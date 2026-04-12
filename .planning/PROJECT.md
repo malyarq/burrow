@@ -1,5 +1,14 @@
 # FriendLauncher (FMCL)
 
+## Current Milestone: v0.2.0 UI System And Experience Rework
+
+**Goal:** Turn FMCL into a visually coherent, theme-correct, fully translated, and meaningfully polished launcher with a deliberate UI system instead of ad hoc screen-by-screen styling.
+
+**Target features:**
+- Unify the launcher visual language across shared components and key screens so blocks, spacing, typography, icons, and states feel like one product.
+- Eliminate visible UI correctness gaps such as missing translations, placeholder text, absent icons, broken theme switching, and inconsistent component styling.
+- Redesign core launcher UX where needed to create a more convenient and attractive flow, while verifying the result manually through real browser runs in addition to repo gates.
+
 ## What This Is
 
 FriendLauncher (FMCL) is an Electron-based Minecraft launcher focused on modpack-heavy desktop workflows, with built-in P2P multiplayer through FriendTunnel. It already covers most core launcher flows and is roughly 80% complete; the current cycle is about turning that broad feature set into a stable, tested, documented, accessible, and security-reviewed release for modpack users.
@@ -19,18 +28,17 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 
 ### Active
 
-- [ ] Eliminate current critical stability and code-quality issues so the project returns to a clean React hooks, TypeScript, and ESLint baseline
-- [ ] Establish Vitest and Testing Library coverage for critical service logic, starting with `modpackService`, `contentManager`, `shareService`, and formatting utilities
-- [ ] Close all remaining roadmap gaps needed for the current release cycle, including instance duplicate/rename from list cards, modpack history and configurable pagination, image disk caching, skin management, mirror fallback and priority, and richer statistics/export
-- [ ] Reach the current accessibility target for desktop use: ARIA coverage, keyboard navigation, sufficient contrast, and reduced-motion support
-- [ ] Bring project documentation in sync across README, EN/RU roadmaps, and IPC contract maps
-- [ ] Complete a practical security hardening pass across IPC validation, path handling, XSS exposure, and Electron window security settings
+- [ ] Build a coherent UI system for FMCL across shared shells, cards, forms, dialogs, themes, icons, and typography instead of the current mixed visual language
+- [ ] Fix visible UI correctness problems such as untranslated placeholder text, missing icons, broken theme application, and inconsistent component states across English and Russian
+- [ ] Redesign key launcher flows where needed so the product feels intentionally convenient and attractive rather than only technically functional
+- [ ] Treat manual browser-based UI verification as a first-class milestone requirement alongside the standard automated repository gates
 
 ### Out of Scope
 
 - Mobile launcher clients — FMCL is a desktop Electron product and the current cycle is about finishing and hardening that product
 - Backend-heavy social or cloud platform features beyond the current launcher/share model — they would expand scope away from launcher stability and local-first workflows
 - Rewriting the application away from Electron, React, TypeScript, or the current IPC architecture — this is a brownfield stabilization milestone, not a platform rewrite
+- Large backend or protocol changes unrelated to launcher presentation and usability — this milestone is about UI/UX and design-system quality on top of the current feature surface
 
 ## Context
 
@@ -39,7 +47,8 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - `docs/KNOWN_ISSUES.md` identifies current lint/hook issues, missing test coverage, and documentation drift; these are part of the active scope, not side notes
 - The product already includes differentiators that matter to this project, especially FriendTunnel P2P multiplayer, broad modpack interoperability, and deep content management
 - Audience for the current stage is modpack users first; the launcher still supports simple-play workflows, but modpack management is the primary product lens
-- Success for the current milestone is a stable release, not merely adding more surface area
+- The previous milestone closed release-hardening and audit recovery work; the next gap is product coherence and perceived quality, not another hardening-only pass
+- Manual UI review through a real browser run is part of the milestone definition, not an optional polish step
 
 ## Constraints
 
@@ -49,16 +58,17 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - **Localization**: User-facing strings must remain synchronized in `src/locales/en.json` and `src/locales/ru.json` — features are not done until both locales are updated
 - **Documentation**: Roadmap and IPC contract documentation must stay current in RU and EN — brownfield drift has already created confusion
 - **Security**: Electron security posture, IPC input validation, and filesystem safety must be reviewed without weakening current functionality
+- **Testing bar**: The milestone must include hands-on browser verification of the redesigned UI, not only static or automated checks
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Keep the current cycle scoped to all six listed priority buckets | The remaining 20% spans stability, testing, roadmap gaps, accessibility, docs, and security; shipping only a subset would leave the release definition incomplete | — Pending |
-| Optimize for a stable release, not pure feature count | The codebase already has broad coverage; the biggest risk is regressions and unfinished hardening work | — Pending |
-| Treat FMCL as a modpack-first launcher | Existing validated functionality and remaining roadmap items are centered on modpack workflows more than vanilla-only play | — Pending |
-| Continue as a brownfield improvement effort instead of a rewrite | The architecture and feature set already exist; a rewrite would delay release and reset risk | — Pending |
-| Add automated tests with Vitest and React Testing Library | The repo currently lacks meaningful automated coverage, and service-level tests are the fastest leverage point | — Pending |
+| Make `v0.2.0` a UI-system-first milestone | The next product gap is inconsistency and perceived quality across the launcher, not missing base capability | Locked |
+| Allow strong UX redesign inside existing architecture | The user explicitly wants a fuller and more deliberate launcher experience, not only cosmetic bugfixes | Locked |
+| Keep the work brownfield-safe | The milestone should improve the current Electron/React launcher rather than reset platform or feature scope | Locked |
+| Require manual browser verification in addition to repo gates | The milestone is specifically about real UI/UX quality, which cannot be judged from static code checks alone | Locked |
+| Continue treating FMCL as a modpack-first launcher | Existing product value and the user’s goal still center on making the launcher itself feel coherent for everyday modpack use | Locked |
 
 ---
-*Last updated: 2026-04-12 after initialization*
+*Last updated: 2026-04-13 for milestone v0.2.0 kickoff*

@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: Completed 06-03-PLAN.md
-last_updated: "2026-04-12T20:33:59.538Z"
-last_activity: 2026-04-12 - Completed 06-03 by rolling requirements forward and rerunning the v1.0 milestone audit to passed
+milestone: v0.2.0
+milestone_name: ui-system-and-experience-rework
+status: active
+stopped_at: Milestone v0.2.0 started
+last_updated: "2026-04-13T00:00:00Z"
+last_activity: 2026-04-13 - Started milestone v0.2.0 to unify the launcher UI system and redesign core UX flows
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 29
-  completed_plans: 29
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 6 complete; v1.0 audit passed and milestone archival is ready
+**Current focus:** Defining requirements for milestone v0.2.0 UI System And Experience Rework
 
 ## Current Position
 
-Phase: 6 of 6 complete (Milestone Auditability Recovery complete)
-Plan: 3 of 3 complete in current phase
-Status: Phase 6 complete - milestone ready for archival
-Last activity: 2026-04-12 - Completed 06-03 by rolling requirements forward and rerunning the v1.0 milestone audit to passed
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-13 - Milestone v0.2.0 started for UI system unification, UX redesign, and manual browser verification
 
-Progress: [██████████] 100%
+Progress: [----------] 0%
 
 ## Performance Metrics
 
 **Velocity:**
 - Total plans completed: 29
-- Active phase plans completed: 3 of 3
+- Active phase plans completed: 0
 - Average duration: 6 min
 - Total execution time: 0.3 hours
 
@@ -44,21 +44,14 @@ Progress: [██████████] 100%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 10 | 0.0h | 0 min |
-| 2 | 3 | 0.0h | 0 min |
-| 3 | 3 | 0.0h | 0 min |
-| 4 | 5 | 0.0h | 0 min |
-| 5 | 5 | 0.0h | 0 min |
-| 6 | 3 | 0.3h | 6 min |
+| v1.0 (archived context) | 29 | 0.3h | 6 min |
 
 **Recent Trend:**
 - Last 5 plans: 05-04, 05-05, 06-01, 06-02, 06-03
-- Trend: Completed
+- Trend: Reset for new milestone
 
 *Updated after each plan completion*
-- Phase 06 P01: 5 min, 2 tasks, 11 files
-- Phase 06 P02: 7 min, 2 tasks, 7 files
-- Phase 06 P03: 7 min, 2 tasks, 2 files
+- Previous milestone totals retained below as historical context
 
 ## Accumulated Context
 
@@ -94,6 +87,7 @@ Recent decisions affecting current work:
 - [Phase 06]: Rebuild verification artifacts from shipped summaries and validation records while preserving real residual blockers instead of flattening them into blanket completion.
 - [Phase 06]: Treat Phase 6 recovery summaries as the closure evidence for blocker debt preserved in reconstructed phase verification files
 - [Phase 06]: Roll REQUIREMENTS.md forward before rerunning the milestone audit so the rerun reflects the verified shipped state
+- Milestone v0.2.0: Go system-first on UI work, allow strong UX redesign inside the existing launcher architecture, and require manual browser testing as part of completion
 
 ### Pending Todos
 
@@ -106,9 +100,10 @@ None yet.
 - `npm run build -- --publish never` is green on this machine, but first-run packaging can still need network access for Electron downloads in restricted environments.
 - The new test dependencies were installable from the public npm registry, but the internal registry returned `403` for `@testing-library/react`; contributor environments that are locked to the internal registry may need follow-up.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
+- No v0.2.0 requirements or roadmap exist yet; the milestone is at the definition stage.
 
 ## Session Continuity
 
-Last session: 2026-04-12T20:33:59.535Z
-Stopped at: Completed 06-03-PLAN.md
-Resume file: None
+Last session: 2026-04-13T00:00:00Z
+Stopped at: Milestone v0.2.0 started
+Resume file: .planning/PROJECT.md
