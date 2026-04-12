@@ -1,481 +1,178 @@
 # Architecture Research
 
-**Domain:** FMCL brownfield stabilization and completion
-**Researched:** 2026-04-12
-**Confidence:** HIGH
+**Domain:** Brownfield desktop-launcher UI system and UX redesign
+**Researched:** 2026-04-13
+**Confidence:** MEDIUM
 
-## Decision Frame
+## Standard Architecture
 
-FMCL is already an Electron monolith with a typed IPC facade:
-
-- Electron main process owns privileged work, persistent state, downloads, launching, accounts, mirrors, statistics, sharing, and modpack storage.
-- Preload bridges expose `window.api.*` plus legacy globals.
-- The React renderer owns UI state, flows, and settings, mostly through contexts and `src/services/ipc/*`.
-- Shared contracts in `shared/contracts/*` already define the safest extension seam.
-
-The remaining work is not a rewrite problem. It is a stabilization problem:
-
-- finish missing UX on top of existing modpack/account/settings flows
-- harden IPC and filesystem boundaries
-- add test coverage around current service seams
-- extend existing persistence for mirrors, stats, caches, and skins
-- do accessibility after the UI surface is stable enough to audit once
-
-Low-risk delivery means extending current domains instead of introducing a new architecture style.
-
-## Recommended System Shape
+### System Overview
 
 ```text
-┌──────────────────────────────────────────────────────────────────────┐
-│ Renderer (React + Context + feature components)                     │
-│                                                                      │
-│ Modpack UI  Accounts UI  Settings UI  Accessibility behaviors        │
-│ List/Details  Avatars/Skins  Mirrors/Stats/Storage  keyboard/focus   │
-└───────────────┬──────────────────────────────────────────────────────┘
-                │ use existing wrappers first
-                ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│ Renderer IPC Wrappers (`src/services/ipc/*`)                         │
-│                                                                      │
-│ modpacksIPC  accountIPC  mirrorsIPC  statisticsIPC  assets/cache IPC │
-└───────────────┬──────────────────────────────────────────────────────┘
-                │ typed contract boundary
-                ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│ Preload + Shared Contracts                                           │
-│                                                                      │
-│ `electron/preload/bridges/*` + `shared/contracts/*`                  │
-│ Preferred namespace: `window.api.*`                                  │
-└───────────────┬──────────────────────────────────────────────────────┘
-                │ thin invoke/subscribe bridge
-                ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│ Main Process Handlers                                                │
-│                                                                      │
-│ Thin adapters + input validation + path/url normalization            │
-└───────────────┬──────────────────────────────────────────────────────┘
-                │ delegate only
-                ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│ Main Process Domain Services                                         │
-│                                                                      │
-│ LauncherManager + RuntimeDownloadService + DownloadManager           │
-│ ModpackService + InstanceService + ContentManager                    │
-│ AccountService (+ skin helpers)                                      │
-│ MirrorsService (+ provider ordering/fallback)                        │
-│ StatisticsService (+ aggregation/export)                             │
-└───────────────┬──────────────────────────────────────────────────────┘
-                │ owns persistence
-                ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│ Filesystem / Electron userData                                       │
-│                                                                      │
-│ modpack configs/index/metadata, content-store, download-cache.json,  │
-│ accounts.json + account asset cache, mirrors.json, statistics.json   │
-└──────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Renderer Screen Layer                    │
+├─────────────────────────────────────────────────────────────┤
+│  Welcome / Play / Modpacks / Accounts / Settings / Dialogs │
+│          consume shared layout, tokens, icons, copy        │
+├─────────────────────────────────────────────────────────────┤
+│                 Shared Presentation Layer                   │
+├─────────────────────────────────────────────────────────────┤
+│  ui/ primitives   shell components   surface classes       │
+│  icon rules       focus/motion rules locale key contracts  │
+├─────────────────────────────────────────────────────────────┤
+│                 State + Integration Layer                   │
+├─────────────────────────────────────────────────────────────┤
+│  SettingsContext  theme.ts  locales/*.json  IPC wrappers   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Guardrails For Remaining Work
+### Component Responsibilities
 
-1. Keep privileged logic in the main process.
-2. Add or extend shared IPC contracts before adding renderer behavior.
-3. Use `src/services/ipc/*` wrappers for new renderer calls. Do not add fresh direct `window.*` usage.
-4. Prefer extending existing services over adding sibling systems:
-   - `ModpackService` for modpack UX/data gaps
-   - `AccountService` for skins/account assets
-   - `MirrorsService` and provider/scoring code for fallback/priority
-   - `StatisticsService` for aggregates/export
-   - download/content stack for cache and remote asset storage
-5. Do validation at the handler/service edge, not only in React forms.
-6. Do not attempt a full Electron sandbox migration in this milestone. `sandbox: false` is currently part of the runtime shape, and changing it is higher risk than the requested hardening pass.
+| Component | Responsibility | Typical Implementation |
+|-----------|----------------|------------------------|
+| Shared UI primitives | Own button/input/select/modal/card semantics and variants | `src/components/ui/*` backed by token-driven class composition |
+| App shell components | Own launcher-wide hierarchy, navigation chrome, and section framing | `TitleBar`, `Sidebar`, welcome/home shell, section headers |
+| Settings/theme seam | Own theme, accent, motion, and appearance state as source of truth | `SettingsContext` + `src/contexts/settings/theme.ts` + CSS variables in `src/index.css` |
+| Localization layer | Own all user-facing strings and keep EN/RU parity | `src/locales/en.json` and `src/locales/ru.json` only, no hardcoded screen copy |
+| Feature screens | Compose the shared system and add workflow-specific content | `src/features/*` and `src/components/*` screens should not invent new visual systems |
 
-## Component Boundaries For Remaining Work
-
-| Workstream | Renderer owner | Contract / wrapper | Main-process owner | Persistence / notes |
-|---|---|---|---|---|
-| Instance rename / duplicate from list | `src/components/modpacks/ModpackList.tsx`, `ModpackContext` | existing `modpacksIPC.rename/duplicate` | existing `ModpackService` / `InstanceService` | UI-only completion; replace `window.prompt` with app modal, no new backend |
-| Modpack version history | modpack details/update UI | extend `shared/contracts/modpacks.ts` | extend `ModpackService` metadata storage | store in existing modpack metadata, not a new database |
-| Configurable pagination in browsers | modpack browser pages/hooks | existing search APIs already carry `offset/limit/total` | existing marketplace search methods | renderer state first; keep API shape aligned with current contracts |
-| Image disk cache | `LazyImage` consumers use wrapper-returned URLs | extend `assets` or `cache` contract, keep `cache` admin actions separate | add remote image cache helper near download/content stack | disk-backed cache under `userData`; renderer should not own network fetch policy |
-| Cache controls / size / cleanup | storage/settings tabs | extend `cacheIPC` for stats/settings/clear | cache service + existing `ContentManager` / `ETagCache` | keep clear operations centralized in main process |
-| Skins / avatar management | accounts page/dialogs | extend account contracts first | `AccountService` with small skin helper module | keep account selection and skin management in one domain; avoid separate “profile service” |
-| Mirror fallback / priority | mirrors settings | extend mirrors contract with priority/fallback config | `MirrorsService` + provider ordering + runtime download service | reuse current provider/scoring stack instead of adding download logic to UI |
-| Statistics / charts / export | statistics tab and dashboard widgets | extend statistics contract | `StatisticsService` | derive aggregates on read; export should serialize current JSON state, not add telemetry infra |
-| Accessibility | shared UI primitives, layouts, feature pages | no new privileged contract except persisted prefs | mostly renderer-only | reduced-motion / contrast prefs can remain in renderer settings unless launcher runtime needs them |
-| Security hardening | form validation and safe rendering | shared contracts + handler validators | handlers + services + window config | authoritative checks stay in main process |
-| Tests | renderer unit tests + hook tests | wrapper mocks at service edge | service tests around real temp dirs and pure helpers | start from service seams already present; do not lead with end-to-end UI tests |
-
-## Recommended Extension Structure
-
-This is an extension map, not a refactor plan:
+## Recommended Project Structure
 
 ```text
-electron/
-├── ipc/
-│   ├── handlers/              # extend current handlers, keep thin
-│   └── validators/            # new: shared IPC input/path/url validation helpers
-├── services/
-│   ├── account/
-│   │   ├── accountService.ts
-│   │   └── skins/             # optional helper folder, only if skin logic grows
-│   ├── cache/                 # new: remote image/cache helpers if needed
-│   ├── content/
-│   ├── download/
-│   ├── mirrors/
-│   ├── modpacks/
-│   └── stats/
 src/
-├── components/ui/             # accessibility-first primitives, dialogs, focus states
-├── components/modpacks/       # finish list/details UX on existing flows
-├── features/accounts/         # accounts + skin management UI
-├── features/settings/
-│   ├── mirrors/
-│   ├── statistics/
-│   ├── accessibility/         # optional, only if settings page grows
-│   └── storage/
-└── services/ipc/              # preferred renderer entrypoint for all privileged work
-shared/
-├── contracts/                 # extend first
-└── types/                     # widen only where persisted/domain data changes
+├── components/ui/            # Shared primitives and reusable visual contracts
+├── components/layout/        # Background, shell, and layout-specific wrappers
+├── components/sidebar/       # Launcher chrome and navigation controls
+├── components/settings/      # Settings shells and tabs consuming shared system
+├── features/                 # Domain screens like accounts and share
+├── contexts/settings/        # Theme, accent, appearance source of truth
+├── locales/                  # EN/RU user-facing copy
+└── services/ipc/             # Typed renderer-to-main seams that UI consumes
 ```
 
-## Data Flow Recommendations
+### Structure Rationale
 
-### 1. Missing launcher UX on existing modpacks
+- **`components/ui/`:** should be the main source of truth for shared affordances, variant logic, and visual states.
+- **`contexts/settings/`:** should remain the single owner of theme and appearance decisions instead of duplicating state across screens.
+- **`locales/`:** should be treated as required completion scope for any user-facing UI change.
+- **`features/` and screen components:** should consume the system rather than define it.
+
+## Architectural Patterns
+
+### Pattern 1: Token-First Theming
+
+**What:** Apply theme and accent through document-level CSS custom properties and shared utility classes.
+**When to use:** Any surface that must react to theme, accent, motion, or contrast choices.
+**Trade-offs:** Centralizes behavior well, but requires disciplined rollout because old hardcoded classes remain visible until migrated.
+
+**Example:**
+```typescript
+applyThemeToDocument(theme, accentColor, customTheme);
+// Shared surfaces and controls then read the same CSS variables.
+```
+
+### Pattern 2: Shared-Primitive Ownership
+
+**What:** Put visual and interaction consistency into shared buttons, inputs, selects, cards, modals, and shell wrappers.
+**When to use:** Any repeated control or state pattern across more than one screen.
+**Trade-offs:** Requires up-front cleanup, but prevents screen-local drift from returning.
+
+**Example:**
+```tsx
+<Button variant="primary" size="lg">
+  {t('general.play')}
+</Button>
+```
+
+### Pattern 3: Locale-First UI Text
+
+**What:** Treat every user-visible string as a localization key backed by EN/RU parity.
+**When to use:** All renderer copy, including placeholders, empty states, tooltips, and modal titles.
+**Trade-offs:** Slightly slower for quick edits, but avoids the current placeholder/hardcoded-string regressions.
+
+## Data Flow
+
+### Request Flow
 
 ```text
-User action in ModpackList / Details
-  ↓
-ModpackContext action or page-local hook
-  ↓
-`modpacksIPC`
-  ↓
-preload bridge + `shared/contracts/modpacks.ts`
-  ↓
-`modpacksHandlers`
-  ↓
-`ModpackService` / `InstanceService`
-  ↓
-config/index/metadata files
-  ↓
-updated list/config returned to renderer
+[User changes appearance setting]
+    ↓
+[Settings UI] → [SettingsContext] → [theme.ts] → [document CSS variables]
+    ↓
+[Shared primitives + screens re-render with tokenized styles]
 ```
 
-Recommended rule:
-
-- if the operation already exists in `ModpackContext` or `modpacksIPC`, finish the UI around it before touching main-process architecture
-- modpack history should be treated as metadata enrichment on the same storage path already used by `ModpackService`
-
-### 2. Remote image caching
+### State Management
 
 ```text
-Renderer requests preview/icon URL
-  ↓
-assets/cache wrapper resolves cached local URL
-  ↓
-IPC handler validates remote URL and cache key
-  ↓
-main-process cache helper downloads or reuses disk copy
-  ↓
-ETag/download/content helpers manage freshness and storage
-  ↓
-renderer receives local/file URL or safe app-managed path
+[Persisted appearance settings]
+    ↓
+[SettingsContext]
+    ↓
+[Components subscribe through props/hooks]
+    ↓
+[Theme + layout updates stay consistent across screens]
 ```
 
-Recommended rule:
+### Key Data Flows
 
-- keep caching policy in the main process
-- do not let `LazyImage` become a second downloader/cache manager
-- keep cache admin actions (`clear`, `size`, `cleanup`) separate from asset lookup calls
+1. **Theme propagation:** Settings change updates root CSS variables, then shared primitives and screen surfaces inherit the same palette and contrast rules.
+2. **Localization coverage:** Screen copy resolves through locale keys, then EN/RU files remain the shipped source of truth.
+3. **Manual verification:** Dev server run plus browser walkthrough validates actual composition, theme, navigation, and focus behavior on live screens.
 
-### 3. Skins and account assets
+## Scaling Considerations
 
-```text
-Accounts UI / skin upload or refresh
-  ↓
-account wrapper + contract
-  ↓
-account handler validates account id, file path, mime/extension
-  ↓
-`AccountService`
-  ↓
-skin helper downloads/copies asset into account-owned cache
-  ↓
-`accounts.json` metadata + account asset directory
-  ↓
-avatar/skin descriptor returned to UI
-```
+| Scale | Architecture Adjustments |
+|-------|--------------------------|
+| 5-10 core screens | Shared primitives and shell components are enough; avoid new state layers |
+| 10-25 complex surfaces | Add stricter visual contracts and focused component tests around shared primitives and route shells |
+| 25+ heavily distinct surfaces | Add stronger system documentation and a surface rollout checklist to stop feature-local divergence |
 
-Recommended rule:
+### Scaling Priorities
 
-- keep skins inside the account domain because account selection/auth/session state already lives there
-- only extract a helper module if file handling grows; do not create a top-level service unless reuse actually appears
+1. **First bottleneck:** theme and surface drift between old and newly refreshed screens — fix by making tokens and shared surfaces mandatory.
+2. **Second bottleneck:** translation and icon coverage drift — fix by including string and icon audit in each rollout wave.
 
-### 4. Mirrors, fallback, and priority
+## Anti-Patterns
 
-```text
-Mirrors settings UI
-  ↓
-mirrors wrapper + contract
-  ↓
-`MirrorsService` state mutation
-  ↓
-provider selection / ordered candidates
-  ↓
-`RuntimeDownloadService` and `DownloadManager`
-  ↓
-mirror scoring success/failure feedback
-  ↓
-updated rankings and persisted settings
-```
+### Anti-Pattern 1: Screen-Local Design Systems
 
-Recommended rule:
+**What people do:** Each screen invents its own spacing, surfaces, icon style, and empty states.
+**Why it's wrong:** The launcher starts looking like multiple products glued together.
+**Do this instead:** Move repeated visual decisions into shared primitives, shell wrappers, and token classes.
 
-- UI should edit preference state only
-- fallback and priority behavior belongs in provider ordering and download candidate selection
-- current `providers.ts`, `scoring.ts`, and `RuntimeDownloadService` are already the correct seam
+### Anti-Pattern 2: Theme Toggle Without Theme Ownership
 
-### 5. Statistics and export
+**What people do:** Persist a light/dark setting but leave large sections on hardcoded colors.
+**Why it's wrong:** Users experience the theme switch as broken even when settings persist correctly.
+**Do this instead:** Make the token layer the only accepted source of app colors and migrate screens onto it.
 
-```text
-Launch session / dashboard request / export action
-  ↓
-`LauncherManager` records usage
-  ↓
-`StatisticsService`
-  ↓
-statistics.json
-  ↓
-derived aggregates / export serializer
-  ↓
-statistics wrapper + UI
-```
+## Integration Points
 
-Recommended rule:
+### External Services
 
-- keep raw event persistence simple
-- add aggregation and export as read-side behavior inside `StatisticsService`
-- do not introduce telemetry infrastructure or a background analytics pipeline for this milestone
+| Service | Integration Pattern | Notes |
+|---------|---------------------|-------|
+| Manual browser runtime | `npm run dev` / preview + browser walkthrough | Required for milestone verification of live UI behavior |
+| Existing test runner | Focused Vitest component and utility tests | Useful for shared primitive and theme regressions, but not a replacement for browser walkthroughs |
 
-### 6. Accessibility and reduced motion
+### Internal Boundaries
 
-```text
-Settings preference or keyboard interaction
-  ↓
-renderer settings/context
-  ↓
-shared UI primitives and page components
-  ↓
-focus handling, ARIA, labels, contrast, motion toggles
-```
-
-Recommended rule:
-
-- accessibility is mostly a renderer concern
-- start at shared primitives and list/dialog/navigation patterns
-- do page-level audits after feature flows stop moving
-
-### 7. Security hardening
-
-```text
-Renderer input
-  ↓
-UI validation for fast feedback
-  ↓
-shared contract typing
-  ↓
-IPC handler validation and normalization
-  ↓
-service-level filesystem/network guards
-  ↓
-persist / launch / download
-```
-
-Recommended rule:
-
-- renderer validation is helpful UX, not a trust boundary
-- normalize paths, URLs, ids, and output destinations in main-process handlers or shared validator helpers
-- keep BrowserWindow posture strict; avoid expanding web capabilities during this milestone
-
-## Brownfield Build Order
-
-### Stage 1: Stabilize the edges first
-
-Goals:
-
-- remove current lint/runtime hazards from known issues
-- stop adding new direct `window.*`, `prompt`, and browser `confirm` usage
-- add handler-side validation helpers for ids, file paths, URLs, and optional output locations
-- establish test scaffolding at the service/wrapper level
-
-Why first:
-
-- this reduces regression risk for every later change
-- it prevents new UX work from deepening existing architectural drift
-- it gives the team a safe baseline before touching caches, skins, or mirrors
-
-### Stage 2: Finish low-risk UX already backed by existing services
-
-Do next:
-
-- rename and duplicate from list cards using existing modpack actions
-- configurable pagination in search/browse flows using current offset/limit contract fields
-- replace temporary browser dialogs with existing app modal/confirm patterns
-
-Why second:
-
-- these are mostly renderer changes over stable operations
-- they deliver visible product value without expanding persistence or security surface area much
-
-### Stage 3: Extend existing persisted domains
-
-Do next:
-
-- modpack version history in metadata
-- statistics aggregation/export in `StatisticsService`
-- mirror priority/fallback in `MirrorsService` + provider ordering
-- skin management in `AccountService`
-- disk-backed image cache beside download/content services
-
-Why third:
-
-- these changes widen contracts and storage formats
-- doing them after baseline hardening makes contract evolution safer
-- they are easier to test once service-level scaffolding exists
-
-### Stage 4: Accessibility pass on stabilized UI
-
-Do next:
-
-- focus order, keyboard navigation, ARIA, labels, contrast, reduced-motion support
-- start from shared UI primitives and then audit pages
-
-Why fourth:
-
-- accessibility on moving UI is expensive rework
-- shared primitive fixes become cheaper after list/dialog/settings flows settle
-
-### Stage 5: Final hardening and documentation sync
-
-Do last:
-
-- security review of all new/changed handlers and file flows
-- contract map update
-- EN/RU roadmap sync
-- release gate checks and smoke verification
-
-Why last:
-
-- documentation should describe the final contract shape, not intermediate states
-- final security review is more effective after all new handlers and flows exist
-
-## Testing Architecture For This Milestone
-
-### Priority test seams
-
-1. Main-process services with temp directories:
-   - `ModpackService`
-   - `InstanceService`
-   - `ContentManager`
-   - `ShareService`
-   - `StatisticsService`
-   - `MirrorsService`
-2. Pure helper modules:
-   - mirror scoring/order
-   - path/url validators
-   - formatting and metadata helpers
-3. Renderer wrappers and hooks:
-   - `src/services/ipc/*`
-   - context hooks that coordinate selection/config flows
-4. Existing install smoke harness remains useful for launcher/runtime coverage, but it should not be the first test layer added for stabilization work.
-
-### Practical test split
-
-- service tests prove persistence and side effects
-- renderer tests prove state orchestration and accessibility behavior
-- smoke/full-install tests prove launcher runtime paths
-
-This is the fastest path to confidence without building a new end-to-end stack first.
-
-## Anti-Patterns To Avoid
-
-### 1. Building new renderer-side mini backends
-
-What it looks like:
-
-- fetching/caching remote images directly in React
-- storing mirror or stats business state in local component trees
-- treating browser dialogs as permanent workflow UI
-
-Do this instead:
-
-- keep business rules and persistence in main-process services
-- use IPC wrappers for renderer access
-
-### 2. Fixing security only in forms
-
-What it looks like:
-
-- validating names, URLs, or file paths only in React inputs
-
-Do this instead:
-
-- duplicate critical validation in the IPC handler/service boundary
-
-### 3. Creating parallel state stores
-
-What it looks like:
-
-- adding a new global state system just for remaining launcher UX
-
-Do this instead:
-
-- extend `ModpackContext`, settings context, and focused hooks already in use
-
-### 4. Large brownfield refactors during stabilization
-
-What it looks like:
-
-- renaming `instances`/`modpacks` everywhere
-- removing legacy globals in one pass
-- switching Electron security model wholesale
-
-Do this instead:
-
-- tolerate transitional naming
-- put new code on the preferred path (`window.api.*` through wrappers)
-- keep compatibility shims until after release stabilization
-
-## Architecture Recommendation
-
-For the remaining FMCL work, the safest architecture is:
-
-- preserve the current Electron main + preload + React renderer split
-- extend shared IPC contracts first, wrappers second, handlers third, services last
-- keep new persistence inside the domains that already own it
-- use the existing download/content stack as the foundation for cache and mirror behavior
-- keep skins inside the account domain and statistics inside the statistics domain
-- treat accessibility as a renderer-wide quality pass, not a new subsystem
-
-This approach is intentionally conservative. It optimizes for shipping a stable release from the current codebase, not for achieving a cleaner theoretical architecture.
+| Boundary | Communication | Notes |
+|----------|---------------|-------|
+| `SettingsContext` ↔ `theme.ts` | Direct API and document side effects | Primary theme source of truth; keep it centralized |
+| `theme.ts` ↔ `src/index.css` | CSS variable contract | Token names must remain stable once the design system starts depending on them |
+| `components/ui/*` ↔ feature screens | Props and shared variants | Screens should compose, not fork, primitive behavior |
+| Feature screens ↔ `locales/*.json` | Localization keys | No direct hardcoded user copy in renderer components |
 
 ## Sources
 
-- `.planning/PROJECT.md`
-- `.planning/codebase/ARCHITECTURE.md`
-- `.planning/codebase/STACK.md`
-- `docs/ru/roadmap.md`
-- `docs/KNOWN_ISSUES.md`
-- Current extension points in:
-  - `electron/ipc/ipcManager.ts`
-  - `electron/preload.ts`
-  - `electron/services/modpacks/modpackService.ts`
-  - `electron/services/content/contentManager.ts`
-  - `electron/services/mirrors/*`
-  - `electron/services/stats/statisticsService.ts`
-  - `electron/services/account/accountService.ts`
-  - `src/contexts/ModpackContext.tsx`
-  - `src/services/ipc/*`
+- Local repo inspection: `.planning/PROJECT.md`
+- Local repo inspection: `src/index.css`
+- Local repo inspection: `src/contexts/settings/theme.ts`
+- Local repo inspection: `src/components/ui/Button.tsx`
+- Local repo inspection: `docs/KNOWN_ISSUES.md`
 
 ---
-*Architecture research for FMCL stabilization milestone*
+*Architecture research for: FMCL v0.2.0 UI system and UX redesign*
+*Researched: 2026-04-13*

@@ -1,143 +1,118 @@
 # Feature Research
 
-**Domain:** Brownfield modpack-first desktop Minecraft launcher release milestone
-**Researched:** 2026-04-12
-**Confidence:** HIGH
-
-## Release Frame
-
-FMCL already has broad launcher coverage. This milestone is not about inventing a bigger product; it is about making the existing modpack-first desktop launcher releasable.
-
-The release definition is driven by six mandatory buckets from `PROJECT.md`:
-
-1. Critical bugs and code-quality regressions
-2. Automated tests for critical paths
-3. Remaining roadmap gaps that materially affect modpack workflows
-4. Accessibility baseline
-5. Documentation parity
-6. Security hardening
-
-For this milestone, the right feature question is not "what else could a launcher do?" but "what must be finished or protected so modpack users can trust FMCL as their daily launcher?"
+**Domain:** Brownfield desktop-launcher UI system and UX redesign
+**Researched:** 2026-04-13
+**Confidence:** MEDIUM
 
 ## Feature Landscape
 
-### Table Stakes
+### Table Stakes (Users Expect These)
 
-**Category complexity:** HIGH
+Features users assume exist. Missing these = product feels incomplete.
 
-**Category dependencies:**
-- Stability work is the gate for meaningful testing, accessibility verification, and release confidence.
-- Roadmap gap closure should stay inside existing FMCL surfaces, not create new product areas.
-- Documentation and release notes should follow shipped behavior, not planned behavior.
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Shared visual language across cards, forms, dialogs, shells, and empty states | A launcher with mixed styles feels unfinished even if features work | MEDIUM | Must be driven by shared primitives and token usage, not isolated screen rewrites |
+| Full EN/RU text correctness with no placeholder or missing translation leaks | Broken language coverage reads as broken product quality immediately | MEDIUM | Includes inventorying hardcoded strings and ensuring both locales ship together |
+| Theme fidelity that actually changes the app, not only isolated controls | Users expect light/dark/accent choices to affect the whole interface | MEDIUM | Requires document-level tokens and screen adoption, not only settings persistence |
+| Consistent iconography and control states | Missing icons and mixed symbols make navigation feel unreliable | LOW | One icon system, explicit loading/error/empty states, and consistent affordances |
+| Critical-screen manual verification | UI polish claims are not credible without real interaction checks | LOW | Must cover launcher home, settings, modpacks, accounts, and modal flows |
 
-| Feature | Why Expected In This Milestone | Complexity | Dependency Notes |
-|---------|-------------------------------|------------|------------------|
-| Stable React, TypeScript, and ESLint baseline | Known hook and runtime issues make the launcher feel unsafe before users even reach modpack workflows | MEDIUM | Must happen before broad verification; directly tied to `docs/KNOWN_ISSUES.md` |
-| Critical-path automated tests for modpack/content/share flows | A brownfield release without regression coverage is likely to break install, import, update, or share flows during cleanup work | HIGH | Depends on stabilized modules; start with `modpackService`, `contentManager`, `shareService`, and formatting utilities |
-| Complete core instance management from list surfaces | Modpack-first users expect duplicate and rename flows without manual filesystem workarounds | MEDIUM | Builds on already shipped instance cards and context actions |
-| Complete modpack discovery continuity | Recent-view history and configurable pagination are basic usability requirements once the browser already exists and catalog size is large | MEDIUM | Depends on current browser filters, persistence, and view-state handling |
-| Persistent disk caching for modpack imagery | Re-downloading covers and previews every session makes the launcher feel unfinished and slow | MEDIUM | Depends on safe cache-path handling, invalidation, and storage settings |
-| Accessibility baseline for desktop interaction | Screen-reader semantics, keyboard traversal, contrast, and reduced motion are part of release readiness, not polish | HIGH | Best done after core UI bugs are fixed; likely touches shared UI primitives and layout components |
-| Documentation parity across README, EN/RU roadmap, and IPC maps | Brownfield drift already exists; wrong docs create support load and false expectations about what is done | LOW-MEDIUM | Depends on final shipped scope; must be updated after feature truth is settled |
-| Security hardening across IPC, path handling, XSS exposure, and Electron window settings | Electron launchers are high-risk if process boundaries and filesystem inputs are too permissive | HIGH | Cross-cuts preload bridges, IPC contracts, main-process handlers, and renderer content surfaces |
+### Differentiators (Competitive Advantage)
 
-### Differentiators
+Features that set the product apart. Not required, but valuable.
 
-**Category complexity:** MEDIUM
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Modpack-first information hierarchy | Makes FMCL feel purpose-built for its strongest audience instead of generic Minecraft chrome | MEDIUM | Prioritize install, browse, play, share, and manage flows around modpack usage |
+| Atmosphere without sacrificing readability | Gives the launcher a deliberate identity beyond “utility app” while still feeling usable | MEDIUM | Backgrounds, accent, and motion should support hierarchy rather than compete with it |
+| Theme and accent customization that propagates cleanly | Turns a settings feature into a real product identity system | MEDIUM | Valuable only if implemented through shared tokens, not per-screen overrides |
+| Unified treatment of advanced surfaces | Accounts, mirrors, statistics, sharing, and content screens should feel like the same product as onboarding and play | HIGH | Important brownfield differentiator because these surfaces often lag behind the shell |
 
-**Category dependencies:**
-- These only pay off if table stakes are green first.
-- The milestone should deepen FMCL's existing strengths, not invent new platform bets.
-- Differentiators should remain local-first and launcher-centric.
+### Anti-Features (Commonly Requested, Often Problematic)
 
-| Feature | Value In This Milestone | Complexity | Dependency Notes |
-|---------|-------------------------|------------|------------------|
-| Skin management on top of existing multi-account support | Finishes the custom-account story for modded and private-server users instead of stopping at login switching | MEDIUM | Depends on current account management and secure file/import validation |
-| Mirror fallback and user-controlled priority | Converts the current mirror system from "fast when it works" into a reliability advantage for large modpack downloads | MEDIUM | Depends on existing mirror speed testing and download retry plumbing |
-| Lightweight local stats uplift with export | Popular packs, usage charts, and export can help users manage their own launcher habits without turning FMCL into a cloud analytics product | MEDIUM | Depends on current per-instance and play-time stats; export must stay local and privacy-safe |
-| Protect FriendTunnel and cross-launcher interoperability during release work | These are already meaningful FMCL differentiators; the release should avoid regressing them while hardening the rest of the app | MEDIUM-HIGH | Depends more on tests, docs, and security review than on net-new UI work |
-
-### Anti-Features / Defer
-
-**Category complexity:** HIGH if pursued
-
-**Category dependencies:**
-- Most of these compete directly with stabilization budget.
-- Several require backend, moderation, or long-tail maintenance that the milestone does not budget for.
-- Pursuing them now would increase surface area faster than release confidence.
-
-| Feature | Why Requested | Why Problematic In This Milestone | Better Alternative |
-|---------|---------------|-----------------------------------|--------------------|
-| Cloud sync and hosted profiles | Feels modern and convenient for multi-device play | Adds backend, auth, conflict resolution, privacy, and support burden while the local launcher still needs release hardening | Keep local import/export and share-code flows reliable and documented |
-| Rewrite away from Electron/React/current IPC architecture | Sounds like a clean way to solve old code problems | Resets brownfield progress, delays release, and creates new regression classes without solving the immediate shipping gap | Hardening and cleanup inside the current architecture |
-| Full social platform around FriendTunnel | Lobbies, presence, and cloud matchmaking sound exciting | Turns a launcher differentiator into a backend product with security and moderation overhead | Keep direct friend play reliable, documented, and well tested |
-| Broad new skin-provider matrix | More providers appear to widen compatibility | Expands maintenance surface before the base skin-management flow is complete | Finish core skin upload/manage flow first, then expand providers later |
-| More visual customization beyond accessibility-safe fixes | Visible UI additions are easy to market | Competes with accessibility, performance, and bug-fix work while Phase 5 is already largely shipped | Restrict UI work to fixes that improve clarity, contrast, and reduced-motion behavior |
-| Additional languages beyond EN/RU | Broadens theoretical audience | Translation QA and maintenance multiply while even EN/RU docs parity is still open | Finish EN/RU parity and release guidance before adding more locales |
+| Feature | Why Requested | Why Problematic | Alternative |
+|---------|---------------|-----------------|-------------|
+| Full visual rewrite of every screen before foundations | Feels like the fastest path to a “new UI” | Guarantees inconsistency and regressions because foundations remain unstable | Establish shared system first, then roll it through high-traffic surfaces |
+| Decorative motion everywhere | Makes screenshots look more “alive” | Hurts readability, focus, and reduced-motion compliance in a desktop launcher | Keep a restrained motion language tied to hierarchy and state changes |
+| New UI framework adoption as part of the milestone | Seems like a shortcut to consistency | Replaces UX work with migration work and explodes scope | Stay on current stack and unify existing primitives |
+| Cosmetic fixes without browser walkthroughs | Feels efficient when time is tight | Misses dead toggles, theme leaks, clipped layouts, and navigation friction | Treat manual browser verification as part of definition of done |
 
 ## Feature Dependencies
 
-```text
-[Stable code-quality baseline]
-    └──enables──> [Critical-path tests]
-                        └──protect──> [FriendTunnel, mirrors, import/export, skin flows]
+```
+Shared tokens + primitives
+    └──requires──> theme source of truth
+                          └──requires──> screen rollout
 
-[Security hardening]
-    ├──overlaps──> [Image disk caching]
-    ├──overlaps──> [Skin upload/import]
-    └──overlaps──> [Mirror fallback and priority]
+Locale cleanup
+    └──requires──> user-facing string inventory
 
-[Core modpack workflow completion]
-    └──precedes──> [Docs parity and release guidance]
+Manual browser verification
+    └──requires──> critical-screen checklist
 
-[Accessibility baseline]
-    └──depends on──> [Shared UI primitives and stable interaction patterns]
-
-[Cloud sync / rewrite / social-platform work]
-    └──conflicts with──> [Stable release budget]
+UX flow redesign
+    └──enhances──> visual-system rollout
 ```
 
 ### Dependency Notes
 
-- **Stable code-quality baseline requires early completion:** fixing known hook, state, and typing issues should happen before test additions and before any final release audit.
-- **Critical-path tests protect differentiators indirectly:** FMCL already has valuable features; the immediate need is to stop hardening work from breaking them.
-- **Security hardening is not isolated work:** cache paths, skin uploads, mirror selection, and IPC validation all touch the same trust boundaries.
-- **Docs parity must follow actual shipped behavior:** updating roadmap and README too early will just create another drift cycle.
-- **Accessibility depends on shared component cleanup:** adding ARIA or keyboard support one screen at a time is fragile if base primitives still have unstable behavior.
+- **Shared tokens + primitives require theme source of truth:** visual consistency collapses if screens can bypass the token layer.
+- **Locale cleanup requires user-facing string inventory:** missing translation issues usually survive unless they are systematically hunted.
+- **Manual browser verification requires a critical-screen checklist:** ad hoc clicking is too easy to under-scope.
+- **UX flow redesign enhances visual-system rollout:** stronger flow polish matters more once screens already share structure and affordances.
 
-## Milestone Cut Line
+## MVP Definition
 
-### Must Ship In This Release
+### Launch With (v0.2.0)
 
-- [ ] Stable lint/type/hook baseline with the current critical issues removed
-- [ ] Regression tests for release-critical modpack, content, and share flows
-- [ ] Core remaining modpack workflow gaps closed: instance duplicate/rename, discovery history, configurable pagination, image disk caching
-- [ ] Accessibility baseline for keyboard, screen-reader semantics, contrast, and reduced motion
-- [ ] Documentation parity across README, EN/RU roadmap, and contract mapping
-- [ ] Security hardening for IPC, filesystem inputs, XSS exposure, and Electron window settings
+- [ ] Shared UI system for shells, cards, forms, dialogs, and visual states — essential because every later screen fix should inherit it
+- [ ] EN/RU correctness pass for visible launcher UI text — essential because placeholder and missing copy are currently user-visible defects
+- [ ] Real theme/icon consistency across the launcher — essential because settings credibility depends on it
+- [ ] Focused redesign of the highest-traffic launcher flows — essential because convenience and visual clarity are part of the milestone goal
+- [ ] Manual browser-based verification of the redesigned experience — essential because this milestone is explicitly about perceived quality
 
-### Ship If The Baseline Stays Green
+### Add After Validation (v0.2.x)
 
-- [ ] Skin management within the already-supported account system
-- [ ] Mirror fallback and mirror-priority controls
-- [ ] Local stats improvements such as popular packs, simple usage charts, and export
+- [ ] Richer secondary visual presets or curated theme packs — add after the base token system and theme propagation prove stable
+- [ ] Broader pass over low-traffic management screens — add once the primary shell and modpack/play/account flows are coherent
 
-### Explicitly Defer
+### Future Consideration (v0.3+)
 
-- [ ] Cloud sync or hosted launcher profiles
-- [ ] Architecture rewrite or framework migration
-- [ ] Expanded social platform beyond current share and P2P flows
-- [ ] Large new provider matrix for skins before core skin management is solid
-- [ ] Extra locale rollout beyond EN/RU
-- [ ] New customization surfaces that do not improve release readiness
+- [ ] Deeper personalization or layout modes beyond current settings — defer until the base design system is stable
+- [ ] Visual regression tooling or screenshot baselines — defer until the desired UI has settled enough to be worth locking visually
+
+## Feature Prioritization Matrix
+
+| Feature | User Value | Implementation Cost | Priority |
+|---------|------------|---------------------|----------|
+| Shared design tokens and primitives | HIGH | MEDIUM | P1 |
+| Translation and placeholder cleanup | HIGH | MEDIUM | P1 |
+| Theme and accent propagation | HIGH | MEDIUM | P1 |
+| Core launcher/modpack/account flow polish | HIGH | HIGH | P1 |
+| Unified advanced-surface restyle | MEDIUM | HIGH | P2 |
+| Extra visual presets and cosmetic variety | MEDIUM | MEDIUM | P3 |
+
+**Priority key:**
+- P1: Must have for launch
+- P2: Should have, add when possible
+- P3: Nice to have, future consideration
+
+## Competitor Feature Analysis
+
+| Feature | Competitor A | Competitor B | Our Approach |
+|---------|--------------|--------------|--------------|
+| Visual consistency | Dedicated launcher brands usually keep one shell language across home, installs, and settings | Many technical launchers expose feature depth but drift visually between modules | FMCL should keep its breadth while unifying shell, cards, dialogs, and settings surfaces |
+| Theme support | Better launchers make theme changes obvious and holistic | Weaker launchers expose a toggle that barely changes content surfaces | FMCL should make theme and accent visibly reshape the full experience |
+| Modpack UX | Modpack-oriented launchers win by making browse/install/play/manage feel close together | Generic launchers often bury modpack actions behind technical navigation | FMCL should lean into its modpack-first product identity rather than flatten it |
 
 ## Sources
 
-- `.planning/PROJECT.md`
-- `docs/ru/roadmap.md`
-- `docs/KNOWN_ISSUES.md`
-- `~/.codex/get-shit-done/templates/research-project/FEATURES.md`
+- Local repo inspection: `docs/KNOWN_ISSUES.md`
+- Local repo inspection: `src/index.css`, `src/contexts/settings/theme.ts`
+- Existing milestone framing in `.planning/PROJECT.md`
+- Current brownfield scope and local UI work-in-progress in `src/components/` and `src/features/`
 
 ---
-*Feature research for: FMCL remaining release work*
-*Researched: 2026-04-12*
+*Feature research for: FMCL v0.2.0 UI system and UX redesign*
+*Researched: 2026-04-13*

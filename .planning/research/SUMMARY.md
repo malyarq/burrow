@@ -1,227 +1,134 @@
 # Project Research Summary
 
 **Project:** FriendLauncher (FMCL)
-**Domain:** Brownfield Electron desktop launcher release milestone
-**Researched:** 2026-04-12
-**Confidence:** HIGH
+**Domain:** Brownfield desktop-launcher UI system and UX redesign
+**Researched:** 2026-04-13
+**Confidence:** MEDIUM
 
 ## Executive Summary
 
-FMCL is already a feature-rich Electron launcher with strong modpack coverage, local content management, broad import/export interoperability, mirrors, statistics, custom accounts, and FriendTunnel P2P multiplayer. The research converges on one conclusion: this milestone should be run as a release-hardening program, not as a product-expansion or architecture-rewrite effort. The safest path is to preserve the current Electron main process + preload + React renderer split, finish missing launcher workflows on top of existing services, and invest the bulk of roadmap capacity into stability, tests, accessibility, documentation parity, and security boundaries.
+FMCL is not missing core launcher capability; it is missing product coherence. The research points to a brownfield-safe approach: keep the current Electron + React + TypeScript + Tailwind architecture, make shared tokens/primitives/theme state the real source of truth, then roll that system through the most visible launcher flows and only after that spend time on broader polish.
 
-The recommended roadmap is conservative by design. Start by restoring a clean lint/type/hooks baseline and hardening the IPC/path boundary, because every later change depends on that trust being restored. Then add service-level test coverage around the current main-process seams, complete the lowest-risk UX gaps that already sit on existing contracts, and only after that extend persisted domains such as image cache, skins, mirror priority/fallback, and richer statistics/export. Accessibility and docs/locales should follow once UI behavior and contracts settle. Final release gating should emphasize handler validation, path containment, mirror integrity, interop round-trips, and documentation truthfulness.
-
-The main release risk is not missing another headline feature. It is letting more work land on top of a noisy React baseline, permissive IPC handlers, filesystem-shaped inputs, and near-zero automated coverage. Brownfield-safe execution means no new architecture layer, no second persistence model, no renderer-side business backend, and no rewrite away from the existing Electron architecture.
+The highest leverage work is not a framework migration or isolated visual tweaks. It is system-first cleanup of shells, cards, dialogs, forms, iconography, and localization, followed by route-level UX refinement for the launcher's most-used flows. The main risks are false progress through screen-local styling, theme settings that do not materially affect the UI, and “manual testing” that never becomes a repeatable browser walkthrough.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The stack direction is stable: keep Electron, React, TypeScript strict mode, Vite, TailwindCSS, XMCL packages, and the current Hyperswarm-based FriendTunnel transport. The milestone should optimize within that stack instead of migrating frameworks or adding a parallel architecture. The main justified additions are release-enabling tools: Vitest plus Testing Library for coverage, Zod for runtime validation at IPC/file-import boundaries, and targeted Electron hardening such as CSP/local asset loading and build-time fuse tightening.
-
-There is one important brownfield adjustment in the synthesis: security hardening should prioritize handler-side validation, path normalization, CSP, local fonts, safe external URL handling, and minimized preload exposure before any broad renderer sandbox migration. The research identifies sandboxing as desirable, but the architecture guidance makes it clear that a full runtime-shape change should not be the roadmap dependency for this milestone.
+The current stack is already sufficient. React 19, TypeScript 5.9, Tailwind 4, CSS custom properties, and the existing settings/theme seams are appropriate for this milestone. The recommended move is to standardize how FMCL uses them, not to replace them. `lucide-react` should become the default icon language, and the existing Vitest + Testing Library setup is enough for shared UI regression coverage.
 
 **Core technologies:**
-- `electron` + preload bridges: desktop shell and privileged execution surface, kept as the current main-process core
-- `react` + contexts + renderer IPC wrappers: UI orchestration layer, kept but cleaned up for hooks, accessibility, and wrapper discipline
-- `typescript` strict mode + `shared/contracts/*`: typed extension seam, used to evolve features without weakening IPC boundaries
-- `vite` + `vitest`: fastest brownfield path to meaningful service and renderer tests in the existing repo
-- `zod`: runtime validation for IPC payloads, settings/import/export boundaries, and filesystem/network inputs
+- React — renderer composition and screen/state orchestration without a platform rewrite
+- TypeScript — typed variants, theme contracts, and locale-safe UI refactors
+- TailwindCSS + CSS variables — shared design tokens and consistent theme propagation
 
 ### Expected Features
 
-The milestone scope is already defined by the product context and research: stabilize what exists, finish the highest-value remaining release gaps, and defer anything that creates a bigger platform or backend surface. The user promise remains modpack-first desktop workflows with local-first operations and P2P friend play.
+The must-haves are a coherent shared visual system, EN/RU correctness, theme/icon consistency, focused redesign of critical launcher flows, and explicit browser-based verification of those flows.
 
-**Must have (release table stakes):**
-- Clean React/TypeScript/ESLint baseline with current hook/runtime issues removed
-- Critical-path automated tests for `modpackService`, `contentManager`, `shareService`, import/export, and related helpers
-- Remaining modpack workflow gaps closed on existing surfaces: instance rename/duplicate, discovery continuity, configurable pagination, image disk caching
-- Accessibility baseline for keyboard use, semantics, contrast, focus management, and reduced motion
-- Documentation parity across README, EN/RU roadmaps, locale files, and IPC contract mapping
-- Security hardening for IPC validation, filesystem inputs, XSS exposure, and external URL handling
+**Must have (table stakes):**
+- Shared shells, surfaces, forms, dialogs, and visual states — users expect one product, not mixed modules
+- Full translation correctness across visible UI states — placeholder or missing-copy leaks are product-quality defects
+- Real theme propagation and consistent iconography — appearance settings must visibly matter
+- Manual browser walkthrough of critical routes — the milestone is about actual experience, not only code health
 
-**Should have (brownfield-safe differentiator completion):**
-- Skin management inside the existing account domain
-- Mirror fallback and user-controlled mirror priority on top of the current provider/scoring stack
-- Local statistics uplift with export, implemented as read-side aggregation inside `StatisticsService`
-- Protection against regressions in FriendTunnel and cross-launcher/share interoperability through tests and release gates
+**Should have (competitive):**
+- Modpack-first information hierarchy — aligns the launcher with its strongest product identity
+- Atmosphere that supports readability — background and motion should give identity without reducing usability
+- Unified treatment of advanced surfaces — accounts, mirrors, stats, and sharing should feel like the same launcher
 
-**Defer (post-release):**
-- Cloud sync, hosted profiles, or backend-heavy social features
-- Rewrite away from Electron/React/current IPC architecture
-- New persistence systems such as SQLite/IndexedDB for this milestone
-- Broad new skin-provider matrix or other expansionary integrations
+**Defer (v2+):**
+- Large framework migration or full UI-kit replacement — too much scope, not necessary for the product goal
+- Deeper personalization and visual-regression infrastructure — valuable later, but not required to validate the milestone
 
 ### Architecture Approach
 
-The architecture recommendation is explicit: preserve the current Electron monolith with typed IPC seams, extend shared contracts first, then renderer wrappers, then thin handlers, then the domain services that already own persistence. New work should stay inside existing domains: `ModpackService` and related instance services for modpack UX completion, `AccountService` for skins/account assets, `MirrorsService` plus existing download/provider ordering for fallback logic, `StatisticsService` for aggregates/export, and the content/download stack for disk-backed remote image caching. Accessibility remains primarily a renderer concern, while authoritative validation remains in the main process.
+The renderer should be treated as three layers: feature screens, a shared presentation system, and a state/integration layer. `SettingsContext` plus `theme.ts` plus `src/index.css` should stay the appearance source of truth; `src/components/ui/*` should own reusable visual semantics; and `src/locales/*.json` should remain the only allowed source for user-facing copy. Feature screens should consume this system rather than define parallel ones.
 
 **Major components:**
-1. Renderer (`src/`): feature UI, contexts, dialogs, settings, accessibility behaviors
-2. IPC seam (`shared/contracts/*`, preload bridges, `src/services/ipc/*`): preferred typed integration boundary for all privileged work
-3. Main-process services (`electron/services/*`): launcher runtime, modpacks, content, accounts, mirrors, stats, sharing, and persistence ownership
+1. Shared UI primitives — own repeated affordances and state styling
+2. App shell and high-traffic routes — own hierarchy, navigation, and launcher identity
+3. Theme/localization seams — own document-level appearance and EN/RU parity
 
 ### Critical Pitfalls
 
-1. **Shipping on a red hooks/lint baseline** — restore `tsc` and renderer lint discipline first or every later phase compounds hidden regressions
-2. **Eroding the IPC trust boundary** — validate payloads and normalize ids/paths/URLs in handlers/services; do not add new direct `window.*` usage
-3. **Path traversal and unsafe file mutation** — centralize containment checks for rename/import/export/screenshot/save flows and test malicious path cases
-4. **Manual-QA-only main-process logic** — service-heavy FMCL code must gain fixture-backed Vitest coverage before broad feature completion work
-5. **Treating mirror availability as artifact integrity** — corrupted/truncated artifact handling and official fallback must be verified, not assumed
-6. **Cache/interop/docs drift** — content-store ownership, format round-trips, EN/RU roadmap sync, and contract-map updates must be enforced as release gates
+1. **Foundation drift disguised as progress** — fix shared tokens and primitives before wide screen polish
+2. **Theme settings with weak visible payoff** — migrate screens onto tokenized colors instead of relying on persistence alone
+3. **Translation cleanup that stops at headlines** — include placeholders, helper text, and modal states in scope
+4. **Decorative polish that reintroduces accessibility debt** — keep readability, focus, contrast, and motion discipline first
+5. **Manual testing reduced to a screenshot** — define and execute a browser walkthrough as milestone evidence
 
 ## Implications for Roadmap
 
-Based on the research, the coarse roadmap should sequence the work like this:
+Based on research, suggested phase structure:
 
-### Phase 1: Release Baseline And Guardrails
+### Phase 7: UI System Foundations
+**Rationale:** Shared primitives, theme tokens, icon rules, and shell contracts must stabilize before broad restyling.
+**Delivers:** Design-token enforcement, primitive cleanup, shell consistency, theme source-of-truth rollout.
+**Addresses:** Shared visual-language and theme-fidelity table stakes.
+**Avoids:** Foundation drift and fake theme support.
 
-**Rationale:** Every source treats the current lint/hooks/test/security debt as the multiplier on release risk. This phase creates a trusted baseline before more UI or persistence work lands.
+### Phase 8: UI Correctness And Core Flow Rollout
+**Rationale:** Once the system exists, high-traffic routes should consume it while translation and icon defects are removed.
+**Delivers:** EN/RU cleanup, icon consistency, and refreshed launcher/modpack/account/settings flows.
+**Uses:** Shared primitives and localization contracts from Phase 7.
+**Implements:** The highest-value route rollout first.
 
-**Delivers:**
-- Zero-error `npx eslint src/` and passing `npx tsc --noEmit`
-- Removal of new direct renderer `window.*` usage from active work
-- Shared handler-side validators for payload shape, ids, paths, URLs, and output destinations
-- Initial test scaffolding for service and wrapper tests
+### Phase 9: Secondary Surface Polish And UX Refinement
+**Rationale:** Advanced or lower-traffic surfaces should be aligned only after the main shell feels coherent.
+**Delivers:** Unified treatment of share/statistics/mirror/content-management surfaces and any remaining visual hierarchy cleanup.
+**Uses:** The same system instead of inventing new exceptions.
 
-**Addresses:**
-- Critical stability/code-quality issues
-- IPC/security hardening prerequisites
-- Pitfalls around hooks baseline, IPC trust erosion, and unsafe file mutation
-
-**Brownfield implication:** keep compatibility shims where needed, but force all new work onto the preferred typed IPC path.
-
-### Phase 2: Test Safety Net For Existing Service Seams
-
-**Rationale:** FMCL’s highest-risk logic lives in Electron services, not in isolated renderer components. Tests need to protect later feature completion and hardening work.
-
-**Delivers:**
-- Vitest coverage for `modpackService`, `contentManager`, `shareService`, and critical path/url/import/export helpers
-- Fixture-backed tests for malformed share payloads, malicious filenames, and import/export round-trips
-- Thin verification around renderer IPC wrappers and preload contract shape
-
-**Addresses:**
-- Critical-path automated tests
-- Pitfalls around manual-QA-only service logic, interop drift, and unsafe path handling
-
-**Uses:**
-- Existing Vite-based toolchain plus new Vitest/Testing Library additions
-
-### Phase 3: Complete Existing Modpack And Discovery UX
-
-**Rationale:** The next lowest-risk value comes from finishing UX already backed by existing services and contracts. This yields visible progress without widening persistence too early.
-
-**Delivers:**
-- Instance rename/duplicate from list surfaces
-- Discovery continuity improvements such as recent/history handling and configurable pagination
-- Replacement of temporary browser dialogs with existing app modal/confirm patterns where applicable
-
-**Addresses:**
-- Remaining roadmap gaps that materially affect daily modpack workflows
-- Pitfalls around unstable UI interaction patterns and docs drift from partially finished flows
-
-**Implements:**
-- Renderer/UI completion over existing `ModpackContext`, `modpacksIPC`, and current modpack contracts
-
-### Phase 4: Extend Persisted Reliability Features Inside Existing Domains
-
-**Rationale:** These items widen storage/contracts and should come only after baseline hardening and test coverage exist. They deepen FMCL’s differentiators without changing its architecture.
-
-**Delivers:**
-- Disk-backed image caching through the main-process content/download stack
-- Skin management in the account domain
-- Mirror fallback and mirror priority inside `MirrorsService` and provider ordering
-- Statistics aggregation/export inside `StatisticsService`
-
-**Addresses:**
-- Remaining roadmap gaps around cache, skins, mirrors, and richer local stats
-- Pitfalls around cache invalidation, mirror integrity, and parallel state ownership
-
-**Avoids:**
-- New databases, renderer-side mini backends, or fresh global state systems
-
-### Phase 5: Accessibility And UX Hardening Pass
-
-**Rationale:** Accessibility work is most efficient after the main interaction surfaces stop moving. The research is explicit that this should be a renderer-wide pass over stabilized UI, not a late ARIA patch scramble.
-
-**Delivers:**
-- Keyboard-only completion paths for both core launcher modes
-- Focus restoration, semantic controls, contrast fixes, and reduced-motion support
-- Shared UI primitive cleanup for dialogs, menus, tabs, list actions, and async status messaging
-
-**Addresses:**
-- Accessibility baseline
-- Pitfalls around customization-heavy UI regressing keyboard/focus/screen-reader behavior
-
-**Implements:**
-- Renderer-first fixes in shared primitives and feature pages; minimal privileged changes unless a persisted preference is needed
-
-### Phase 6: Documentation Truth, Final Security Review, And Release Gate
-
-**Rationale:** Docs, locale parity, and final security verification should describe the shipped contract surface, not an intermediate state. This phase closes the release with truthfulness and auditability.
-
-**Delivers:**
-- README, EN roadmap, RU roadmap, locale files, and `docs/ru/contracts-map.md` brought in sync with shipped behavior
-- Final pass over touched handlers for validation, path containment, safe external URLs, CSP/local asset loading, and preload exposure
-- Smoke verification of mirror fallback, import/export/share, cache cleanup, and critical modpack flows
-
-**Addresses:**
-- Documentation parity
-- Security hardening completion
-- Pitfalls around docs/localization drift, residual IPC risk, and release regressions
+### Phase 10: Manual Experience Verification And Release Truth
+**Rationale:** The milestone explicitly requires browser-based validation, and documentation should reflect the refreshed UI truthfully.
+**Delivers:** Real browser walkthrough evidence, final UI fallout fixes, and documentation updates tied to shipped UX.
 
 ### Phase Ordering Rationale
 
-- Phase 1 must precede everything else because the current hooks/lint/security baseline affects the correctness of all later work.
-- Phase 2 comes before deeper feature completion because FMCL’s main-process services are the real regression hotspot; tests need to protect the brownfield changes, not trail them.
-- Phase 3 intentionally harvests low-risk value first by finishing UX on top of services that already exist, which reduces roadmap churn without widening storage.
-- Phase 4 waits until after baseline hardening because cache, skins, mirrors, and stats widen contracts and persistence formats; those are safer once validators and tests exist.
-- Phase 5 follows feature stabilization because accessibility fixes are cheaper and more durable when shared primitives and page flows have stopped moving.
-- Phase 6 closes with docs/security/release gates so project documentation, IPC maps, and locale files match the final shipped state rather than an earlier draft.
+- Foundations come first because theme, icon, and surface drift are structural, not cosmetic.
+- Core routes come before secondary surfaces because they define whether the launcher feels coherent in everyday use.
+- Verification closes the milestone because visual and interaction quality must be judged on the live product, not inferred from code.
 
 ### Research Flags
 
-Phases likely needing deeper planning attention:
-- **Phase 2:** import/export/share fixtures and malicious-path coverage need careful test-scope planning because they span multiple formats and failure classes
-- **Phase 4:** image cache ownership, mirror integrity logic, and storage-format evolution need explicit migration and cleanup rules
-- **Phase 6:** final security review should resolve the boundary between “hardening now” and “post-release architecture cleanup,” especially around preload legacy aliases
+Phases likely needing deeper research during planning:
+- **Phase 9:** Secondary surface grouping should be scoped against the actual current UI drift, not assumed from feature names alone.
+- **Phase 10:** Manual verification should define an explicit walkthrough/checklist so the completion claim stays concrete.
 
-Phases with standard enough patterns to plan directly:
-- **Phase 1:** baseline lint/type/hooks cleanup plus handler validator introduction follow established repo conventions
-- **Phase 3:** list-surface rename/duplicate and pagination/history work are mostly renderer completions on top of existing services
-- **Phase 5:** accessibility pass is broad but follows standard renderer/UI hardening patterns once the flows stabilize
+Phases with standard patterns (skip research-phase):
+- **Phase 7:** Uses established token/primitives/source-of-truth patterns already visible in the codebase.
+- **Phase 8:** Mostly rollout and cleanup work on known screens rather than new technical terrain.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | The research is internally consistent on keeping the existing Electron/React/TypeScript stack and only adding release-enabling tooling |
-| Features | HIGH | The milestone scope is already well defined in local planning docs and centers on release readiness rather than product expansion |
-| Architecture | HIGH | Multiple docs agree on extending current contracts/wrappers/services instead of rewriting or adding a parallel architecture |
-| Pitfalls | HIGH | The risks are concrete, release-specific, and tightly tied to the current codebase shape and known issues |
+| Stack | HIGH | Current codebase already exposes the right tools for this milestone |
+| Features | MEDIUM | User intent is clear, but exact route scope still needs requirement-level scoping |
+| Architecture | MEDIUM | Strong local evidence exists, though some screen-level drift still needs direct planning inspection |
+| Pitfalls | HIGH | Brownfield UI-system risks are well aligned with the repo's known issues and current seams |
 
-**Overall confidence:** HIGH
+**Overall confidence:** MEDIUM
 
 ### Gaps to Address
 
-- **Sandbox hardening scope:** desirable from a security perspective, but not reliable enough to anchor the roadmap without first validating preload/runtime impact
-- **Skin-provider breadth:** core skin management is clear, but provider-matrix breadth should stay out of the release milestone unless a specific provider becomes mandatory
-- **Interop fidelity boundaries:** some import/export/share paths may remain intentionally lossy, so the roadmap should require explicit documentation and fixture coverage rather than assume perfect equivalence
+- Exact set of core routes that must be refreshed in Phase 8 versus Phase 9
+- Concrete browser walkthrough checklist and evidence format for milestone completion
 
 ## Sources
 
-All sources used for this summary were local project/planning documents. No web or external sources were used.
+### Primary (HIGH confidence)
+- Local repo inspection: `package.json` — active runtime and tooling stack
+- Local repo inspection: `src/index.css`, `src/contexts/settings/theme.ts`, `src/components/ui/Button.tsx` — current theme and shared UI seams
+- Local repo inspection: `docs/KNOWN_ISSUES.md` — active correctness gaps and brownfield risks
 
-### Primary (local docs)
-- `.planning/research/STACK.md`
-- `.planning/research/FEATURES.md`
-- `.planning/research/ARCHITECTURE.md`
-- `.planning/research/PITFALLS.md`
-- `.planning/PROJECT.md`
+### Secondary (MEDIUM confidence)
+- `.planning/PROJECT.md` — milestone framing and current product priorities
+- Current uncommitted UI work in `src/components/` and `src/features/` — evidence of likely rollout seams
 
-### Formatting reference
-- `~/.codex/get-shit-done/templates/research-project/SUMMARY.md`
+### Tertiary (LOW confidence)
+- Inference from brownfield launcher UX patterns rather than external ecosystem benchmarking in this run
 
 ---
-*Research completed: 2026-04-12*
+*Research completed: 2026-04-13*
 *Ready for roadmap: yes*
