@@ -1,84 +1,61 @@
 # Requirements: FriendLauncher (FMCL)
 
-**Defined:** 2026-04-12  
+**Defined:** 2026-04-13  
 **Core Value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
 
 ## v1 Requirements
 
-Requirements for the current release-hardening milestone. These map to roadmap phases.
+Requirements for the current UI-system and experience-rework milestone. These map to roadmap phases 7-10.
 
-### Reliability
+### Design System
 
-- [x] **REL-01**: User can use background, accounts, share, and storage flows without React hook ordering, stale effect, or cascading re-render regressions
-- [x] **REL-02**: Release candidates pass `npx tsc --noEmit` and `npx eslint src/` before shipment
+- [ ] **DSYS-01**: User sees a consistent visual language across launcher shells, cards, forms, dialogs, and feedback states instead of mixed screen-by-screen styling
+- [ ] **DSYS-02**: User sees one consistent icon and action-affordance language across navigation, cards, menus, dialogs, and empty states
+- [ ] **DSYS-03**: User sees refreshed core surfaces built from shared primitives and shared visual tokens instead of feature-local styling exceptions
 
-### Testing
+### Localization And Theme Fidelity
 
-- [x] **TEST-01**: Maintainers can run `npm test` to execute the automated FMCL test suite locally and in CI
-- [x] **TEST-02**: Critical `modpackService`, `contentManager`, `shareService`, and formatting flows are covered by automated tests
+- [ ] **LOCL-01**: User sees complete English and Russian UI copy across labels, placeholders, helper text, validation, tooltips, and empty states on refreshed surfaces
+- [ ] **THEME-01**: User can switch theme and accent settings and see the launcher shell plus refreshed screens update consistently instead of only isolated controls changing
+- [ ] **A11Y-04**: User can use the refreshed UI with visible focus states, sufficient contrast, and reduced-motion-respecting behavior
 
-### Modpack Workflow
+### Core UX Flows
 
-- [x] **FLOW-01**: User can duplicate an instance directly from modpack list cards or card actions without opening the details view
-- [x] **FLOW-02**: User can rename an instance directly from modpack list cards or card actions without opening the details view
-- [x] **FLOW-03**: User can view recently opened or viewed modpacks in the browser
-- [x] **FLOW-04**: User can configure page size and navigate paginated modpack browser results
-- [x] **FLOW-05**: Modpack and mod imagery loads from a persistent disk cache with size management and cleanup controls
+- [ ] **UX-01**: User can navigate a clearer launcher home and play flow that emphasizes the primary actions and current status at a glance
+- [ ] **UX-02**: User can browse, inspect, install, and manage modpacks through a visually coherent and lower-friction modpack experience
+- [ ] **UX-03**: User can use account and settings flows that match the rest of the launcher visually and structurally
 
-### Accounts And Delivery
+### Advanced Surface Alignment
 
-- [x] **ACCT-01**: User can preview skins for supported custom accounts, refresh that preview, and open the provider management page from within the launcher
-- [x] **DLVR-01**: User can configure mirror priority or preference order for downloads
-- [x] **DLVR-02**: Launcher automatically falls back to healthy mirrors when preferred sources fail
-- [x] **DLVR-03**: Corrupted or incomplete downloads are detected and rejected instead of being treated as successful mirror responses
+- [ ] **UX-04**: User can use secondary launcher surfaces such as sharing, statistics, mirrors, and content-management views without them feeling like a different product
 
-Scope note for `ACCT-01` (audit recovery, 2026-04-12): Phase 4 deliberately shipped provider-aware preview, refresh, and provider-site handoff for Blessing Skin and LittleSkin. Full in-launcher upload or edit remains deferred because it would require a broader provider-auth flow than this milestone shipped.
+### Verification And Release Truth
 
-### Statistics
-
-- [x] **STAT-01**: User can view popular modpacks and local usage trends in the launcher statistics UI
-- [x] **STAT-02**: User can export local statistics data for backup or analysis
-
-### Accessibility
-
-- [x] **A11Y-01**: User can complete core launcher and modpack flows with keyboard-only navigation
-- [x] **A11Y-02**: Interactive controls expose accessible names, roles, and states for assistive technologies
-- [x] **A11Y-03**: Themes, backgrounds, and animations meet contrast and reduced-motion expectations for release
-
-### Documentation
-
-- [x] **DOC-01**: README and EN/RU roadmaps accurately reflect shipped FMCL feature status
-- [x] **DOC-02**: Contract maps document the active IPC channels for account, mirrors, screenshots, share, statistics, worlds, resource packs, shaders, and datapacks
-
-### Security
-
-- [x] **SEC-01**: Privileged IPC handlers validate payload shape and unsafe values before starting work
-- [x] **SEC-02**: File and archive operations prevent path traversal and writes outside allowed roots
-- [x] **SEC-03**: Renderer and Electron window configuration are reviewed for XSS exposure, unsafe external URLs, and insecure web preferences
+- [ ] **VER-01**: Maintainers execute a manual browser-based walkthrough of refreshed critical UI flows before closing the milestone
+- [ ] **DOC-03**: README and roadmap-level product descriptions reflect the refreshed launcher UI and UX truthfully after the rollout lands
 
 ## v2 Requirements
 
-Deferred until after the current release-hardening milestone.
+Deferred until after the current UI-system milestone.
 
-### Post-Release Expansion
+### Future Experience Expansion
 
-- **SYNC-01**: User can sync launcher profiles or modpack state across devices through a cloud-backed service
-- **SOC-01**: User can use richer social or hosted multiplayer coordination beyond current P2P and share-code flows
-- **SKIN-01**: User can choose from a broader matrix of third-party skin providers beyond the initial supported set
-- **LOCL-01**: User can use FMCL in languages beyond English and Russian
+- **AUTO-01**: Maintainers can run automated visual-regression or snapshot workflows for the most important launcher surfaces
+- **THEME-02**: User can choose from richer curated theme packs or layout modes beyond the base token system
+- **LOCL-02**: User can use FMCL in additional locales beyond English and Russian
+- **PERS-01**: User can personalize launcher layout or dashboard density beyond the current appearance controls
 
 ## Out of Scope
 
-Explicitly excluded from this milestone to keep the release focused.
+Explicitly excluded from this milestone to keep the work centered on product coherence and usability.
 
 | Feature | Reason |
 |---------|--------|
-| Architecture rewrite away from Electron/React/current IPC model | Brownfield release work should harden the existing platform, not reset it |
-| Cloud sync / hosted profiles | Adds backend, privacy, and support scope outside the current local-first milestone |
-| Backend-heavy social platform | Would expand FMCL beyond launcher and direct P2P/share responsibilities |
-| Full in-launcher skin upload/edit flow | Phase 4 intentionally shipped provider-aware preview, refresh, and provider-site handoff only; deeper provider auth belongs to a later expansion |
-| Broad new skin-provider matrix | Finish the core skin-management flow first, then expand provider breadth later |
-| Additional locales beyond EN/RU | Translation expansion should follow documentation and release parity, not precede it |
+| Rewriting FMCL away from Electron, React, TypeScript, Tailwind, or the current IPC architecture | This milestone is a brownfield UI-system rollout, not a platform migration |
+| Importing a heavyweight UI framework to replace the current component layer wholesale | Would turn the milestone into a migration project and slow real UX improvement |
+| Backend-heavy social, sync, or hosted cloud features | Expands scope away from launcher presentation and usability |
+| Broad third-party provider expansions unrelated to launcher UI coherence | The current goal is to improve the existing experience, not open new capability domains |
+| Automated visual-regression infrastructure as a release gate | Useful later, but not required to validate the refreshed UI in this milestone |
 
 ## Traceability
 
@@ -86,35 +63,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REL-01 | Phase 6 | Complete |
-| REL-02 | Phase 6 | Complete |
-| TEST-01 | Phase 6 | Complete |
-| TEST-02 | Phase 6 | Complete |
-| FLOW-01 | Phase 6 | Complete |
-| FLOW-02 | Phase 6 | Complete |
-| FLOW-03 | Phase 6 | Complete |
-| FLOW-04 | Phase 6 | Complete |
-| FLOW-05 | Phase 6 | Complete |
-| ACCT-01 | Phase 6 | Complete |
-| DLVR-01 | Phase 6 | Complete |
-| DLVR-02 | Phase 6 | Complete |
-| DLVR-03 | Phase 6 | Complete |
-| STAT-01 | Phase 6 | Complete |
-| STAT-02 | Phase 6 | Complete |
-| A11Y-01 | Phase 6 | Complete |
-| A11Y-02 | Phase 6 | Complete |
-| A11Y-03 | Phase 6 | Complete |
-| DOC-01 | Phase 6 | Complete |
-| DOC-02 | Phase 6 | Complete |
-| SEC-01 | Phase 6 | Complete |
-| SEC-02 | Phase 6 | Complete |
-| SEC-03 | Phase 6 | Complete |
+| DSYS-01 | Phase 7 | Pending |
+| DSYS-02 | Phase 7 | Pending |
+| DSYS-03 | Phase 8 | Pending |
+| LOCL-01 | Phase 8 | Pending |
+| THEME-01 | Phase 7 | Pending |
+| A11Y-04 | Phase 9 | Pending |
+| UX-01 | Phase 8 | Pending |
+| UX-02 | Phase 8 | Pending |
+| UX-03 | Phase 8 | Pending |
+| UX-04 | Phase 9 | Pending |
+| VER-01 | Phase 10 | Pending |
+| DOC-03 | Phase 10 | Pending |
 
 **Coverage:**
-- v1 requirements: 23 total
-- Mapped to phases: 23
+- v1 requirements: 12 total
+- Mapped to phases: 12
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-04-12*  
-*Last updated: 2026-04-12 after 06-03 requirement roll-forward and audit recovery*
+*Requirements defined: 2026-04-13*  
+*Last updated: 2026-04-13 after v0.2.0 milestone definition*

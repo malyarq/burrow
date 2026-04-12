@@ -5,9 +5,10 @@
 **Goal:** Turn FMCL into a visually coherent, theme-correct, fully translated, and meaningfully polished launcher with a deliberate UI system instead of ad hoc screen-by-screen styling.
 
 **Target features:**
-- Unify the launcher visual language across shared components and key screens so blocks, spacing, typography, icons, and states feel like one product.
+- Unify the launcher visual language across shared components and major launcher surfaces so blocks, spacing, typography, icons, and states feel like one product.
 - Eliminate visible UI correctness gaps such as missing translations, placeholder text, absent icons, broken theme switching, and inconsistent component styling.
-- Redesign core launcher UX where needed to create a more convenient and attractive flow, while verifying the result manually through real browser runs in addition to repo gates.
+- Redesign core launcher UX where needed and pull the remaining secondary surfaces into the same system so the launcher feels intentionally convenient and attractive end to end.
+- Verify the refreshed experience manually through real browser runs in addition to the normal repository quality gates.
 
 ## What This Is
 
@@ -71,4 +72,4 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Continue treating FMCL as a modpack-first launcher | Existing product value and the user’s goal still center on making the launcher itself feel coherent for everyday modpack use | Locked |
 
 ---
-*Last updated: 2026-04-13 for milestone v0.2.0 kickoff*
+*Last updated: 2026-04-13 after v0.2.0 research and roadmap definition*

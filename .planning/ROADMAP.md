@@ -2,103 +2,74 @@
 
 ## Overview
 
-This roadmap turns FMCL's broad existing feature surface into a release-ready desktop launcher by sequencing work around trust restoration first, then verification, then the remaining product gaps that fit the current architecture. It stays brownfield-safe: harden the current Electron + React + TypeScript launcher, finish missing release-critical flows inside existing domains, and close on accessibility, documentation truth, and security confidence rather than introducing rewrite work.
+This roadmap continues from the completed `v1.0` release-hardening milestone into `v0.2.0`, which is focused on product coherence rather than raw capability expansion. The objective is to turn FMCL's broad existing launcher surface into a visually unified, theme-correct, fully translated, and manually verified desktop experience without rewriting the current Electron + React + TypeScript architecture.
 
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+- Integer phases (7, 8, 9, 10): Planned milestone work
+- Decimal phases (7.1, 8.1): Urgent insertions (marked with INSERTED)
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Release Baseline And Trust Boundaries** - Restore the reliability, lint, type, and security baseline that every later release change depends on.
-- [x] **Phase 2: Automated Release Verification** - Put a repeatable automated safety net around the highest-risk service and formatting flows.
-- [x] **Phase 3: Modpack Workflow Completion** - Finish the missing browser and instance-management flows already supported by the current launcher model.
-- [x] **Phase 4: Delivery, Cache, Accounts, And Stats Hardening** - Extend existing domains for image caching, skins, mirror resilience, and local statistics export. (completed 2026-04-12)
-- [x] **Phase 5: Accessibility And Release Truthfulness** - Lock the shipped UI and docs into an accessible, accurate final release state. (completed 2026-04-12)
-- [x] **Phase 6: Milestone Auditability Recovery** - Close the remaining audit-discovered product drift, reconstruct verification evidence, and restore `v1.0` milestone archival readiness. (completed 2026-04-12)
+- [ ] **Phase 7: UI System Foundations** - Establish the shared visual system, theme source of truth, and icon/shell contracts that every later screen rollout depends on.
+- [ ] **Phase 8: Core Route Rollout And UI Correctness** - Move the highest-traffic launcher flows onto the shared system while removing visible translation, icon, and state defects.
+- [ ] **Phase 9: Secondary Surface Alignment And UX Polish** - Bring advanced or lower-traffic launcher surfaces into the same product language and close accessibility and atmosphere fallout.
+- [ ] **Phase 10: Manual Experience Verification And Release Truth** - Validate the refreshed launcher through real browser walkthroughs, land fallout fixes, and update release-facing documentation.
 
 ## Phase Details
 
-### Phase 1: Release Baseline And Trust Boundaries
-**Goal**: FMCL has a trustworthy release baseline: critical launcher flows stop regressing at runtime, quality gates are clean, and privileged boundaries reject unsafe input before work starts.
-**Depends on**: Nothing (first phase)
-**Requirements**: REL-01, REL-02, SEC-01, SEC-02, SEC-03
+### Phase 7: UI System Foundations
+**Goal**: FMCL has one shared visual foundation for shells, cards, forms, dialogs, icons, and theme behavior instead of a patchwork of per-screen styling.
+**Depends on**: Phase 6
+**Requirements**: DSYS-01, DSYS-02, THEME-01
 **Success Criteria** (what must be TRUE):
-  1. User can use background, accounts, share, and storage-heavy flows without hook-order crashes, stale-effect breakage, or cascading re-render regressions.
-  2. Release candidates pass `npx tsc --noEmit` and `npx eslint src/` before shipment, and regressions in either gate are visible immediately.
-  3. Invalid IPC payloads and unsafe values are rejected before privileged handlers begin work.
-  4. File and archive operations stay inside allowed roots, and renderer/window behavior blocks unsafe navigation, XSS exposure, and insecure web preferences.
+  1. Shared UI primitives and launcher shell components define the main visual language for refreshed surfaces.
+  2. Theme and accent changes visibly affect the launcher shell, dialogs, cards, and shared controls instead of only isolated elements.
+  3. Iconography and repeated action affordances are standardized across navigation, cards, dialogs, and empty states.
+  4. High-traffic surfaces stop relying on unowned hardcoded visual exceptions for their core structure.
 **Plans**: TBD
 
-### Phase 2: Automated Release Verification
-**Goal**: The launcher's highest-risk service logic has an automated release gate that maintainers can run locally and in CI instead of relying on manual QA only.
-**Depends on**: Phase 1
-**Requirements**: TEST-01, TEST-02
+### Phase 8: Core Route Rollout And UI Correctness
+**Goal**: The launcher's most-used routes feel coherent, translated, and intentionally convenient instead of merely functional.
+**Depends on**: Phase 7
+**Requirements**: DSYS-03, LOCL-01, UX-01, UX-02, UX-03
 **Success Criteria** (what must be TRUE):
-  1. Maintainer can run `npm test` locally and in CI to execute the FMCL automated test suite.
-  2. Regressions in `modpackService`, `contentManager`, `shareService`, and formatting utilities fail the automated suite before release candidates ship.
-  3. Release-critical malformed-input and round-trip scenarios are covered by automated tests rather than only manual verification.
+  1. Launcher home/play, settings, accounts, onboarding, and modpack flows consume the shared visual system rather than parallel styling patterns.
+  2. Visible EN/RU UI copy on refreshed core routes no longer leaks placeholder text, missing translations, or mismatched helper states.
+  3. Core dialogs, forms, and action states use consistent icons, spacing, hierarchy, and feedback patterns.
+  4. The primary launcher workflows feel clearer and lower-friction in a real browser run than they did before the rollout.
 **Plans**: TBD
 
-### Phase 3: Modpack Workflow Completion
-**Goal**: Core modpack browsing and instance-management workflows feel complete from the list and browser surfaces without forcing users into workaround navigation.
-**Depends on**: Phase 2
-**Requirements**: FLOW-01, FLOW-02, FLOW-03, FLOW-04
+### Phase 9: Secondary Surface Alignment And UX Polish
+**Goal**: The rest of the launcher stops feeling like leftover modules and the polished UI still respects accessibility, performance, and readability.
+**Depends on**: Phase 8
+**Requirements**: A11Y-04, UX-04
 **Success Criteria** (what must be TRUE):
-  1. User can duplicate an instance directly from modpack list cards or card actions without opening the details view.
-  2. User can rename an instance directly from modpack list cards or card actions without opening the details view.
-  3. User can return to recently opened or viewed modpacks in the browser.
-  4. User can configure page size and navigate paginated modpack browser results without losing browsing context.
+  1. Sharing, statistics, mirrors, and remaining advanced or content-management surfaces feel like the same product as the refreshed shell and core flows.
+  2. The refreshed UI preserves visible focus, sufficient contrast, reduced-motion behavior, and runtime readability across updated surfaces.
+  3. Backgrounds, gradients, blur, and motion support hierarchy and atmosphere without overwhelming content or making the launcher feel heavier.
 **Plans**: TBD
 
-### Phase 4: Delivery, Cache, Accounts, And Stats Hardening
-**Goal**: FMCL deepens its existing launcher domains so delivery and content flows are resilient, cached, configurable, and inspectable without changing architecture.
-**Depends on**: Phase 3
-**Requirements**: FLOW-05, ACCT-01, DLVR-01, DLVR-02, DLVR-03, STAT-01, STAT-02
+### Phase 10: Manual Experience Verification And Release Truth
+**Goal**: The milestone closes on live experience evidence and truthful release messaging rather than assuming the redesigned UI is done.
+**Depends on**: Phase 9
+**Requirements**: VER-01, DOC-03
 **Success Criteria** (what must be TRUE):
-  1. Modpack and mod imagery loads from a persistent disk cache, and users have cache size management and cleanup controls.
-  2. User can preview supported custom-account skins, refresh that preview, and open the provider management page directly from within the launcher.
-  3. User can set mirror priority, the launcher falls back to healthy mirrors automatically, and corrupted or incomplete downloads are rejected instead of being accepted as successful.
-  4. User can view popular modpacks and local usage trends in the launcher and export local statistics data for backup or analysis.
-**Scope Note**: Phase 4 intentionally stopped at provider-aware preview, refresh, and provider-site handoff for Blessing Skin and LittleSkin after the skin-provider APIs implied a broader auth expansion than the milestone allowed.
+  1. Maintainers execute a real browser-based walkthrough across refreshed critical routes and interactions before claiming completion.
+  2. Fallout found during that walkthrough is fixed without reopening design-system drift or leaving known UX defects untracked.
+  3. README and roadmap-facing UI descriptions reflect the shipped launcher experience accurately after the redesign lands.
+  4. The refreshed milestone still closes with the normal repository quality gates green.
 **Plans**: TBD
-
-### Phase 5: Accessibility And Release Truthfulness
-**Goal**: The shipped FMCL release is keyboard-usable, assistive-technology friendly, visually accessible, and documented truthfully across its public artifacts and IPC maps.
-**Depends on**: Phase 4
-**Requirements**: A11Y-01, A11Y-02, A11Y-03, DOC-01, DOC-02
-**Success Criteria** (what must be TRUE):
-  1. User can complete core launcher and modpack flows with keyboard-only navigation, clear focus movement, and recoverable dialogs and menus.
-  2. Interactive controls expose accessible names, roles, and states for assistive technologies.
-  3. Themes, backgrounds, and animations meet contrast and reduced-motion expectations for release use.
-  4. README and EN/RU roadmaps accurately describe shipped FMCL behavior, and the contract maps document the active IPC channels for the release surface.
-**Plans**: TBD
-
-### Phase 6: Milestone Auditability Recovery
-**Goal**: `v1.0` regains auditability on honest release truth: the remaining audit-discovered runtime and documentation drift is closed, each completed phase has verification evidence, and milestone archival can proceed without accepting avoidable process debt.
-**Depends on**: Phase 5
-**Requirements**: REL-01, REL-02, TEST-01, TEST-02, FLOW-01, FLOW-02, FLOW-03, FLOW-04, FLOW-05, ACCT-01, DLVR-01, DLVR-02, DLVR-03, STAT-01, STAT-02, A11Y-01, A11Y-02, A11Y-03, DOC-01, DOC-02, SEC-01, SEC-02, SEC-03
-**Gap Closure:** Closes `v1.0-MILESTONE-AUDIT.md` blockers caused by missing `VERIFICATION.md` files, requirement-tracking drift, and the final shipped-behavior mismatches found during milestone review.
-**Success Criteria** (what must be TRUE):
-  1. Launcher mirror selection and fallback no longer bypass the persisted mirror-priority model, and the remaining live modpack imagery surfaces use the shipped cache path instead of raw remote URLs.
-  2. Phase 4 and Phase 5 documentation truth is repaired where the audit found drift, including roadmap language and requirement wording that overstated or understated shipped behavior.
-  3. Phases 1 through 5 each have `VERIFICATION.md` artifacts that map shipped work to requirements, evidence, and unresolved debt.
-  4. `REQUIREMENTS.md` checkboxes and traceability rows reflect verified status instead of the pre-audit `Pending` baseline, including explicit closure evidence for `REL-02`.
-  5. Re-running `$gsd-audit-milestone` for `v1.0` no longer reports orphaned or unsatisfied requirements caused by missing verification artifacts or known phase drift.
-**Plans**: 3 planned in 2 waves
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 2.1 -> 2.2 -> 3 -> 3.1 -> 4 -> 5 -> 6
+Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Release Baseline And Trust Boundaries | 10/10 | Completed | 2026-04-12 |
-| 2. Automated Release Verification | 3/3 | Completed | 2026-04-12 |
-| 3. Modpack Workflow Completion | 3/3 | Completed | 2026-04-12 |
-| 4. Delivery, Cache, Accounts, And Stats Hardening | 5/5 | Complete   | 2026-04-12 |
-| 5. Accessibility And Release Truthfulness | 5/5 | Complete | 2026-04-12 |
-| 6. Milestone Auditability Recovery | 3/3 | Complete | 2026-04-12 |
+| 7. UI System Foundations | 0/0 | Planned | — |
+| 8. Core Route Rollout And UI Correctness | 0/0 | Planned | — |
+| 9. Secondary Surface Alignment And UX Polish | 0/0 | Planned | — |
+| 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |
