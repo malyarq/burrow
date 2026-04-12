@@ -1,5 +1,5 @@
 import { orderCandidatesByScore } from './scoring';
-import type { DownloadProviderId } from '@shared/types';
+import type { DownloadProviderId, Mirror } from '@shared/types';
 export type { DownloadProviderId } from '@shared/types';
 
 export interface DownloadProvider {
@@ -88,6 +88,13 @@ const applyReplacement = (url: string, replacements: Array<[string, string]>) =>
   return null;
 };
 
+const flattenProviderCandidates = (
+  providers: DownloadProvider[],
+  resolveCandidates: (provider: DownloadProvider) => string[],
+) => uniq(
+  providers.flatMap((provider) => orderCandidatesByScore(resolveCandidates(provider))),
+);
+
 const replaceMavenUrl = (url: string, mirrorRoot: string) => {
   const forge = 'https://maven.minecraftforge.net';
   const forgeHttp = 'http://files.minecraftforge.net/maven';
@@ -168,30 +175,41 @@ export class BmclProvider implements DownloadProvider {
 
 export class AutoProvider implements DownloadProvider {
   public id: DownloadProviderId = 'auto';
-  private bmcl = new BmclProvider();
-  private official = new OfficialProvider();
+  private readonly providers: DownloadProvider[];
+
+  constructor(providers: DownloadProvider[] = [new BmclProvider(), new OfficialProvider()]) {
+    this.providers = providers;
+  }
 
   getVersionListURLs(): string[] {
-    const candidates = uniq([...this.bmcl.getVersionListURLs(), ...this.official.getVersionListURLs()]);
-    return orderCandidatesByScore(candidates);
+    return flattenProviderCandidates(this.providers, (provider) => provider.getVersionListURLs());
   }
 
   getAssetObjectCandidates(assetPath: string): string[] {
-    const candidates = uniq([
-      ...this.bmcl.getAssetObjectCandidates(assetPath),
-      ...this.official.getAssetObjectCandidates(assetPath),
-    ]);
-    return orderCandidatesByScore(candidates);
+    return flattenProviderCandidates(this.providers, (provider) => provider.getAssetObjectCandidates(assetPath));
   }
 
   injectURL(url: string): string {
-    return this.bmcl.injectURL(url);
+    return this.providers[0]?.injectURL(url) ?? url;
   }
 
   injectURLWithCandidates(url: string): string[] {
-    const candidates = uniq([...this.bmcl.injectURLWithCandidates(url), ...this.official.injectURLWithCandidates(url)]);
-    return orderCandidatesByScore(candidates);
+    return flattenProviderCandidates(this.providers, (provider) => provider.injectURLWithCandidates(url));
   }
+}
+
+export class PriorityProvider extends AutoProvider {
+  constructor(providers: DownloadProvider[]) {
+    super(providers);
+  }
+}
+
+export function createProviderForMirror(mirror: Mirror): DownloadProvider {
+  if (mirror.type === 'official') {
+    return new OfficialProvider();
+  }
+
+  return new BmclProvider(mirror.rootUrl);
 }
 
 // Custom mirrors will be created dynamically, so getProviderById might need to accept a config or be part of a service
@@ -210,4 +228,3 @@ export function getProviderById(id: DownloadProviderId, customRoot?: string): Do
       return new OfficialProvider();
   }
 }
-

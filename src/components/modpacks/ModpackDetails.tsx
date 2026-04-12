@@ -37,7 +37,7 @@ interface ModpackDetailsProps {
 
 export const ModpackDetails: React.FC<ModpackDetailsProps> = ({ modpackId, onBack, onNavigate, onLaunch, onMetadataUpdated }) => {
   const { t, getAccentStyles, getAccentHex, minecraftPath } = useSettings();
-  const { modpacks, select, remove, refresh } = useModpack();
+  const { modpacks, select, rename, duplicate, remove, refresh } = useModpack();
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -174,13 +174,56 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({ modpackId, onBac
     }
   };
 
+  const handleRename = async () => {
+    if (!modpack) return;
+
+    const nextName = await confirm.prompt({
+      title: t('modpacks.rename') || 'Переименовать',
+      message: t('modpacks.rename_prompt') || 'Введите новое название:',
+      confirmText: t('modpacks.rename') || 'Переименовать',
+      cancelText: t('general.cancel') || 'Отмена',
+      input: {
+        initialValue: modpack.name,
+        placeholder: modpack.name,
+        requireNonEmpty: true,
+      },
+    });
+    const newName = nextName?.trim();
+
+    if (newName && newName !== modpack.name) {
+      try {
+        await rename(modpackId, newName);
+        await loadDetails();
+      } catch (error) {
+        console.error('Error renaming modpack:', error);
+        toast.error(t('modpacks.rename_error') || 'Ошибка при переименовании');
+      }
+    }
+  };
+
   const handleDuplicate = async () => {
     if (!modpack) return;
+
+    const suggestedName = `${modpack.name} - Copy`;
+    const nextName = await confirm.prompt({
+      title: t('modpacks.duplicate') || 'Дублировать',
+      message: t('modpacks.duplicate_prompt') || 'Введите название копии:',
+      confirmText: t('modpacks.duplicate') || 'Дублировать',
+      cancelText: t('general.cancel') || 'Отмена',
+      input: {
+        initialValue: suggestedName,
+        placeholder: suggestedName,
+        requireNonEmpty: true,
+      },
+    });
+    const newName = nextName?.trim();
+
+    if (!newName) {
+      return;
+    }
+
     try {
-      const result = await modpacksIPC.duplicate(modpackId);
-      if (result?.id) {
-        await refresh();
-      }
+      await duplicate(modpackId, newName);
     } catch (error) {
       console.error('Error duplicating modpack:', error);
       toast.error(t('modpacks.duplicate_error') || 'Ошибка при дублировании модпака');
@@ -354,6 +397,7 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({ modpackId, onBac
                 }}
                 hasUpdate={hasUpdate && !!metadata?.source && !!metadata?.sourceId && metadata.source !== 'local'}
                 onShowUpdate={() => setShowUpdateModal(true)}
+                onRename={handleRename}
                 onDuplicate={handleDuplicate}
                 onExport={() => onNavigate({ type: 'export', modpackId })}
                 canDelete={modpacks.length > 1}

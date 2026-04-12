@@ -15,13 +15,14 @@ import type {
   WindowControlsAPI,
   FriendLauncherApi,
   AccountAPI,
+  ExternalLinksAPI,
 } from '@shared/contracts';
+import type { ShareAPI } from '@shared/contracts/share';
 
 declare global {
   interface Window {
     launcher: LauncherAPI;
     modpacks: ModpacksAPI;
-    mirrors: MirrorsAPI;
     mods: ModsAPI;
     updater: InstanceUpdaterAPI;
     windowControls: WindowControlsAPI;
@@ -33,8 +34,10 @@ declare global {
     ipcRenderer: IpcRendererAPI;
     account: AccountAPI;
     mirrors: MirrorsAPI;
+    share: ShareAPI;
+    externalLinks: ExternalLinksAPI;
 
-    // Preferred surface for new code (namespaced).
+    // Supported surface for renderer code (namespaced).
     api: FriendLauncherApi;
   }
 }

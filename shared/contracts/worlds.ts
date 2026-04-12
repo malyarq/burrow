@@ -10,5 +10,5 @@ export interface WorldsAPI {
     delete: (folderName: string, instancePath: string) => Promise<void>;
     backup: (folderName: string, instancePath: string) => Promise<string>;
     duplicate: (folderName: string, instancePath: string) => Promise<string>;
-    getWorldPath: (folderName: string, instancePath: string) => string;
+    openFolder: (folderName: string, instancePath: string) => Promise<void>;
 }

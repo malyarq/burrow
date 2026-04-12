@@ -262,8 +262,8 @@
   - Filters (MC version, mod loader, category, platform)
   - Sorting (popularity, date, alphabetical, downloads)
   - Favorites (save in localStorage)
-  - [ ] View history
-  - [ ] Pagination with configurable results count (currently fixed at 12)
+  - [x] View history
+  - [x] Pagination with configurable results count
   - Modpack preview (without opening modal)
 
 - [x] **Modpack Export/Import** ⭐ Top Feature
@@ -529,11 +529,11 @@
 
 - [x] **Caching**
   - Modpack metadata cache (local storage)
-  - [ ] Image cache (modpack icons, previews)
+  - [x] Image cache (modpack icons, previews)
   - Minecraft versions cache
   - Mod cache (metadata)
-  - Cache size configuration
-  - Cache cleanup
+  - [x] Cache size configuration
+  - [x] Cache cleanup
 
 - [x] **Lazy Loading**
   - Lazy load UI components (partially exists)
@@ -575,19 +575,19 @@
 
 ### 5.1 Extended Themes ⭐ Top Feature (XMCL)
 
-- [ ] **Custom Colors**
-  - Card color settings
-  - Panel color settings
-  - Background color settings
-  - Highlight color settings
-  - Error color settings
-  - Separate storage for light/dark theme
-  - Color palette with preview
+- [x] **Custom Colors**
+  - [x] Card color settings
+  - [x] Panel color settings
+  - [x] Background color settings
+  - [x] Highlight color settings
+  - [x] Error color settings
+  - [ ] Separate storage for light/dark theme
+  - [x] Color palette with preview
 
-- [ ] **Additional Themes**
-  - Preset themes (High Contrast, Dark+, Light+)
-  - Theme import/export
-  - Create custom themes
+- [x] **Additional Themes**
+  - [x] Preset themes (High Contrast, Dark+, Light+)
+  - [x] Theme import/export
+  - [x] Create custom themes
 
 **Dependencies:** None  
 **Time:** 2-3 weeks
@@ -596,24 +596,24 @@
 
 ### 5.2 Background Effects ⭐ Top Feature (XMCL)
 
-- [ ] **Background Images**
-  - Load background image
-  - Transparency settings
-  - Background blur
-  - Positioning (center, stretch, tile)
-  - Multiple preset backgrounds
+- [x] **Background Images**
+  - [x] Load background image
+  - [x] Transparency settings
+  - [x] Background blur
+  - [x] Positioning (center, stretch, tile)
+  - [ ] Multiple preset backgrounds
 
-- [ ] **Background Videos** (optional)
-  - Background video support (MP4, WebM)
-  - Volume settings
-  - Loop playback
-  - Pause on inactivity
+- [x] **Background Videos** (optional)
+  - [x] Background video support (MP4, WebM)
+  - [x] Volume settings
+  - [x] Loop playback
+  - [x] Pause on inactivity
 
-- [ ] **Particles** (optional)
-  - Animated background particles
-  - Intensity settings
-  - Speed settings
-  - Different particle types
+- [x] **Particles** (optional)
+  - [x] Animated background particles
+  - [x] Intensity settings
+  - [x] Speed settings
+  - [x] Different particle types
 
 **Dependencies:** None  
 **Time:** 2-3 weeks
@@ -622,16 +622,16 @@
 
 ### 5.3 Additional UI Settings
 
-- [ ] **Sizes and Layout**
-  - Font size settings (small, medium, large)
-  - Element size settings
-  - Panel position settings (Sidebar left/right)
-  - Compact/expanded mode
+- [x] **Sizes and Layout**
+  - [x] Interface scale settings (zoom)
+  - [x] Element size settings
+  - [x] Panel position settings (Sidebar left/right)
+  - [x] Compact/expanded mode
 
-- [ ] **Animations**
-  - Enable/disable animations
-  - Animation speed settings (fast, normal, slow)
-  - Animation preview
+- [x] **Animations**
+  - [x] Enable/disable animations
+  - [ ] Animation speed settings (fast, normal, slow)
+  - [ ] Animation preview
 
 **Dependencies:** None  
 **Time:** 1 week
@@ -644,17 +644,17 @@
 
 ### 6.1 Custom Accounts and Skins ⭐ Top Feature (HMCL, XMCL)
 
-- [ ] **Third-Party Service Support**
-  - Blessing Skin (full integration)
-  - Authlib Injector (partially exists, enhance)
-  - LittleSkin
-  - Other skin services (extensible system)
+- [x] **Third-Party Service Support**
+  - [x] Blessing Skin (provider-aware preview and manage-page handoff)
+  - [x] Authlib Injector (third-party account support)
+  - [x] LittleSkin (provider-aware preview and manage-page handoff)
+  - [ ] Other skin services (extensible system)
 
-- [ ] **Account Management**
-  - Multiple accounts
-  - Switch between accounts
-  - Skin management
-  - Custom skins (file upload)
+- [x] **Account Management**
+  - [x] Multiple accounts
+  - [x] Switch between accounts
+  - [x] Skin management handoff (preview + provider page)
+  - [ ] Custom skins (file upload)
 
 **Dependencies:** None  
 **Time:** 2-3 weeks
@@ -663,13 +663,13 @@
 
 ### 6.2 Mirrors and CDN ⭐ Top Feature (XMCL)
 
-- [ ] **Mirror Management**
+- [x] **Mirror Management**
   - [x] BMCL API support
   - [x] Custom mirrors (add your own)
   - [x] Automatic best mirror selection (by speed)
-  - [ ] Fallback mirrors
+  - [x] Fallback mirrors
   - [x] Mirror speed testing
-  - [ ] Mirror priority settings
+  - [x] Mirror priority settings
 
 **Dependencies:** None  
 **Time:** 2 weeks
@@ -678,13 +678,13 @@
 
 ### 6.3 Statistics and Analytics
 
-- [ ] **Usage Statistics**
-  - Play time (by instances, total)
-  - Launch count
-  - Popular modpacks
-  - Instance statistics
-  - Usage graphs
-  - Statistics export
+- [x] **Usage Statistics**
+  - [x] Play time (by instances, total)
+  - [x] Launch count
+  - [x] Popular modpacks
+  - [x] Instance statistics
+  - [x] Usage graphs
+  - [x] Statistics export
 
 **Dependencies:** None  
 **Time:** 1-2 weeks
@@ -693,10 +693,10 @@
 
 ### 6.4 Social Features (optional)
 
-- [ ] **Instance Sharing**
-  - Generate share code
-  - Import by code
-  - Cloud storage (optional, via external service)
+- [x] **Instance Sharing**
+  - [x] Generate share code
+  - [x] Import by code
+  - [ ] Cloud storage (optional, via external service)
 
 **Dependencies:** 3.4 (Instance Export/Import)  
 **Time:** 1-2 weeks
@@ -710,22 +710,22 @@
 ### 7.1 Accessibility
 
 - [ ] **Screen Reader Support**
-  - ARIA attributes on all interactive elements
-  - Semantic markup (HTML5)
-  - Keyboard navigation (full support)
-  - Descriptions for all elements
+  - [x] ARIA attributes on shared shell and release-critical interactive elements
+  - [x] Semantic markup (dialogs, tabs, landmarks, lists, menus)
+  - [x] Keyboard navigation for core launcher and modpack flows
+  - [ ] Descriptions for all elements
 
 - [ ] **Keyboard Navigation**
-  - Hotkeys (extended set)
-  - Full navigation without mouse
-  - Hotkey hints (in tooltips and settings)
-  - Hotkey configuration
+  - [ ] Hotkeys (extended set)
+  - [x] Full navigation without mouse for core launcher and modpack flows
+  - [ ] Hotkey hints (in tooltips and settings)
+  - [ ] Hotkey configuration
 
 - [ ] **Visual Accessibility**
-  - High contrast mode
-  - Interface scaling (zoom)
-  - Font size settings
-  - Color blindness (don't rely only on color)
+  - [ ] High contrast mode
+  - [x] Interface scaling (zoom)
+  - [ ] Font size settings
+  - [x] Contrast and reduced-motion cleanup on release-critical surfaces
 
 **Dependencies:** None  
 **Time:** 2-3 weeks

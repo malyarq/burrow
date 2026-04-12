@@ -28,6 +28,8 @@ import { InstanceExporterService, type ExportOptions } from '../instances/export
 import { app } from 'electron';
 import { DownloadManager } from '../download/downloadManager';
 import { downloadQueue } from '../download/downloadQueue';
+import { assertAbsolutePath, assertChildName, assertPathWithinRoot, resolvePathWithinRoot } from '../../security/pathGuards';
+import { resolveApprovedInstancePath, resolveLauncherRootPath } from '../instances/paths';
 
 export type {
   ModpackConfig,
@@ -45,6 +47,15 @@ export class ModpackService extends BaseModpackService {
   constructor(private readonly contentManager?: ContentManager) {
     super();
   }
+
+  private resolveSafeRootPath(rootPath: string): string {
+    return resolveLauncherRootPath(rootPath);
+  }
+
+  private resolveSafeModpackDir(rootPath: string, modpackId: string): string {
+    return resolveApprovedInstancePath(this.getModpackDir(this.resolveSafeRootPath(rootPath), modpackId));
+  }
+
   /**
    * Сохранить конфиг и синхронизировать metadata.minecraftVersion для отображения в списке
    */
@@ -264,9 +275,11 @@ export class ModpackService extends BaseModpackService {
     options?: any,
     platformService?: ModPlatformService,
   ): Promise<void> {
-    const modpackDir = this.getModpackDir(rootPath, modpackId);
-    const metadata = this.getModpackMetadata(rootPath, modpackId);
-    const config = this.loadModpackConfig(rootPath, modpackId);
+    const safeRootPath = this.resolveSafeRootPath(rootPath);
+    const modpackDir = this.resolveSafeModpackDir(safeRootPath, modpackId);
+    const safeOutputPath = assertAbsolutePath(outputPath, 'Modpack export output path');
+    const metadata = this.getModpackMetadata(safeRootPath, modpackId);
+    const config = this.loadModpackConfig(safeRootPath, modpackId);
 
     if (!fs.existsSync(modpackDir)) {
       throw new Error(`Modpack directory not found: ${modpackDir}`);
@@ -282,7 +295,7 @@ export class ModpackService extends BaseModpackService {
         modpackName,
         modpackVersion,
         author,
-        outputPath,
+        safeOutputPath,
         platformService,
       );
     } else if (format === 'modrinth') {
@@ -291,7 +304,7 @@ export class ModpackService extends BaseModpackService {
         modpackName,
         modpackVersion,
         modpackId, // versionId для Modrinth
-        outputPath,
+        safeOutputPath,
         platformService,
       );
     } else if (format === 'multimc') {
@@ -303,9 +316,9 @@ export class ModpackService extends BaseModpackService {
         includeShaders: options?.includeShaders,
         includeMods: options?.includeMods,
       };
-      await exporter.exportInstance(rootPath, modpackId, format, outputPath, exportOptions);
+      await exporter.exportInstance(safeRootPath, modpackId, format, safeOutputPath, exportOptions);
     } else {
-      await exportToZip(modpackDir, outputPath);
+      await exportToZip(modpackDir, safeOutputPath);
     }
   }
 
@@ -329,62 +342,74 @@ export class ModpackService extends BaseModpackService {
     targetModpackId?: string,
     platformService?: ModPlatformService,
   ): Promise<{ id: string; config: ModpackConfig; metadata: ModpackMetadata }> {
-    if (!fs.existsSync(filePath)) {
-      throw new Error(`Modpack file not found: ${filePath}`);
+    const safeRootPath = this.resolveSafeRootPath(rootPath);
+    const safeFilePath = assertAbsolutePath(filePath, 'Modpack file path');
+
+    if (!fs.existsSync(safeFilePath)) {
+      throw new Error(`Modpack file not found: ${safeFilePath}`);
     }
 
     // Определить ID целевого модпака
     let modpackId = targetModpackId;
+    let createdModpack = false;
     if (!modpackId) {
       // Создать новый модпак на основе имени файла
-      const fileName = path.basename(filePath, path.extname(filePath));
-      const { id } = super.createModpack(rootPath, fileName);
+      const fileName = path.basename(safeFilePath, path.extname(safeFilePath));
+      const { id } = super.createModpack(safeRootPath, fileName);
       modpackId = id;
+      createdModpack = true;
     }
 
-    const modpackDir = this.getModpackDir(rootPath, modpackId);
+    try {
+      const modpackDir = this.resolveSafeModpackDir(safeRootPath, modpackId);
 
-    // Импортировать модпак (извлечь файлы)
-    const { manifest, format } = await importModpack(filePath, modpackDir);
+      // Импортировать модпак (извлечь файлы)
+      const { manifest, format } = await importModpack(safeFilePath, modpackDir);
 
-    // Сохранить манифест
-    const manifestPath = path.join(modpackDir, 'manifest.json');
-    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+      // Сохранить манифест
+      const manifestPath = resolvePathWithinRoot(modpackDir, 'manifest.json', 'Manifest path');
+      fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 
-    // Установить моды из манифеста
-    if (platformService && (format === 'curseforge' || format === 'modrinth')) {
-      await this.installModsFromManifest(rootPath, modpackId, manifest, platformService);
+      // Установить моды из манифеста
+      if (platformService && (format === 'curseforge' || format === 'modrinth')) {
+        await this.installModsFromManifest(safeRootPath, modpackId, manifest, platformService);
+      }
+
+      // Обновить конфигурацию на основе манифеста
+      const config = this.loadModpackConfig(safeRootPath, modpackId);
+      config.runtime = {
+        minecraft: manifest.minecraft.version,
+        modLoader: manifest.minecraft.modLoaders[0] ? (() => {
+          const loaderId = manifest.minecraft.modLoaders[0].id;
+          if (loaderId.startsWith('forge-')) {
+            return { type: 'forge' as ModLoaderType, version: loaderId.substring(6) };
+          } else if (loaderId.startsWith('fabric-')) {
+            return { type: 'fabric' as ModLoaderType, version: loaderId.substring(7) };
+          } else if (loaderId.startsWith('quilt-')) {
+            return { type: 'quilt' as ModLoaderType, version: loaderId.substring(6) };
+          } else if (loaderId.startsWith('neoforge-')) {
+            return { type: 'neoforge' as ModLoaderType, version: loaderId.substring(9) };
+          }
+          return undefined;
+        })() : undefined,
+      };
+      this.saveModpackConfig(safeRootPath, config);
+
+      // Обновить метаданные
+      const metadata = this.getModpackMetadata(safeRootPath, modpackId);
+      metadata.name = manifest.name;
+      metadata.version = manifest.version;
+      metadata.author = manifest.author;
+      metadata.minecraftVersion = manifest.minecraft.version;
+      this.updateModpackMetadata(safeRootPath, modpackId, metadata);
+
+      return { id: modpackId, config, metadata };
+    } catch (error) {
+      if (createdModpack && modpackId) {
+        this.deleteModpack(safeRootPath, modpackId);
+      }
+      throw error;
     }
-
-    // Обновить конфигурацию на основе манифеста
-    const config = this.loadModpackConfig(rootPath, modpackId);
-    config.runtime = {
-      minecraft: manifest.minecraft.version,
-      modLoader: manifest.minecraft.modLoaders[0] ? (() => {
-        const loaderId = manifest.minecraft.modLoaders[0].id;
-        if (loaderId.startsWith('forge-')) {
-          return { type: 'forge' as ModLoaderType, version: loaderId.substring(6) };
-        } else if (loaderId.startsWith('fabric-')) {
-          return { type: 'fabric' as ModLoaderType, version: loaderId.substring(7) };
-        } else if (loaderId.startsWith('quilt-')) {
-          return { type: 'quilt' as ModLoaderType, version: loaderId.substring(6) };
-        } else if (loaderId.startsWith('neoforge-')) {
-          return { type: 'neoforge' as ModLoaderType, version: loaderId.substring(9) };
-        }
-        return undefined;
-      })() : undefined,
-    };
-    this.saveModpackConfig(rootPath, config);
-
-    // Обновить метаданные
-    const metadata = this.getModpackMetadata(rootPath, modpackId);
-    metadata.name = manifest.name;
-    metadata.version = manifest.version;
-    metadata.author = manifest.author;
-    metadata.minecraftVersion = manifest.minecraft.version;
-    this.updateModpackMetadata(rootPath, modpackId, metadata);
-
-    return { id: modpackId, config, metadata };
   }
 
   /**
@@ -512,8 +537,9 @@ export class ModpackService extends BaseModpackService {
     modpackId: string,
     overrides: Record<string, Buffer>,
   ): void {
-    const modpackDir = this.getModpackDir(rootPath, modpackId);
-    const overridesDir = path.join(modpackDir, 'overrides');
+    const safeRootPath = this.resolveSafeRootPath(rootPath);
+    const modpackDir = this.resolveSafeModpackDir(safeRootPath, modpackId);
+    const overridesDir = resolvePathWithinRoot(modpackDir, 'overrides', 'Overrides directory');
 
     // Создать папку overrides, если её нет
     if (!fs.existsSync(overridesDir)) {
@@ -522,13 +548,7 @@ export class ModpackService extends BaseModpackService {
 
     // Записать все файлы
     for (const [filePath, content] of Object.entries(overrides)) {
-      // Безопасность: проверка на path traversal
-      const normalizedPath = path.normalize(filePath);
-      if (normalizedPath.includes('..') || path.isAbsolute(normalizedPath)) {
-        throw new Error(`Invalid override path: ${filePath}`);
-      }
-
-      const fullPath = path.join(overridesDir, normalizedPath);
+      const fullPath = resolvePathWithinRoot(overridesDir, filePath, `Override path "${filePath}"`);
       const dirPath = path.dirname(fullPath);
 
       // Создать директорию, если её нет
@@ -541,7 +561,7 @@ export class ModpackService extends BaseModpackService {
     }
 
     // Обновить манифест, чтобы указать наличие overrides
-    const manifestPath = path.join(modpackDir, 'manifest.json');
+    const manifestPath = resolvePathWithinRoot(modpackDir, 'manifest.json', 'Manifest path');
     if (fs.existsSync(manifestPath)) {
       const manifestJson = fs.readFileSync(manifestPath, 'utf-8');
       const manifest: ModpackManifest = JSON.parse(manifestJson);
@@ -557,8 +577,8 @@ export class ModpackService extends BaseModpackService {
    * Получить список модов в модпаке
    */
   public async getModpackMods(rootPath: string, modpackId: string): Promise<ModEntry[]> {
-    const modpackDir = this.getModpackDir(rootPath, modpackId);
-    const modsDir = path.join(modpackDir, 'mods');
+    const modpackDir = this.resolveSafeModpackDir(rootPath, modpackId);
+    const modsDir = resolvePathWithinRoot(modpackDir, 'mods', 'Mods directory');
     return scanModsFolder(modsDir);
   }
 
@@ -566,8 +586,9 @@ export class ModpackService extends BaseModpackService {
    * Создать резервную копию модпака
    */
   public async backupModpack(rootPath: string, modpackId: string): Promise<string> {
-    const modpackDir = this.getModpackDir(rootPath, modpackId);
-    const backupsDir = path.join(rootPath, 'backups');
+    const safeRootPath = this.resolveSafeRootPath(rootPath);
+    const modpackDir = this.resolveSafeModpackDir(safeRootPath, modpackId);
+    const backupsDir = resolvePathWithinRoot(safeRootPath, 'backups', 'Backups directory');
 
     // Создать папку backups, если её нет
     if (!fs.existsSync(backupsDir)) {
@@ -577,7 +598,11 @@ export class ModpackService extends BaseModpackService {
     // Создать имя файла бэкапа с timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const backupFileName = `${modpackId}-${timestamp}.zip`;
-    const backupPath = path.join(backupsDir, backupFileName);
+    const backupPath = resolvePathWithinRoot(
+      backupsDir,
+      assertChildName(backupFileName, 'Backup file name'),
+      'Backup path',
+    );
 
     // Использовать adm-zip для создания архива
     const zip = new AdmZip();
@@ -586,7 +611,7 @@ export class ModpackService extends BaseModpackService {
     const addDirectoryToZip = (dir: string, zipPath: string = '') => {
       const files = fs.readdirSync(dir);
       for (const file of files) {
-        const filePath = path.join(dir, file);
+        const filePath = assertPathWithinRoot(modpackDir, path.join(dir, file), 'Modpack backup source path');
         const stat = fs.statSync(filePath);
         const zipFilePath = zipPath ? path.join(zipPath, file) : file;
 
@@ -638,10 +663,11 @@ export class ModpackService extends BaseModpackService {
     manifest: ModpackManifest,
     platformService: ModPlatformService
   ): Promise<{ id: string }> {
+    const safeRootPath = this.resolveSafeRootPath(rootPath);
     // 1. Создать локальный модпак
     const modLoader = manifest.minecraft.modLoaders[0];
     const { id } = this.createLocalModpack(
-      rootPath,
+      safeRootPath,
       manifest.name,
       manifest.version,
       manifest.minecraft.version,
@@ -652,7 +678,7 @@ export class ModpackService extends BaseModpackService {
     );
 
     // 2. Установить моды
-    await this.installModsFromManifest(rootPath, id, manifest, platformService);
+    await this.installModsFromManifest(safeRootPath, id, manifest, platformService);
 
     return { id };
   }
@@ -666,8 +692,9 @@ export class ModpackService extends BaseModpackService {
     manifest: ModpackManifest,
     platformService: ModPlatformService,
   ): Promise<void> {
-    const modpackDir = this.getModpackDir(rootPath, modpackId);
-    const modsDir = path.join(modpackDir, 'mods');
+    const safeRootPath = this.resolveSafeRootPath(rootPath);
+    const modpackDir = this.resolveSafeModpackDir(safeRootPath, modpackId);
+    const modsDir = resolvePathWithinRoot(modpackDir, 'mods', 'Mods directory');
 
     if (!fs.existsSync(modsDir)) {
       fs.mkdirSync(modsDir, { recursive: true });
@@ -682,7 +709,11 @@ export class ModpackService extends BaseModpackService {
             const modFile = await curseforge.getModFile(file.projectID, file.fileID);
             const modDownloadUrl = modFile.downloadUrl;
             if (modDownloadUrl) {
-              const modDestination = path.join(modsDir, modFile.fileName);
+              const modDestination = resolvePathWithinRoot(
+                modsDir,
+                assertChildName(modFile.fileName, 'Mod file name'),
+                'Mod file path',
+              );
               const modSha1 = modFile.hashes?.find((h) => h.algo === 1 /* sha1 */)?.value;
 
               if (this.contentManager && modSha1) {
@@ -692,7 +723,10 @@ export class ModpackService extends BaseModpackService {
                 } else {
                   const tempDir = path.join(app.getPath('temp'), 'fmcl-downloads');
                   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-                  const tempFile = path.join(tempDir, `${modFile.fileName}-${Date.now()}`);
+                  const tempFile = path.join(
+                    tempDir,
+                    assertChildName(`${modFile.fileName}-${Date.now()}`, 'Temporary mod file name'),
+                  );
 
                   await downloadQueue.add(async () => {
                     await DownloadManager.downloadSingle(modDownloadUrl, tempFile, {
@@ -720,7 +754,11 @@ export class ModpackService extends BaseModpackService {
           const primaryFile = version.files.find((f) => f.primary) || version.files[0];
 
           if (primaryFile?.url) {
-            const modDestination = path.join(modsDir, primaryFile.filename);
+            const modDestination = resolvePathWithinRoot(
+              modsDir,
+              assertChildName(primaryFile.filename, 'Mod file name'),
+              'Mod file path',
+            );
             const modSha1 = primaryFile.hashes?.sha1;
 
             if (this.contentManager && modSha1) {
@@ -730,7 +768,10 @@ export class ModpackService extends BaseModpackService {
               } else {
                 const tempDir = path.join(app.getPath('temp'), 'fmcl-downloads');
                 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-                const tempFile = path.join(tempDir, `${primaryFile.filename}-${Date.now()}`);
+                const tempFile = path.join(
+                  tempDir,
+                  assertChildName(`${primaryFile.filename}-${Date.now()}`, 'Temporary mod file name'),
+                );
 
                 await downloadQueue.add(async () => {
                   await DownloadManager.downloadSingle(primaryFile.url, tempFile, {
@@ -757,4 +798,3 @@ export class ModpackService extends BaseModpackService {
     }
   }
 }
-

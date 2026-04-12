@@ -8,6 +8,7 @@ import { cn } from '../../../utils/cn';
 import { modNameToSlug } from '../../../utils/modSlug';
 import type { ModEntry } from '@shared/types/mods';
 import { isVersionCompatible } from '../../../utils/versionCheck';
+import { externalLinksIPC } from '../../../services/ipc/externalLinksIPC';
 
 export type ModpackModEntry = ModEntry;
 
@@ -55,6 +56,12 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
     if (!isVersionCompatible(installed.version, versionRange)) return 'incompatible';
     return 'installed';
   }, [mods]);
+
+  const handleOpenExternalLink = React.useCallback((url: string, context: string) => {
+    void externalLinksIPC.open({ url, context }).catch((error) => {
+      console.error('Failed to open external link:', error)
+    })
+  }, [])
 
 
   const filteredMods = React.useMemo(() => {
@@ -135,6 +142,7 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
                   toggleExpand={toggleExpand}
                   onModToggle={onModToggle}
                   onRemoveMod={onRemoveMod}
+                  onOpenExternalLink={handleOpenExternalLink}
                   getDependencyStatus={getDependencyStatus}
                   t={t}
                 />
@@ -154,9 +162,10 @@ const ModItem = React.memo<{
   toggleExpand: (id: string) => void;
   onModToggle?: (mod: ModpackModEntry) => void;
   onRemoveMod: (mod: ModpackModEntry) => Promise<void>;
+  onOpenExternalLink: (url: string, context: string) => void;
   getDependencyStatus: (id: string, range?: string | string[]) => string;
   t: (key: string) => string;
-}>(({ mod, isExpanded, toggleExpand, onModToggle, onRemoveMod, getDependencyStatus, t }) => {
+}>(({ mod, isExpanded, toggleExpand, onModToggle, onRemoveMod, onOpenExternalLink, getDependencyStatus, t }) => {
   return (
     <div
       className={cn(
@@ -205,24 +214,32 @@ const ModItem = React.memo<{
               <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{mod.file.name}</p>
             </div>
             <div className="flex gap-2 mt-2">
-              <a
-                href={`https://modrinth.com/mod/${modNameToSlug(mod.name)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
                 className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onOpenExternalLink(
+                    `https://modrinth.com/mod/${modNameToSlug(mod.name)}`,
+                    `${mod.name} on Modrinth`,
+                  )
+                }}
               >
                 Modrinth
-              </a>
-              <a
-                href={`https://www.curseforge.com/minecraft/mc-mods/${modNameToSlug(mod.name)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              </button>
+              <button
+                type="button"
                 className="text-xs text-orange-600 dark:text-orange-400 hover:underline"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onOpenExternalLink(
+                    `https://www.curseforge.com/minecraft/mc-mods/${modNameToSlug(mod.name)}`,
+                    `${mod.name} on CurseForge`,
+                  )
+                }}
               >
                 CurseForge
-              </a>
+              </button>
             </div>
           </div>
 

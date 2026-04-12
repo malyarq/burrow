@@ -1,6 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import AdmZip from 'adm-zip';
+import { assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
+import { resolveWorldPath, resolveWorldsDir } from '../instances/paths';
 
 export interface WorldInfo {
     name: string;
@@ -16,7 +18,7 @@ export class WorldsService {
      * Get the saves directory path for an instance.
      */
     private getSavesDir(instancePath: string): string {
-        return path.join(instancePath, 'saves');
+        return resolveWorldsDir(instancePath);
     }
 
     /**
@@ -77,12 +79,23 @@ export class WorldsService {
         const worlds: WorldInfo[] = [];
 
         for (const entry of entries) {
-            const worldPath = path.join(savesDir, entry);
-            const stat = await fs.stat(worldPath);
+            let worldPath: string;
+            try {
+                worldPath = resolvePathWithinRoot(savesDir, entry, 'World path');
+            } catch {
+                continue;
+            }
+
+            let stat;
+            try {
+                stat = await fs.stat(worldPath);
+            } catch {
+                continue;
+            }
 
             if (stat.isDirectory()) {
                 // Check if it has level.dat (valid world)
-                const levelDatPath = path.join(worldPath, 'level.dat');
+                const levelDatPath = resolvePathWithinRoot(worldPath, 'level.dat', 'World level.dat path');
                 try {
                     await fs.access(levelDatPath);
 
@@ -111,8 +124,7 @@ export class WorldsService {
      * Delete a world from the instance.
      */
     async delete(folderName: string, instancePath: string): Promise<void> {
-        const savesDir = this.getSavesDir(instancePath);
-        const worldPath = path.join(savesDir, folderName);
+        const worldPath = resolveWorldPath(instancePath, folderName);
 
         await fs.rm(worldPath, { recursive: true, force: true });
     }
@@ -123,15 +135,16 @@ export class WorldsService {
      */
     async backup(folderName: string, instancePath: string): Promise<string> {
         const savesDir = this.getSavesDir(instancePath);
-        const worldPath = path.join(savesDir, folderName);
+        const safeFolderName = assertChildName(folderName, 'World name');
+        const worldPath = resolveWorldPath(instancePath, safeFolderName);
 
         // Create backup in the same saves folder with timestamp
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        const backupName = `${folderName}_backup_${timestamp}.zip`;
-        const backupPath = path.join(savesDir, backupName);
+        const backupName = `${safeFolderName}_backup_${timestamp}.zip`;
+        const backupPath = resolvePathWithinRoot(savesDir, backupName, 'World backup path');
 
         const zip = new AdmZip();
-        zip.addLocalFolder(worldPath, folderName);
+        zip.addLocalFolder(worldPath, safeFolderName);
         zip.writeZip(backupPath);
 
         return backupPath;
@@ -142,23 +155,24 @@ export class WorldsService {
      */
     async duplicate(folderName: string, instancePath: string): Promise<string> {
         const savesDir = this.getSavesDir(instancePath);
-        const worldPath = path.join(savesDir, folderName);
+        const safeFolderName = assertChildName(folderName, 'World name');
+        const worldPath = resolveWorldPath(instancePath, safeFolderName);
 
         // Find a unique name
         let copyIndex = 1;
-        let newName = `${folderName}_copy`;
+        let newName = `${safeFolderName}_copy`;
         while (true) {
-            const testPath = path.join(savesDir, newName);
+            const testPath = resolvePathWithinRoot(savesDir, newName, 'World copy path');
             try {
                 await fs.access(testPath);
                 copyIndex++;
-                newName = `${folderName}_copy_${copyIndex}`;
+                newName = `${safeFolderName}_copy_${copyIndex}`;
             } catch {
                 break; // Name is available
             }
         }
 
-        const newPath = path.join(savesDir, newName);
+        const newPath = resolvePathWithinRoot(savesDir, newName, 'World copy path');
         await fs.cp(worldPath, newPath, { recursive: true });
 
         return newName;
@@ -168,7 +182,7 @@ export class WorldsService {
      * Open the world folder in file explorer.
      */
     getWorldPath(folderName: string, instancePath: string): string {
-        return path.join(this.getSavesDir(instancePath), folderName);
+        return resolveWorldPath(instancePath, folderName);
     }
 }
 

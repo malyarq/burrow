@@ -69,6 +69,7 @@ const Sidebar = ({
     const { uiMode, setMode } = useUIMode();
     const { modpacks, selectedId, effectiveModpackId } = useModpack();
     const lastGame = useMemo(() => loadLastGame(effectiveModpackId), [effectiveModpackId]);
+    const sidebarContentId = 'launcher-sidebar-content';
     const [isCollapsed, setIsCollapsed] = useState(() => {
         const saved = localStorage.getItem('sidebar_collapsed');
         return saved === 'true';
@@ -87,15 +88,21 @@ const Sidebar = ({
     // Sidebar now only manages nickname; version and modloader settings are configured per-modpack.
 
     return (
-        <div className={cn(
+        <aside
+            aria-label="FriendLauncher sidebar"
+            className={cn(
             "flex flex-col bg-sidebar backdrop-blur-sm border-r border-border shadow-2xl shadow-black/10 dark:shadow-black/30 z-10 relative transition-all duration-300 ease-out",
             isCollapsed ? "w-16 p-2" : (compactMode ? "w-64 p-4" : "w-80 p-6"),
             sidebarPosition === 'right' ? "border-l border-r-0 order-last" : "border-r border-l-0"
-        )}>
+        )}
+        >
             {/* Collapse button at the very top - thin strip */}
             {!isCollapsed && (
                 <button
+                    type="button"
                     onClick={() => setIsCollapsed(!isCollapsed)}
+                    aria-controls={sidebarContentId}
+                    aria-expanded={!isCollapsed}
                     className="absolute top-0 left-0 right-0 h-6 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex items-center justify-center gap-1 border-b border-border/50"
                 >
                     <span className="text-xs">◀</span>
@@ -118,8 +125,12 @@ const Sidebar = ({
                 />
             </div>
 
+            <div className="sr-only" aria-live="polite">
+                {runtime.statusText || ''}
+            </div>
+
             {!isCollapsed && (
-                <div className="space-y-6 flex-1 flex flex-col">
+                <div id={sidebarContentId} className="space-y-6 flex-1 flex flex-col">
                     {/* Игровые настройки – ник, версия и (в Classic) модлоадер/OptiFine */}
                     <div className="space-y-4 sidebar-section-enter">
                         <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
@@ -191,50 +202,39 @@ const Sidebar = ({
             )}
 
             {/* Icons that move from header to center when collapsed - using staggered animation */}
-            <div className={cn(
-                "flex-1 flex flex-col items-center gap-2",
-                isCollapsed
-                    ? "opacity-100 pointer-events-auto"
-                    : "opacity-0 h-0 overflow-hidden pointer-events-none"
-            )}>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={actions.onShowMultiplayer}
-                    disabled={runtime.isLaunching}
-                    className={cn(
-                        "w-12 h-12 p-0 transition-all duration-500 ease-out",
-                        isCollapsed
-                            ? "scale-100 translate-y-0 opacity-100"
-                            : "scale-0 -translate-y-8 opacity-0"
-                    )}
-                    style={{
-                        transitionDelay: isCollapsed ? '100ms' : '0ms',
-                    }}
-                    title={t('multiplayer.title') || 'Multiplayer'}
-                >
-                    <span className="text-xl">🌐</span>
-                </Button>
-                <Tooltip content={<span>{t('general.settings')} <span className="text-zinc-400 text-xs ml-1">Ctrl+,</span></span>} position="right">
+            {isCollapsed && (
+                <div className="flex-1 flex flex-col items-center gap-2 opacity-100 pointer-events-auto">
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={actions.onShowSettings}
+                        onClick={actions.onShowMultiplayer}
                         disabled={runtime.isLaunching}
-                        className={cn(
-                            "w-12 h-12 p-0 transition-all duration-500 ease-out",
-                            isCollapsed
-                                ? "scale-100 translate-y-0 opacity-100"
-                                : "scale-0 -translate-y-8 opacity-0"
-                        )}
+                        aria-label={t('multiplayer.title') || 'Multiplayer'}
+                        className="w-12 h-12 p-0 transition-all duration-500 ease-out scale-100 translate-y-0 opacity-100"
                         style={{
-                            transitionDelay: isCollapsed ? '200ms' : '0ms',
+                            transitionDelay: '100ms',
                         }}
+                        title={t('multiplayer.title') || 'Multiplayer'}
                     >
-                        <span className="text-xl">⚙️</span>
+                        <span className="text-xl">🌐</span>
                     </Button>
-                </Tooltip>
-            </div>
+                    <Tooltip content={<span>{t('general.settings')} <span className="text-zinc-400 text-xs ml-1">Ctrl+,</span></span>} position="right">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={actions.onShowSettings}
+                            disabled={runtime.isLaunching}
+                            aria-label={t('general.settings') || 'Settings'}
+                            className="w-12 h-12 p-0 transition-all duration-500 ease-out scale-100 translate-y-0 opacity-100"
+                            style={{
+                                transitionDelay: '200ms',
+                            }}
+                        >
+                            <span className="text-xl">⚙️</span>
+                        </Button>
+                    </Tooltip>
+                </div>
+            )}
 
             <div className="mt-auto">
                 <LaunchControls
@@ -250,7 +250,7 @@ const Sidebar = ({
                     lastLaunch={lastGame ? formatLastLaunch(lastGame.timestamp, t) : undefined}
                 />
             </div>
-        </div>
+        </aside>
     );
 };
 

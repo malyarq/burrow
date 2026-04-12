@@ -135,3 +135,53 @@ export function getOrCreateModpackMetadata(
 
   return newMetadata;
 }
+
+/**
+ * Синхронизировать имя модпака в хранилище метаданных
+ */
+export function syncRenamedModpackMetadata(
+  rootPath: string,
+  config: ModpackConfig,
+): ModpackMetadata {
+  const metadata = loadModpacksMetadata(rootPath);
+  const existing = metadata.modpacks[config.id];
+
+  const renamedMetadata = existing
+    ? updateModpackMetadata(existing, { name: config.name })
+    : createModpackMetadataFromConfig(config);
+
+  metadata.modpacks[config.id] = renamedMetadata;
+  saveModpacksMetadata(rootPath, metadata);
+
+  return renamedMetadata;
+}
+
+/**
+ * Скопировать метаданные исходного модпака в новый модпак
+ */
+export function duplicateModpackMetadata(
+  rootPath: string,
+  sourceId: string,
+  duplicatedConfig: ModpackConfig,
+): ModpackMetadata {
+  const metadata = loadModpacksMetadata(rootPath);
+  const sourceMetadata = metadata.modpacks[sourceId];
+  const now = new Date().toISOString();
+  const createdAt = duplicatedConfig.createdAt || now;
+  const updatedAt = duplicatedConfig.updatedAt || now;
+  const duplicatedMetadata = sourceMetadata
+    ? {
+      ...sourceMetadata,
+      id: duplicatedConfig.id,
+      name: duplicatedConfig.name,
+      createdAt,
+      updatedAt,
+    }
+    : createModpackMetadataFromConfig(duplicatedConfig);
+
+  metadata.modpacks[duplicatedConfig.id] = duplicatedMetadata;
+  metadata.selectedModpack = duplicatedConfig.id;
+  saveModpacksMetadata(rootPath, metadata);
+
+  return duplicatedMetadata;
+}

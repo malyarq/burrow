@@ -5,11 +5,12 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { User, Server } from 'lucide-react';
 import clsx from 'clsx';
+import { accountIPC } from '../../services/ipc/accountIPC';
 
 interface AddAccountDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdded: () => void;
+    onAdded: () => void | Promise<void>;
 }
 
 type AuthType = 'offline' | 'third-party';
@@ -36,14 +37,14 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
         try {
             if (authType === 'offline') {
                 if (!nickname.trim()) throw new Error(t('accounts.nicknameRequired'));
-                await window.account.addOfflineAccount(nickname);
+                await accountIPC.addOfflineAccount(nickname);
             } else {
                 if (!serverUrl.trim()) throw new Error(t('accounts.serverUrlRequired'));
                 if (!username.trim()) throw new Error(t('accounts.usernameRequired'));
                 // Password might be optional for some auth servers or specific flows, but usually required
-                await window.account.addThirdPartyAccount(serverUrl, username, password || undefined);
+                await accountIPC.addThirdPartyAccount(serverUrl, username, password || undefined);
             }
-            onAdded();
+            await onAdded();
             onClose();
             // Reset form
             setNickname('');
@@ -51,9 +52,9 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
             setUsername('');
             setPassword('');
             setAuthType('offline');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError(err.message || 'Failed to add account');
+            setError(err instanceof Error ? err.message : (t('accounts.addError') || 'Failed to add account'));
         } finally {
             setLoading(false);
         }

@@ -10,6 +10,10 @@ import {
   getModpackDir,
   getModpacksIndexPath,
 } from './paths';
+import {
+  duplicateModpackMetadata,
+  syncRenamedModpackMetadata,
+} from '../modpacks/storage';
 
 export type { ModpackConfig, ModpacksIndex, ModpackRuntime, ModLoaderType, NetworkMode } from './types';
 import { javaScanner, type DetectedJava } from '../java/javaScanner';
@@ -186,6 +190,7 @@ export class ModpackService {
     const cfg = this.loadModpackConfig(rootPath, modpackId);
     cfg.name = newName;
     this.saveModpackConfig(rootPath, cfg);
+    syncRenamedModpackMetadata(rootPath, cfg);
     return { ok: true } as const;
   }
 
@@ -236,6 +241,7 @@ export class ModpackService {
     idx.modpacks[id] = { name: baseName };
     idx.selectedModpack = id;
     this.saveModpacksIndex(rootPath, idx);
+    duplicateModpackMetadata(rootPath, sourceId, cfg);
 
     return { id, config: cfg } as const;
   }
@@ -244,4 +250,3 @@ export class ModpackService {
     return await javaScanner.scanJava();
   }
 }
-

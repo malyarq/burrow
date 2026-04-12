@@ -4,7 +4,8 @@ import { useAppUpdater } from '../features/updater/hooks/useAppUpdater';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { cn } from '../utils/cn';
-import { SettingsTabsHeader, type SettingsTabId } from './settings/SettingsTabsHeader';
+import { SettingsTabsHeader } from './settings/SettingsTabsHeader';
+import { getSettingsPanelId, getSettingsTabId, type SettingsTabId } from './settings/settingsTabs';
 
 // Import all tabs directly to avoid loading delay when switching tabs
 import { AppearanceTab } from './settings/tabs/AppearanceTab';
@@ -22,7 +23,7 @@ interface SettingsPageProps {
 
 // Settings modal for appearance and launcher preferences.
 const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
-    const [activeTab, setActiveTab] = useState<SettingsTabId>('appearance' as SettingsTabId);
+    const [activeTab, setActiveTab] = useState<SettingsTabId>('appearance');
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const {
         hideLauncher, setHideLauncher,
@@ -47,6 +48,60 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
         }
     }, [status]);
 
+    const renderActiveTab = () => {
+        if (activeTab === 'appearance') {
+            return <AppearanceTab />;
+        }
+
+        if (activeTab === 'downloads') {
+            return (
+                <DownloadsTab
+                    autoDownloadThreads={autoDownloadThreads}
+                    setAutoDownloadThreads={setAutoDownloadThreads}
+                    downloadThreads={downloadThreads}
+                    setDownloadThreads={setDownloadThreads}
+                    maxSockets={maxSockets}
+                    setMaxSockets={setMaxSockets}
+                    t={t}
+                />
+            );
+        }
+
+        if (activeTab === 'launcher') {
+            return (
+                <LauncherTab
+                    hideLauncher={hideLauncher}
+                    setHideLauncher={setHideLauncher}
+                    showConsole={showConsole}
+                    setShowConsole={setShowConsole}
+                    minecraftPath={minecraftPath}
+                    setMinecraftPath={setMinecraftPath}
+                    t={t}
+                    status={status}
+                    updateInfo={updateInfo}
+                    onCheckForUpdates={checkForUpdates}
+                    onBeforeCheckForUpdates={() => setShowUpdateModal(false)}
+                />
+            );
+        }
+
+        if (activeTab === 'storage') {
+            return (
+                <StorageSettings
+                    t={t}
+                    getAccentStyles={getAccentStyles}
+                    modpacksIPC={modpacksIPC}
+                />
+            );
+        }
+
+        if (activeTab === 'accounts') {
+            return <AccountsPage />;
+        }
+
+        return <StatisticsTab />;
+    };
+
     return (
         <Modal
             isOpen={true}
@@ -62,54 +117,14 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
                     getAccentStyles={(type) => getAccentStyles(type)}
                 />
 
-                <div>
-                    {activeTab === 'appearance' && (
-                        <AppearanceTab />
-                    )}
-
-                    {activeTab === 'downloads' && (
-                        <DownloadsTab
-                            autoDownloadThreads={autoDownloadThreads}
-                            setAutoDownloadThreads={setAutoDownloadThreads}
-                            downloadThreads={downloadThreads}
-                            setDownloadThreads={setDownloadThreads}
-                            maxSockets={maxSockets}
-                            setMaxSockets={setMaxSockets}
-                            t={t}
-                        />
-                    )}
-
-                    {activeTab === 'launcher' && (
-                        <LauncherTab
-                            hideLauncher={hideLauncher}
-                            setHideLauncher={setHideLauncher}
-                            showConsole={showConsole}
-                            setShowConsole={setShowConsole}
-                            minecraftPath={minecraftPath}
-                            setMinecraftPath={setMinecraftPath}
-                            t={t}
-                            status={status}
-                            updateInfo={updateInfo}
-                            onCheckForUpdates={checkForUpdates}
-                            onBeforeCheckForUpdates={() => setShowUpdateModal(false)}
-                        />
-                    )}
-
-                    {activeTab === 'storage' && (
-                        <StorageSettings
-                            t={t}
-                            getAccentStyles={getAccentStyles}
-                            modpacksIPC={modpacksIPC}
-                        />
-                    )}
-
-                    {activeTab === 'accounts' && (
-                        <AccountsPage />
-                    )}
-
-                    {activeTab === 'statistics' && (
-                        <StatisticsTab />
-                    )}
+                <div
+                    id={getSettingsPanelId(activeTab)}
+                    role="tabpanel"
+                    aria-labelledby={getSettingsTabId(activeTab)}
+                    tabIndex={0}
+                    className="outline-none"
+                >
+                    {renderActiveTab()}
                 </div>
 
                 <div className="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-800">

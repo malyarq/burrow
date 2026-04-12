@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useDebounce } from '../../hooks/useDebounce';
 import { Input } from '../ui/Input';
@@ -7,45 +7,88 @@ import { cn } from '../../utils/cn';
 import type { ModpackSearchResultItem, ModpackVersionDescriptor } from '@shared/contracts';
 import { Button } from '../ui/Button';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { LazyImage } from '../ui/LazyImage';
 import { modpacksIPC } from '../../services/ipc/modpacksIPC';
 import { dialogIPC } from '../../services/ipc/dialogIPC';
 import { MINECRAFT_VERSIONS } from '../../utils/minecraftVersionsList';
+import { DEFAULT_MODPACK_BROWSER_STATE, type ModpackBrowserState } from '../../features/modpacks/hooks/useModpackNavigation';
 
-type Platform = 'curseforge' | 'modrinth';
-type SortOption = 'popularity' | 'date' | 'alphabetical';
-type FilterMCVersion = string | 'all';
-type FilterLoader = string | 'all';
+type Platform = ModpackBrowserState['platform'];
+type SortOption = ModpackBrowserState['sortBy'];
+type FilterMCVersion = ModpackBrowserState['filterMCVersion'];
+type FilterLoader = ModpackBrowserState['filterLoader'];
 
-interface ModpackBrowserProps {
-  onBack: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onNavigate: (view: { type: 'install'; modpack: any; versions: any[]; platform: 'curseforge' | 'modrinth' } | { type: 'importPreview'; filePath: string }) => void;
+function isActivationKey(key: string) {
+  return key === 'Enter' || key === ' ';
 }
 
-export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNavigate }) => {
+interface ModpackBrowserProps {
+  initialState: ModpackBrowserState;
+  onBack: () => void;
+  onNavigate: (
+    view:
+      | { type: 'install'; modpack: ModpackSearchResultItem; versions: ModpackVersionDescriptor[]; platform: 'curseforge' | 'modrinth' }
+      | { type: 'importPreview'; filePath: string }
+  ) => void;
+  onStateChange: (state: ModpackBrowserState) => void;
+}
+
+const MODPACK_FAVORITES_STORAGE_KEY = 'modpack-favorites';
+const MODPACK_HISTORY_STORAGE_KEY = 'modpack-history';
+
+function getModpackIdentity(modpack: Pick<ModpackSearchResultItem, 'projectId' | 'platform'>): string {
+  return `${modpack.platform}:${modpack.projectId}`;
+}
+
+export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, onBack, onNavigate, onStateChange }) => {
   const { t, getAccentStyles } = useSettings();
-  const [platform, setPlatform] = useState<Platform>('modrinth');
-  const [query, setQuery] = useState('');
+  const [platform, setPlatform] = useState<Platform>(initialState.platform);
+  const [query, setQuery] = useState(initialState.query);
   const [searchResults, setSearchResults] = useState<ModpackSearchResultItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [, setSelectedModpack] = useState<ModpackSearchResultItem | null>(null);
   const [, setVersions] = useState<ModpackVersionDescriptor[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('popularity');
-  const [filterMCVersion, setFilterMCVersion] = useState<FilterMCVersion>('all');
-  const [filterLoader, setFilterLoader] = useState<FilterLoader>('all');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<SortOption>(initialState.sortBy);
+  const [filterMCVersion, setFilterMCVersion] = useState<FilterMCVersion>(initialState.filterMCVersion);
+  const [filterLoader, setFilterLoader] = useState<FilterLoader>(initialState.filterLoader);
+  const [currentPage, setCurrentPage] = useState(initialState.currentPage);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [totalResults, setTotalResults] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     const saved = localStorage.getItem('modpack-items-per-page');
-    return saved ? Number(saved) : 12;
+    if (!saved) {
+      return initialState.itemsPerPage;
+    }
+
+    if (initialState.itemsPerPage !== DEFAULT_MODPACK_BROWSER_STATE.itemsPerPage) {
+      return initialState.itemsPerPage;
+    }
+
+    const parsed = Number(saved);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : initialState.itemsPerPage;
   });
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(initialState.showHistory);
   const [history, setHistory] = useState<ModpackSearchResultItem[]>([]);
+  const didHydratePageResetRef = useRef(false);
+
+  const browserState = useMemo<ModpackBrowserState>(() => ({
+    platform,
+    query,
+    sortBy,
+    filterMCVersion,
+    filterLoader,
+    currentPage,
+    itemsPerPage,
+    showHistory,
+  }), [platform, query, sortBy, filterMCVersion, filterLoader, currentPage, itemsPerPage, showHistory]);
+
+  useEffect(() => {
+    onStateChange(browserState);
+  }, [browserState, onStateChange]);
 
   // Load favorites from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('modpack-favorites');
+    const saved = localStorage.getItem(MODPACK_FAVORITES_STORAGE_KEY);
     if (saved) {
       try {
         setFavorites(new Set(JSON.parse(saved)));
@@ -55,10 +98,14 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
     }
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem('modpack-items-per-page', String(itemsPerPage));
+  }, [itemsPerPage]);
+
   // Load history
   useEffect(() => {
     try {
-      const savedHistory = localStorage.getItem('modpack-history');
+      const savedHistory = localStorage.getItem(MODPACK_HISTORY_STORAGE_KEY);
       if (savedHistory) {
         setHistory(JSON.parse(savedHistory));
       }
@@ -69,37 +116,46 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
 
   const addToHistory = useCallback((modpack: ModpackSearchResultItem) => {
     setHistory(prev => {
-      const filtered = prev.filter(p => p.projectId !== modpack.projectId);
+      const filtered = prev.filter((candidate) => getModpackIdentity(candidate) !== getModpackIdentity(modpack));
       const newHistory = [modpack, ...filtered].slice(0, 50);
-      localStorage.setItem('modpack-history', JSON.stringify(newHistory));
+      localStorage.setItem(MODPACK_HISTORY_STORAGE_KEY, JSON.stringify(newHistory));
       return newHistory;
     });
   }, []);
 
   const clearHistory = useCallback(() => {
     setHistory([]);
-    localStorage.removeItem('modpack-history');
+    localStorage.removeItem(MODPACK_HISTORY_STORAGE_KEY);
   }, []);
 
   const handleItemsPerPageChange = (val: number) => {
     setItemsPerPage(val);
-    localStorage.setItem('modpack-items-per-page', String(val));
     setCurrentPage(1);
   };
 
   // Save favorites to localStorage
   const saveFavorites = useCallback((newFavorites: Set<string>) => {
     setFavorites(newFavorites);
-    localStorage.setItem('modpack-favorites', JSON.stringify(Array.from(newFavorites)));
+    localStorage.setItem(MODPACK_FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(newFavorites)));
   }, []);
 
-  const toggleFavorite = useCallback((projectId: string) => {
+  const isFavorite = useCallback((modpack: Pick<ModpackSearchResultItem, 'projectId' | 'platform'>) => {
+    const identity = getModpackIdentity(modpack);
+    return favorites.has(identity) || favorites.has(modpack.projectId);
+  }, [favorites]);
+
+  const toggleFavorite = useCallback((modpack: Pick<ModpackSearchResultItem, 'projectId' | 'platform'>) => {
     const newFavorites = new Set(favorites);
-    if (newFavorites.has(projectId)) {
-      newFavorites.delete(projectId);
+    const identity = getModpackIdentity(modpack);
+
+    if (newFavorites.has(identity) || newFavorites.has(modpack.projectId)) {
+      newFavorites.delete(identity);
+      newFavorites.delete(modpack.projectId);
     } else {
-      newFavorites.add(projectId);
+      newFavorites.delete(modpack.projectId);
+      newFavorites.add(identity);
     }
+
     saveFavorites(newFavorites);
   }, [favorites, saveFavorites]);
 
@@ -153,6 +209,11 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
 
   useEffect(() => {
     // Сбрасываем на первую страницу при изменении фильтров
+    if (!didHydratePageResetRef.current) {
+      didHydratePageResetRef.current = true;
+      return;
+    }
+
     setCurrentPage(1);
   }, [debouncedQuery, platform, filterMCVersion, filterLoader, sortBy]);
 
@@ -161,27 +222,28 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
     searchModpacks();
   }, [debouncedQuery, platform, filterMCVersion, filterLoader, sortBy, currentPage, searchModpacks]);
 
-  const handleModpackClick = async (modpack: ModpackSearchResultItem) => {
+  const handleModpackClick = useCallback(async (modpack: ModpackSearchResultItem) => {
     addToHistory(modpack);
     setSelectedModpack(modpack);
     setLoading(true);
     try {
       let versionsList: ModpackVersionDescriptor[];
+      const modpackPlatform = modpack.platform;
 
-      if (platform === 'curseforge') {
+      if (modpackPlatform === 'curseforge') {
         versionsList = await modpacksIPC.getCurseForgeVersions(Number(modpack.projectId));
       } else {
         versionsList = await modpacksIPC.getModrinthVersions(modpack.projectId);
       }
 
       setVersions(versionsList);
-      onNavigate({ type: 'install', modpack, versions: versionsList, platform });
+      onNavigate({ type: 'install', modpack, versions: versionsList, platform: modpackPlatform });
     } catch (error) {
       console.error('Error loading versions:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToHistory, onNavigate]);
 
   // Results are already sorted and filtered by the API
   // Pagination is handled by the API as well
@@ -207,6 +269,15 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
     }
   };
 
+  const handleCardKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>, modpack: ModpackSearchResultItem) => {
+    if (!isActivationKey(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    void handleModpackClick(modpack);
+  }, [handleModpackClick]);
+
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -225,30 +296,40 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
           {t('modpacks.browser')}
         </h2>
         <div className="flex gap-2 shrink-0 items-center">
-          <button
-            onClick={() => setPlatform('curseforge')}
-            disabled
-            className={cn(
-              "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
-              "bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-500",
-              "cursor-not-allowed opacity-60"
-            )}
-            title={t('modpacks.curseforge_wip') || 'CurseForge в разработке'}
-          >
-            {t('modpacks.platform_curseforge')} (WIP)
-          </button>
-          <button
-            onClick={() => setPlatform('modrinth')}
-            className={cn(
-              "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
-              platform === 'modrinth'
-                ? cn("text-white", getAccentStyles('bg').className)
-                : "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-            )}
-            style={platform === 'modrinth' ? getAccentStyles('bg').style : undefined}
-          >
-            {t('modpacks.platform_modrinth')}
-          </button>
+          <div role="tablist" aria-label={t('modpacks.browser')} className="flex gap-2">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={platform === 'curseforge'}
+              tabIndex={platform === 'curseforge' ? 0 : -1}
+              onClick={() => setPlatform('curseforge')}
+              disabled
+              className={cn(
+                "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
+                "bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-500",
+                "cursor-not-allowed opacity-60"
+              )}
+              title={t('modpacks.curseforge_wip') || 'CurseForge в разработке'}
+            >
+              {t('modpacks.platform_curseforge')} (WIP)
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={platform === 'modrinth'}
+              tabIndex={platform === 'modrinth' ? 0 : -1}
+              onClick={() => setPlatform('modrinth')}
+              className={cn(
+                "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
+                platform === 'modrinth'
+                  ? cn("text-white", getAccentStyles('bg').className)
+                  : "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+              )}
+              style={platform === 'modrinth' ? getAccentStyles('bg').style : undefined}
+            >
+              {t('modpacks.platform_modrinth')}
+            </button>
+          </div>
           <Button
             variant="secondary"
             size="sm"
@@ -261,6 +342,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
             variant={showHistory ? 'primary' : 'secondary'}
             size="sm"
             onClick={() => setShowHistory(!showHistory)}
+            aria-pressed={showHistory}
             className="shrink-0 ml-2"
             title={t('modpacks.history_tooltip') || 'История просмотров'}
           >
@@ -272,11 +354,12 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
       <div className="flex-1 overflow-y-auto p-6 min-h-0 custom-scrollbar">
         {/* Search and Filters */}
         {!showHistory && (
-          <div className="mb-4 space-y-3">
+          <div className="mb-4 space-y-3" role="search" aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}>
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('modpacks.search_placeholder')}
+              aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
               className="w-full"
             />
 
@@ -284,6 +367,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
               <Select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
+                aria-label={t('modpacks.sort_popularity') || 'Sort modpacks'}
                 className="flex-1 min-w-[150px]"
               >
                 <option value="popularity">{t('modpacks.sort_popularity') || 'По популярности'}</option>
@@ -294,6 +378,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
               <Select
                 value={filterMCVersion}
                 onChange={(e) => setFilterMCVersion(e.target.value as FilterMCVersion)}
+                aria-label={t('modpacks.filter_all') || 'Filter by Minecraft version'}
                 className="flex-1 min-w-[150px]"
               >
                 <option value="all">{t('modpacks.filter_all') || 'Все версии MC'}</option>
@@ -307,6 +392,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
               <Select
                 value={filterLoader}
                 onChange={(e) => setFilterLoader(e.target.value as FilterLoader)}
+                aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
                 className="flex-1 min-w-[150px]"
               >
                 <option value="all">{t('modpacks.filter_all_loaders') || 'Все модлоадеры'}</option>
@@ -318,6 +404,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
               <Select
                 value={String(itemsPerPage)}
                 onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                aria-label={t('modpacks.items_per_page') || 'Items per page'}
                 className="w-[100px]"
                 title={t('modpacks.items_per_page') || 'Элементов на странице'}
               >
@@ -354,34 +441,52 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
                 {t('modpacks.no_history') || 'История просмотров пуста'}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="list" aria-label={t('modpacks.history') || 'Viewed modpacks'}>
                 {history.map((modpack) => (
                   <div
-                    key={modpack.projectId}
+                    key={getModpackIdentity(modpack)}
+                    role="listitem"
                     onClick={() => handleModpackClick(modpack)}
-                    className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors relative"
+                    className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors relative focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-zinc-900"
                   >
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      aria-label={modpack.title}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleModpackClick(modpack);
+                      }}
+                      onKeyDown={(event) => {
+                        void handleCardKeyDown(event, modpack);
+                      }}
+                      className="absolute inset-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                    />
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleFavorite(modpack.projectId);
+                        toggleFavorite(modpack);
                       }}
+                      aria-pressed={isFavorite(modpack)}
+                      aria-label={`${isFavorite(modpack) ? t('modpacks.remove_favorite') || 'Remove favorite' : t('modpacks.add_favorite') || 'Add favorite'}: ${modpack.title}`}
                       className="absolute top-2 right-2 p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                      title={favorites.has(modpack.projectId) ? t('modpacks.remove_favorite') || 'Удалить из избранного' : t('modpacks.add_favorite') || 'Добавить в избранное'}
+                      title={isFavorite(modpack) ? t('modpacks.remove_favorite') || 'Удалить из избранного' : t('modpacks.add_favorite') || 'Добавить в избранное'}
                     >
                       <span className={cn(
                         'text-lg',
-                        favorites.has(modpack.projectId) ? 'text-yellow-500' : 'text-zinc-400'
+                        isFavorite(modpack) ? 'text-yellow-500' : 'text-zinc-400'
                       )}>
-                        {favorites.has(modpack.projectId) ? '★' : '☆'}
+                        {isFavorite(modpack) ? '★' : '☆'}
                       </span>
                     </button>
                     <div className="flex gap-4">
                       {modpack.iconUrl && (
-                        <img
+                        <LazyImage
                           src={modpack.iconUrl}
                           alt={modpack.title}
                           className="w-16 h-16 rounded-lg object-cover"
+                          fallback="/icon.png"
                         />
                       )}
                       <div className="flex-1 min-w-0">
@@ -427,34 +532,52 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
 
         {!showHistory && !loading && paginatedResults.length > 0 && (
           <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" role="list" aria-label={t('modpacks.browser') || 'Modpack results'}>
               {paginatedResults.map((modpack) => (
-                <div
-                  key={modpack.projectId}
-                  onClick={() => handleModpackClick(modpack)}
-                  className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors relative"
-                >
+                  <div
+                    key={getModpackIdentity(modpack)}
+                    role="listitem"
+                    onClick={() => handleModpackClick(modpack)}
+                    className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors relative focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-zinc-900"
+                  >
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label={modpack.title}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      void handleModpackClick(modpack);
+                    }}
+                    onKeyDown={(event) => {
+                      void handleCardKeyDown(event, modpack);
+                    }}
+                    className="absolute inset-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                  />
                   <button
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggleFavorite(modpack.projectId);
+                      toggleFavorite(modpack);
                     }}
+                    aria-pressed={isFavorite(modpack)}
+                    aria-label={`${isFavorite(modpack) ? t('modpacks.remove_favorite') || 'Remove favorite' : t('modpacks.add_favorite') || 'Add favorite'}: ${modpack.title}`}
                     className="absolute top-2 right-2 p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                    title={favorites.has(modpack.projectId) ? t('modpacks.remove_favorite') || 'Удалить из избранного' : t('modpacks.add_favorite') || 'Добавить в избранное'}
+                    title={isFavorite(modpack) ? t('modpacks.remove_favorite') || 'Удалить из избранного' : t('modpacks.add_favorite') || 'Добавить в избранное'}
                   >
                     <span className={cn(
                       'text-lg',
-                      favorites.has(modpack.projectId) ? 'text-yellow-500' : 'text-zinc-400'
+                      isFavorite(modpack) ? 'text-yellow-500' : 'text-zinc-400'
                     )}>
-                      {favorites.has(modpack.projectId) ? '★' : '☆'}
+                      {isFavorite(modpack) ? '★' : '☆'}
                     </span>
                   </button>
                   <div className="flex gap-4">
                     {modpack.iconUrl && (
-                      <img
+                      <LazyImage
                         src={modpack.iconUrl}
                         alt={modpack.title}
                         className="w-16 h-16 rounded-lg object-cover"
+                        fallback="/icon.png"
                       />
                     )}
                     <div className="flex-1 min-w-0">

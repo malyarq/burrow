@@ -1,6 +1,8 @@
 import { shell } from 'electron';
-import path from 'path';
-import fs from 'fs/promises';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+import { assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
+import { resolveScreenshotsDir } from '../instances/paths';
 
 
 export interface Screenshot {
@@ -15,7 +17,12 @@ export class ScreenshotService {
     constructor() { }
 
     private getScreenshotsDir(instancePath: string): string {
-        return path.join(instancePath, 'screenshots');
+        return resolveScreenshotsDir(instancePath);
+    }
+
+    private hasSupportedImageExtension(fileName: string): boolean {
+        const lowerName = fileName.toLowerCase();
+        return lowerName.endsWith('.png') || lowerName.endsWith('.jpg');
     }
 
     async listScreenshots(instancePath: string): Promise<Screenshot[]> {
@@ -30,10 +37,11 @@ export class ScreenshotService {
         const screenshots: Screenshot[] = [];
 
         for (const file of files) {
-            if (!file.toLowerCase().endsWith('.png') && !file.toLowerCase().endsWith('.jpg')) continue;
+            if (!this.hasSupportedImageExtension(file)) continue;
 
-            const filePath = path.join(dir, file);
+            let filePath: string;
             try {
+                filePath = resolvePathWithinRoot(dir, file, 'Screenshot path');
                 const stats = await fs.stat(filePath);
                 screenshots.push({
                     name: file,
@@ -52,21 +60,28 @@ export class ScreenshotService {
 
     async deleteScreenshot(instancePath: string, filename: string): Promise<void> {
         const dir = this.getScreenshotsDir(instancePath);
-        const filePath = path.join(dir, filename);
+        const safeFileName = assertChildName(filename, 'Screenshot name');
+        const filePath = resolvePathWithinRoot(dir, safeFileName, 'Screenshot path');
         await fs.unlink(filePath);
     }
 
     async renameScreenshot(instancePath: string, oldName: string, newName: string): Promise<void> {
         const dir = this.getScreenshotsDir(instancePath);
-        const oldPath = path.join(dir, oldName);
-        const newPath = path.join(dir, newName);
+        const safeOldName = assertChildName(oldName, 'Screenshot name');
+        const safeRequestedName = assertChildName(newName, 'Screenshot name');
+        const oldPath = resolvePathWithinRoot(dir, safeOldName, 'Screenshot path');
+        let normalizedNewName = safeRequestedName;
 
         // Simple validation
-        if (!newName.toLowerCase().endsWith('.png') && !newName.toLowerCase().endsWith('.jpg')) {
-            if (oldName.endsWith('.png') && !newName.endsWith('.png')) newName += '.png';
-            if (oldName.endsWith('.jpg') && !newName.endsWith('.jpg')) newName += '.jpg';
+        if (!this.hasSupportedImageExtension(normalizedNewName)) {
+            const oldExtension = path.extname(safeOldName);
+            if (oldExtension === '.png' || oldExtension === '.jpg') {
+                normalizedNewName += oldExtension;
+            }
         }
 
+        const safeNewName = assertChildName(normalizedNewName, 'Screenshot name');
+        const newPath = resolvePathWithinRoot(dir, safeNewName, 'Screenshot path');
         await fs.rename(oldPath, newPath);
     }
 

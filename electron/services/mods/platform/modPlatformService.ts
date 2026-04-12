@@ -455,6 +455,19 @@ export class ModPlatformService {
       }
     }
 
+    const facetsJson = JSON.stringify(facets);
+    const mapSearchHit = (hit: Awaited<ReturnType<ModrinthV2Client['searchProjects']>>['hits'][number]) => ({
+      platform: 'modrinth' as const,
+      projectId: hit.project_id,
+      slug: hit.slug,
+      title: hit.title,
+      description: hit.description,
+      iconUrl: hit.icon_url,
+      downloads: hit.downloads,
+      dateCreated: hit.date_created,
+      dateModified: hit.date_modified,
+    });
+
     // Map sort option to Modrinth index
     let index: string;
     switch (sort) {
@@ -470,42 +483,58 @@ export class ModPlatformService {
         break;
     }
 
-    // For alphabetical sorting, we need to fetch more results and sort them
-    // Modrinth API doesn't support alphabetical sorting directly
-    const fetchLimit = sort === 'alphabetical' ? Math.min(limit * 10, 100) : limit;
+    if (sort === 'alphabetical') {
+      const pageSize = 100;
+      const allHits: Awaited<ReturnType<ModrinthV2Client['searchProjects']>>['hits'] = [];
+      let nextOffset = 0;
+      let totalHits = 0;
+
+      while (nextOffset === 0 || nextOffset < totalHits) {
+        const page = await this.modrinth.searchProjects({
+          query,
+          facets: facetsJson,
+          index,
+          offset: nextOffset,
+          limit: pageSize,
+        });
+
+        totalHits = page.total_hits;
+        allHits.push(...page.hits);
+
+        if (page.hits.length === 0) {
+          break;
+        }
+
+        nextOffset += page.hits.length;
+      }
+
+      const items = allHits
+        .map(mapSearchHit)
+        .sort((left, right) => left.title.localeCompare(right.title))
+        .slice(offset, offset + limit);
+
+      return {
+        items,
+        total: totalHits,
+        offset,
+        limit,
+      };
+    }
 
     const result = await this.modrinth.searchProjects({
       query,
-      facets: JSON.stringify(facets),
+      facets: facetsJson,
       index,
-      offset: sort === 'alphabetical' ? 0 : offset, // For alphabetical, we fetch from start
-      limit: fetchLimit,
+      offset,
+      limit,
     });
 
-    let items = result.hits.map((h) => ({
-      platform: 'modrinth' as const,
-      projectId: h.project_id,
-      slug: h.slug,
-      title: h.title,
-      description: h.description,
-      iconUrl: h.icon_url,
-      downloads: h.downloads,
-      dateCreated: h.date_created,
-      dateModified: h.date_modified,
-    }));
-
-    // Apply alphabetical sorting if needed
-    if (sort === 'alphabetical') {
-      items.sort((a, b) => a.title.localeCompare(b.title));
-      // Apply pagination after sorting
-      const start = offset;
-      items = items.slice(start, start + limit);
-    }
+    const items = result.hits.map(mapSearchHit);
 
     return {
       items,
       total: result.total_hits,
-      offset: sort === 'alphabetical' ? offset : result.offset,
+      offset: result.offset,
       limit: result.limit,
     };
   }
@@ -548,4 +577,3 @@ export class ModPlatformService {
     return this.modrinth;
   }
 }
-

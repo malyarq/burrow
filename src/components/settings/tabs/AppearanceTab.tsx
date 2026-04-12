@@ -6,6 +6,7 @@ import { Input } from '../../ui/Input';
 import { Button } from '../../ui/Button';
 import { Select } from '../../ui/Select';
 import { THEME_PRESETS } from '../../../contexts/settings/theme-presets';
+import type { CustomThemeConfig } from '../../../contexts/settings/types';
 
 const COLORS = [
   { id: 'emerald', class: 'bg-emerald-500', ring: 'ring-emerald-500' },
@@ -14,6 +15,16 @@ const COLORS = [
   { id: 'orange', class: 'bg-orange-500', ring: 'ring-orange-500' },
   { id: 'rose', class: 'bg-rose-500', ring: 'ring-rose-500' },
 ] as const;
+
+type BackgroundConfig = NonNullable<CustomThemeConfig['background']>;
+type BackgroundParticlesConfig = NonNullable<BackgroundConfig['particles']>;
+type BackgroundParticleType = NonNullable<BackgroundParticlesConfig['type']>;
+type BackgroundType = NonNullable<BackgroundConfig['type']>;
+type BackgroundPosition = NonNullable<BackgroundConfig['position']>;
+
+const BACKGROUND_TYPES: readonly BackgroundType[] = ['image', 'video', 'particles'];
+const BACKGROUND_POSITIONS: readonly BackgroundPosition[] = ['cover', 'contain', 'center', 'repeat'];
+const BACKGROUND_PARTICLE_TYPES: readonly BackgroundParticleType[] = ['stars', 'snow', 'rain'];
 
 export const AppearanceTab: React.FC = () => {
   const {
@@ -45,7 +56,7 @@ export const AppearanceTab: React.FC = () => {
     });
   };
 
-  const updateBackground = (key: keyof NonNullable<typeof customTheme.background>, value: any) => {
+  const updateBackground = <K extends keyof BackgroundConfig>(key: K, value: BackgroundConfig[K]) => {
     setCustomTheme({
       ...customTheme,
       background: {
@@ -86,12 +97,20 @@ export const AppearanceTab: React.FC = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const json = JSON.parse(event.target?.result as string);
-        if (json.config) {
-          setCustomTheme(json.config);
+        if (typeof event.target?.result !== 'string') {
+          return;
         }
-        if (json.theme && (json.theme === 'light' || json.theme === 'dark')) {
-          setTheme(json.theme);
+
+        const parsed = JSON.parse(event.target.result) as Partial<{
+          config: CustomThemeConfig;
+          theme: 'light' | 'dark';
+        }>;
+
+        if (parsed.config) {
+          setCustomTheme(parsed.config);
+        }
+        if (parsed.theme === 'light' || parsed.theme === 'dark') {
+          setTheme(parsed.theme);
         }
       } catch (error) {
         console.error("Failed to parse theme file", error);
@@ -306,7 +325,12 @@ export const AppearanceTab: React.FC = () => {
             </label>
             <Select
               value={customTheme.background?.type || 'image'}
-              onChange={(e) => updateBackground('type', e.target.value)}
+              onChange={(e) => {
+                const nextType = e.target.value as BackgroundType;
+                if (BACKGROUND_TYPES.includes(nextType)) {
+                  updateBackground('type', nextType);
+                }
+              }}
             >
               <option value="image">Image</option>
               <option value="video">Video</option>
@@ -408,7 +432,15 @@ export const AppearanceTab: React.FC = () => {
                   onChange={(e) => {
                     setCustomTheme({
                       ...customTheme,
-                      background: { ...customTheme.background, particles: { ...customTheme.background?.particles, type: e.target.value as any } }
+                      background: {
+                        ...customTheme.background,
+                        particles: {
+                          ...customTheme.background?.particles,
+                          type: BACKGROUND_PARTICLE_TYPES.includes(e.target.value as BackgroundParticleType)
+                            ? (e.target.value as BackgroundParticleType)
+                            : 'stars',
+                        },
+                      }
                     });
                   }}
                 >
@@ -498,7 +530,12 @@ export const AppearanceTab: React.FC = () => {
                 </label>
                 <Select
                   value={customTheme.background?.position || 'cover'}
-                  onChange={(e) => updateBackground('position', e.target.value)}
+                  onChange={(e) => {
+                    const nextPosition = e.target.value as BackgroundPosition;
+                    if (BACKGROUND_POSITIONS.includes(nextPosition)) {
+                      updateBackground('position', nextPosition);
+                    }
+                  }}
                 >
                   <option value="cover">Cover (Stretch)</option>
                   <option value="contain">Contain (Fit)</option>

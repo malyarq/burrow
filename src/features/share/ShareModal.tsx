@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Share2, Copy, Check } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { shareIPC } from '../../services/ipc/shareIPC';
 
 interface ShareModalProps {
     isOpen: boolean;
@@ -15,24 +16,53 @@ interface ShareModalProps {
 export function ShareModal({ isOpen, onClose, modpackId }: ShareModalProps) {
     const { t } = useSettings();
     const [code, setCode] = useState<string>('');
-    const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [loadedForId, setLoadedForId] = useState<string | null>(null);
+
+    const loading = isOpen && Boolean(modpackId) && loadedForId !== modpackId && !error;
 
     useEffect(() => {
-        if (isOpen && modpackId) {
-            setLoading(true);
-            setError(null);
-            window.api.share.generateCode(modpackId)
-                .then(setCode)
-                .catch(err => {
-                     
-                    console.error(err);
-                    setError(t('share.error_desc') || 'Ошибка генерации кода');
-                })
-                .finally(() => setLoading(false));
+        if (!isOpen || !modpackId || loadedForId === modpackId) {
+            return;
         }
-    }, [isOpen, modpackId, t]);
+
+        let isActive = true;
+
+        void shareIPC.generateCode(modpackId)
+                .then((nextCode) => {
+                    if (!isActive) {
+                        return;
+                    }
+
+                    setCode(nextCode);
+                    setError(null);
+                    setLoadedForId(modpackId);
+                })
+                .catch((err: unknown) => {
+                    if (!isActive) {
+                        return;
+                    }
+
+                    console.error(err);
+                    setCode('');
+                    setError(err instanceof Error ? err.message : (t('share.generateError') || t('share.error_desc') || 'Ошибка генерации кода'));
+                    setLoadedForId(modpackId);
+                })
+        ;
+
+        return () => {
+            isActive = false;
+        };
+    }, [isOpen, loadedForId, modpackId, t]);
+
+    const handleClose = () => {
+        setCode('');
+        setCopied(false);
+        setError(null);
+        setLoadedForId(null);
+        onClose();
+    };
 
     const handleCopy = () => {
         if (code) {
@@ -45,7 +75,7 @@ export function ShareModal({ isOpen, onClose, modpackId }: ShareModalProps) {
     return (
         <Modal
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             title={
                 <div className="flex items-center gap-2">
                     <Share2 className="w-5 h-5" />

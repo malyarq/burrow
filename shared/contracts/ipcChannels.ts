@@ -11,7 +11,6 @@
 export const allowedIpcChannels = [
   // window controls
   'window:minimize',
-  'window:minimize',
   'window:close',
   'window:openConsole',
   'window:closeConsole',
@@ -26,6 +25,7 @@ export const allowedIpcChannels = [
   'launcher:clearCache',
   'launcher:reload',
   'launcher:killAndRestart',
+  'launcher:stdin',
 
   // launcher events
   'launcher:log',
@@ -78,6 +78,12 @@ export const allowedIpcChannels = [
   // assets
   'assets:getIconPath',
 
+  // cache
+  'cache:getImageState',
+  'cache:setImageLimit',
+  'cache:cleanupImage',
+  'cache:resolveImage',
+
   // instance updater (manifest sync)
   'updater:sync',
   'updater:progress',
@@ -123,7 +129,11 @@ export const allowedIpcChannels = [
   'modpacks:updateOverrides',
   'modpacks:getMods',
   'modpacks:backup',
+  'modpacks:createFromManifest',
+  'modpacks:cleanupContent',
+  'modpacks:getContentStats',
   'modpacks:resolvePath',
+  'modpacks:scanJava',
 
   // modpacks events
   'modpacks:updateProgress',
@@ -163,6 +173,44 @@ export const allowedIpcChannels = [
 
   // app
   'app:saveFile',
+
+  // accounts
+  'account:getAccounts',
+  'account:getSelectedAccount',
+  'account:addOffline',
+  'account:addThirdParty',
+  'account:getSkinState',
+  'account:refreshSkinState',
+  'account:removeAccount',
+  'account:selectAccount',
+
+  // mirrors
+  'mirrors:getMirrors',
+  'mirrors:getSelectedMirror',
+  'mirrors:addCustomMirror',
+  'mirrors:removeMirror',
+  'mirrors:selectMirror',
+  'mirrors:moveMirror',
+  'mirrors:testSpeed',
+  'mirrors:setAutoSelect',
+  'mirrors:isAutoSelectEnabled',
+
+  // screenshots
+  'screenshots:list',
+  'screenshots:delete',
+  'screenshots:rename',
+  'screenshots:openFolder',
+
+  // sharing
+  'share:generateCode',
+  'share:importCode',
+
+  // statistics
+  'stats:get',
+  'stats:export',
+
+  // external links
+  'externalLinks:open',
 ] as const;
 
 export type AllowedIpcChannel = typeof allowedIpcChannels[number];

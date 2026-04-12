@@ -205,7 +205,7 @@ export class ContentManager {
                         if (fs.readdirSync(fullPath).length === 0) {
                             fs.rmdirSync(fullPath);
                         }
-                    } catch (e) {
+                    } catch {
                         // Ignore
                     }
                 } else if (entry.isFile()) {
@@ -232,4 +232,3 @@ export class ContentManager {
         return { freedSize, deletedFiles };
     }
 }
-

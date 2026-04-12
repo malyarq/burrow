@@ -2,7 +2,14 @@ import path from 'node:path';
 import type { Dispatcher } from 'undici';
 import { DefaultRangePolicy } from '@xmcl/file-transfer';
 import { getVersionList, type MinecraftVersionList } from '@xmcl/installer';
-import { BMCL_ROOT, getProviderById, type DownloadProvider, type DownloadProviderId } from '../mirrors/providers';
+import {
+  BMCL_ROOT,
+  createProviderForMirror,
+  getProviderById,
+  PriorityProvider,
+  type DownloadProvider,
+  type DownloadProviderId,
+} from '../mirrors/providers';
 import { reportMirrorFailure, reportMirrorSuccess } from '../mirrors/scoring';
 import { DEFAULT_USER_AGENT } from '@shared/constants';
 import type { LibraryEntry, VersionEntry } from '@shared/types';
@@ -25,14 +32,18 @@ export class RuntimeDownloadService {
   }
 
   public getDownloadProvider(providerId?: DownloadProviderId): DownloadProvider {
-    // If providerId matches a custom mirror in MirrorsService, use it
-    if (this.mirrorsService && providerId) {
-      const mirror = this.mirrorsService.getMirrors().find(m => m.id === providerId);
-      if (mirror && mirror.type === 'custom') {
-        return getProviderById(providerId, mirror.rootUrl);
+    if (providerId && providerId !== 'auto') {
+      return getProviderById(providerId);
+    }
+
+    if (this.mirrorsService) {
+      const preferredMirrors = this.mirrorsService.getPreferredMirrors();
+      if (preferredMirrors.length > 0) {
+        return new PriorityProvider(preferredMirrors.map((mirror) => createProviderForMirror(mirror)));
       }
     }
-    return getProviderById(providerId ?? 'auto');
+
+    return getProviderById('auto');
   }
 
   /**
@@ -211,4 +222,3 @@ export class RuntimeDownloadService {
     };
   }
 }
-

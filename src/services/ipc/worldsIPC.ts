@@ -8,14 +8,10 @@ export const worldsIPC: WorldsAPI = {
     delete: (folderName, instancePath) => ipc().invoke('worlds:delete', folderName, instancePath),
     backup: (folderName, instancePath) => ipc().invoke('worlds:backup', folderName, instancePath),
     duplicate: (folderName, instancePath) => ipc().invoke('worlds:duplicate', folderName, instancePath),
-    getWorldPath: (folderName, instancePath) => {
-        // This is a sync function on the backend, but we'll handle it via invoke
-        ipc().invoke('worlds:openFolder', folderName, instancePath);
-        return ''; // The backend opens the folder directly
-    },
+    openFolder: (folderName, instancePath) => ipc().invoke('worlds:openFolder', folderName, instancePath),
 };
 
 // Add a dedicated openFolder function
 export const openWorldFolder = (folderName: string, instancePath: string) => {
-    return ipc().invoke('worlds:openFolder', folderName, instancePath);
+    return worldsIPC.openFolder(folderName, instancePath);
 };

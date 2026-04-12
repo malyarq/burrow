@@ -5,6 +5,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
+import { LazyImage } from '../ui/LazyImage';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { cn } from '../../utils/cn';
@@ -350,10 +351,11 @@ export const AddModModal: React.FC<AddModModalProps> = ({
                     className="mt-1 w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 focus:ring-2 focus:ring-zinc-500"
                   />
                   {mod.iconUrl && (
-                    <img
+                    <LazyImage
                       src={mod.iconUrl}
                       alt={mod.title}
                       className="w-12 h-12 rounded object-cover shrink-0"
+                      fallback="/icon.png"
                     />
                   )}
                   <div className="flex-1 min-w-0">

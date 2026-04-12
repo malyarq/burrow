@@ -1,5 +1,6 @@
-import path from 'node:path';
 import fs from 'node:fs/promises';
+import { assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
+import { resolveApprovedInstancePath, resolveShaderPacksDir } from '../instances/paths';
 
 export interface ShaderPack {
     fileName: string;
@@ -12,14 +13,18 @@ export class ShadersService {
      * Get the shaderpacks directory path for an instance.
      */
     private getShaderPacksDir(instancePath: string): string {
-        return path.join(instancePath, 'shaderpacks');
+        return resolveShaderPacksDir(instancePath);
     }
 
     /**
      * Get the optionsshaders.txt path for an instance.
      */
     private getOptionsPath(instancePath: string): string {
-        return path.join(instancePath, 'optionsshaders.txt');
+        return resolvePathWithinRoot(
+            resolveApprovedInstancePath(instancePath),
+            'optionsshaders.txt',
+            'Shader options path',
+        );
     }
 
     /**
@@ -46,6 +51,9 @@ export class ShadersService {
      * @param shaderName The shader filename, or "(internal)" for no shader.
      */
     async setActiveShader(shaderName: string, instancePath: string): Promise<void> {
+        const safeShaderName = shaderName === '(internal)'
+            ? shaderName
+            : assertChildName(shaderName, 'Shader pack name');
         const optionsPath = this.getOptionsPath(instancePath);
         let content = '';
 
@@ -56,7 +64,7 @@ export class ShadersService {
             content = '';
         }
 
-        const shaderPackLine = `shaderPack=${shaderName}`;
+        const shaderPackLine = `shaderPack=${safeShaderName}`;
 
         if (content.match(/^shaderPack=.+$/m)) {
             // Replace existing line
@@ -87,8 +95,19 @@ export class ShadersService {
         const packs: ShaderPack[] = [];
 
         for (const entry of entries) {
-            const entryPath = path.join(shaderDir, entry);
-            const stat = await fs.stat(entryPath);
+            let entryPath: string;
+            try {
+                entryPath = resolvePathWithinRoot(shaderDir, entry, 'Shader pack path');
+            } catch {
+                continue;
+            }
+
+            let stat;
+            try {
+                stat = await fs.stat(entryPath);
+            } catch {
+                continue;
+            }
 
             // Shaders can be .zip files or directories
             if (stat.isFile() && entry.endsWith('.zip')) {
@@ -114,7 +133,8 @@ export class ShadersService {
      */
     async delete(fileName: string, instancePath: string): Promise<void> {
         const shaderDir = this.getShaderPacksDir(instancePath);
-        const filePath = path.join(shaderDir, fileName);
+        const safeFileName = assertChildName(fileName, 'Shader pack name');
+        const filePath = resolvePathWithinRoot(shaderDir, safeFileName, 'Shader pack path');
 
         const stat = await fs.stat(filePath);
         if (stat.isDirectory()) {

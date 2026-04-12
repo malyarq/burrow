@@ -8,7 +8,7 @@ export class DownloadQueue {
     private queue: Array<{
         task: DownloadTask;
         resolve: () => void;
-        reject: (err: any) => void
+        reject: (err: unknown) => void
     }> = [];
 
     private active = new Set<string>();

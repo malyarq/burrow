@@ -1,9 +1,68 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import AdmZip from 'adm-zip';
+import { assertAbsolutePath, assertRelativePath, resolvePathWithinRoot } from '../../../security/pathGuards';
+import { resolveApprovedInstancePath, resolveLauncherRootPath } from '../paths';
 import { ModpackService } from '../instanceService';
 import { ModpackService as AdvancedModpackService } from '../../modpacks/modpackService';
 import type { ModLoaderType } from '../types';
+
+type ZipEntry = ReturnType<AdmZip['getEntries']>[number];
+
+type MultiMCComponent = {
+    uid?: string;
+    version?: string;
+};
+
+type MultiMCExtractionTask = {
+    entry: ZipEntry;
+    relativePath: string;
+};
+
+function normalizeArchiveRelativePath(value: string, label: string): string {
+    const trimmedValue = value.replace(/[\\/]+$/, '');
+    if (!trimmedValue) {
+        throw new Error(`${label} must stay inside the launcher root`);
+    }
+
+    return assertRelativePath(trimmedValue, label).split(path.sep).join('/');
+}
+
+function asMultiMCComponents(value: unknown): MultiMCComponent[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value.filter((component): component is MultiMCComponent => (
+        typeof component === 'object'
+        && component !== null
+    ));
+}
+
+function findComponent(components: MultiMCComponent[], uid: string): MultiMCComponent | undefined {
+    return components.find((component) => component.uid === uid);
+}
+
+function collectMultiMCExtractionTasks(zip: AdmZip, zipRoot: string): MultiMCExtractionTask[] {
+    const minecraftPrefix = zipRoot ? `${zipRoot}/.minecraft/` : '.minecraft/';
+    const tasks: MultiMCExtractionTask[] = [];
+
+    for (const entry of zip.getEntries()) {
+        const normalizedEntryPath = normalizeArchiveRelativePath(entry.entryName, 'Archive entry path');
+        if (!normalizedEntryPath.startsWith(minecraftPrefix)) {
+            continue;
+        }
+
+        const relativePath = normalizedEntryPath.substring(minecraftPrefix.length);
+        if (!relativePath || entry.isDirectory) {
+            continue;
+        }
+
+        tasks.push({ entry, relativePath });
+    }
+
+    return tasks;
+}
 
 export class InstanceImporterService {
     constructor(
@@ -20,26 +79,29 @@ export class InstanceImporterService {
         filePath: string,
         targetName?: string
     ): Promise<string> {
-        if (!fs.existsSync(filePath)) {
-            throw new Error(`File not found: ${filePath}`);
+        const safeRootPath = resolveLauncherRootPath(rootPath);
+        const safeFilePath = assertAbsolutePath(filePath, 'Modpack import path');
+
+        if (!fs.existsSync(safeFilePath)) {
+            throw new Error(`File not found: ${safeFilePath}`);
         }
 
-        const ext = path.extname(filePath).toLowerCase();
+        const ext = path.extname(safeFilePath).toLowerCase();
 
         // Check if it's a MultiMC/Prism zip
-        const zip = new AdmZip(filePath);
+        const zip = new AdmZip(safeFilePath);
         const mmcPack = zip.getEntry('mmc-pack.json');
         // Also check if found deeper
         const mmcPackDeep = zip.getEntries().find(e => e.entryName.endsWith('mmc-pack.json') && !e.entryName.includes('__MACOSX'));
 
         if (mmcPack || mmcPackDeep) {
-            return this.importMultiMC(rootPath, zip, targetName || path.basename(filePath, ext));
+            return this.importMultiMC(safeRootPath, zip, targetName || path.basename(safeFilePath, ext));
         }
 
         // Check if it's a CurseForge/Modrinth modpack
-        const format = this.advancedModpackService.getModpackInfoFromFile(filePath).format;
+        const format = this.advancedModpackService.getModpackInfoFromFile(safeFilePath).format;
         if (format) {
-            const result = await this.advancedModpackService.importModpack(rootPath, filePath, undefined);
+            const result = await this.advancedModpackService.importModpack(safeRootPath, safeFilePath, undefined);
             return result.id;
         }
 
@@ -59,68 +121,64 @@ export class InstanceImporterService {
             const found = zip.getEntries().find(e => e.entryName.endsWith('mmc-pack.json') && !e.entryName.includes('__MACOSX'));
             if (found) {
                 mmcPackEntry = found;
-                zipRoot = path.dirname(found.entryName);
+                const normalizedManifestPath = normalizeArchiveRelativePath(found.entryName, 'MultiMC manifest path');
+                zipRoot = path.posix.dirname(normalizedManifestPath);
                 if (zipRoot === '.') zipRoot = '';
             } else {
                 throw new Error('Invalid MultiMC pack: missing mmc-pack.json');
             }
         }
 
-        // 1. Create new instance
-        const { id, config } = this.modpackService.createModpack(rootPath, name, {
-            runtime: { minecraft: '1.20.1', modLoader: undefined } // Temporary
-        });
+        const parsedPack: unknown = JSON.parse(mmcPackEntry.getData().toString('utf8'));
+        const mmcPack = typeof parsedPack === 'object' && parsedPack !== null
+            ? parsedPack as { components?: unknown }
+            : {};
 
-        const instanceDir = this.modpackService.getModpackDir(rootPath, id);
+        const components = asMultiMCComponents(mmcPack.components);
+        const mcComponent = findComponent(components, 'net.minecraft');
+        const forge = findComponent(components, 'net.minecraftforge');
+        const fabric = findComponent(components, 'net.fabricmc.fabric-loader');
+        const quilt = findComponent(components, 'org.quiltmc.quilt-loader');
+        const neoforge = findComponent(components, 'net.neoforged.neoforge');
+        const extractionTasks = collectMultiMCExtractionTasks(zip, zipRoot);
 
-        // 2. Parse mmc-pack.json
-        const mmcPack = JSON.parse(mmcPackEntry.getData().toString('utf8'));
+        let modLoader: { type: ModLoaderType; version?: string } | undefined;
+        if (forge) modLoader = { type: 'forge', version: forge.version };
+        if (fabric) modLoader = { type: 'fabric', version: fabric.version };
+        if (quilt) modLoader = { type: 'quilt', version: quilt.version };
+        if (neoforge) modLoader = { type: 'neoforge', version: neoforge.version };
 
-        const components = mmcPack.components || [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mcComponent = components.find((c: any) => c.uid === 'net.minecraft');
+        let createdModpackId: string | null = null;
 
-        if (mcComponent) {
-            config.runtime.minecraft = mcComponent.version;
-        }
+        try {
+            const { id } = this.modpackService.createModpack(rootPath, name, {
+                runtime: {
+                    minecraft: mcComponent?.version || '1.20.1',
+                    modLoader,
+                },
+            });
 
-        // Find modloader
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const forge = components.find((c: any) => c.uid === 'net.minecraftforge');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const fabric = components.find((c: any) => c.uid === 'net.fabricmc.fabric-loader');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const quilt = components.find((c: any) => c.uid === 'org.quiltmc.quilt-loader');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const neoforge = components.find((c: any) => c.uid === 'net.neoforged.neoforge');
+            createdModpackId = id;
 
-        if (forge) config.runtime.modLoader = { type: 'forge' as ModLoaderType, version: forge.version };
-        if (fabric) config.runtime.modLoader = { type: 'fabric' as ModLoaderType, version: fabric.version };
-        if (quilt) config.runtime.modLoader = { type: 'quilt' as ModLoaderType, version: quilt.version };
-        if (neoforge) config.runtime.modLoader = { type: 'neoforge' as ModLoaderType, version: neoforge.version };
+            const instanceDir = resolveApprovedInstancePath(this.modpackService.getModpackDir(rootPath, id));
 
-        this.modpackService.saveModpackConfig(rootPath, config);
-
-        // 3. Extract files
-        const entries = zip.getEntries();
-
-        let minecraftDirPrefix = '.minecraft/';
-        if (zipRoot) {
-            minecraftDirPrefix = `${zipRoot}/.minecraft/`;
-        }
-
-        for (const entry of entries) {
-            if (entry.isDirectory) continue;
-
-            if (entry.entryName.startsWith(minecraftDirPrefix)) {
-                const relPath = entry.entryName.substring(minecraftDirPrefix.length);
-                const targetPath = path.join(instanceDir, relPath);
+            for (const task of extractionTasks) {
+                const targetPath = resolvePathWithinRoot(
+                    instanceDir,
+                    task.relativePath,
+                    `Archive entry "${task.entry.entryName}"`,
+                );
 
                 fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-                fs.writeFileSync(targetPath, entry.getData());
+                fs.writeFileSync(targetPath, task.entry.getData());
             }
-        }
 
-        return id;
+            return id;
+        } catch (error) {
+            if (createdModpackId) {
+                this.modpackService.deleteModpack(rootPath, createdModpackId);
+            }
+            throw error;
+        }
     }
 }

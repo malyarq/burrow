@@ -25,6 +25,7 @@ import { registerAccountHandlers } from './handlers/accountHandlers'
 import { registerMirrorsHandlers } from './handlers/mirrorsHandlers'
 import { MirrorsService } from '../services/mirrors/mirrorsService'
 import { registerStatisticsHandlers } from './handlers/statisticsHandlers'
+import { registerExternalLinksHandlers } from './handlers/externalLinksHandlers'
 import { StatisticsService } from '../services/stats/statisticsService'
 
 import { registerShareHandlers } from './handlers/shareHandlers'
@@ -80,5 +81,6 @@ export class IPCManager {
         registerMirrorsHandlers({ mirrorsService })
         registerStatisticsHandlers({ statisticsService })
         registerShareHandlers({ shareService })
+        registerExternalLinksHandlers()
     }
 }

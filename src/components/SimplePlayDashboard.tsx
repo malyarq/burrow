@@ -64,7 +64,7 @@ function generateParticles(baseId: number): Particle[] {
 }
 
 export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actions }: SimplePlayDashboardProps) {
-  const { t, getAccentStyles, getAccentHex, minecraftPath } = useSettings();
+  const { t, getAccentStyles, getAccentHex, minecraftPath, disableAnimations } = useSettings();
   const { setMode } = useUIMode();
   const {
     effectiveModpackId,
@@ -105,6 +105,7 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
     return localStorage.getItem('simple_play_welcome_dismissed') !== 'true';
   });
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const clickTimestampsRef = useRef<number[]>([]);
   const easterEggTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const particleIdCounterRef = useRef(0);
@@ -115,17 +116,53 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
   const accentHex = getAccentHex();
   const loaderLabel = LOADER_LABELS[launch.loaderType] ?? launch.loaderType;
   const showMods = launch.loaderType !== 'vanilla';
+  const reducedMotion = disableAnimations || prefersReducedMotion;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updatePreference = () => {
+      setPrefersReducedMotion(mediaQuery.matches);
+    };
+
+    updatePreference();
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updatePreference);
+    } else {
+      mediaQuery.addListener(updatePreference);
+    }
+
+    return () => {
+      if (typeof mediaQuery.removeEventListener === 'function') {
+        mediaQuery.removeEventListener('change', updatePreference);
+      } else {
+        mediaQuery.removeListener(updatePreference);
+      }
+    };
+  }, []);
 
   const launchFireworks = useCallback(() => {
+    if (reducedMotion) {
+      return;
+    }
+
     const waveId = particleIdCounterRef.current++;
     const next = generateParticles(waveId);
     setParticles((prev) => [...prev, ...next].slice(-60));
     setTimeout(() => {
       setParticles((prev) => prev.filter((p) => !p.id.startsWith(`particle-${waveId}-`)));
     }, 2000);
-  }, []);
+  }, [reducedMotion]);
 
   const handleLogoClick = useCallback(() => {
+    if (reducedMotion) {
+      return;
+    }
+
     const now = Date.now();
     clickTimestampsRef.current.push(now);
     lastClickTimeRef.current = now;
@@ -147,7 +184,7 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
         clickTimestampsRef.current = [];
       }
     }, 2000);
-  }, [showEasterEgg, launchFireworks]);
+  }, [showEasterEgg, launchFireworks, reducedMotion]);
 
   const handleDismissWelcome = useCallback(() => {
     setShowWelcome(false);
@@ -160,11 +197,33 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
     };
   }, []);
 
+  useEffect(() => {
+    if (!reducedMotion) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setShowEasterEgg(false);
+      setParticles([]);
+      clickTimestampsRef.current = [];
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [reducedMotion]);
+
   return (
-    <div className="h-full w-full flex flex-col items-center px-4 py-6 md:px-6 overflow-y-auto overflow-x-hidden animate-fade-in-up">
+    <div className={cn(
+      'h-full w-full flex flex-col items-center px-4 py-6 md:px-6 overflow-y-auto overflow-x-hidden',
+      !reducedMotion && 'animate-fade-in-up'
+    )}>
       {/* Welcome Banner */}
       {showWelcome && (
-        <div className="w-full max-w-2xl mb-6 p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 flex flex-col sm:flex-row items-center gap-4 relative animate-in fade-in slide-in-from-top-4">
+        <div className={cn(
+          'w-full max-w-2xl mb-6 p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 flex flex-col sm:flex-row items-center gap-4 relative',
+          !reducedMotion && 'animate-in fade-in slide-in-from-top-4'
+        )}>
           <div className="text-3xl">👋</div>
           <div className="flex-1 text-center sm:text-left">
             <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-100">
@@ -187,19 +246,23 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
 
       {/* Logo + easter egg — на фоне, без жёсткого бокса */}
       <div className="relative flex flex-col items-center gap-2 mb-6 overflow-visible w-full">
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
           onClick={handleLogoClick}
-          onKeyDown={(e) => e.key === 'Enter' && handleLogoClick()}
-          className="logo-container relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-visible cursor-pointer transition-all duration-300 ease-out hover:scale-110 active:scale-105"
+          aria-label="FriendLauncher logo"
+          className={cn(
+            'logo-container motion-safe-transform relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-visible cursor-pointer',
+            reducedMotion
+              ? 'transition-none'
+              : 'transition-all duration-300 ease-out hover:scale-110 active:scale-105'
+          )}
           style={{ filter: `drop-shadow(0 0 24px ${accentHex}50) drop-shadow(0 0 48px ${accentHex}30)` }}
         >
           <div
             className="absolute -inset-6 rounded-full animate-pulse-slow pointer-events-none"
             style={{
               background: `radial-gradient(circle, ${accentHex}20 0%, transparent 60%)`,
-              animation: showEasterEgg ? 'easter-egg-glow 0.5s ease-in-out infinite' : 'none',
+              animation: !reducedMotion && showEasterEgg ? 'easter-egg-glow 0.5s ease-in-out infinite' : 'none',
             }}
           />
           <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl shadow-black/20 border border-zinc-200/60 dark:border-zinc-700/60 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm">
@@ -208,28 +271,28 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
               alt="FriendLauncher"
               className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-300"
               style={{
-                transform: showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
-                filter: showEasterEgg ? `drop-shadow(0 0 15px ${accentHex})` : 'none',
+                transform: !reducedMotion && showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
+                filter: !reducedMotion && showEasterEgg ? `drop-shadow(0 0 15px ${accentHex})` : 'none',
               }}
             />
           </div>
-        </div>
+        </button>
         <h1
           className={cn(
             'text-2xl md:text-3xl font-black tracking-tight drop-shadow-sm transition-all duration-300 relative z-10',
             accent.className,
-            showEasterEgg && 'animate-pulse scale-110'
+            !reducedMotion && showEasterEgg && 'animate-pulse scale-110'
           )}
           style={{
             ...(accent.style ?? {}),
-            textShadow: showEasterEgg
+            textShadow: !reducedMotion && showEasterEgg
               ? `0 0 20px ${accentHex}, 0 0 40px ${accentHex}, 0 4px 14px ${accentHex}80`
               : `0 4px 14px ${accentHex}40`,
           }}
         >
           FriendLauncher
         </h1>
-        {particles.map((p) => {
+        {!reducedMotion && particles.map((p) => {
           const ar = (p.angle * Math.PI) / 180;
           const x = Math.cos(ar) * p.distance;
           const y = Math.sin(ar) * p.distance;
@@ -279,7 +342,7 @@ export function SimplePlayDashboard({ launch, runtime: _runtime, actions: _actio
           }
           .firework-particle { animation: firework-particle var(--particle-duration) ease-out var(--particle-delay) forwards; will-change: transform, opacity; }
           .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
-          .logo-container:hover { filter: drop-shadow(0 0 30px ${accentHex}80) drop-shadow(0 0 60px ${accentHex}60) !important; }
+          .logo-container:hover { filter: ${reducedMotion ? `drop-shadow(0 0 24px ${accentHex}50) drop-shadow(0 0 48px ${accentHex}30)` : `drop-shadow(0 0 30px ${accentHex}80) drop-shadow(0 0 60px ${accentHex}60)`} !important; }
         `}</style>
       </div>
 

@@ -2,20 +2,31 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import AdmZip from 'adm-zip';
 import { ResourcePack } from '../../../shared/types/resourcePack';
+import {
+    assertAbsolutePath,
+    assertChildName,
+    assertChildNameList,
+    resolvePathWithinRoot,
+} from '../../security/pathGuards';
+import { resolveApprovedInstancePath, resolveResourcePacksDir } from '../instances/paths';
 
 export class ResourcePacksService {
     /**
      * Get the resourcepacks directory for an instance
      */
     private getResourcePacksDir(instancePath: string): string {
-        return path.join(instancePath, 'resourcepacks');
+        return resolveResourcePacksDir(instancePath);
     }
 
     /**
      * Get options.txt path
      */
     private getOptionsPath(instancePath: string): string {
-        return path.join(instancePath, 'options.txt');
+        return resolvePathWithinRoot(
+            resolveApprovedInstancePath(instancePath),
+            'options.txt',
+            'Resource pack options path',
+        );
     }
     // ...
     /**
@@ -138,7 +149,13 @@ export class ResourcePacksService {
             // Skip .DS_Store etc
             if (file.startsWith('.')) continue;
 
-            const filePath = path.join(dir, file);
+            let filePath: string;
+            try {
+                filePath = resolvePathWithinRoot(dir, file, 'Resource pack path');
+            } catch {
+                continue;
+            }
+
             const metadata = await this.getPackMetadata(filePath);
             const stats = await fs.stat(filePath);
 
@@ -193,6 +210,7 @@ export class ResourcePacksService {
     }
 
     async enable(fileName: string, instancePath: string): Promise<boolean> {
+        const safeFileName = assertChildName(fileName, 'Resource pack name');
         const current = await this.getEnabledPacks(instancePath);
         if (!current.includes('vanilla')) {
             // Always ensure vanilla is there, usually first?
@@ -201,7 +219,7 @@ export class ResourcePacksService {
             // Safer to just append our pack.
         }
 
-        const packEntry = `file/${fileName}`;
+        const packEntry = `file/${safeFileName}`;
         if (!current.includes(packEntry)) {
             // Add to end (Highest priority)
             current.push(packEntry);
@@ -212,8 +230,9 @@ export class ResourcePacksService {
     }
 
     async disable(fileName: string, instancePath: string): Promise<boolean> {
+        const safeFileName = assertChildName(fileName, 'Resource pack name');
         const current = await this.getEnabledPacks(instancePath);
-        const packEntry = `file/${fileName}`;
+        const packEntry = `file/${safeFileName}`;
         const newPacks = current.filter(p => p !== packEntry);
 
         if (newPacks.length !== current.length) {
@@ -224,6 +243,7 @@ export class ResourcePacksService {
     }
 
     async reorder(fileNames: string[], instancePath: string): Promise<boolean> {
+        const safeFileNames = assertChildNameList(fileNames, 'Resource pack name');
         // fileNames comes from UI: Top to Bottom (High Priority -> Low Priority).
         // options.txt expects: Bottom to Top (Low Priority -> High Priority).
         // So we reverse the input list.
@@ -237,7 +257,7 @@ export class ResourcePacksService {
         const nonFilePacks = current.filter(p => !p.startsWith('file/'));
 
         // We assume fileNames ONLY contains the "file/..." packs (passed as just filenames).
-        const newFilePacks = fileNames.map(f => `file/${f}`).reverse(); // Reverse for options.txt format
+        const newFilePacks = safeFileNames.map(f => `file/${f}`).reverse(); // Reverse for options.txt format
 
         // Combine: [Non-File Packs (vanilla)], [File Packs]
         // This assumes vanilla is always lowest.
@@ -250,17 +270,20 @@ export class ResourcePacksService {
     async import(filePath: string, instancePath: string): Promise<boolean> {
         const dir = this.getResourcePacksDir(instancePath);
         await fs.ensureDir(dir);
-        const fileName = path.basename(filePath);
-        await fs.copy(filePath, path.join(dir, fileName));
+        const safeSourcePath = assertAbsolutePath(filePath, 'Resource pack source path');
+        const fileName = assertChildName(path.basename(safeSourcePath), 'Resource pack name');
+        const destinationPath = resolvePathWithinRoot(dir, fileName, 'Resource pack path');
+        await fs.copy(safeSourcePath, destinationPath);
         return true;
     }
 
     async delete(fileName: string, instancePath: string): Promise<boolean> {
         const dir = this.getResourcePacksDir(instancePath);
-        const filePath = path.join(dir, fileName);
+        const safeFileName = assertChildName(fileName, 'Resource pack name');
+        const filePath = resolvePathWithinRoot(dir, safeFileName, 'Resource pack path');
         await fs.remove(filePath);
         // Also disable if enabled
-        await this.disable(fileName, instancePath);
+        await this.disable(safeFileName, instancePath);
         return true;
     }
 }

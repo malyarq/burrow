@@ -1,10 +1,11 @@
-import { Mirror, MirrorState } from '@shared/types';
+import { Mirror, MirrorMoveDirection, MirrorState } from '@shared/types';
 import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
 
 import { net as electronNet } from 'electron';
+import { assertTrustedEndpointUrl } from '../../security/trustedEndpoints';
 
 const DEFAULT_MIRRORS: Mirror[] = [
     {
@@ -12,6 +13,7 @@ const DEFAULT_MIRRORS: Mirror[] = [
         name: 'Official (Mojang)',
         type: 'official',
         rootUrl: 'https://launchermeta.mojang.com',
+        priority: 1,
         isActive: true,
     },
     {
@@ -19,41 +21,138 @@ const DEFAULT_MIRRORS: Mirror[] = [
         name: 'BMCLAPI',
         type: 'bmcl',
         rootUrl: 'https://bmclapi2.bangbang93.com',
+        priority: 2,
         isActive: false,
     },
 ];
 
+type PersistedMirrorState = Partial<MirrorState> & {
+    mirrors?: Mirror[];
+    selectedMirrorId?: string;
+};
+
 export class MirrorsService {
-    private state: MirrorState = {
-        mirrors: [...DEFAULT_MIRRORS],
-        selectedMirrorId: 'official',
-        autoSelect: false,
-    };
-    private accountsFile: string;
+    private state: MirrorState = this.createInitialState();
+    private mirrorsFile: string;
 
     constructor() {
         const userDataPath = app.getPath('userData');
-        this.accountsFile = path.join(userDataPath, 'mirrors.json');
+        this.mirrorsFile = path.join(userDataPath, 'mirrors.json');
         this.loadMirrors();
+    }
+
+    private cloneMirror(mirror: Mirror): Mirror {
+        return { ...mirror };
+    }
+
+    private createInitialState(): MirrorState {
+        return {
+            mirrors: this.decorateMirrors(DEFAULT_MIRRORS.map((mirror) => this.cloneMirror(mirror))),
+            autoSelect: false,
+        };
+    }
+
+    private decorateMirrors(mirrors: Mirror[]): Mirror[] {
+        const activeMirrorId = mirrors.find((mirror) => !mirror.isDisabled)?.id;
+        return mirrors.map((mirror, index) => ({
+            ...mirror,
+            priority: index + 1,
+            isActive: mirror.id === activeMirrorId && !mirror.isDisabled,
+        }));
+    }
+
+    private orderMirrors(
+        mirrors: Mirror[],
+        orderedIds: string[] = [],
+        selectedMirrorId?: string,
+    ): Mirror[] {
+        const mirrorsById = new Map(mirrors.map((mirror) => [mirror.id, this.cloneMirror(mirror)]));
+        const ordered: Mirror[] = [];
+
+        const take = (id?: string) => {
+            if (!id) {
+                return;
+            }
+
+            const mirror = mirrorsById.get(id);
+            if (!mirror) {
+                return;
+            }
+
+            ordered.push(mirror);
+            mirrorsById.delete(id);
+        };
+
+        take(selectedMirrorId);
+        orderedIds.forEach((id) => take(id));
+        mirrors.forEach((mirror) => take(mirror.id));
+
+        return ordered;
+    }
+
+    private createPersistedState(state: MirrorState): PersistedMirrorState {
+        return {
+            mirrors: state.mirrors.map((mirror) => this.cloneMirror(mirror)),
+            autoSelect: state.autoSelect,
+            selectedMirrorId: state.mirrors.find((mirror) => mirror.isActive)?.id,
+        };
+    }
+
+    private revalidateMirror(mirror: Mirror): Mirror {
+        if (mirror.type !== 'custom') {
+            return {
+                ...mirror,
+                isDisabled: false,
+                disabledReason: undefined,
+            };
+        }
+
+        try {
+            assertTrustedEndpointUrl(mirror.rootUrl, 'Custom mirror URL');
+            return {
+                ...mirror,
+                isDisabled: false,
+                disabledReason: undefined,
+            };
+        } catch {
+            return {
+                ...mirror,
+                isDisabled: true,
+                disabledReason: 'insecureRemoteHttp',
+                isActive: false,
+            };
+        }
     }
 
     private loadMirrors() {
         try {
-            if (fs.existsSync(this.accountsFile)) {
-                const data = fs.readFileSync(this.accountsFile, 'utf-8');
-                const savedState = JSON.parse(data) as Partial<MirrorState>;
-
-                // Merge saved mirrors with defaults, ensuring defaults always exist
-                const customMirrors = (savedState.mirrors || []).filter(m => m.type === 'custom');
-
-                this.state = {
-                    mirrors: [...DEFAULT_MIRRORS, ...customMirrors],
-                    selectedMirrorId: savedState.selectedMirrorId || 'official',
-                    autoSelect: savedState.autoSelect || false,
+            if (fs.existsSync(this.mirrorsFile)) {
+                const data = fs.readFileSync(this.mirrorsFile, 'utf-8');
+                const savedState = JSON.parse(data) as PersistedMirrorState;
+                const savedMirrors = Array.isArray(savedState.mirrors) ? savedState.mirrors : [];
+                const customMirrors = savedMirrors
+                    .filter((mirror) => mirror.type === 'custom')
+                    .map((mirror) => this.revalidateMirror(mirror));
+                const mergedMirrors = [
+                    ...DEFAULT_MIRRORS.map((mirror) => this.cloneMirror(mirror)),
+                    ...customMirrors,
+                ];
+                const orderedMirrors = this.orderMirrors(
+                    mergedMirrors,
+                    savedMirrors.map((mirror) => mirror.id),
+                    savedState.selectedMirrorId,
+                );
+                const nextState: MirrorState = {
+                    mirrors: this.decorateMirrors(orderedMirrors),
+                    autoSelect: savedState.autoSelect === true,
                 };
 
-                // Update isActive flags based on selected ID
-                this.updateActiveFlags();
+                this.state = nextState;
+
+                const normalized = JSON.stringify(this.createPersistedState(nextState), null, 2);
+                if (normalized !== JSON.stringify(savedState, null, 2)) {
+                    fs.writeFileSync(this.mirrorsFile, normalized);
+                }
             }
         } catch (error) {
             console.error('Failed to load mirrors:', error);
@@ -62,73 +161,92 @@ export class MirrorsService {
 
     private saveMirrors() {
         try {
-            // Don't save default mirrors in the JSON to keep it clean, or save everything?
-            // Saving everything is safer for state consistency.
-            fs.writeFileSync(this.accountsFile, JSON.stringify(this.state, null, 2));
+            fs.writeFileSync(this.mirrorsFile, JSON.stringify(this.createPersistedState(this.state), null, 2));
         } catch (error) {
             console.error('Failed to save mirrors:', error);
         }
     }
 
-    private updateActiveFlags() {
-        this.state.mirrors.forEach(m => {
-            m.isActive = m.id === this.state.selectedMirrorId;
-        });
+    private setMirrors(mirrors: Mirror[]) {
+        this.state.mirrors = this.decorateMirrors(mirrors);
     }
 
     public getMirrors(): Mirror[] {
-        return this.state.mirrors;
+        return this.state.mirrors.map((mirror) => this.cloneMirror(mirror));
     }
 
     public getSelectedMirror(): Mirror | undefined {
-        return this.state.mirrors.find(m => m.id === this.state.selectedMirrorId);
+        const activeMirror = this.state.mirrors.find((mirror) => mirror.isActive);
+        return activeMirror ? this.cloneMirror(activeMirror) : undefined;
+    }
+
+    public getPreferredMirrors(): Mirror[] {
+        return this.state.mirrors
+            .filter((mirror) => !mirror.isDisabled)
+            .map((mirror) => this.cloneMirror(mirror));
     }
 
     public async addCustomMirror(name: string, rootUrl: string): Promise<Mirror> {
+        const safeRootUrl = assertTrustedEndpointUrl(rootUrl, 'Custom mirror URL');
         const mirror: Mirror = {
             id: randomUUID(),
             name,
             type: 'custom',
-            rootUrl,
+            rootUrl: safeRootUrl,
+            priority: this.state.mirrors.length + 1,
             isActive: false,
+            isDisabled: false,
         };
 
-        this.state.mirrors.push(mirror);
+        this.setMirrors([...this.state.mirrors, mirror]);
         this.saveMirrors();
-        return mirror;
+        return this.getMirrors().find((item) => item.id === mirror.id) ?? mirror;
     }
 
     public async removeMirror(id: string): Promise<void> {
-        const mirror = this.state.mirrors.find(m => m.id === id);
+        const mirror = this.state.mirrors.find((item) => item.id === id);
         if (!mirror) return;
 
         if (mirror.type !== 'custom') {
             throw new Error('Cannot remove default mirrors');
         }
 
-        this.state.mirrors = this.state.mirrors.filter(m => m.id !== id);
-
-        if (this.state.selectedMirrorId === id) {
-            this.state.selectedMirrorId = 'official';
-            this.updateActiveFlags();
-        }
-
+        this.setMirrors(this.state.mirrors.filter((item) => item.id !== id));
         this.saveMirrors();
     }
 
     public async selectMirror(id: string): Promise<void> {
-        const mirror = this.state.mirrors.find(m => m.id === id);
+        const mirror = this.state.mirrors.find((item) => item.id === id);
         if (!mirror) throw new Error('Mirror not found');
+        if (mirror.isDisabled) throw new Error('Mirror is disabled because its URL is insecure');
 
-        this.state.selectedMirrorId = id;
-        this.updateActiveFlags();
+        this.setMirrors(this.orderMirrors(this.state.mirrors, [id]));
+        this.saveMirrors();
+    }
+
+    public async moveMirror(id: string, direction: MirrorMoveDirection): Promise<void> {
+        const currentIndex = this.state.mirrors.findIndex((mirror) => mirror.id === id);
+        if (currentIndex === -1) {
+            throw new Error('Mirror not found');
+        }
+
+        const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+        if (targetIndex < 0 || targetIndex >= this.state.mirrors.length) {
+            return;
+        }
+
+        const nextMirrors = this.state.mirrors.map((mirror) => this.cloneMirror(mirror));
+        const [mirror] = nextMirrors.splice(currentIndex, 1);
+        nextMirrors.splice(targetIndex, 0, mirror);
+        this.setMirrors(nextMirrors);
         this.saveMirrors();
     }
 
     public async testSpeed(url: string): Promise<number> {
         const start = Date.now();
         try {
-            await electronNet.fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(5000) });
+            const safeUrl = assertTrustedEndpointUrl(url, 'Mirror speed test URL');
+            await electronNet.fetch(safeUrl, { method: 'HEAD', signal: AbortSignal.timeout(5000) });
             return Date.now() - start;
         } catch (e) {
             console.error('Mirror speed test failed:', e);
@@ -150,12 +268,13 @@ export class MirrorsService {
 
     public async autoSelectBestMirror(): Promise<void> {
         console.log('Starting auto-selection of best mirror...');
-        const results = await Promise.all(this.state.mirrors.map(async (mirror) => {
+        const selectableMirrors = this.state.mirrors.filter((mirror) => !mirror.isDisabled);
+        const results = await Promise.all(selectableMirrors.map(async (mirror) => {
             const latency = await this.testSpeed(mirror.rootUrl);
             return { id: mirror.id, latency };
         }));
 
-        const validResults = results.filter(r => r.latency !== -1);
+        const validResults = results.filter((result) => result.latency !== -1);
 
         if (validResults.length === 0) {
             console.warn('No reachable mirrors found during auto-selection.');
@@ -163,9 +282,16 @@ export class MirrorsService {
         }
 
         validResults.sort((a, b) => a.latency - b.latency);
+        const orderedIds = [
+            ...validResults.map((result) => result.id),
+            ...this.state.mirrors
+                .map((mirror) => mirror.id)
+                .filter((id) => !validResults.some((result) => result.id === id)),
+        ];
         const bestMirrorId = validResults[0].id;
 
         console.log(`Auto-selected mirror: ${bestMirrorId} with latency ${validResults[0].latency}ms`);
-        await this.selectMirror(bestMirrorId);
+        this.setMirrors(this.orderMirrors(this.state.mirrors, orderedIds));
+        this.saveMirrors();
     }
 }

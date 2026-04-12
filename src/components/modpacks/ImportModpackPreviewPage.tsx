@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { cn } from '../../utils/cn';
 import { modpacksIPC } from '../../services/ipc/modpacksIPC';
 import type { ModpackManifest } from '@shared/types/modpack';
+import { useModpackListContext } from '../../contexts/ModpackContext';
 
 interface ImportModpackPreviewPageProps {
   filePath: string;
@@ -25,6 +26,7 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
 }) => {
   const { t, getAccentStyles } = useSettings();
   const toast = useToast();
+  const { refresh } = useModpackListContext();
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState<{
     format: 'curseforge' | 'modrinth' | 'zip' | 'multimc' | null;
@@ -54,17 +56,15 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
     setImporting(true);
     try {
       await modpacksIPC.import(filePath);
+      await refresh();
       toast.success(t('modpacks.import_success') || 'Модпак успешно импортирован!');
-      setTimeout(() => {
-        onBack();
-        window.location.reload();
-      }, 1000);
+      onBack();
     } catch (error) {
       console.error('Error importing modpack:', error);
       toast.error(t('modpacks.import_error') || 'Ошибка при импорте модпака');
-    } finally {
-      setImporting(false);
     }
+
+    setImporting(false);
   };
 
   return (

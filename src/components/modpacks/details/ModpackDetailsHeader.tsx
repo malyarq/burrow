@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../../utils/cn';
+import { LazyImage } from '../../ui/LazyImage';
 import type { ModpackConfig } from '../../../contexts/ModpackContext';
 import type { ModpackMetadata } from '@shared/types/modpack';
 
@@ -32,15 +33,11 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
   <div className="flex-shrink-0 px-6 pt-6 pb-0">
     <div className="flex items-start gap-4 mb-6 pb-4 border-b border-zinc-200 dark:border-zinc-700">
       {metadata?.iconUrl && (
-        <img
+        <LazyImage
           src={metadata.iconUrl}
           alt={modpackName}
           className="w-20 h-20 rounded-lg object-cover border border-zinc-200 dark:border-zinc-700"
-          onError={(e) => {
-            if (e.currentTarget.src !== '/icon.png') {
-              e.currentTarget.src = '/icon.png';
-            }
-          }}
+          fallback="/icon.png"
         />
       )}
       <div className="flex-1 min-w-0">

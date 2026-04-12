@@ -7,6 +7,7 @@ import { Button } from '../../ui/Button';
 import { AddModModal } from '../AddModModal';
 import { cn } from '../../../utils/cn';
 import { modNameToSlug } from '../../../utils/modSlug';
+import { externalLinksIPC } from '../../../services/ipc/externalLinksIPC';
 
 export interface ModsTabProps {
     modpackId: string;
@@ -129,6 +130,12 @@ export function ModsTab({
         [modpackId, instancePath, toast, t]
     );
 
+    const handleOpenExternalLink = useCallback((url: string, context: string) => {
+        void externalLinksIPC.open({ url, context }).catch((error) => {
+            console.error('Failed to open external link:', error);
+        });
+    }, []);
+
     return (
         <div className={cn("space-y-4", className)}>
             <div className="flex items-center justify-between">
@@ -193,24 +200,32 @@ export function ModsTab({
                                     <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{mod.file.name}</p>
                                 </div>
                                 <div className="flex gap-3 mt-1.5">
-                                    <a
-                                        href={`https://modrinth.com/mod/${modNameToSlug(mod.name)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
+                                        type="button"
                                         className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                                        onClick={(e) => e.stopPropagation()}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleOpenExternalLink(
+                                                `https://modrinth.com/mod/${modNameToSlug(mod.name)}`,
+                                                `${mod.name} on Modrinth`,
+                                            );
+                                        }}
                                     >
                                         Modrinth
-                                    </a>
-                                    <a
-                                        href={`https://www.curseforge.com/minecraft/mc-mods/${modNameToSlug(mod.name)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    </button>
+                                    <button
+                                        type="button"
                                         className="text-xs text-orange-600 dark:text-orange-400 hover:underline"
-                                        onClick={(e) => e.stopPropagation()}
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            handleOpenExternalLink(
+                                                `https://www.curseforge.com/minecraft/mc-mods/${modNameToSlug(mod.name)}`,
+                                                `${mod.name} on CurseForge`,
+                                            );
+                                        }}
                                     >
                                         CurseForge
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
 

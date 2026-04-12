@@ -6,6 +6,7 @@ import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
+import { LazyImage } from '../ui/LazyImage';
 import { cn } from '../../utils/cn';
 import { modsIPC } from '../../services/ipc/modsIPC';
 import { modpacksIPC } from '../../services/ipc/modpacksIPC';
@@ -374,10 +375,11 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
                       className="mt-1 w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 focus:ring-2 focus:ring-zinc-500"
                     />
                     {mod.iconUrl && (
-                      <img
+                      <LazyImage
                         src={mod.iconUrl}
                         alt={mod.title}
                         className="w-12 h-12 rounded object-cover shrink-0"
+                        fallback="/icon.png"
                       />
                     )}
                     <div className="flex-1 min-w-0">

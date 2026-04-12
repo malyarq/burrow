@@ -63,10 +63,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [showConsole, setShowConsole] = useLocalStorageState('settings_showConsole', deserializeBoolean(false), serializeBoolean);
     const [language, setLanguage] = useLocalStorageState<Language>('settings_language', (raw) => (raw === 'ru' ? 'ru' : 'en'), serializeString);
     const [theme, setTheme] = useLocalStorageState<Theme>('settings_theme', (raw) => (raw === 'light' ? 'light' : 'dark'), serializeString);
-    const [downloadProvider, setDownloadProvider] = useLocalStorageState<DownloadProvider>('settings_downloadProvider', (raw) => (raw === 'mojang' || raw === 'bmcl' ? raw : 'auto'), serializeString);
+    const [legacyDownloadProvider, setDownloadProvider] = useLocalStorageState<DownloadProvider>(
+        'settings_downloadProvider',
+        (raw) => (raw === 'mojang' || raw === 'bmcl' ? raw : 'auto'),
+        serializeString
+    );
     const [autoDownloadThreads, setAutoDownloadThreads] = useLocalStorageState('settings_autoDownloadThreads', deserializeBoolean(true), serializeBoolean);
     const [downloadThreads, setDownloadThreads] = useLocalStorageState('settings_downloadThreads', deserializeInt(8), serializeInt);
     const [maxSockets, setMaxSockets] = useLocalStorageState('settings_maxSockets', deserializeInt(64), serializeInt);
+    const downloadProvider: DownloadProvider = 'auto';
     // Custom theme configuration
     const [customTheme, setCustomTheme] = useLocalStorageState<CustomThemeConfig>(
         'settings_customTheme',
@@ -96,6 +101,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     useEffect(() => {
         applyThemeToDocument(theme, customTheme);
     }, [theme, customTheme]);
+
+    useEffect(() => {
+        if (legacyDownloadProvider !== 'auto') {
+            setDownloadProvider('auto');
+        }
+    }, [legacyDownloadProvider, setDownloadProvider]);
 
     useEffect(() => {
         document.documentElement.style.fontSize = `${uiScale}%`;

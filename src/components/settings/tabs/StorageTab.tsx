@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button } from '../../ui/Button';
 import { ModpacksIPC } from '../../../services/ipc/modpacksIPC';
 import { formatSize } from '../../../utils/format';
 import { cn } from '../../../utils/cn';
+import { useConfirm } from '../../../contexts/ConfirmContext';
 
 interface StorageStats {
     totalSize: number;
@@ -18,36 +19,52 @@ interface StorageSettingsProps {
 }
 
 export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentStyles, modpacksIPC }) => {
+    const confirm = useConfirm();
     const [stats, setStats] = useState<StorageStats | null>(null);
     const [loading, setLoading] = useState(false);
     const [cleanupResult, setCleanupResult] = useState<{ freedSize: number; deletedFiles: number } | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-    const loadStats = async () => {
+    const loadStats = useCallback(async () => {
         setLoading(true);
         try {
             const data = await modpacksIPC.getContentStats();
             setStats(data);
+            setError(null);
         } catch (error) {
             console.error('Failed to load storage stats:', error);
+            setError(error instanceof Error ? error.message : (t('settings.storage.loadError') || 'Failed to load storage stats'));
         } finally {
             setLoading(false);
         }
-    };
+    }, [modpacksIPC, t]);
 
     useEffect(() => {
-        loadStats();
-    }, []);
+        void loadStats();
+    }, [loadStats]);
 
     const handleCleanup = async () => {
-        if (!confirm(t('settings.storage.cleanupConfirm'))) return;
+        const confirmed = await confirm.confirm({
+            title: t('settings.storage.cleanupTitle') || t('settings.storage.cleanup'),
+            message: t('settings.storage.cleanupConfirm'),
+            confirmText: t('settings.storage.cleanupConfirmButton') || t('settings.storage.cleanupBtn'),
+            cancelText: t('common.cancel'),
+            variant: 'danger',
+        });
+
+        if (!confirmed) {
+            return;
+        }
 
         setLoading(true);
         try {
             const result = await modpacksIPC.cleanupContent();
             setCleanupResult(result);
+            setError(null);
             await loadStats(); // Reload stats after cleanup
         } catch (error) {
             console.error('Failed to cleanup content:', error);
+            setError(error instanceof Error ? error.message : (t('settings.storage.cleanupError') || 'Failed to clean up stored content'));
         } finally {
             setLoading(false);
         }
@@ -108,6 +125,12 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
             )}
 
             <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                {error && (
+                    <div className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                        {error}
+                    </div>
+                )}
+
                 <div className="flex items-center justify-between">
                     <div>
                         <h4 className="text-sm font-medium text-zinc-900 dark:text-zinc-100 mb-1">

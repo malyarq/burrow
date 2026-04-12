@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Textarea } from '../../components/ui/Textarea';
 import { Download, AlertCircle } from 'lucide-react';
 import { ModpackManifest } from '@shared/types';
+import { shareIPC } from '../../services/ipc/shareIPC';
 
 interface ImportShareModalProps {
     isOpen: boolean;
@@ -19,6 +20,13 @@ export function ImportShareModal({ isOpen, onClose, onImport }: ImportShareModal
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const handleClose = () => {
+        setCode('');
+        setError(null);
+        setLoading(false);
+        onClose();
+    };
+
     const handleImport = async () => {
         if (!code.trim()) return;
 
@@ -27,13 +35,12 @@ export function ImportShareModal({ isOpen, onClose, onImport }: ImportShareModal
 
         try {
             // Resolve code to manifest using backend
-            const manifest = await window.api.share.importCode(code.trim());
+            const manifest = await shareIPC.importCode(code.trim());
             await onImport(manifest);
-            onClose();
-        } catch (err) {
-             
+            handleClose();
+        } catch (err: unknown) {
             console.error(err);
-            setError(t('share.error_desc') || 'Ошибка импорта');
+            setError(err instanceof Error ? err.message : (t('share.error_desc') || 'Ошибка импорта'));
         } finally {
             setLoading(false);
         }
@@ -42,7 +49,7 @@ export function ImportShareModal({ isOpen, onClose, onImport }: ImportShareModal
     return (
         <Modal
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             title={
                 <div className="flex items-center gap-2">
                     <Download className="w-5 h-5" />
@@ -72,7 +79,7 @@ export function ImportShareModal({ isOpen, onClose, onImport }: ImportShareModal
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 mt-4">
-                <Button variant="ghost" onClick={onClose} disabled={loading} className="text-zinc-400 hover:text-zinc-100">
+                <Button variant="ghost" onClick={handleClose} disabled={loading} className="text-zinc-400 hover:text-zinc-100">
                     {t('general.cancel')}
                 </Button>
                 <Button onClick={handleImport} disabled={loading || !code.trim()} className="bg-zinc-100 text-zinc-900 hover:bg-zinc-200">
