@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Visible EN/RU UI copy on refreshed core routes no longer leaks placeholder text, missing translations, or mismatched helper states.
   3. Core dialogs, forms, and action states use consistent icons, spacing, hierarchy, and feedback patterns.
   4. The primary launcher workflows feel clearer and lower-friction in a real browser run than they did before the rollout.
-**Plans**: TBD
+**Plans**: 4
 
 ### Phase 9: Secondary Surface Alignment And UX Polish
 **Goal**: The rest of the launcher stops feeling like leftover modules and the polished UI still respects accessibility, performance, and readability.
@@ -70,6 +70,6 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 7. UI System Foundations | 4/4 | Complete | 2026-04-13 |
-| 8. Core Route Rollout And UI Correctness | 0/0 | Planned | — |
+| 8. Core Route Rollout And UI Correctness | 0/4 | Planned | — |
 | 9. Secondary Surface Alignment And UX Polish | 0/0 | Planned | — |
 | 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |
