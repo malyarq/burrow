@@ -9,14 +9,14 @@ Requirements for the current UI-system and experience-rework milestone. These ma
 
 ### Design System
 
-- [ ] **DSYS-01**: User sees a consistent visual language across launcher shells, cards, forms, dialogs, and feedback states instead of mixed screen-by-screen styling
-- [ ] **DSYS-02**: User sees one consistent icon and action-affordance language across navigation, cards, menus, dialogs, and empty states
+- [x] **DSYS-01**: User sees a consistent visual language across launcher shells, cards, forms, dialogs, and feedback states instead of mixed screen-by-screen styling
+- [x] **DSYS-02**: User sees one consistent icon and action-affordance language across navigation, cards, menus, dialogs, and empty states
 - [ ] **DSYS-03**: User sees refreshed core surfaces built from shared primitives and shared visual tokens instead of feature-local styling exceptions
 
 ### Localization And Theme Fidelity
 
 - [ ] **LOCL-01**: User sees complete English and Russian UI copy across labels, placeholders, helper text, validation, tooltips, and empty states on refreshed surfaces
-- [ ] **THEME-01**: User can switch theme and accent settings and see the launcher shell plus refreshed screens update consistently instead of only isolated controls changing
+- [x] **THEME-01**: User can switch theme and accent settings and see the launcher shell plus refreshed screens update consistently instead of only isolated controls changing
 - [ ] **A11Y-04**: User can use the refreshed UI with visible focus states, sufficient contrast, and reduced-motion-respecting behavior
 
 ### Core UX Flows
@@ -63,11 +63,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DSYS-01 | Phase 7 | Pending |
-| DSYS-02 | Phase 7 | Pending |
+| DSYS-01 | Phase 7 | Complete |
+| DSYS-02 | Phase 7 | Complete |
 | DSYS-03 | Phase 8 | Pending |
 | LOCL-01 | Phase 8 | Pending |
-| THEME-01 | Phase 7 | Pending |
+| THEME-01 | Phase 7 | Complete |
 | A11Y-04 | Phase 9 | Pending |
 | UX-01 | Phase 8 | Pending |
 | UX-02 | Phase 8 | Pending |
@@ -83,4 +83,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after v0.2.0 milestone definition*
+*Last updated: 2026-04-13 after Phase 7 completion*

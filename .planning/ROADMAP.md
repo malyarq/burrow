@@ -12,7 +12,7 @@ This roadmap continues from the completed `v1.0` release-hardening milestone int
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 7: UI System Foundations** - Establish the shared visual system, theme source of truth, and icon/shell contracts that every later screen rollout depends on.
+- [x] **Phase 7: UI System Foundations** - Establish the shared visual system, theme source of truth, and icon/shell contracts that every later screen rollout depends on. Completed 2026-04-13.
 - [ ] **Phase 8: Core Route Rollout And UI Correctness** - Move the highest-traffic launcher flows onto the shared system while removing visible translation, icon, and state defects.
 - [ ] **Phase 9: Secondary Surface Alignment And UX Polish** - Bring advanced or lower-traffic launcher surfaces into the same product language and close accessibility and atmosphere fallout.
 - [ ] **Phase 10: Manual Experience Verification And Release Truth** - Validate the refreshed launcher through real browser walkthroughs, land fallout fixes, and update release-facing documentation.
@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Theme and accent changes visibly affect the launcher shell, dialogs, cards, and shared controls instead of only isolated elements.
   3. Iconography and repeated action affordances are standardized across navigation, cards, dialogs, and empty states.
   4. High-traffic surfaces stop relying on unowned hardcoded visual exceptions for their core structure.
-**Plans**: TBD
+**Plans**: 4
 
 ### Phase 8: Core Route Rollout And UI Correctness
 **Goal**: The launcher's most-used routes feel coherent, translated, and intentionally convenient instead of merely functional.
@@ -69,7 +69,7 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 7. UI System Foundations | 0/0 | Planned | — |
+| 7. UI System Foundations | 4/4 | Complete | 2026-04-13 |
 | 8. Core Route Rollout And UI Correctness | 0/0 | Planned | — |
 | 9. Secondary Surface Alignment And UX Polish | 0/0 | Planned | — |
 | 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |

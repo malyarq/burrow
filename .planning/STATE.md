@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.2.0
 milestone_name: ui-system-and-experience-rework
 status: active
-stopped_at: Milestone v0.2.0 requirements and roadmap defined
-last_updated: "2026-04-13T00:00:00Z"
-last_activity: 2026-04-13 - Defined v0.2.0 requirements and roadmap for the launcher UI system and experience rework
+stopped_at: Completed Phase 7 execution
+last_updated: "2026-04-13T01:30:00Z"
+last_activity: 2026-04-13 - Completed Phase 7 UI system foundations and phase verification
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 4
+  completed_plans: 4
+  percent: 25
 ---
 
 # Project State
@@ -21,34 +21,34 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 7 planning for milestone v0.2.0 UI System And Experience Rework
+**Current focus:** Phase 8 planning for milestone v0.2.0 UI System And Experience Rework
 
 ## Current Position
 
-Phase: Not started (ready to plan Phase 7)
-Plan: —
-Status: Ready for Phase 7 planning
-Last activity: 2026-04-13 - Requirements and roadmap created for UI system unification, UX redesign, and manual browser verification
+Phase: 8 - Core Route Rollout And UI Correctness
+Plan: Not started
+Status: Ready to plan Phase 8
+Last activity: 2026-04-13 - Completed Phase 7 UI system foundations and phase verification
 
-Progress: [----------] 0%
+Progress: [###-------] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
-- Active phase plans completed: 0
-- Average duration: 6 min
-- Total execution time: 0.3 hours
+- Total plans completed: 33
+- Active phase plans completed: 4
+- Average duration: 17 min
+- Total execution time: 1.1 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| v1.0 (archived context) | 29 | 0.3h | 6 min |
+| 7. UI System Foundations | 4 | 1.1h | 17 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-04, 05-05, 06-01, 06-02, 06-03
-- Trend: Reset for new milestone
+- Last 5 plans: 06-03, 07-01, 07-02, 07-03, 07-04
+- Trend: Phase 7 completed; ready to expand route rollout
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -88,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 06]: Treat Phase 6 recovery summaries as the closure evidence for blocker debt preserved in reconstructed phase verification files
 - [Phase 06]: Roll REQUIREMENTS.md forward before rerunning the milestone audit so the rerun reflects the verified shipped state
 - Milestone v0.2.0: Go system-first on UI work, allow strong UX redesign inside the existing launcher architecture, and require manual browser testing as part of completion
+- [Phase 07]: Keep the UI-system rollout foundation-first by stabilizing primitives, shell, and document theme seams before broad route redesign.
+- [Phase 07]: Treat live browser renders as required evidence for foundation work, but record environment-level browser scripting limits explicitly instead of hiding them.
 
 ### Pending Todos
 
@@ -97,13 +99,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- `npm run build -- --publish never` is green on this machine, but first-run packaging can still need network access for Electron downloads in restricted environments.
-- The new test dependencies were installable from the public npm registry, but the internal registry returned `403` for `@testing-library/react`; contributor environments that are locked to the internal registry may need follow-up.
+- `npm run build -- --publish never` was not rerun in Phase 7 because this milestone phase closes on UI-system foundations, not packaging changes; packaging should be rechecked during the later release-truth phase.
+- Browser scripting in this CLI environment was partially constrained during live sanity work (`Safari` blocks JavaScript-from-Apple-Events and sandboxed Node could not reach Chromium DevTools), so Phase 10 should still perform the full interactive walkthrough on refreshed routes.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
-- v0.2.0 is planned but not yet decomposed into executable plan files; Phase 7 planning is the next routing step.
 
 ## Session Continuity
 
-Last session: 2026-04-13T00:00:00Z
-Stopped at: Milestone v0.2.0 requirements and roadmap defined
-Resume file: .planning/PROJECT.md
+Last session: 2026-04-13T01:30:00Z
+Stopped at: Completed Phase 7 execution
+Resume file: .planning/phases/07-ui-system-foundations/07-VERIFICATION.md
