@@ -61,6 +61,9 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
         />
       </div>
 
+
+      <MinecraftPathSection minecraftPath={minecraftPath} setMinecraftPath={setMinecraftPath} t={t} />
+
       <div className="flex gap-3 items-stretch">
         <div className="flex-1 p-3 bg-zinc-50 dark:bg-zinc-900/40 rounded-lg border border-zinc-100 dark:border-zinc-800 flex flex-col">
           <div className="mt-auto">
@@ -111,8 +114,6 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
           </div>
         </div>
       </div>
-
-      <MinecraftPathSection minecraftPath={minecraftPath} setMinecraftPath={setMinecraftPath} t={t} />
 
       {(status === 'checking' || status === 'available' || status === 'up-to-date' || status === 'error') && (
         <div className="flex items-center justify-between">

@@ -44,19 +44,19 @@
 
 **Problem:** No separation between simple gameplay and modpacks, interface is overloaded
 
-- [ ] **Mode Switcher**
+- [x] **Mode Switcher**
   - Add "🎮 Simple Play" / "📦 Modpacks" switcher in Sidebar Header
   - Save selected mode in settings
   - Smooth switching animation
 
-- [ ] **"Simple Play" Mode**
+- [x] **"Simple Play" Mode**
   - Simplified Sidebar: only Nickname, Version, Play button
   - "Advanced" section (collapsed by default) for mod loaders
   - Main screen: "Last Game" card with quick launch
   - Quick actions: Multiplayer, Settings
   - "Go to Modpacks" link
 
-- [ ] **"Modpacks" Mode**
+- [x] **"Modpacks" Mode**
   - Full Sidebar with all settings
   - Main screen: modpack list (current state)
   - All modpack management features
@@ -68,12 +68,12 @@
 
 ### 0.2 Simplified Sidebar for Simple Play
 
-- [ ] **Adaptive Sidebar**
+- [x] **Adaptive Sidebar**
   - In "Simple Play" mode: minimal set of fields
   - In "Modpacks" mode: full set of settings
   - Smooth transition between states
 
-- [ ] **"Advanced" Section**
+- [x] **"Advanced" Section**
   - Collapsed by default
   - Contains: Mod Loaders, OptiFine, Java Settings
   - Remember user preference (always expand/collapse)
@@ -88,30 +88,30 @@
 
 **Note:** Various content options were considered. A combined approach with an information dashboard was chosen.
 
-- [ ] **Information Dashboard**
+- [x] **Information Dashboard**
   - Current Minecraft version
   - Selected mod loader (Forge/Fabric/NeoForge/Vanilla)
   - Allocated RAM
   - Connection status (online/offline)
   - Last launch (date/time, if available)
 
-- [ ] **"Last Game" Card** (optional)
+- [x] **"Last Game" Card** (optional)
   - Shows last settings (version, nickname)
   - Large "Play Now" button
   - Quick launch with saved settings
   - Visually appealing card
 
-- [ ] **Quick Actions**
+- [x] **Quick Actions**
   - Compact buttons: 🌐 Multiplayer, ⚙️ Settings
   - Located below information dashboard
   - Visually prominent but not overwhelming
 
-- [ ] **Switch to Modpacks**
+- [x] **Switch to Modpacks**
   - Text link or button
   - Smooth transition to "Modpacks" mode
   - Less visually prominent than main actions
 
-- [ ] **Additional Widgets** (for future versions)
+- [x] **Additional Widgets** (for future versions)
   - Game statistics (play time, launches)
   - Update notifications
   - Tips and hints
@@ -125,23 +125,23 @@
 
 **Problem:** Modpack creation is not obvious, process is not step-by-step
 
-- [ ] **Step 1: Basic Information**
+- [x] **Step 1: Basic Information**
   - Modpack name (required)
   - Description (optional)
   - Progress indicator [1/3]
 
-- [ ] **Step 2: Version and Mod Loader**
+- [x] **Step 2: Version and Mod Loader**
   - Minecraft version selection
   - Mod loader selection (None, Forge, Fabric, NeoForge)
   - Progress indicator [2/3]
 
-- [ ] **Step 3: Add Mods (optional)**
+- [x] **Step 3: Add Mods (optional)**
   - Option to skip or add mods
   - Mod search (CurseForge/Modrinth)
   - Mod list with checkboxes
   - Progress indicator [3/3]
 
-- [ ] **Navigation**
+- [x] **Navigation**
   - "Back" and "Next" / "Create" buttons
   - Validation on each step
   - Progress saving (can close and return)
@@ -153,19 +153,19 @@
 
 ### 0.5 Improved Mod Management in Modpack
 
-- [ ] **"Mods" Tab in ModpackDetails**
+- [x] **"Mods" Tab in ModpackDetails**
   - Mod list with checkboxes (enable/disable)
   - "+ Add Mod" button
   - Mod search directly in list
   - Settings and delete buttons for each mod
   - Statistics: total mods / enabled
 
-- [ ] **Drag & Drop for Mod Order**
+- [x] **Drag & Drop for Mod Order**
   - Drag mods to change load order
   - Visual indication when dragging
   - Automatic order saving
 
-- [ ] **Improved Modpack Card**
+- [x] **Improved Modpack Card**
   - "Play" button instead of "Select" (more intuitive)
   - ⚙️ icon for settings (more compact)
   - Menu (⋮) for additional actions (Duplicate, Export, Delete)
@@ -177,12 +177,12 @@
 
 ### 0.6 Progressive Disclosure
 
-- [ ] **Collapsible Sections in Sidebar**
+- [x] **Collapsible Sections in Sidebar**
   - "Advanced" section collapsed by default
   - Smooth expand/collapse animation
   - Remember user preference
 
-- [ ] **Hidden Settings in Modpacks**
+- [x] **Hidden Settings in Modpacks**
   - Advanced settings in "Advanced" section
   - Hint on first use
   - Launcher setting: "Always show all settings"
@@ -194,19 +194,19 @@
 
 ### 0.7 Improved Navigation
 
-- [ ] **Breadcrumbs**
+- [x] **Breadcrumbs**
   - Show navigation path (Home > Modpacks > My Modpack)
   - Clickable elements for quick navigation
   - Adaptive (hidden on small screens)
 
-- [ ] **Quick Access Icons**
+- [x] **Quick Access Icons**
   - 🏠 Home (Simple Play)
   - 📦 Modpacks
   - ⚙️ Settings
   - 🌐 Multiplayer
   - Location: in Sidebar Header or TitleBar
 
-- [ ] **Back Button**
+- [x] **Back Button**
   - In modals and detail pages
   - Hotkey: Esc
 
@@ -221,27 +221,28 @@
 
 ### 1.1 Instance Management Improvement
 
-- [ ] **UI for Instance Management**
+- [x] **UI for Instance Management**
   - Instance list with cards (in "Modpacks" mode)
   - Create new instance via UI
   - Edit instance
   - Delete instance with confirmation
-  - Duplicate instance
-  - Rename instance
+  - [x] Duplicate instance
+  - [x] Rename instance
   - Icons and previews for instances
   - Instance status (active, running, update available)
 
-- [ ] **Context Menu for Instances**
-  - Right-click → Launch, Edit, Delete, Export, Duplicate
+- [x] **Context Menu for Instances**
+  - Right-click → Launch, Edit, Delete
+  - [x] Export, Duplicate
   - Quick actions
   - Visual indication of active instance
 
-- [ ] **Instance Grouping and Filtering**
-  - By Minecraft version
-  - By mod loader
-  - By modpack
-  - Search by name
-  - Sorting (by date, by name, by version)
+- [x] **Instance Grouping and Filtering**
+  - [x] By Minecraft version
+  - [x] By mod loader
+  - [x] By modpack (via search)
+  - [x] Search by name
+  - [x] Sorting (by date, by name, by version)
 
 **Dependencies:** 0.1 (Mode Switcher)  
 **Time:** 2-3 weeks
@@ -250,22 +251,22 @@
 
 ### 1.2 Modpack Enhancement
 
-- [ ] **Modpack Updates** ⭐ Top Feature
+- [x] **Modpack Updates** ⭐ Top Feature
   - Automatic update detection (background process)
   - Update notifications (ModpackUpdateNotification)
   - One-click update installation
   - Modpack version history
   - Setting: automatic updates / notifications only
 
-- [ ] **Modpack Browser Improvement**
+- [x] **Modpack Browser Improvement**
   - Filters (MC version, mod loader, category, platform)
   - Sorting (popularity, date, alphabetical, downloads)
   - Favorites (save in localStorage)
-  - View history
-  - Pagination with configurable results count
+  - [ ] View history
+  - [ ] Pagination with configurable results count (currently fixed at 12)
   - Modpack preview (without opening modal)
 
-- [ ] **Modpack Export/Import** ⭐ Top Feature
+- [x] **Modpack Export/Import** ⭐ Top Feature
   - Export to CurseForge format (.zip)
   - Export to Modrinth format (.mrpack)
   - Export to MultiMC format
@@ -282,7 +283,7 @@
 
 ### 1.3 Mod Management
 
-- [ ] **UI for Mod Management**
+- [x] **UI for Mod Management**
   - Installed mod list (in modpack details)
   - Enable/disable mods (checkboxes)
   - Delete mods
@@ -290,19 +291,19 @@
   - Mod grouping (by category, by mod loader)
   - Search in mod list
 
-- [ ] **Mod Download and Installation**
+- [x] **Mod Download and Installation**
   - Mod search on CurseForge/Modrinth (built-in search)
   - Install mods to instance/modpack
   - Automatic dependency resolution
   - Mod updates (automatic detection)
   - Bulk install/delete
 
-- [ ] **Dependency Management**
-  - Show mod dependencies (visual tree)
+- [x] **Dependency Management**
+  - [x] Show mod dependencies (visual tree)
   - Automatic dependency installation
-  - Conflict detection
-  - Visual problem indication (red badges)
-  - Version incompatibility warnings
+  - [x] Conflict detection
+  - [x] Visual problem indication (red badges)
+  - [x] Version incompatibility warnings
 
 **Dependencies:** 0.5 (Improved Mod Management)  
 **Time:** 3-4 weeks
@@ -311,20 +312,20 @@
 
 ### 1.4 Additional UI/UX Improvements
 
-- [ ] **Improved Empty States**
+- [x] **Improved Empty States**
   - For simple play: welcome message with hints
   - For modpacks: call to action (Browser, Create, Import)
   - Visual icons and illustrations
   - Hotkeys removed from hints (to simplify interface)
 
-- [ ] **Improved Notifications**
+- [x] **Improved Notifications**
   - Extend Toast system
   - Update notifications (modpacks, mods, launcher)
   - Error notifications with actions
   - Operation completion notifications
   - Notification grouping
 
-- [ ] **Improved Hotkeys**
+- [x] **Improved Hotkeys**
   - `Ctrl+1`: Switch to "Simple Play"
   - `Ctrl+2`: Switch to "Modpacks"
   - `Ctrl+P`: Play (quick launch)
@@ -347,18 +348,18 @@
 
 ### 2.1 Resource Pack Management ⭐ Top Feature
 
-- [ ] **Resource Pack Download**
-  - Search on Modrinth/CurseForge
-  - Install to instance/modpack
-  - Enable/disable resource packs (checkboxes)
-  - Resource pack load order (drag & drop)
-  - Resource pack preview
+- [x] **Resource Pack Download**
+  - [x] Search on Modrinth/CurseForge
+  - [x] Install to instance/modpack
+  - [x] Enable/disable resource packs (checkboxes)
+  - [x] Resource pack load order (up/down buttons)
+  - Resource pack preview (screenshots) — optional
 
-- [ ] **UI for Resource Packs**
-  - Installed resource pack list (in instance/modpack details)
-  - Resource pack preview (screenshots)
-  - Delete resource pack
-  - Resource pack information (version, author, description)
+- [x] **UI for Resource Packs**
+  - [x] Installed resource pack list (in instance/modpack details)
+  - [x] Resource pack preview (icon)
+  - [x] Delete resource pack
+  - [x] "Add Resource Pack" button
 
 **Dependencies:** 1.1 (Instance Management)  
 **Time:** 2 weeks
@@ -367,16 +368,17 @@
 
 ### 2.2 Shader Management ⭐ Top Feature
 
-- [ ] **Shader Download**
-  - Search on Modrinth
-  - Install shader packs
-  - Manage shaders in instance/modpack
+- [x] **Shader Download**
+  - [x] Search on Modrinth
+  - [x] Install shader packs
+  - [x] Manage shaders in instance/modpack
 
-- [ ] **UI for Shaders**
-  - Installed shader list
-  - Switch between shaders (radio buttons)
-  - Delete shaders
-  - Shader preview (screenshots)
+- [x] **UI for Shaders**
+  - [x] Installed shader list
+  - [x] Switch between shaders (activate)
+  - [x] Disable shaders
+  - [x] Delete shaders
+  - [x] "Add Shader" button
 
 **Dependencies:** 1.1 (Instance Management)  
 **Time:** 2 weeks
@@ -385,15 +387,17 @@
 
 ### 2.3 Datapack Management ⭐ Top Feature (Modrinth App)
 
-- [ ] **Datapack Download**
-  - Search on Modrinth
-  - Install to instance/modpack
-  - Manage datapacks
+- [x] **Datapack Download**
+  - [x] Search on Modrinth (with MC version filter)
+  - [x] Install to world
+  - [x] Manage datapacks (enable/disable/delete)
+  - [x] Restriction: only for MC 1.13+ (datapacks were added in 1.13)
 
-- [ ] **UI for Datapacks**
-  - Installed datapack list
-  - Enable/disable datapacks
-  - Datapack information
+- [x] **UI for Datapacks**
+  - [x] "Datapacks" button for each world in world list
+  - [x] Modal with "Installed" / "Search Modrinth" tabs
+  - [x] Enable/disable datapacks
+  - [x] Datapack information (name, description, version)
 
 **Dependencies:** 1.1 (Instance Management)  
 **Time:** 1-2 weeks
@@ -402,13 +406,13 @@
 
 ### 2.4 World Management
 
-- [ ] **World List**
-  - View saved worlds (in instance details)
-  - Delete worlds
-  - Copy worlds
-  - World backup
-  - Rename worlds
-  - World information (creation date, size, screenshot)
+- [x] **World List**
+  - [x] View saved worlds (in instance/modpack details)
+  - [x] Delete worlds
+  - [x] Copy (duplicate) worlds
+  - [x] World backup
+  - [x] Open world folder
+  - [x] World information (creation date, size)
 
 **Dependencies:** 1.1 (Instance Management)  
 **Time:** 1-2 weeks
@@ -421,13 +425,13 @@
 
 ### 3.1 Extended Java Settings
 
-- [ ] **Java Management**
-  - Automatic Java detection (partially exists)
-  - Select Java version for instance
-  - JVM arguments management (advanced editor)
-  - Memory settings (Xmx, Xms) with visual slider
-  - Performance profiles (Low, Medium, High, Custom)
-  - Invalid settings warnings
+- [x] **Java Management**
+  - [x] Automatic Java detection
+  - [x] Select Java version for instance
+  - [x] JVM arguments management (advanced editor)
+  - [x] Memory settings (Xmx, Xms) with visual slider
+  - [x] Performance profiles (Low, Medium, High, Custom)
+  - [x] Invalid settings warnings
 
 **Dependencies:** 1.1 (Instance Management)  
 **Time:** 1-2 weeks
@@ -436,20 +440,20 @@
 
 ### 3.2 Logs and Debugging ⭐ Top Feature (Prism Launcher)
 
-- [ ] **Improved Logs**
-  - Color-coded logs (ERROR - red, WARN - yellow, INFO - blue, DEBUG - gray)
-  - Log filtering (by level, by source, by text)
-  - Log search (Ctrl+F)
-  - Export logs (to file)
-  - Automatic error detection (highlighting)
-  - Copy selected text
+- [x] **Improved Logs**
+  - [x] Color-coded logs (ERROR - red, WARN - yellow, INFO - blue, DEBUG - gray)
+  - [x] Log filtering (by level, by source, by text)
+  - [x] Log search (Ctrl+F)
+  - [x] Export logs (to file)
+  - [x] Automatic error detection (highlighting)
+  - [x] Copy selected text
 
-- [ ] **Console**
-  - Built-in console for Minecraft (partially exists)
-  - Send commands to game
-  - Command history (up/down arrows)
-  - Command autocomplete
-  - Syntax highlighting
+- [x] **Console**
+  - [x] Built-in console for Minecraft
+  - [x] Send commands to game
+  - [x] Command history (up/down arrows)
+  - [x] Command autocomplete
+  - [x] Syntax highlighting
 
 **Dependencies:** None  
 **Time:** 2-3 weeks
@@ -458,13 +462,13 @@
 
 ### 3.3 Screenshot Management ⭐ Top Feature (Prism Launcher)
 
-- [ ] **Screenshot Viewing**
-  - Screenshot list from game (in instance details)
-  - Screenshot preview (gallery)
-  - Delete screenshots
-  - Open screenshot folder
-  - Rename screenshots
-  - Copy screenshots
+- [x] **Screenshot Viewing**
+  - [x] Screenshot list from game (in instance details)
+  - [x] Screenshot preview (gallery)
+  - [x] Delete screenshots
+  - [x] Open screenshot folder
+  - [x] Rename screenshots
+  - [x] Copy screenshots
 
 - [ ] **Additional Features** (optional)
   - Upload screenshots (to cloud or server)
@@ -478,18 +482,18 @@
 
 ### 3.4 Instance Export/Import ⭐ Top Feature
 
-- [ ] **Instance Export**
-  - Export to various formats (MultiMC, Prism, ATLauncher, CurseForge, Modrinth)
-  - Include/exclude mods, worlds, settings
-  - Archive compression
-  - Export path selection
+- [x] **Instance Export**
+  - [x] Export to various formats (MultiMC, Prism, ATLauncher, CurseForge, Modrinth)
+  - [x] Include/exclude mods, worlds, settings
+  - [x] Archive compression
+  - [x] Export path selection
 
-- [ ] **Instance Import**
-  - Import from other launchers (MultiMC, Prism, ATLauncher, CurseForge, Modrinth)
-  - Import validation
-  - Automatic problem resolution
-  - Preview before import
-  - Select elements for import
+- [x] **Instance Import**
+  - [x] Import from other launchers (MultiMC, Prism, ATLauncher, CurseForge, Modrinth)
+  - [x] Import validation
+  - [x] Automatic problem resolution
+  - [x] Preview before import
+  - [x] Select elements for import
 
 **Dependencies:** 1.1 (Instance Management), 1.2 (Modpack Export/Import)  
 **Time:** 2-3 weeks
@@ -504,16 +508,16 @@
 
 **Problem:** Disk space duplication with multiple instances sharing common mods
 
-- [ ] **Centralized Storage**
+- [x] **Centralized Storage**
   - Single storage for mods, resource packs, shaders
   - Use hard links instead of copying files
   - Disk space savings (up to 90% with multiple instances)
   - Automatic hard link creation on install
 
-- [ ] **Resource Management**
+- [x] **Resource Management**
   - Automatic deduplication
-  - Cleanup unused resources
-  - Disk usage statistics
+  - [x] Cleanup unused resources
+  - [x] Disk usage statistics
   - Space savings visualization
 
 **Dependencies:** 1.3 (Mod Management), 2.1-2.3 (Resource Packs, Shaders, Datapacks)  
@@ -523,22 +527,21 @@
 
 ### 4.2 Performance Optimization
 
-- [ ] **Caching**
+- [x] **Caching**
   - Modpack metadata cache (local storage)
-  - Image cache (modpack icons, previews)
+  - [ ] Image cache (modpack icons, previews)
   - Minecraft versions cache
   - Mod cache (metadata)
   - Cache size configuration
   - Cache cleanup
 
-- [ ] **Lazy Loading**
+- [x] **Lazy Loading**
   - Lazy load UI components (partially exists)
   - Lazy load lists (virtualization)
   - Virtualize long lists (react-window or similar)
   - Lazy load images (LazyImage already exists)
 
-- [ ] **Render Optimization**
-  - Component memoization (React.memo)
+- [x] Implement Render Optimization (React.memo, debounce)
   - Re-render optimization
   - Debounce for search and filters
 
@@ -549,13 +552,13 @@
 
 ### 4.3 Download Improvements
 
-- [ ] **Parallel Downloads**
+- [x] **Parallel Downloads**
   - Parallel file downloads (up to N simultaneous)
   - Download queue with priorities
   - Download priorities (critical files first)
   - Progress for each download
 
-- [ ] **Download Resumption**
+- [x] **Download Resumption**
   - Save download progress
   - Resume after restart
   - Validate downloaded files (checksum)
@@ -661,12 +664,12 @@
 ### 6.2 Mirrors and CDN ⭐ Top Feature (XMCL)
 
 - [ ] **Mirror Management**
-  - BMCL API support
-  - Custom mirrors (add your own)
-  - Automatic best mirror selection (by speed)
-  - Fallback mirrors
-  - Mirror speed testing
-  - Mirror priority settings
+  - [x] BMCL API support
+  - [x] Custom mirrors (add your own)
+  - [x] Automatic best mirror selection (by speed)
+  - [ ] Fallback mirrors
+  - [x] Mirror speed testing
+  - [ ] Mirror priority settings
 
 **Dependencies:** None  
 **Time:** 2 weeks

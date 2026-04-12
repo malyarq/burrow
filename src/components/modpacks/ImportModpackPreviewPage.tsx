@@ -27,7 +27,7 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
   const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState<{
-    format: 'curseforge' | 'modrinth' | 'zip' | null;
+    format: 'curseforge' | 'modrinth' | 'zip' | 'multimc' | null;
     manifest: ModpackManifest | null;
     error?: string;
   } | null>(null);
@@ -105,7 +105,7 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
                 <h3 className="font-bold text-lg text-zinc-900 dark:text-white mb-4">
                   {info.manifest.name || path.basename(filePath)}
                 </h3>
-                
+
                 <div className="space-y-3">
                   {info.manifest.version && (
                     <div>
@@ -170,8 +170,9 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
                     </p>
                     <p className="text-sm font-medium text-zinc-900 dark:text-white capitalize">
                       {info.format === 'curseforge' ? t('modpacks.platform_curseforge') :
-                       info.format === 'modrinth' ? t('modpacks.platform_modrinth') :
-                       info.format || 'Unknown'}
+                        info.format === 'modrinth' ? t('modpacks.platform_modrinth') :
+                          info.format === 'multimc' ? 'MultiMC / Prism / FriendLauncher' :
+                            info.format || 'Unknown'}
                     </p>
                   </div>
                 </div>

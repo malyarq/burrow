@@ -66,6 +66,15 @@
   - `modpacks:getModpackInfoFromFile`
   - `modpacks:getMods`
   - `modpacks:backup`
+  
+- **datapacks**
+  - `datapacks:list`
+  - `datapacks:enable`
+  - `datapacks:disable`
+  - `datapacks:delete`
+  - `datapacks:search`
+  - `datapacks:install`
+  - `datapacks:getVersions`
 
 - **network**
   - `network:host`

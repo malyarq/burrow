@@ -9,6 +9,10 @@ import type { ModsAPI } from './mods';
 import type { NetworkAPI } from './network';
 import type { SettingsAPI } from './settings';
 import type { WindowControlsAPI } from './windowControls';
+import type { AccountAPI } from './account';
+import type { MirrorsAPI } from './mirrors';
+import type { StatisticsAPI } from './statistics';
+import type { ShareAPI } from './share';
 
 /**
  * Unified, namespaced preload surface (preferred for new code).
@@ -27,5 +31,9 @@ export type FriendLauncherApi = {
   assets: AssetsAPI;
   appUpdater: AppUpdaterAPI;
   ipcRenderer: IpcRendererAPI;
+  account: AccountAPI;
+  mirrors: MirrorsAPI;
+  statistics: StatisticsAPI;
+  share: ShareAPI;
 };
 

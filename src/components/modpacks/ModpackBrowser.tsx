@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useDebounce } from '../../hooks/useDebounce';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { cn } from '../../utils/cn';
@@ -17,6 +18,7 @@ type FilterLoader = string | 'all';
 
 interface ModpackBrowserProps {
   onBack: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onNavigate: (view: { type: 'install'; modpack: any; versions: any[]; platform: 'curseforge' | 'modrinth' } | { type: 'importPreview'; filePath: string }) => void;
 }
 
@@ -34,7 +36,12 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
   const [currentPage, setCurrentPage] = useState(1);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [totalResults, setTotalResults] = useState(0);
-  const itemsPerPage = 12;
+  const [itemsPerPage, setItemsPerPage] = useState(() => {
+    const saved = localStorage.getItem('modpack-items-per-page');
+    return saved ? Number(saved) : 12;
+  });
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<ModpackSearchResultItem[]>([]);
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -47,6 +54,38 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
       }
     }
   }, []);
+
+  // Load history
+  useEffect(() => {
+    try {
+      const savedHistory = localStorage.getItem('modpack-history');
+      if (savedHistory) {
+        setHistory(JSON.parse(savedHistory));
+      }
+    } catch (e) {
+      console.error('Error loading history:', e);
+    }
+  }, []);
+
+  const addToHistory = useCallback((modpack: ModpackSearchResultItem) => {
+    setHistory(prev => {
+      const filtered = prev.filter(p => p.projectId !== modpack.projectId);
+      const newHistory = [modpack, ...filtered].slice(0, 50);
+      localStorage.setItem('modpack-history', JSON.stringify(newHistory));
+      return newHistory;
+    });
+  }, []);
+
+  const clearHistory = useCallback(() => {
+    setHistory([]);
+    localStorage.removeItem('modpack-history');
+  }, []);
+
+  const handleItemsPerPageChange = (val: number) => {
+    setItemsPerPage(val);
+    localStorage.setItem('modpack-items-per-page', String(val));
+    setCurrentPage(1);
+  };
 
   // Save favorites to localStorage
   const saveFavorites = useCallback((newFavorites: Set<string>) => {
@@ -64,19 +103,21 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
     saveFavorites(newFavorites);
   }, [favorites, saveFavorites]);
 
+  const debouncedQuery = useDebounce(query, 500);
+
   const searchModpacks = useCallback(async () => {
     setLoading(true);
     try {
       // Используем пустую строку для получения популярных модпаков, если запрос пустой
-      const searchQuery = query.trim() || '';
-      
+      const searchQuery = debouncedQuery.trim() || '';
+
       // Вычисляем offset для текущей страницы
       const offset = (currentPage - 1) * itemsPerPage;
-      
+
       // Подготавливаем параметры
       const mcVersion = filterMCVersion !== 'all' ? filterMCVersion : undefined;
       const loader = filterLoader !== 'all' ? filterLoader : undefined;
-      
+
       let results;
       if (platform === 'curseforge') {
         results = await modpacksIPC.searchCurseForge(
@@ -97,7 +138,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
           itemsPerPage
         );
       }
-      
+
       const items = results.items || [];
       setSearchResults(items);
       setTotalResults(results.total || items.length);
@@ -108,39 +149,31 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
     } finally {
       setLoading(false);
     }
-  }, [query, platform, filterMCVersion, filterLoader, sortBy, currentPage, itemsPerPage]);
+  }, [debouncedQuery, platform, filterMCVersion, filterLoader, sortBy, currentPage, itemsPerPage]);
 
   useEffect(() => {
     // Сбрасываем на первую страницу при изменении фильтров
     setCurrentPage(1);
-  }, [query, platform, filterMCVersion, filterLoader, sortBy]);
+  }, [debouncedQuery, platform, filterMCVersion, filterLoader, sortBy]);
 
   useEffect(() => {
-    // Выполняем поиск сразу при открытии и при изменении платформы
-    // Для пустого запроса используем debounce только при вводе текста
-    if (query.trim()) {
-      const timeoutId = setTimeout(() => {
-        searchModpacks();
-      }, 500);
-      return () => clearTimeout(timeoutId);
-    } else {
-      // При пустом запросе выполняем поиск сразу (популярные модпаки)
-      searchModpacks();
-    }
-  }, [query, platform, filterMCVersion, filterLoader, sortBy, currentPage, searchModpacks]);
+    // Выполняем поиск при изменении debouncedQuery или других параметров
+    searchModpacks();
+  }, [debouncedQuery, platform, filterMCVersion, filterLoader, sortBy, currentPage, searchModpacks]);
 
   const handleModpackClick = async (modpack: ModpackSearchResultItem) => {
+    addToHistory(modpack);
     setSelectedModpack(modpack);
     setLoading(true);
     try {
       let versionsList: ModpackVersionDescriptor[];
-      
+
       if (platform === 'curseforge') {
         versionsList = await modpacksIPC.getCurseForgeVersions(Number(modpack.projectId));
       } else {
         versionsList = await modpacksIPC.getModrinthVersions(modpack.projectId);
       }
-      
+
       setVersions(versionsList);
       onNavigate({ type: 'install', modpack, versions: versionsList, platform });
     } catch (error) {
@@ -179,123 +212,150 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header with back button, title, platform tabs, import */}
       <div className="flex items-center gap-4 p-6 border-b border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/40 min-w-0 flex-wrap">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onBack}
+          className="flex items-center gap-2 shrink-0"
+        >
+          <span>←</span>
+          {t('general.back') || 'Назад'}
+        </Button>
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-white shrink-0">
+          {t('modpacks.browser')}
+        </h2>
+        <div className="flex gap-2 shrink-0 items-center">
+          <button
+            onClick={() => setPlatform('curseforge')}
+            disabled
+            className={cn(
+              "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
+              "bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-500",
+              "cursor-not-allowed opacity-60"
+            )}
+            title={t('modpacks.curseforge_wip') || 'CurseForge в разработке'}
+          >
+            {t('modpacks.platform_curseforge')} (WIP)
+          </button>
+          <button
+            onClick={() => setPlatform('modrinth')}
+            className={cn(
+              "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
+              platform === 'modrinth'
+                ? cn("text-white", getAccentStyles('bg').className)
+                : "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+            )}
+            style={platform === 'modrinth' ? getAccentStyles('bg').style : undefined}
+          >
+            {t('modpacks.platform_modrinth')}
+          </button>
           <Button
             variant="secondary"
             size="sm"
-            onClick={onBack}
-            className="flex items-center gap-2 shrink-0"
+            onClick={handleImport}
+            className="shrink-0 ml-2"
           >
-            <span>←</span>
-            {t('general.back') || 'Назад'}
+            {t('modpacks.import') || 'Импорт'}
           </Button>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-white shrink-0">
-            {t('modpacks.browser')}
-          </h2>
-          <div className="flex gap-2 shrink-0 items-center">
-            <button
-              onClick={() => setPlatform('curseforge')}
-              disabled
-              className={cn(
-                "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
-                "bg-zinc-200 text-zinc-500 dark:bg-zinc-700 dark:text-zinc-500",
-                "cursor-not-allowed opacity-60"
-              )}
-              title={t('modpacks.curseforge_wip') || 'CurseForge в разработке'}
-            >
-              {t('modpacks.platform_curseforge')} (WIP)
-            </button>
-            <button
-              onClick={() => setPlatform('modrinth')}
-              className={cn(
-                "px-4 py-2 rounded-lg font-medium transition-colors text-sm",
-                platform === 'modrinth'
-                  ? cn("text-white", getAccentStyles('bg').className)
-                  : "bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-              )}
-              style={platform === 'modrinth' ? getAccentStyles('bg').style : undefined}
-            >
-              {t('modpacks.platform_modrinth')}
-            </button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleImport}
-              className="shrink-0 ml-2"
-            >
-              {t('modpacks.import') || 'Импорт'}
-            </Button>
-          </div>
+          <Button
+            variant={showHistory ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setShowHistory(!showHistory)}
+            className="shrink-0 ml-2"
+            title={t('modpacks.history_tooltip') || 'История просмотров'}
+          >
+            {t('modpacks.history') || 'История'}
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 min-h-0 custom-scrollbar">
         {/* Search and Filters */}
-        <div className="mb-4 space-y-3">
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t('modpacks.search_placeholder')}
-                className="w-full"
-              />
-              
-              <div className="flex gap-2 flex-wrap">
-                <Select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortOption)}
-                  className="flex-1 min-w-[150px]"
+        {!showHistory && (
+          <div className="mb-4 space-y-3">
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('modpacks.search_placeholder')}
+              className="w-full"
+            />
+
+            <div className="flex gap-2 flex-wrap">
+              <Select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="flex-1 min-w-[150px]"
+              >
+                <option value="popularity">{t('modpacks.sort_popularity') || 'По популярности'}</option>
+                <option value="alphabetical">{t('modpacks.sort_alphabetical') || 'По алфавиту'}</option>
+                <option value="date">{t('modpacks.sort_date') || 'По дате'}</option>
+              </Select>
+
+              <Select
+                value={filterMCVersion}
+                onChange={(e) => setFilterMCVersion(e.target.value as FilterMCVersion)}
+                className="flex-1 min-w-[150px]"
+              >
+                <option value="all">{t('modpacks.filter_all') || 'Все версии MC'}</option>
+                {MINECRAFT_VERSIONS.filter(v => v.type === 'release').map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.id}
+                  </option>
+                ))}
+              </Select>
+
+              <Select
+                value={filterLoader}
+                onChange={(e) => setFilterLoader(e.target.value as FilterLoader)}
+                className="flex-1 min-w-[150px]"
+              >
+                <option value="all">{t('modpacks.filter_all_loaders') || 'Все модлоадеры'}</option>
+                <option value="forge">Forge</option>
+                <option value="fabric">Fabric</option>
+                <option value="neoforge">NeoForge</option>
+              </Select>
+
+              <Select
+                value={String(itemsPerPage)}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="w-[100px]"
+                title={t('modpacks.items_per_page') || 'Элементов на странице'}
+              >
+                <option value="12">12</option>
+                <option value="24">24</option>
+                <option value="48">48</option>
+              </Select>
+            </div>
+          </div>
+
+
+        )}
+
+        {/* History View */}
+        {showHistory && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-white">
+                {t('modpacks.history') || 'История'} ({history.length})
+              </h3>
+              {history.length > 0 && (
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={clearHistory}
                 >
-                  <option value="popularity">{t('modpacks.sort_popularity') || 'По популярности'}</option>
-                  <option value="alphabetical">{t('modpacks.sort_alphabetical') || 'По алфавиту'}</option>
-                  <option value="date">{t('modpacks.sort_date') || 'По дате'}</option>
-                </Select>
-                
-                <Select
-                  value={filterMCVersion}
-                  onChange={(e) => setFilterMCVersion(e.target.value as FilterMCVersion)}
-                  className="flex-1 min-w-[150px]"
-                >
-                  <option value="all">{t('modpacks.filter_all') || 'Все версии MC'}</option>
-                  {MINECRAFT_VERSIONS.filter(v => v.type === 'release').map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.id}
-                    </option>
-                  ))}
-                </Select>
-                
-                <Select
-                  value={filterLoader}
-                  onChange={(e) => setFilterLoader(e.target.value as FilterLoader)}
-                  className="flex-1 min-w-[150px]"
-                >
-                  <option value="all">{t('modpacks.filter_all_loaders') || 'Все модлоадеры'}</option>
-                  <option value="forge">Forge</option>
-                  <option value="fabric">Fabric</option>
-                  <option value="neoforge">NeoForge</option>
-                </Select>
+                  {t('modpacks.clear_history') || 'Очистить историю'}
+                </Button>
+              )}
+            </div>
+
+            {history.length === 0 ? (
+              <div className="text-center py-12 text-zinc-500 dark:text-zinc-400">
+                {t('modpacks.no_history') || 'История просмотров пуста'}
               </div>
-        </div>
-
-        {/* Results */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-12 gap-3">
-                <LoadingSpinner size="lg" />
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  {t('modpacks.loading')}
-                </p>
-          </div>
-        )}
-
-        {!loading && paginatedResults.length === 0 && (
-          <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
-                {query.trim() 
-                  ? t('modpacks.no_results')
-                  : t('modpacks.loading_popular') || 'Загрузка популярных модпаков...'}
-          </div>
-        )}
-
-        {!loading && paginatedResults.length > 0 && (
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  {paginatedResults.map((modpack) => (
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {history.map((modpack) => (
                   <div
                     key={modpack.projectId}
                     onClick={() => handleModpackClick(modpack)}
@@ -341,34 +401,108 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ onBack, onNaviga
                       </div>
                     </div>
                   </div>
-                  ))}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Search Results */}
+        {!showHistory && loading && (
+          <div className="flex flex-col items-center justify-center py-12 gap-3">
+            <LoadingSpinner size="lg" />
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {t('modpacks.loading')}
+            </p>
+          </div>
+        )}
+
+        {!showHistory && !loading && paginatedResults.length === 0 && (
+          <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
+            {query.trim()
+              ? t('modpacks.no_results')
+              : t('modpacks.loading_popular') || 'Загрузка популярных модпаков...'}
+          </div>
+        )}
+
+        {!showHistory && !loading && paginatedResults.length > 0 && (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {paginatedResults.map((modpack) => (
+                <div
+                  key={modpack.projectId}
+                  onClick={() => handleModpackClick(modpack)}
+                  className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/50 cursor-pointer transition-colors relative"
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(modpack.projectId);
+                    }}
+                    className="absolute top-2 right-2 p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                    title={favorites.has(modpack.projectId) ? t('modpacks.remove_favorite') || 'Удалить из избранного' : t('modpacks.add_favorite') || 'Добавить в избранное'}
+                  >
+                    <span className={cn(
+                      'text-lg',
+                      favorites.has(modpack.projectId) ? 'text-yellow-500' : 'text-zinc-400'
+                    )}>
+                      {favorites.has(modpack.projectId) ? '★' : '☆'}
+                    </span>
+                  </button>
+                  <div className="flex gap-4">
+                    {modpack.iconUrl && (
+                      <img
+                        src={modpack.iconUrl}
+                        alt={modpack.title}
+                        className="w-16 h-16 rounded-lg object-cover"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-zinc-900 dark:text-white truncate">
+                        {modpack.title}
+                      </h4>
+                      {modpack.description && (
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 mt-1">
+                          {modpack.description}
+                        </p>
+                      )}
+                      {modpack.downloads !== undefined && (
+                        <p className="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
+                          {t('modpacks.downloads')}: {modpack.downloads.toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            
+
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-4">
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="px-3 py-1 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                    >
-                      {t('modpacks.prev') || 'Назад'}
-                    </button>
-                    <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                      {t('modpacks.page') || 'Страница'} {currentPage} {t('modpacks.of') || 'из'} {totalPages} ({totalResults} {t('modpacks.total') || 'всего'})
-                    </span>
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="px-3 py-1 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                    >
-                      {t('modpacks.next') || 'Вперед'}
-                    </button>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                >
+                  {t('modpacks.prev') || 'Назад'}
+                </button>
+                <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                  {t('modpacks.page') || 'Страница'} {currentPage} {t('modpacks.of') || 'из'} {totalPages} ({totalResults} {t('modpacks.total') || 'всего'})
+                </span>
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                >
+                  {t('modpacks.next') || 'Вперед'}
+                </button>
               </div>
             )}
           </div>
         )}
       </div>
+
     </div>
   );
 };

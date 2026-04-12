@@ -26,7 +26,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           onCreateWizard={handleCreateWizard}
         />
       );
-    
+
     case 'create':
       return (
         <ModpackCreationWizard
@@ -36,7 +36,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           }}
         />
       );
-    
+
     case 'browser':
       return (
         <ModpackBrowser
@@ -44,7 +44,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           onNavigate={navigate}
         />
       );
-    
+
     case 'details':
       return (
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -56,7 +56,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           />
         </div>
       );
-    
+
     case 'addMod':
       return (
         <AddModPage
@@ -64,7 +64,25 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           onBack={goBack}
         />
       );
-    
+
+    case 'addResourcePack':
+      return (
+        <AddModPage
+          modpackId={view.modpackId}
+          onBack={goBack}
+          contentType="resourcepack"
+        />
+      );
+
+    case 'addShader':
+      return (
+        <AddModPage
+          modpackId={view.modpackId}
+          onBack={goBack}
+          contentType="shader"
+        />
+      );
+
     case 'export':
       return (
         <ExportModpackPage
@@ -72,7 +90,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           onBack={goBack}
         />
       );
-    
+
     case 'install':
       return (
         <InstallModpackPage
@@ -82,7 +100,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           onBack={goBack}
         />
       );
-    
+
     case 'importPreview':
       return (
         <ImportModpackPreviewPage
@@ -90,7 +108,7 @@ const ModpackRouterInner: React.FC<ModpackRouterProps> = ({ onLaunch }) => {
           onBack={goBack}
         />
       );
-    
+
     default:
       return (
         <ModpackList

@@ -33,28 +33,30 @@ const BMCL_FORGE_MAVEN_MIRRORS = [
 
 // Generic Maven mirrors can be useful for Maven Central artifacts, but are unsafe for Forge Maven
 // due to HTML placeholder responses and aggressive caching behaviors.
+// Generic Maven mirrors can be useful for Maven Central artifacts, but are unsafe for Forge Maven
+// due to HTML placeholder responses and aggressive caching behaviors.
 const BMCL_GENERIC_MAVEN_MIRRORS = [
   'https://maven.aliyun.com/repository/public',
   'https://repo.huaweicloud.com/repository/maven',
 ];
 
-const BMCL_REPLACEMENTS: Array<[string, string]> = [
+export const getBmclReplacements = (root: string): Array<[string, string]> => [
   // Normalize both BMCL domains to preferred root.
-  ['https://bmclapi2.bangbang93.com', BMCL_ROOT],
-  ['https://bmclapi.bangbang93.com', BMCL_ROOT],
-  ['https://launchermeta.mojang.com', BMCL_ROOT],
-  ['https://piston-meta.mojang.com', BMCL_ROOT],
-  ['https://piston-data.mojang.com', BMCL_ROOT],
-  ['https://launcher.mojang.com', BMCL_ROOT],
-  ['https://libraries.minecraft.net', `${BMCL_ROOT}/libraries`],
-  ['http://files.minecraftforge.net/maven', `${BMCL_ROOT}/maven`],
-  ['https://files.minecraftforge.net/maven', `${BMCL_ROOT}/maven`],
-  ['https://files.minecraftforge.net/maven', `${BMCL_ROOT}/maven`],
-  ['https://maven.minecraftforge.net', `${BMCL_ROOT}/maven`],
-  ['https://maven.neoforged.net/releases/', `${BMCL_ROOT}/maven/`],
-  ['https://meta.fabricmc.net', `${BMCL_ROOT}/fabric-meta`],
-  ['https://maven.fabricmc.net', `${BMCL_ROOT}/maven`],
-  ['https://authlib-injector.yushi.moe', `${BMCL_ROOT}/mirrors/authlib-injector`],
+  ['https://bmclapi2.bangbang93.com', root],
+  ['https://bmclapi.bangbang93.com', root],
+  ['https://launchermeta.mojang.com', root],
+  ['https://piston-meta.mojang.com', root],
+  ['https://piston-data.mojang.com', root],
+  ['https://launcher.mojang.com', root],
+  ['https://libraries.minecraft.net', `${root}/libraries`],
+  ['http://files.minecraftforge.net/maven', `${root}/maven`],
+  ['https://files.minecraftforge.net/maven', `${root}/maven`],
+  ['https://files.minecraftforge.net/maven', `${root}/maven`],
+  ['https://maven.minecraftforge.net', `${root}/maven`],
+  ['https://maven.neoforged.net/releases/', `${root}/maven/`],
+  ['https://meta.fabricmc.net', `${root}/fabric-meta`],
+  ['https://maven.fabricmc.net', `${root}/maven`],
+  ['https://authlib-injector.yushi.moe', `${root}/mirrors/authlib-injector`],
   ['https://repo1.maven.org/maven2', 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public'],
   ['https://repo.maven.apache.org/maven2', 'https://mirrors.cloud.tencent.com/nexus/repository/maven-public'],
   ['https://hmcl.glavo.site/metadata/cleanroom', 'https://alist.8mi.tech/d/mirror/HMCL-Metadata/Auto/cleanroom'],
@@ -63,7 +65,7 @@ const BMCL_REPLACEMENTS: Array<[string, string]> = [
     'https://zkitefly.github.io/unlisted-versions-of-minecraft',
     'https://alist.8mi.tech/d/mirror/unlisted-versions-of-minecraft/Auto',
   ],
-  [OFFICIAL_ASSETS_ROOT, `${BMCL_ROOT}/assets`],
+  [OFFICIAL_ASSETS_ROOT, `${root}/assets`],
 ];
 
 const uniq = (values: string[]) => {
@@ -129,15 +131,22 @@ export class OfficialProvider implements DownloadProvider {
 }
 
 export class BmclProvider implements DownloadProvider {
-  public id: DownloadProviderId = 'bmcl';
-  private replacements = BMCL_REPLACEMENTS;
+  public id: DownloadProviderId;
+  private replacements: Array<[string, string]>;
+  private root: string;
+
+  constructor(rootUrl: string = BMCL_ROOT, id: DownloadProviderId = 'bmcl') {
+    this.root = rootUrl;
+    this.id = id;
+    this.replacements = getBmclReplacements(rootUrl);
+  }
 
   getVersionListURLs(): string[] {
     return this.injectURLWithCandidates(OFFICIAL_VERSION_MANIFEST_URL);
   }
 
   getAssetObjectCandidates(assetPath: string): string[] {
-    return uniq([`${BMCL_ROOT}/assets/${assetPath}`, `${OFFICIAL_ASSETS_ROOT}/${assetPath}`]);
+    return uniq([`${this.root}/assets/${assetPath}`, `${OFFICIAL_ASSETS_ROOT}/${assetPath}`]);
   }
 
   injectURL(url: string): string {
@@ -145,6 +154,8 @@ export class BmclProvider implements DownloadProvider {
   }
 
   injectURLWithCandidates(url: string): string[] {
+    // For custom mirrors, we might want to just rely on the root URL or generic mirrors
+    // For now, let's keep the hardcoded maven mirrors but ideally these should be configurable or inferred
     const roots = isForgeMavenUrl(url) ? BMCL_FORGE_MAVEN_MIRRORS : [...BMCL_FORGE_MAVEN_MIRRORS, ...BMCL_GENERIC_MAVEN_MIRRORS];
     const mavenCandidates = roots.map((root) => replaceMavenUrl(url, root)).filter(Boolean) as string[];
     if (mavenCandidates.length > 0) {
@@ -183,13 +194,19 @@ export class AutoProvider implements DownloadProvider {
   }
 }
 
-export function getProviderById(id: DownloadProviderId): DownloadProvider {
+// Custom mirrors will be created dynamically, so getProviderById might need to accept a config or be part of a service
+// For now, keep it simple for backward compatibility but expose a way to create providers
+export function getProviderById(id: DownloadProviderId, customRoot?: string): DownloadProvider {
   switch (id) {
     case 'bmcl':
       return new BmclProvider();
     case 'auto':
       return new AutoProvider();
     default:
+      if (customRoot) {
+        // Assuming custom mirrors use BMCL structure for now
+        return new BmclProvider(customRoot, id);
+      }
       return new OfficialProvider();
   }
 }

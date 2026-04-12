@@ -11,7 +11,10 @@
 export const allowedIpcChannels = [
   // window controls
   'window:minimize',
+  'window:minimize',
   'window:close',
+  'window:openConsole',
+  'window:closeConsole',
 
   // launcher
   'launcher:launch',
@@ -120,12 +123,48 @@ export const allowedIpcChannels = [
   'modpacks:updateOverrides',
   'modpacks:getMods',
   'modpacks:backup',
+  'modpacks:resolvePath',
 
   // modpacks events
   'modpacks:updateProgress',
+  // resource packs
+  'resourcePacks:list',
+  'resourcePacks:enable',
+  'resourcePacks:disable',
+  'resourcePacks:reorder',
+  'resourcePacks:import',
+  'resourcePacks:delete',
+  'resourcePacks:openFolder',
+  'resourcePacks:add',
+
+  // shaders
+  'shaders:list',
+  'shaders:setActive',
+  'shaders:disable',
+  'shaders:delete',
+  'shaders:openFolder',
+  'shaders:add',
+
+  // worlds
+  'worlds:list',
+  'worlds:delete',
+  'worlds:backup',
+  'worlds:duplicate',
+  'worlds:openFolder',
+
+  // datapacks
+  'datapacks:list',
+  'datapacks:enable',
+  'datapacks:disable',
+  'datapacks:delete',
+  'datapacks:search',
+  'datapacks:install',
+  'datapacks:getVersions',
+
+  // app
+  'app:saveFile',
 ] as const;
 
 export type AllowedIpcChannel = typeof allowedIpcChannels[number];
 
 export const allowedIpcChannelSet: ReadonlySet<string> = new Set<string>(allowedIpcChannels);
-

@@ -1,11 +1,14 @@
 import { useState, useCallback } from 'react';
 
-export type ModpackView = 
+export type ModpackView =
   | { type: 'list' }
   | { type: 'browser' }
   | { type: 'details'; modpackId: string }
   | { type: 'addMod'; modpackId: string }
+  | { type: 'addResourcePack'; modpackId: string }
+  | { type: 'addShader'; modpackId: string }
   | { type: 'export'; modpackId: string }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { type: 'install'; modpack: any; versions: any[]; platform: 'curseforge' | 'modrinth' }
   | { type: 'importPreview'; filePath: string }
   | { type: 'create' };

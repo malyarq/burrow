@@ -84,3 +84,48 @@ export function createMainWindow(params: CreateMainWindowParams): BrowserWindow 
   return win;
 }
 
+export function createConsoleWindow(params: CreateMainWindowParams): BrowserWindow {
+  const { preloadPath, rendererDevUrl, rendererDist, vitePublicPath } = params;
+
+  const iconPath = path.join(vitePublicPath, 'icon.png');
+  const appIcon = nativeImage.createFromPath(iconPath);
+
+  const win = new BrowserWindow({
+    width: 900,
+    height: 600,
+    minHeight: 400,
+    minWidth: 600,
+    icon: appIcon,
+    title: 'Debug Console',
+    webPreferences: {
+      preload: preloadPath,
+      sandbox: false,
+      contextIsolation: true,
+      nodeIntegration: false,
+      webSecurity: true,
+      devTools: Boolean(rendererDevUrl),
+    },
+    // Console window has standard frame/titlebar
+    autoHideMenuBar: true,
+  });
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    void shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  if (process.platform === 'win32') {
+    win.setIcon(appIcon);
+  }
+
+  // Load with hash #console
+  if (rendererDevUrl) {
+    win.loadURL(`${rendererDevUrl}#console`);
+  } else {
+    // In production, loading file://.../index.html#console works
+    win.loadURL(`file://${path.join(rendererDist, 'index.html')}#console`);
+  }
+
+  return win;
+}
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { useAppUpdater } from '../features/updater/hooks/useAppUpdater';
 import { Modal } from './ui/Modal';
@@ -11,6 +11,10 @@ import { AppearanceTab } from './settings/tabs/AppearanceTab';
 import { DownloadsTab } from './settings/tabs/DownloadsTab';
 import { LauncherTab } from './settings/tabs/LauncherTab';
 import { UpdateModal } from './UpdateModal';
+import { StorageSettings } from './settings/tabs/StorageTab';
+import { modpacksIPC } from '../services/ipc/modpacksIPC';
+import { AccountsPage } from '../features/accounts/AccountsPage';
+import { StatisticsTab } from '../features/settings/statistics/StatisticsTab';
 
 interface SettingsPageProps {
     onClose: () => void;
@@ -22,12 +26,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const {
         hideLauncher, setHideLauncher,
-        accentColor, setAccentColor,
         showConsole, setShowConsole,
-        language, setLanguage, t,
-        theme, setTheme,
+        t,
         minecraftPath, setMinecraftPath,
-        downloadProvider, setDownloadProvider,
         autoDownloadThreads, setAutoDownloadThreads,
         downloadThreads, setDownloadThreads,
         maxSockets, setMaxSockets,
@@ -63,22 +64,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
 
                 <div>
                     {activeTab === 'appearance' && (
-                        <AppearanceTab
-                            accentColor={accentColor}
-                            setAccentColor={setAccentColor}
-                            theme={theme}
-                            setTheme={setTheme}
-                            language={language}
-                            setLanguage={setLanguage}
-                            t={t}
-                            getAccentStyles={getAccentStyles}
-                        />
+                        <AppearanceTab />
                     )}
 
                     {activeTab === 'downloads' && (
                         <DownloadsTab
-                            downloadProvider={downloadProvider}
-                            setDownloadProvider={setDownloadProvider}
                             autoDownloadThreads={autoDownloadThreads}
                             setAutoDownloadThreads={setAutoDownloadThreads}
                             downloadThreads={downloadThreads}
@@ -103,6 +93,22 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
                             onCheckForUpdates={checkForUpdates}
                             onBeforeCheckForUpdates={() => setShowUpdateModal(false)}
                         />
+                    )}
+
+                    {activeTab === 'storage' && (
+                        <StorageSettings
+                            t={t}
+                            getAccentStyles={getAccentStyles}
+                            modpacksIPC={modpacksIPC}
+                        />
+                    )}
+
+                    {activeTab === 'accounts' && (
+                        <AccountsPage />
+                    )}
+
+                    {activeTab === 'statistics' && (
+                        <StatisticsTab />
                     )}
                 </div>
 

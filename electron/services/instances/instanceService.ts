@@ -12,6 +12,9 @@ import {
 } from './paths';
 
 export type { ModpackConfig, ModpacksIndex, ModpackRuntime, ModLoaderType, NetworkMode } from './types';
+import { javaScanner, type DetectedJava } from '../java/javaScanner';
+
+export type { DetectedJava };
 
 /**
  * Owns modpack/root folder layout concerns.
@@ -132,17 +135,17 @@ export class ModpackService {
   public deleteModpack(rootPath: string, modpackId: string) {
     const idx = this.loadModpacksIndex(rootPath);
     if (!idx.modpacks[modpackId]) return;
-    
+
     delete idx.modpacks[modpackId];
-    
+
     // If deleted modpack was selected, select another one (prefer 'default' if exists, otherwise first available)
     if (idx.selectedModpack === modpackId) {
       const remainingIds = Object.keys(idx.modpacks);
-      idx.selectedModpack = remainingIds.length > 0 
+      idx.selectedModpack = remainingIds.length > 0
         ? (idx.modpacks['default'] ? 'default' : remainingIds[0])
         : 'default';
     }
-    
+
     this.saveModpacksIndex(rootPath, idx);
     const dir = this.getModpackDir(rootPath, modpackId);
     try {
@@ -235,6 +238,10 @@ export class ModpackService {
     this.saveModpacksIndex(rootPath, idx);
 
     return { id, config: cfg } as const;
+  }
+
+  public async scanJava(): Promise<DetectedJava[]> {
+    return await javaScanner.scanJava();
   }
 }
 

@@ -1,5 +1,5 @@
 export type { LauncherAPI, LauncherLaunchOptions, LauncherProgressEvent, LauncherVersionListResponse } from './launcher';
-export type { 
+export type {
   ModpacksAPI,
   ModpackSearchResultItem,
   ModpackSearchResult,
@@ -19,4 +19,7 @@ export type { AppUpdaterAPI, AppUpdaterAvailableInfo, AppUpdaterProgress } from 
 export type { IpcRendererAPI } from './ipcRenderer';
 export type { AllowedIpcChannel } from './ipcChannels';
 export type { FriendLauncherApi } from './windowApi';
+export type { AccountAPI } from './account';
+export type { MirrorsAPI } from './mirrors';
+export type { StatisticsAPI } from './statistics';
 

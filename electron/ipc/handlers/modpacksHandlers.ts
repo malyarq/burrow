@@ -4,17 +4,66 @@ import type { ModPlatformService } from '../../services/mods/platform/modPlatfor
 import { downloadCurseForgeModpack } from '../../services/modpacks/installers/curseforgeInstaller'
 import { downloadModrinthModpack } from '../../services/modpacks/installers/modrinthInstaller'
 
-export function registerModpacksHandlers(deps: { 
+import { InstanceExporterService } from '../../services/instances/exporter/InstanceExporterService'
+import { InstanceImporterService } from '../../services/instances/importer/InstanceImporterService'
+
+export function registerModpacksHandlers(deps: {
   modpacks: ModpackService
   modPlatforms: ModPlatformService
   window?: BrowserWindow
 }) {
   const { modpacks, modPlatforms, window } = deps
+  const exporter = new InstanceExporterService(modpacks)
+  const importer = new InstanceImporterService(modpacks, modpacks)
 
   ipcMain.removeHandler('modpacks:list')
   ipcMain.handle('modpacks:list', async (_evt, rootPath?: string) => {
     const root = rootPath || modpacks.getDefaultRootPath()
     return modpacks.listModpacks(root)
+  })
+
+  // ... (keep intermediate handlers) ...
+
+  ipcMain.removeHandler('modpacks:export')
+  ipcMain.handle('modpacks:export', async (
+    _evt,
+    modpackId: string,
+    format: 'curseforge' | 'modrinth' | 'zip' | 'multimc',
+    outputPath: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    options?: any, // ExportOptions
+    rootPath?: string,
+  ) => {
+    const root = rootPath || modpacks.getDefaultRootPath()
+    if (format === 'multimc') {
+      await exporter.exportInstance(root, modpackId, 'multimc', outputPath, options)
+    } else if (format === 'zip' && options) {
+      // If options provided, use InstanceExporter for raw zip with includes
+      await exporter.exportInstance(root, modpackId, 'zip', outputPath, options)
+    } else if (format === 'zip') {
+      // Maintain legacy behavior for Modpack export (manifest based?)
+      // modpacks.exportModpack for zip exports a simple zip of the folder currently.
+      await modpacks.exportModpack(root, modpackId, 'zip', outputPath, modPlatforms)
+    } else {
+      await modpacks.exportModpack(root, modpackId, format as 'curseforge' | 'modrinth', outputPath, modPlatforms)
+    }
+    return { ok: true }
+  })
+
+  ipcMain.removeHandler('modpacks:getModpackInfoFromFile')
+  ipcMain.handle('modpacks:getModpackInfoFromFile', async (_evt, filePath: string) => {
+    return modpacks.getModpackInfoFromFile(filePath)
+  })
+
+  ipcMain.removeHandler('modpacks:import')
+  ipcMain.handle('modpacks:import', async (
+    _evt,
+    filePath: string,
+    targetModpackId?: string,
+    rootPath?: string,
+  ) => {
+    const root = rootPath || modpacks.getDefaultRootPath()
+    return importer.importInstance(root, filePath, targetModpackId)
   })
 
   ipcMain.removeHandler('modpacks:listWithMetadata')
@@ -195,6 +244,20 @@ export function registerModpacksHandlers(deps: {
     return modpacks.exportModpackFromInstance(root, modpackId, name, version, author, modPlatforms)
   })
 
+  ipcMain.removeHandler('modpacks:export')
+  ipcMain.handle('modpacks:export', async (
+    _evt,
+    modpackId: string,
+    format: 'curseforge' | 'modrinth' | 'zip' | 'multimc',
+    outputPath: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    options?: any,
+    rootPath?: string,
+  ) => {
+    const root = rootPath || modpacks.getDefaultRootPath()
+    return modpacks.exportModpack(root, modpackId, format, outputPath, options, modPlatforms)
+  })
+
   ipcMain.removeHandler('modpacks:createLocal')
   ipcMain.handle('modpacks:createLocal', async (
     _evt,
@@ -208,16 +271,38 @@ export function registerModpacksHandlers(deps: {
     return modpacks.createLocalModpack(root, name, version, minecraftVersion, modLoader as { type: import('../../services/instances/types').ModLoaderType; version?: string } | undefined)
   })
 
+  ipcMain.removeHandler('modpacks:createFromManifest')
+  ipcMain.handle('modpacks:createFromManifest', async (
+    _evt,
+    manifest: import('../../../shared/types/modpack').ModpackManifest,
+    rootPath?: string,
+  ) => {
+    const root = rootPath || modpacks.getDefaultRootPath()
+    return modpacks.createFromManifest(root, manifest, modPlatforms)
+  })
+
   ipcMain.removeHandler('modpacks:export')
   ipcMain.handle('modpacks:export', async (
     _evt,
     modpackId: string,
-    format: 'curseforge' | 'modrinth' | 'zip',
+    format: 'curseforge' | 'modrinth' | 'zip' | 'multimc',
     outputPath: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    options?: any, // ExportOptions
     rootPath?: string,
   ) => {
     const root = rootPath || modpacks.getDefaultRootPath()
-    await modpacks.exportModpack(root, modpackId, format, outputPath, modPlatforms)
+
+    if (format === 'multimc') {
+      await exporter.exportInstance(root, modpackId, 'multimc', outputPath, options)
+    } else if (format === 'zip' && options?.includeMods !== undefined) {
+      // If options provided (heuristic), use InstanceExporter
+      await exporter.exportInstance(root, modpackId, 'zip', outputPath, options)
+    } else {
+      // Legacy/Manifest export
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await modpacks.exportModpack(root, modpackId, format as any, outputPath, modPlatforms)
+    }
     return { ok: true }
   })
 
@@ -234,7 +319,8 @@ export function registerModpacksHandlers(deps: {
     rootPath?: string,
   ) => {
     const root = rootPath || modpacks.getDefaultRootPath()
-    return modpacks.importModpack(root, filePath, targetModpackId, modPlatforms)
+    // Use new importer
+    return importer.importInstance(root, filePath, targetModpackId)
   })
 
   ipcMain.removeHandler('modpacks:addMod')
@@ -305,7 +391,32 @@ export function registerModpacksHandlers(deps: {
     const backupPath = await modpacks.backupModpack(root, modpackId)
     return { backupPath }
   })
+
+  // Резолвинг пути модпака (для frontend, когда settings.minecraftPath пуст)
+  ipcMain.removeHandler('modpacks:resolvePath')
+  ipcMain.handle('modpacks:resolvePath', async (_evt, modpackId: string, rootPath?: string) => {
+    const root = rootPath || modpacks.getDefaultRootPath()
+    return modpacks.getModpackDir(root, modpackId)
+  })
+
+  // Java
+  ipcMain.removeHandler('modpacks:scanJava')
+  ipcMain.handle('modpacks:scanJava', async () => {
+    return modpacks.scanJava()
+  })
+
+  // Управление контентом
+  ipcMain.removeHandler('modpacks:getContentStats')
+  ipcMain.handle('modpacks:getContentStats', async () => {
+    return modpacks.getContentStats()
+  })
+
+  ipcMain.removeHandler('modpacks:cleanupContent')
+  ipcMain.handle('modpacks:cleanupContent', async () => {
+    return modpacks.cleanupContent()
+  })
 }
+
 
 // Legacy alias for backward compatibility
 export const registerInstancesHandlers = registerModpacksHandlers;

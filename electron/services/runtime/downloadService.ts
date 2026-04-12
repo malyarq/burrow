@@ -7,6 +7,8 @@ import { reportMirrorFailure, reportMirrorSuccess } from '../mirrors/scoring';
 import { DEFAULT_USER_AGENT } from '@shared/constants';
 import type { LibraryEntry, VersionEntry } from '@shared/types';
 
+import type { MirrorsService } from '../mirrors/mirrorsService';
+
 /**
  * Owns download/mirror state (e.g. bad hosts blacklist) and constructs XMCL installer options.
  *
@@ -16,8 +18,20 @@ import type { LibraryEntry, VersionEntry } from '@shared/types';
  */
 export class RuntimeDownloadService {
   private badDownloadHosts = new Set<string>();
+  private mirrorsService?: MirrorsService;
+
+  constructor(mirrorsService?: MirrorsService) {
+    this.mirrorsService = mirrorsService;
+  }
 
   public getDownloadProvider(providerId?: DownloadProviderId): DownloadProvider {
+    // If providerId matches a custom mirror in MirrorsService, use it
+    if (this.mirrorsService && providerId) {
+      const mirror = this.mirrorsService.getMirrors().find(m => m.id === providerId);
+      if (mirror && mirror.type === 'custom') {
+        return getProviderById(providerId, mirror.rootUrl);
+      }
+    }
     return getProviderById(providerId ?? 'auto');
   }
 

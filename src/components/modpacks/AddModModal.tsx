@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useToast } from '../../contexts/ToastContext';
+import { useDebounce } from '../../hooks/useDebounce';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
@@ -93,13 +94,15 @@ export const AddModModal: React.FC<AddModModalProps> = ({
     loadModpackMetadataAndConfig();
   }, [isOpen, loadModpackMetadataAndConfig]);
 
+  const debouncedQuery = useDebounce(query, 500);
+
   const searchMods = useCallback(async (offset: number, append: boolean) => {
     if (offset === 0) setLoading(true);
     else setLoadingMore(true);
     try {
       const result = await modsIPC.searchMods({
         platform,
-        query: query.trim() || '',
+        query: debouncedQuery.trim() || '',
         mcVersion: effectiveMCVersion || undefined,
         loader: effectiveLoader || undefined,
         sort: filterSort,
@@ -116,15 +119,12 @@ export const AddModModal: React.FC<AddModModalProps> = ({
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [query, platform, effectiveMCVersion, effectiveLoader, filterSort]);
+  }, [debouncedQuery, platform, effectiveMCVersion, effectiveLoader, filterSort]);
 
   useEffect(() => {
     if (!isOpen) return;
-    const timeoutId = setTimeout(() => {
-      searchMods(0, false);
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [isOpen, query, platform, filterMCVersion, filterLoader, filterSort, searchMods]);
+    searchMods(0, false);
+  }, [isOpen, debouncedQuery, platform, filterMCVersion, filterLoader, filterSort, searchMods]);
 
   useEffect(() => {
     setCheckedMods(new Map());
@@ -279,7 +279,7 @@ export const AddModModal: React.FC<AddModModalProps> = ({
               </option>
             ))}
           </Select>
-          
+
           <Select
             value={filterLoader}
             onChange={(e) => setFilterLoader(e.target.value)}
