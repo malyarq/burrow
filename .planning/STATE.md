@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Ready to plan Phase 12
-last_updated: "2026-04-13T13:49:37Z"
-last_activity: 2026-04-13 - Completed Phase 11 adaptive layout foundations
+stopped_at: Ready to execute Phase 12
+last_updated: "2026-04-13T14:12:00Z"
+last_activity: 2026-04-13 - Planned Phase 12 theme truth and settings IA simplification
 progress:
   total_phases: 4
   completed_phases: 1
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Ready to plan Phase 12 theme truth and settings IA simplification
+**Current focus:** Ready to execute Phase 12 theme truth and settings IA simplification
 
 ## Current Position
 
 Phase: 12
-Plan: unplanned
-Status: Ready to plan Phase 12
-Last activity: 2026-04-13 - Completed Phase 11 adaptive layout foundations
+Plan: planned (12-01..12-04)
+Status: Ready to execute Phase 12
+Last activity: 2026-04-13 - Planned Phase 12 theme truth and settings IA simplification
 
 Progress: [##--------] 24%
 
@@ -51,8 +51,8 @@ Progress: [##--------] 24%
 | 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
 
 **Recent Trend:**
-- Last 5 plans: milestone kickoff, 11-01, 11-02, 11-03, 11-04
-- Trend: v0.3.0 moved from planning into execution, and Phase 11 is now a verified shell/overlay/fallback foundation for the remaining UX-hardening work
+- Last 5 plans: 11-01, 11-02, 11-03, 11-04, 12 planning
+- Trend: v0.3.0 moved from adaptive foundation work into theme-truth and settings-IA planning, with Phase 12 now ready for execution on top of the Phase 11 shell baseline
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -118,12 +118,12 @@ None yet.
 
 - Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- Phase 11 is complete and verified; the next workflow step is planning Phase 12.
+- Phase 12 is planned and ready for execution.
 - Live Phase 11 evidence also surfaced a pre-existing raw settings i18n key (`settings.tab_storage`), which is outside Phase 11 acceptance but should be cleaned up in later UX/i18n work.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
 Last session: 2026-04-13T13:49:37Z
-Stopped at: Ready to plan Phase 12
+Stopped at: Ready to execute Phase 12
 Resume file: .planning/PROJECT.md
