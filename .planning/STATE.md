@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Ready to execute Phase 12
-last_updated: "2026-04-13T14:12:00Z"
-last_activity: 2026-04-13 - Planned Phase 12 theme truth and settings IA simplification
+stopped_at: Completed 12-01-PLAN.md
+last_updated: "2026-04-13T14:26:56Z"
+last_activity: 2026-04-13 - Executed 12-01 preset theme truth contract
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 17
-  completed_plans: 4
-  percent: 24
+  completed_plans: 5
+  percent: 29
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Ready to execute Phase 12 theme truth and settings IA simplification
+**Current focus:** Ready to execute Phase 12 plan 02 contrast cleanup on top of the new preset truth seam
 
 ## Current Position
 
 Phase: 12
-Plan: planned (12-01..12-04)
-Status: Ready to execute Phase 12
-Last activity: 2026-04-13 - Planned Phase 12 theme truth and settings IA simplification
+Plan: 02/04 ready
+Status: Ready to execute 12-02
+Last activity: 2026-04-13 - Executed 12-01 preset theme truth contract
 
-Progress: [##--------] 24%
+Progress: [###-------] 29%
 
 ## Performance Metrics
 
 **Velocity:**
 - Total plans completed: 50
-- Active phase plans completed: 21
+- Active phase plans completed: 22
 - Average duration: 19 min
-- Total execution time: 6.7 hours
+- Total execution time: 6.9 hours
 
 **By Phase:**
 
@@ -51,8 +51,8 @@ Progress: [##--------] 24%
 | 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
 
 **Recent Trend:**
-- Last 5 plans: 11-01, 11-02, 11-03, 11-04, 12 planning
-- Trend: v0.3.0 moved from adaptive foundation work into theme-truth and settings-IA planning, with Phase 12 now ready for execution on top of the Phase 11 shell baseline
+- Last 5 plans: 11-02, 11-03, 11-04, 12 planning, 12-01
+- Trend: v0.3.0 moved from adaptive foundation work into theme-truth execution, with 12-01 establishing a truthful preset runtime contract and 12-02 next for contrast cleanup
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -107,6 +107,8 @@ Recent decisions affecting current work:
 - [Phase 11]: Express adaptive layout through shared shell and control seams rather than per-screen breakpoint fixes.
 - [Phase 11]: Fix overlay overflow with one anchored overlay contract reused by tooltips, onboarding, and installed-modpack actions.
 - [Phase 11]: Replace placeholder-feeling logo reuse with one shipped launcher mark shared by classic surfaces and fallback seams.
+- [Phase 12]: Persist preset identity separately from custom theme overrides and infer it once from legacy preset-shaped storage for brownfield-safe migration.
+- [Phase 12]: Resolve the full document token contract from preset mode variants so applying a preset repaints shell, overlay, helper-text, and border tokens immediately.
 
 ### Pending Todos
 
@@ -118,12 +120,12 @@ None yet.
 
 - Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- Phase 12 is planned and ready for execution.
+- Phase 12 plan 01 is complete; plan 02 contrast cleanup is the next execution target.
 - Live Phase 11 evidence also surfaced a pre-existing raw settings i18n key (`settings.tab_storage`), which is outside Phase 11 acceptance but should be cleaned up in later UX/i18n work.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T13:49:37Z
-Stopped at: Ready to execute Phase 12
+Last session: 2026-04-13T14:26:56Z
+Stopped at: Completed 12-01-PLAN.md
 Resume file: .planning/PROJECT.md
