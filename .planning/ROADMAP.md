@@ -49,7 +49,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. Sharing, statistics, mirrors, and remaining advanced or content-management surfaces feel like the same product as the refreshed shell and core flows.
   2. The refreshed UI preserves visible focus, sufficient contrast, reduced-motion behavior, and runtime readability across updated surfaces.
   3. Backgrounds, gradients, blur, and motion support hierarchy and atmosphere without overwhelming content or making the launcher feel heavier.
-**Plans**: TBD
+**Plans**: 5
 
 ### Phase 10: Manual Experience Verification And Release Truth
 **Goal**: The milestone closes on live experience evidence and truthful release messaging rather than assuming the redesigned UI is done.
@@ -71,5 +71,5 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 |-------|----------------|--------|-----------|
 | 7. UI System Foundations | 4/4 | Complete | 2026-04-13 |
 | 8. Core Route Rollout And UI Correctness | 4/4 | Complete | 2026-04-13 |
-| 9. Secondary Surface Alignment And UX Polish | 0/0 | Planned | — |
+| 9. Secondary Surface Alignment And UX Polish | 0/5 | Planned | — |
 | 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |
