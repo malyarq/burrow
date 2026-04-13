@@ -4,7 +4,7 @@
 
 - Milestone: `v0.2.0`
 - Theme: UI System And Experience Rework
-- Status: manual walkthrough completed, release-truth closeout in progress
+- Status: complete
 - Last updated: `2026-04-13`
 
 ## Why This Milestone Exists
@@ -31,7 +31,7 @@ The live walkthrough for this milestone covered:
 | 7. UI System Foundations | Complete | Shared visual primitives, shell language, icon consistency, and document-level theme behavior |
 | 8. Core Route Rollout And UI Correctness | Complete | Refreshed home, onboarding, settings/accounts, and main modpack routes with synchronized EN/RU copy |
 | 9. Secondary Surface Alignment And UX Polish | Complete | Share, screenshots, utilities, secondary content management, reduced motion, and accessibility polish |
-| 10. Manual Experience Verification And Release Truth | In closeout | Recorded browser walkthrough evidence, release-facing docs refresh, and final repository gate |
+| 10. Manual Experience Verification And Release Truth | Complete | Recorded browser walkthrough evidence, refreshed release-facing docs, and closed the final repository gate |
 
 ## What `v0.2.0` Delivers
 

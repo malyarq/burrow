@@ -31,8 +31,8 @@ Requirements for the current UI-system and experience-rework milestone. These ma
 
 ### Verification And Release Truth
 
-- [ ] **VER-01**: Maintainers execute a manual browser-based walkthrough of refreshed critical UI flows before closing the milestone
-- [ ] **DOC-03**: README and roadmap-level product descriptions reflect the refreshed launcher UI and UX truthfully after the rollout lands
+- [x] **VER-01**: Maintainers execute a manual browser-based walkthrough of refreshed critical UI flows before closing the milestone
+- [x] **DOC-03**: README and roadmap-level product descriptions reflect the refreshed launcher UI and UX truthfully after the rollout lands
 
 ## v2 Requirements
 
@@ -73,8 +73,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-02 | Phase 8 | Complete |
 | UX-03 | Phase 8 | Complete |
 | UX-04 | Phase 9 | Complete |
-| VER-01 | Phase 10 | Pending |
-| DOC-03 | Phase 10 | Pending |
+| VER-01 | Phase 10 | Complete |
+| DOC-03 | Phase 10 | Complete |
 
 **Coverage:**
 - v1 requirements: 12 total
@@ -83,4 +83,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after Phase 9 completion*
+*Last updated: 2026-04-13 after Phase 10 completion*

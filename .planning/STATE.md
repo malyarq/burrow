@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.2.0
 milestone_name: ui-system-and-experience-rework
-status: active
-stopped_at: Phase 10 planned; execution next
-last_updated: "2026-04-13T10:18:00Z"
-last_activity: 2026-04-13 - Planned Phase 10 (manual experience verification and release truth)
+status: ready_for_milestone_closeout
+stopped_at: Phase 10 complete; milestone audit or archive next
+last_updated: "2026-04-13T12:11:00Z"
+last_activity: 2026-04-13 - Completed Phase 10 (manual experience verification and release truth)
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 17
-  completed_plans: 13
-  percent: 76
+  completed_plans: 17
+  percent: 100
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Execute Phase 10 for milestone v0.2.0 UI System And Experience Rework
+**Current focus:** Milestone closeout for v0.2.0 UI System And Experience Rework
 
 ## Current Position
 
-Phase: 10 - Manual Experience Verification And Release Truth
-Plan: 10-01 through 10-04 planned
-Status: Phase 10 planning is complete; execution is next
-Last activity: 2026-04-13 - Planned Phase 10 (manual experience verification and release truth)
+Phase: none
+Plan: none
+Status: All Phase 10 plans are complete; milestone audit or archive is next
+Last activity: 2026-04-13 - Completed Phase 10 (manual experience verification and release truth)
 
-Progress: [########--] 76%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 42
-- Active phase plans completed: 13
+- Total plans completed: 46
+- Active phase plans completed: 17
 - Average duration: 19 min
-- Total execution time: 4.0 hours
+- Total execution time: 5.8 hours
 
 **By Phase:**
 
@@ -47,10 +47,11 @@ Progress: [########--] 76%
 | 7. UI System Foundations | 4 | 1.1h | 17 min |
 | 8. Core Route Rollout And UI Correctness | 4 | 1.4h | 21 min |
 | 9. Secondary Surface Alignment And UX Polish | 5 | 1.5h | 18 min |
+| 10. Manual Experience Verification And Release Truth | 4 | 1.8h | 27 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-02, 09-03, 09-04, 09-05, 10 planning
-- Trend: Phase 9 execution is complete and Phase 10 is now planned around reusable walkthrough evidence, docs truth, and the deferred packaging gate
+- Last 5 plans: 09-05, 10-01, 10-02, 10-03, 10-04
+- Trend: The milestone now closes on reusable browser evidence, refreshed public docs, and a green packaging-aware repository gate
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -100,6 +101,8 @@ Recent decisions affecting current work:
 - [Phase 09]: Close A11Y-04 explicitly across the updated secondary surfaces, with a dedicated accessibility or atmosphere slice rather than assuming Phase 7 foundations are enough.
 - [Phase 09]: Keep Phase 9 browser sanity narrow and surface-owned so Phase 10 still owns the milestone-wide walkthrough and release-truth claims.
 - [Phase 09]: Close the phase on focused seam tests, repo gates, and temporary same-origin browser sanity evidence instead of pulling broader release messaging into the execution wave.
+- [Phase 10]: Reuse one same-origin manual verification entry across core and secondary walkthroughs instead of building phase-specific browser harnesses.
+- [Phase 10]: Refresh public docs from walkthrough evidence first, then mark the milestone complete only after the packaging-aware gate passes.
 
 ### Pending Todos
 
@@ -109,15 +112,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- `npm run build -- --publish never` was not rerun in Phase 8 because this milestone phase closes on route integration evidence, not packaging changes; packaging should be rechecked during the later release-truth phase.
-- Phase 8 captured real browser sanity through temporary same-origin harness runs against the live dev server, but Phase 10 should still perform the broader milestone walkthrough on refreshed routes without relying on phase-scoped scaffolding.
-- Phase 9 execution closed on focused repo gates (`npm test`, `npm run lint`, `npx tsc --noEmit`) plus narrow live browser sanity; the broader packaging or release-truth gate is still deferred to Phase 10.
-- Phase 10 is now planned, but execution still needs one reusable live-browser verification seam or a proven direct app path to avoid falling back to throwaway harnesses.
+- Final gate is green, including `npm run build -- --publish never`.
+- Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 - `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from planning and execution commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T10:18:00Z
-Stopped at: Phase 10 planned; execute Phase 10 next
-Resume file: .planning/phases/10-manual-experience-verification-and-release-truth/10-01-PLAN.md
+Last session: 2026-04-13T12:11:00Z
+Stopped at: Phase 10 complete; milestone audit or archive next
+Resume file: .planning/phases/10-manual-experience-verification-and-release-truth/10-VERIFICATION.md
