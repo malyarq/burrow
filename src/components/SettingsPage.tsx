@@ -132,9 +132,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             isOpen={true}
             onClose={onClose}
             title={t('settings.title')}
-            className="max-w-4xl"
+            className="max-w-[min(72rem,calc(100vw-1rem))]"
         >
-            <div className="space-y-4">
+            <div className="min-h-0 space-y-4">
                 <SettingsTabsHeader
                     activeTab={activeTab}
                     onTabChange={setActiveTab}
@@ -147,7 +147,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                     role="tabpanel"
                     aria-labelledby={getSettingsTabId(activeTab)}
                     tabIndex={0}
-                    className="surface-panel min-h-[26rem] outline-none p-4 sm:p-5"
+                    className="surface-panel min-h-[22rem] outline-none p-4 sm:p-5"
                 >
                     {renderActiveTab()}
                 </div>
@@ -158,7 +158,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                     </p>
                     <Button
                         onClick={onClose}
-                        className={cn("text-white sm:min-w-[9rem]", getAccentStyles('bg').className)}
+                        className={cn("text-white sm:min-w-[10rem]", getAccentStyles('bg').className)}
                         style={getAccentStyles('bg').style}
                     >
                         {t('settings.done')}

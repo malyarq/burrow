@@ -113,8 +113,9 @@ export const SimplePlayHome: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-full w-full flex items-center justify-center px-6 text-center animate-fade-in-up relative overflow-hidden">
-      <div className="flex flex-col items-center gap-4 relative z-10">
+    <div className="h-full w-full overflow-y-auto overflow-x-hidden">
+      <div className="launcher-content-width relative flex min-h-full items-center justify-center px-4 py-10 text-center sm:px-6">
+        <div className="relative z-10 flex flex-col items-center gap-4 animate-fade-in-up">
         <div
           onClick={handleLogoClick}
           className="logo-container relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-visible cursor-pointer transition-all duration-300 ease-out hover:scale-110 active:scale-105"
@@ -153,7 +154,7 @@ export const SimplePlayHome: React.FC = () => {
         >
           FriendLauncher
         </h1>
-      </div>
+        </div>
 
       {/* Фейерверк из иконок */}
       {particles.map((particle) => {
@@ -198,7 +199,7 @@ export const SimplePlayHome: React.FC = () => {
         );
       })}
 
-      <style>{`
+        <style>{`
         @keyframes pulse-slow {
           0%, 100% {
             opacity: 0.3;
@@ -252,9 +253,9 @@ export const SimplePlayHome: React.FC = () => {
           filter: drop-shadow(0 0 30px ${accentHex}80) drop-shadow(0 0 60px ${accentHex}60) !important;
         }
       `}</style>
+      </div>
     </div>
   );
 };
-
 
 

@@ -215,10 +215,13 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
   }, [reducedMotion]);
 
   return (
-    <div className={cn(
-      'h-full w-full flex flex-col items-center px-4 py-6 md:px-6 overflow-y-auto overflow-x-hidden',
-      !reducedMotion && 'animate-fade-in-up'
-    )}>
+    <div className="h-full w-full overflow-y-auto overflow-x-hidden">
+      <div
+        className={cn(
+          'launcher-content-width flex min-h-full flex-col items-center px-4 py-6 sm:px-5 lg:px-6',
+          !reducedMotion && 'animate-fade-in-up'
+        )}
+      >
       {/* Welcome Banner */}
       {showWelcome && (
         <section
@@ -462,6 +465,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
         <Boxes className="h-4 w-4" />
         {t('dashboard.go_to_modpacks') || 'Go to Modpacks'}
       </Button>
+      </div>
     </div>
   );
 }

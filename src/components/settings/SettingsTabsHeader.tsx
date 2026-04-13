@@ -76,7 +76,7 @@ export function SettingsTabsHeader(props: {
 
   return (
     <div
-      className="flex gap-2 border-b border-zinc-200 dark:border-zinc-700 -mx-6 px-6"
+      className="-mx-1 flex gap-2 overflow-x-auto border-b border-border/70 px-1 pb-1 custom-scrollbar"
       role="tablist"
       aria-label={t('settings.title')}
       aria-orientation="horizontal"
@@ -98,8 +98,10 @@ export function SettingsTabsHeader(props: {
             aria-controls={getSettingsPanelId(tab.id)}
             tabIndex={isActive ? 0 : -1}
             className={cn(
-              'px-4 py-2 text-sm font-medium transition-all border-b-2 -mb-[1px]',
-              isActive ? 'text-zinc-900 dark:text-white' : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+              'shrink-0 whitespace-nowrap rounded-xl border px-4 py-2.5 text-sm font-medium transition-all',
+              isActive
+                ? 'border-border bg-card text-foreground shadow-sm'
+                : 'border-transparent text-secondary hover:border-border/60 hover:bg-background/70 hover:text-foreground'
             )}
             style={accentBorderStyle}
           >

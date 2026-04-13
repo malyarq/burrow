@@ -18,13 +18,13 @@ export const Input: React.FC<InputProps> = ({
     return (
         <div className={cn("flex flex-col gap-1.5 w-full", containerClassName)}>
             {label && (
-                <label className="text-xs font-medium uppercase tracking-wider text-secondary">
+                <label className="control-label">
                     {label}
                 </label>
             )}
             <input
                 className={cn(
-                    'w-full rounded-xl border border-border/70 bg-card/82 px-3 py-3 text-sm leading-normal text-foreground shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-md transition-all placeholder:text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background hover:bg-card/92 disabled:opacity-50 disabled:bg-background/70',
+                    'control-frame min-h-11 w-full px-4 py-2.5 text-sm leading-normal placeholder:text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background hover:bg-card/92 disabled:bg-background/70 disabled:opacity-50',
                     error && 'border-red-500 focus-visible:ring-red-500/30',
                     className
                 )}
