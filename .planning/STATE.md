@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.2.0
 milestone_name: ui-system-and-experience-rework
 status: active
-stopped_at: Phase 9 complete; Phase 10 planning next
-last_updated: "2026-04-13T09:47:00Z"
-last_activity: 2026-04-13 - Completed Phase 9 (secondary surface alignment and UX polish)
+stopped_at: Phase 10 planned; execution next
+last_updated: "2026-04-13T10:18:00Z"
+last_activity: 2026-04-13 - Planned Phase 10 (manual experience verification and release truth)
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 13
+  total_plans: 17
   completed_plans: 13
-  percent: 100
+  percent: 76
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Plan Phase 10 for milestone v0.2.0 UI System And Experience Rework
+**Current focus:** Execute Phase 10 for milestone v0.2.0 UI System And Experience Rework
 
 ## Current Position
 
 Phase: 10 - Manual Experience Verification And Release Truth
-Plan: Pending
-Status: Phase 9 execution is complete; Phase 10 planning is next
-Last activity: 2026-04-13 - Completed Phase 9 (secondary surface alignment and UX polish)
+Plan: 10-01 through 10-04 planned
+Status: Phase 10 planning is complete; execution is next
+Last activity: 2026-04-13 - Planned Phase 10 (manual experience verification and release truth)
 
-Progress: [##########] 100%
+Progress: [########--] 76%
 
 ## Performance Metrics
 
@@ -49,8 +49,8 @@ Progress: [##########] 100%
 | 9. Secondary Surface Alignment And UX Polish | 5 | 1.5h | 18 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-01, 09-02, 09-03, 09-04, 09-05
-- Trend: Phase 9 completed cleanly under focused tests plus live browser sanity; planning can move to the milestone-wide Phase 10 walkthrough
+- Last 5 plans: 09-02, 09-03, 09-04, 09-05, 10 planning
+- Trend: Phase 9 execution is complete and Phase 10 is now planned around reusable walkthrough evidence, docs truth, and the deferred packaging gate
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -112,12 +112,12 @@ None yet.
 - `npm run build -- --publish never` was not rerun in Phase 8 because this milestone phase closes on route integration evidence, not packaging changes; packaging should be rechecked during the later release-truth phase.
 - Phase 8 captured real browser sanity through temporary same-origin harness runs against the live dev server, but Phase 10 should still perform the broader milestone walkthrough on refreshed routes without relying on phase-scoped scaffolding.
 - Phase 9 execution closed on focused repo gates (`npm test`, `npm run lint`, `npx tsc --noEmit`) plus narrow live browser sanity; the broader packaging or release-truth gate is still deferred to Phase 10.
-- Phase 10 is not planned yet; roadmap truth now depends on planning that broader walkthrough and documentation closeout honestly.
+- Phase 10 is now planned, but execution still needs one reusable live-browser verification seam or a proven direct app path to avoid falling back to throwaway harnesses.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 - `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from planning and execution commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T09:47:00Z
-Stopped at: Phase 9 complete; plan Phase 10 next
-Resume file: .planning/phases/09-secondary-surface-alignment-and-ux-polish/09-05-SUMMARY.md
+Last session: 2026-04-13T10:18:00Z
+Stopped at: Phase 10 planned; execute Phase 10 next
+Resume file: .planning/phases/10-manual-experience-verification-and-release-truth/10-01-PLAN.md

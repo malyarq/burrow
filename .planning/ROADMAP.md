@@ -60,7 +60,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Fallout found during that walkthrough is fixed without reopening design-system drift or leaving known UX defects untracked.
   3. README and roadmap-facing UI descriptions reflect the shipped launcher experience accurately after the redesign lands.
   4. The refreshed milestone still closes with the normal repository quality gates green.
-**Plans**: TBD
+**Plans**: 4
 
 ## Progress
 
@@ -72,4 +72,4 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 | 7. UI System Foundations | 4/4 | Complete | 2026-04-13 |
 | 8. Core Route Rollout And UI Correctness | 4/4 | Complete | 2026-04-13 |
 | 9. Secondary Surface Alignment And UX Polish | 5/5 | Complete | 2026-04-13 |
-| 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |
+| 10. Manual Experience Verification And Release Truth | 0/4 | Planned | — |
