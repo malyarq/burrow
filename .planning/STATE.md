@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v0.2.0
-milestone_name: ui-system-and-experience-rework
-status: awaiting_next_milestone
-stopped_at: v0.2.0 archived; next milestone planning pending
-last_updated: "2026-04-13T11:43:41.959Z"
-last_activity: 2026-04-13 - Archived v0.2.0 milestone
+milestone: v0.3.0
+milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
+status: active
+stopped_at: Defining requirements and roadmap for v0.3.0
+last_updated: "2026-04-13T12:05:00Z"
+last_activity: 2026-04-13 - Started milestone v0.3.0 (adaptive UX hardening and launcher ergonomics)
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 17
-  completed_plans: 17
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Planning the next milestone after shipping v0.2.0
+**Current focus:** Defining requirements and roadmap for v0.3.0 adaptive UX hardening
 
 ## Current Position
 
 Phase: none
 Plan: none
-Status: v0.2.0 is archived; define the next milestone with `$gsd-new-milestone`
-Last activity: 2026-04-13 - Archived v0.2.0 milestone
+Status: Defining requirements
+Last activity: 2026-04-13 - Started milestone v0.3.0 (adaptive UX hardening and launcher ergonomics)
 
-Progress: [##########] 100%
+Progress: [----------] 0%
 
 ## Performance Metrics
 
@@ -51,7 +51,7 @@ Progress: [##########] 100%
 
 **Recent Trend:**
 - Last 5 plans: 09-05, 10-01, 10-02, 10-03, 10-04
-- Trend: v0.2.0 is now archived; the next session should define the next milestone instead of reopening shipped scope
+- Trend: v0.3.0 starts as a UX-hardening cycle focused on adaptivity, theme correctness, launch clarity, and modpack ergonomics
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -114,12 +114,12 @@ None yet.
 
 - Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- No active milestone is defined yet; create one with `$gsd-new-milestone`.
+- `v0.3.0` requirements and roadmap are not written yet; phase numbering and scope still need to be defined.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 - `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from planning and execution commits.
 
 ## Session Continuity
 
 Last session: 2026-04-13T12:11:00Z
-Stopped at: v0.2.0 archived; next milestone planning pending
+Stopped at: Defining requirements and roadmap for v0.3.0
 Resume file: .planning/PROJECT.md

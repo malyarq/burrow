@@ -1,5 +1,16 @@
 # FriendLauncher (FMCL)
 
+## Current Milestone: v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
+
+**Goal:** Make FMCL feel predictable, adaptive, and trustworthy in day-to-day use by fixing layout instability, broken theme behavior, overloaded settings navigation, unclear launch feedback, and weak modpack UX seams.
+
+**Target features:**
+- make the launcher adaptive to different window sizes and density settings without broken sizing, clipped menus, or inconsistent visual rhythm
+- repair the theme preset system so light and dark presets apply correctly, safely, and consistently across all refreshed surfaces
+- simplify information architecture in settings and related flows so users do not get trapped in nested tabs and hidden actions
+- make launch and background task progress explicit so users understand what is happening and stop spam-clicking during long operations
+- improve modpack creation, dependency visibility, browser usability, and other user-critical launcher ergonomics based on pain points and competitive research
+
 ## Current State
 
 **Latest shipped milestone:** `v0.2.0` — UI System And Experience Rework (`2026-04-13`)
@@ -16,13 +27,9 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 
 ## Next Milestone Goals
 
-- Define the next milestone with `$gsd-new-milestone`.
-- Choose whether the next cycle focuses on release-build cleanup, richer experience expansion, or broader automation.
-- Likely candidates carried forward from the shipped milestone:
-  - reduce large renderer chunks in production build
-  - add missing package metadata and release polish
-  - consider automated visual-regression coverage for key launcher surfaces
-  - evaluate richer theme packs, new locales, or deeper personalization
+- Ship a UX-hardening release instead of another visual refresh-only pass.
+- Remove the most obvious trust breakers: broken preset themes, placeholder surfaces, inconsistent controls, and unclear progress states.
+- Use competitive launcher patterns selectively where they improve clarity or capability, without turning the milestone into an unbounded feature clone.
 
 ## Context
 
@@ -35,6 +42,13 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - Remaining non-blocking debt after `v0.2.0`:
   - large renderer chunk warning in production build
   - missing `description` and `author` in `package.json`
+- New user-reported pain points after `v0.2.0`:
+  - non-adaptive layout and inconsistent button or row sizing across surfaces
+  - preset themes behaving incorrectly across light and dark modes
+  - overly nested settings navigation
+  - weak transparency during launch or background operations
+  - unreliable dependency visibility in modpack creation and awkward modpack-browser ergonomics
+  - placeholder assets still leaking on some classic or easter-egg surfaces
 
 ## Constraints
 
@@ -54,6 +68,8 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Require manual browser verification in addition to repo gates | UI-heavy milestones need real experience evidence, not only code-level confidence | Validated in `v0.2.0` |
 | Reuse one manual verification entry across walkthrough waves | Avoid throwaway harnesses and keep milestone evidence on one seam | Validated in `v0.2.0` |
 | Refresh public docs from walkthrough evidence before closeout | Release-facing docs should describe shipped behavior, not stale promises | Validated in `v0.2.0` |
+| Make `v0.3.0` a UX-hardening milestone before adding broad new launcher scope | The current gap is reliability of interaction design and product ergonomics, not lack of raw surface area | Pending |
+| Use competitor research as input, not as a mandate to clone other launchers | FMCL should adopt proven patterns where they reduce user pain without losing product focus | Pending |
 
 ## Archived Milestone Definition
 
@@ -72,4 +88,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-13 after archiving v0.2.0*
+*Last updated: 2026-04-13 after starting v0.3.0 milestone*
