@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Defining requirements and roadmap for v0.3.0
-last_updated: "2026-04-13T12:05:00Z"
-last_activity: 2026-04-13 - Started milestone v0.3.0 (adaptive UX hardening and launcher ergonomics)
+stopped_at: Ready to plan Phase 11
+last_updated: "2026-04-13T12:40:00Z"
+last_activity: 2026-04-13 - Defined v0.3.0 requirements and roadmap
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
-  total_plans: 0
+  total_plans: 17
   completed_plans: 0
   percent: 0
 ---
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Defining requirements and roadmap for v0.3.0 adaptive UX hardening
+**Current focus:** Ready to plan Phase 11 adaptive layout foundations
 
 ## Current Position
 
 Phase: none
 Plan: none
-Status: Defining requirements
-Last activity: 2026-04-13 - Started milestone v0.3.0 (adaptive UX hardening and launcher ergonomics)
+Status: Ready to plan Phase 11
+Last activity: 2026-04-13 - Defined v0.3.0 requirements and roadmap
 
 Progress: [----------] 0%
 
@@ -50,8 +50,8 @@ Progress: [----------] 0%
 | 10. Manual Experience Verification And Release Truth | 4 | 1.8h | 27 min |
 
 **Recent Trend:**
-- Last 5 plans: 09-05, 10-01, 10-02, 10-03, 10-04
-- Trend: v0.3.0 starts as a UX-hardening cycle focused on adaptivity, theme correctness, launch clarity, and modpack ergonomics
+- Last 5 plans: 10-01, 10-02, 10-03, 10-04, milestone kickoff
+- Trend: v0.3.0 is now structured as four phases: adaptive foundations -> theme/settings truth -> launch/modpack ergonomics -> live verification
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -114,12 +114,11 @@ None yet.
 
 - Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- `v0.3.0` requirements and roadmap are not written yet; phase numbering and scope still need to be defined.
+- `v0.3.0` roadmap is defined, but no phase has been planned yet. Phase 11 is the next routing target.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
-- `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from planning and execution commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T12:11:00Z
-Stopped at: Defining requirements and roadmap for v0.3.0
+Last session: 2026-04-13T12:40:00Z
+Stopped at: Ready to plan Phase 11
 Resume file: .planning/PROJECT.md

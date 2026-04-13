@@ -67,30 +67,30 @@ Explicitly excluded from `v0.3.0` to keep the milestone centered on trust and er
 
 ## Traceability
 
-Which phases cover which requirements. Filled during roadmap creation.
+Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ADPT-01 | TBD | Pending |
-| ADPT-02 | TBD | Pending |
-| ADPT-03 | TBD | Pending |
-| THEME-01 | TBD | Pending |
-| THEME-02 | TBD | Pending |
-| NAV-01 | TBD | Pending |
-| LAUNCH-01 | TBD | Pending |
-| LAUNCH-02 | TBD | Pending |
-| MPUX-01 | TBD | Pending |
-| MPUX-02 | TBD | Pending |
-| MPUX-03 | TBD | Pending |
-| VIS-01 | TBD | Pending |
-| VER-01 | TBD | Pending |
-| DOC-01 | TBD | Pending |
+| ADPT-01 | Phase 11 | Pending |
+| ADPT-02 | Phase 11 | Pending |
+| ADPT-03 | Phase 11 | Pending |
+| THEME-01 | Phase 12 | Pending |
+| THEME-02 | Phase 12 | Pending |
+| NAV-01 | Phase 12 | Pending |
+| LAUNCH-01 | Phase 13 | Pending |
+| LAUNCH-02 | Phase 13 | Pending |
+| MPUX-01 | Phase 13 | Pending |
+| MPUX-02 | Phase 13 | Pending |
+| MPUX-03 | Phase 13 | Pending |
+| VIS-01 | Phase 11 | Pending |
+| VER-01 | Phase 14 | Pending |
+| DOC-01 | Phase 14 | Pending |
 
 **Coverage:**
 - v1 requirements: 14 total
-- Mapped to phases: 0
-- Unmapped: 14 ⚠️
+- Mapped to phases: 14
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after initial definition*
+*Last updated: 2026-04-13 after roadmap creation*
