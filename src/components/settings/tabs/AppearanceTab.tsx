@@ -6,8 +6,8 @@ import { CollapsibleSection } from '../../ui/CollapsibleSection';
 import { Input } from '../../ui/Input';
 import { Button } from '../../ui/Button';
 import { Select } from '../../ui/Select';
-import { THEME_PRESETS } from '../../../contexts/settings/theme-presets';
-import type { CustomThemeConfig } from '../../../contexts/settings/types';
+import { getThemePreset, THEME_PRESETS } from '../../../contexts/settings/theme-presets';
+import type { CustomThemeConfig, ThemePresetId } from '../../../contexts/settings/types';
 
 const COLORS = [
   { id: 'emerald', class: 'bg-emerald-500', ring: 'ring-emerald-500' },
@@ -63,9 +63,12 @@ export const AppearanceTab: React.FC = () => {
     accentColor, setAccentColor,
     theme, setTheme,
     language, setLanguage,
+    themePresetId,
+    applyThemePreset,
     t,
     getAccentStyles,
     customTheme, setCustomTheme,
+    activeThemeConfig,
     uiScale, setUiScale,
     disableAnimations, setDisableAnimations,
     sidebarPosition, setSidebarPosition,
@@ -73,6 +76,10 @@ export const AppearanceTab: React.FC = () => {
   } = useSettings();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedPreset = getThemePreset(themePresetId);
+  const selectedPresetModeLabel = theme === 'light'
+    ? t('settings.theme_light')
+    : t('settings.theme_dark');
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);
@@ -98,19 +105,20 @@ export const AppearanceTab: React.FC = () => {
     });
   };
 
-  const applyPreset = (presetId: string) => {
-    const preset = THEME_PRESETS.find(p => p.id === presetId);
-    if (preset) {
-      setTheme(preset.theme);
-      setCustomTheme(preset.config);
+  const handlePresetChange = (presetId: string) => {
+    if (!presetId) {
+      return;
     }
+
+    applyThemePreset(presetId as ThemePresetId);
   };
 
   const handleExportTheme = () => {
     const themeData = {
-      name: "Custom Export",
+      name: selectedPreset?.name || "Custom Export",
+      presetId: themePresetId || undefined,
       theme,
-      config: customTheme
+      config: activeThemeConfig
     };
     const blob = new Blob([JSON.stringify(themeData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -249,13 +257,16 @@ export const AppearanceTab: React.FC = () => {
           {t('settings.theme_presets') || 'Theme Presets'}
         </label>
         <p className="text-sm text-secondary">
-          {t('settings.theme_presets_desc') || 'Apply a ready-made visual profile, or import/export your own configuration.'}
+          {selectedPreset
+            ? `${selectedPreset.name} · ${selectedPresetModeLabel}`
+            : (t('settings.theme_presets_desc') || 'Apply a ready-made visual profile, or import/export your own configuration.')}
         </p>
         <div className="flex gap-2">
           <Select
-            onChange={(e) => applyPreset(e.target.value)}
+            value={themePresetId || ''}
+            onChange={(e) => handlePresetChange(e.target.value)}
             className="flex-1"
-            defaultValue=""
+            aria-label={t('settings.theme_presets') || 'Theme Presets'}
           >
             <option value="" disabled>{t('settings.theme_presets_placeholder') || 'Select a preset...'}</option>
             {THEME_PRESETS.map(preset => (

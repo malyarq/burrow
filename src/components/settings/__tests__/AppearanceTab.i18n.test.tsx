@@ -15,11 +15,15 @@ type MockSettings = {
   setAccentColor: ReturnType<typeof vi.fn>;
   theme: 'dark' | 'light';
   setTheme: ReturnType<typeof vi.fn>;
+  themePresetId: string | null;
+  applyThemePreset: ReturnType<typeof vi.fn>;
   language: Language;
   setLanguage: ReturnType<typeof vi.fn>;
   t: ReturnType<typeof createTranslator>;
   getAccentStyles: (type: AccentStyleType) => { className?: string; style?: CSSProperties };
   customTheme: CustomThemeConfig;
+  activeThemeConfig: CustomThemeConfig;
+  clearThemePreset: ReturnType<typeof vi.fn>;
   setCustomTheme: ReturnType<typeof vi.fn>;
   uiScale: number;
   setUiScale: ReturnType<typeof vi.fn>;
@@ -33,8 +37,10 @@ type MockSettings = {
 
 const setAccentColorMock = vi.fn();
 const setThemeMock = vi.fn();
+const applyThemePresetMock = vi.fn();
 const setLanguageMock = vi.fn();
 const setCustomThemeMock = vi.fn();
+const clearThemePresetMock = vi.fn();
 const setUiScaleMock = vi.fn();
 const setDisableAnimationsMock = vi.fn();
 const setSidebarPositionMock = vi.fn();
@@ -54,6 +60,8 @@ function buildSettings(language: Language): MockSettings {
     setAccentColor: setAccentColorMock,
     theme: 'dark',
     setTheme: setThemeMock,
+    themePresetId: null,
+    applyThemePreset: applyThemePresetMock,
     language,
     setLanguage: setLanguageMock,
     t: createTranslator(language),
@@ -71,6 +79,20 @@ function buildSettings(language: Language): MockSettings {
         },
       },
     },
+    activeThemeConfig: {
+      colors: {
+        background: '#111111',
+      },
+      background: {
+        type: 'particles',
+        particles: {
+          type: 'snow',
+          intensity: 65,
+          speed: 3,
+        },
+      },
+    },
+    clearThemePreset: clearThemePresetMock,
     setCustomTheme: setCustomThemeMock,
     uiScale: 100,
     setUiScale: setUiScaleMock,
@@ -88,8 +110,10 @@ describe('AppearanceTab i18n seams', () => {
     localStorage.clear();
     setAccentColorMock.mockReset();
     setThemeMock.mockReset();
+    applyThemePresetMock.mockReset();
     setLanguageMock.mockReset();
     setCustomThemeMock.mockReset();
+    clearThemePresetMock.mockReset();
     setUiScaleMock.mockReset();
     setDisableAnimationsMock.mockReset();
     setSidebarPositionMock.mockReset();
