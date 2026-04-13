@@ -11,19 +11,19 @@ Requirements for the current UI-system and experience-rework milestone. These ma
 
 - [x] **DSYS-01**: User sees a consistent visual language across launcher shells, cards, forms, dialogs, and feedback states instead of mixed screen-by-screen styling
 - [x] **DSYS-02**: User sees one consistent icon and action-affordance language across navigation, cards, menus, dialogs, and empty states
-- [ ] **DSYS-03**: User sees refreshed core surfaces built from shared primitives and shared visual tokens instead of feature-local styling exceptions
+- [x] **DSYS-03**: User sees refreshed core surfaces built from shared primitives and shared visual tokens instead of feature-local styling exceptions
 
 ### Localization And Theme Fidelity
 
-- [ ] **LOCL-01**: User sees complete English and Russian UI copy across labels, placeholders, helper text, validation, tooltips, and empty states on refreshed surfaces
+- [x] **LOCL-01**: User sees complete English and Russian UI copy across labels, placeholders, helper text, validation, tooltips, and empty states on refreshed surfaces
 - [x] **THEME-01**: User can switch theme and accent settings and see the launcher shell plus refreshed screens update consistently instead of only isolated controls changing
 - [ ] **A11Y-04**: User can use the refreshed UI with visible focus states, sufficient contrast, and reduced-motion-respecting behavior
 
 ### Core UX Flows
 
-- [ ] **UX-01**: User can navigate a clearer launcher home and play flow that emphasizes the primary actions and current status at a glance
-- [ ] **UX-02**: User can browse, inspect, install, and manage modpacks through a visually coherent and lower-friction modpack experience
-- [ ] **UX-03**: User can use account and settings flows that match the rest of the launcher visually and structurally
+- [x] **UX-01**: User can navigate a clearer launcher home and play flow that emphasizes the primary actions and current status at a glance
+- [x] **UX-02**: User can browse, inspect, install, and manage modpacks through a visually coherent and lower-friction modpack experience
+- [x] **UX-03**: User can use account and settings flows that match the rest of the launcher visually and structurally
 
 ### Advanced Surface Alignment
 
@@ -65,13 +65,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | DSYS-01 | Phase 7 | Complete |
 | DSYS-02 | Phase 7 | Complete |
-| DSYS-03 | Phase 8 | Pending |
-| LOCL-01 | Phase 8 | Pending |
+| DSYS-03 | Phase 8 | Complete |
+| LOCL-01 | Phase 8 | Complete |
 | THEME-01 | Phase 7 | Complete |
 | A11Y-04 | Phase 9 | Pending |
-| UX-01 | Phase 8 | Pending |
-| UX-02 | Phase 8 | Pending |
-| UX-03 | Phase 8 | Pending |
+| UX-01 | Phase 8 | Complete |
+| UX-02 | Phase 8 | Complete |
+| UX-03 | Phase 8 | Complete |
 | UX-04 | Phase 9 | Pending |
 | VER-01 | Phase 10 | Pending |
 | DOC-03 | Phase 10 | Pending |
@@ -83,4 +83,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after Phase 7 completion*
+*Last updated: 2026-04-13 after Phase 8 completion*
