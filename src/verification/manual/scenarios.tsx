@@ -14,6 +14,11 @@ import { ExportModpackPage } from '../../components/modpacks/ExportModpackPage';
 import { AddModModal } from '../../components/modpacks/AddModModal';
 import { DEFAULT_MODPACK_BROWSER_STATE } from '../../features/modpacks/hooks/useModpackNavigation';
 import { AccountsPage } from '../../features/accounts/AccountsPage';
+import { ShareModal } from '../../features/share/ShareModal';
+import { ScreenshotsTab } from '../../features/screenshots/components/ScreenshotsTab';
+import { MirrorsSettings } from '../../features/settings/mirrors/MirrorsSettings';
+import { StatisticsTab } from '../../features/settings/statistics/StatisticsTab';
+import { WorldDatapacksModal } from '../../components/modpacks/details/WorldDatapacksModal';
 import { CORE_VIEWS, type ManualVerificationView } from './views';
 
 interface ManualVerificationScenarioProps {
@@ -312,6 +317,73 @@ function AddModScenario({ onReady }: ManualVerificationScenarioProps) {
   );
 }
 
+function ShareScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['Share Modpack', 'Share code', 'Copy Code'],
+    'Share modal rendered with generated share code and copy controls.',
+  );
+
+  return (
+    <SettingsProviders>
+      <ShareModal isOpen={true} onClose={() => undefined} modpackId="alpha" />
+    </SettingsProviders>
+  );
+}
+
+function ScreenshotsScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['Screenshots', 'Open Folder', 'mountain-sunrise.png'],
+    'Screenshots gallery rendered with live fixture images.',
+  );
+
+  return (
+    <SettingsProviders>
+      <div className="mx-auto max-w-6xl p-6">
+        <ScreenshotsTab instancePath="/mock/.minecraft/instances/alpha" />
+      </div>
+    </SettingsProviders>
+  );
+}
+
+function UtilitiesScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['Download mirrors', 'Popular Modpacks', 'Alpha Pack'],
+    'Utilities surface rendered with mirrors priority and local statistics.',
+  );
+
+  return (
+    <SettingsProviders>
+      <div className="mx-auto max-w-6xl space-y-6 p-6">
+        <MirrorsSettings />
+        <StatisticsTab />
+      </div>
+    </SettingsProviders>
+  );
+}
+
+function ContentScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['Datapacks for Alpha World', 'Installed', 'Logic Tweaks'],
+    'Content-management modal rendered with installed world datapacks.',
+  );
+
+  return (
+    <SettingsProviders>
+      <WorldDatapacksModal
+        isOpen={true}
+        onClose={() => undefined}
+        instancePath="/mock/.minecraft/instances/alpha"
+        worldFolder="AlphaWorld"
+        worldName="Alpha World"
+      />
+    </SettingsProviders>
+  );
+}
+
 export function ManualVerificationScenarios(props: { view: ManualVerificationView; onReady: (message: string) => void }) {
   const scenarioProps = { onReady: props.onReady };
 
@@ -353,6 +425,22 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 
   if (props.view === 'modpack-add') {
     return <AddModScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'share') {
+    return <ShareScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'screenshots') {
+    return <ScreenshotsScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'utilities') {
+    return <UtilitiesScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'content') {
+    return <ContentScenario {...scenarioProps} />;
   }
 
   return <OverviewScenario />;

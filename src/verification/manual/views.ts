@@ -9,7 +9,11 @@ export type ManualVerificationView =
   | 'modpack-browser'
   | 'modpack-details'
   | 'modpack-export'
-  | 'modpack-add';
+  | 'modpack-add'
+  | 'share'
+  | 'screenshots'
+  | 'utilities'
+  | 'content';
 
 export const CORE_VIEWS: Array<{ id: ManualVerificationView; label: string; description: string }> = [
   { id: 'overview', label: 'Overview', description: 'Manual verification hub for Phase 10 core flows.' },
@@ -23,6 +27,10 @@ export const CORE_VIEWS: Array<{ id: ManualVerificationView; label: string; desc
   { id: 'modpack-details', label: 'Modpack Details', description: 'Details overview and primary actions.' },
   { id: 'modpack-export', label: 'Export', description: 'Export flow on the shared page surface.' },
   { id: 'modpack-add', label: 'Add Mod', description: 'Add-mod dialog with live search and selection.' },
+  { id: 'share', label: 'Share', description: 'Share-code modal on the refreshed secondary surface.' },
+  { id: 'screenshots', label: 'Screenshots', description: 'Screenshot gallery with live fixture imagery.' },
+  { id: 'utilities', label: 'Utilities', description: 'Mirrors priority and local statistics utilities.' },
+  { id: 'content', label: 'Content', description: 'Representative world datapack management flow.' },
 ];
 
 export function isManualVerificationView(value: string | null): value is ManualVerificationView {

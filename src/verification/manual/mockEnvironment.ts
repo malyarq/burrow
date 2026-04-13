@@ -1,7 +1,8 @@
 import type { FriendLauncherApi, ModpackSearchResultItem, ModpackVersionDescriptor } from '@shared/contracts';
-import type { Account, Mirror, ModpackMetadata, StatisticsOverview } from '@shared/types';
+import type { Account, Mirror, ModpackManifest, ModpackMetadata, StatisticsOverview } from '@shared/types';
 import type { ModEntry } from '@shared/types/mods';
 import type { ModpackConfig } from '../../contexts/instances/types';
+import type { Screenshot } from '../../../electron/services/screenshots/screenshotService';
 
 const ICON_PATH = '/icon.png';
 const DESKTOP_PATH = '/Users/manual/Desktop';
@@ -177,6 +178,79 @@ const statistics: StatisticsOverview = {
     { date: '2026-04-12', launches: 6, playTime: 2_400_000 },
     { date: '2026-04-13', launches: 8, playTime: 3_600_000 },
   ],
+};
+
+const sharedManifest: ModpackManifest = {
+  formatVersion: 1,
+  minecraft: {
+    version: '1.20.1',
+    modLoaders: [{ id: 'fabric-0.16.9', primary: true }],
+  },
+  name: 'Alpha Pack',
+  version: '1.4.2',
+  author: 'FMCL',
+  files: [
+    {
+      projectId: 'sodium',
+      versionId: 'sodium-1.0.0',
+      path: 'mods/sodium.jar',
+      downloads: ['https://example.invalid/sodium.jar'],
+      hashes: { sha1: 'sodium-sha1' },
+      fileSize: 1024,
+      required: true,
+      env: {
+        client: 'required',
+        server: 'optional',
+      },
+    },
+  ],
+  overrides: 'overrides',
+};
+
+const screenshots: Screenshot[] = [
+  {
+    name: 'mountain-sunrise.png',
+    path: '/mock/.minecraft/instances/alpha/screenshots/mountain-sunrise.png',
+    url: ICON_PATH,
+    createdAt: Date.now() - 720_000,
+    size: 256_000,
+  },
+  {
+    name: 'village-evening.png',
+    path: '/mock/.minecraft/instances/alpha/screenshots/village-evening.png',
+    url: ICON_PATH,
+    createdAt: Date.now() - 360_000,
+    size: 248_000,
+  },
+];
+
+const installedDatapacks = [
+  {
+    fileName: 'logic-tweaks.zip',
+    name: 'Logic Tweaks',
+    description: 'Adds world automation helpers for the Alpha fixture.',
+    isEnabled: true,
+    path: '/mock/.minecraft/instances/alpha/saves/AlphaWorld/datapacks/logic-tweaks.zip',
+  },
+  {
+    fileName: 'adventure-rules.zip',
+    name: 'Adventure Rules',
+    description: 'Tighter progression rules for shared sessions.',
+    isEnabled: false,
+    path: '/mock/.minecraft/instances/alpha/saves/AlphaWorld/datapacks/adventure-rules.zip',
+  },
+];
+
+const datapackSearchResults = {
+  hits: [
+    {
+      project_id: 'immersive-world-events',
+      title: 'Immersive World Events',
+      description: 'Extra survival events tuned for multiplayer worlds.',
+      icon_url: ICON_PATH,
+    },
+  ],
+  total_hits: 1,
 };
 
 type ManualState = {
@@ -442,6 +516,11 @@ export function installManualVerificationEnvironment() {
     open: async (request: { url: string }) => ({ status: 'opened', url: request.url }),
   };
 
+  const shareApi = {
+    generateCode: async (modpackId: string) => `fmcl://share/${modpackId}?v=1.4.2`,
+    importCode: async () => structuredClone(sharedManifest),
+  };
+
   const modsApi = {
     searchMods: async () => ({
       items: [
@@ -532,6 +611,21 @@ export function installManualVerificationEnvironment() {
       if (channel === 'dialog:getDesktopPath') {
         return DESKTOP_PATH as T;
       }
+      if (channel === 'datapacks:list') {
+        return structuredClone(installedDatapacks) as T;
+      }
+      if (channel === 'datapacks:enable' || channel === 'datapacks:disable' || channel === 'datapacks:delete') {
+        return { ok: true } as T;
+      }
+      if (channel === 'datapacks:search') {
+        return structuredClone(datapackSearchResults) as T;
+      }
+      if (channel === 'datapacks:getVersions') {
+        return [{ id: 'immersive-world-events-1.0.0' }] as T;
+      }
+      if (channel === 'datapacks:install') {
+        return { ok: true } as T;
+      }
       throw new Error(`Unhandled manual verification ipc channel: ${channel}`);
     },
   };
@@ -550,6 +644,7 @@ export function installManualVerificationEnvironment() {
     mods: modsApi,
     statistics: statisticsApi,
     mirrors: mirrorsApi,
+    share: shareApi,
     windowControls,
     ipcRenderer,
   } as unknown as FriendLauncherApi;
@@ -560,5 +655,12 @@ export function installManualVerificationEnvironment() {
   window.externalLinks = externalLinksApi as unknown as Window['externalLinks'];
   window.mods = modsApi as unknown as Window['mods'];
   window.mirrors = mirrorsApi as unknown as Window['mirrors'];
+  window.share = shareApi as unknown as Window['share'];
+  window.screenshots = {
+    list: async () => structuredClone(screenshots),
+    delete: async () => ({ ok: true }),
+    rename: async () => ({ ok: true }),
+    openFolder: async () => ({ ok: true }),
+  };
   window.windowControls = windowControls;
 }
