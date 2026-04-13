@@ -381,10 +381,10 @@ const ModpackListComponentInternal: React.FC<{
       await modpacksIPC.createFromManifest(manifest);
       await refresh();
       await loadModpacks();
-      toast.success(t('share.import_success') || 'Модпак успешно импортирован');
+      toast.success(t('share.import_success'));
     } catch (error) {
       console.error('Error importing modpack from share code:', error);
-      toast.error(t('share.import_error') || 'Ошибка при импорте');
+      toast.error(t('share.import_error'));
     } finally {
       setLoading(false);
     }
@@ -668,10 +668,10 @@ const ModpackListComponentInternal: React.FC<{
               variant="secondary"
               onClick={() => setImportShareModalOpen(true)}
               className="w-full sm:w-auto"
-              title={t('share.import_title') || 'Импорт по коду'}
+              title={t('share.import_title')}
             >
               <Download className="w-4 h-4" />
-              {t('share.import_btn') || 'Импорт'}
+              {t('modpacks.import_code_btn')}
             </Button>
             <Button
               variant="secondary"
@@ -854,7 +854,7 @@ const ModpackListComponentInternal: React.FC<{
               }}
             >
               <Share2 className="w-4 h-4 mr-2" />
-              {t('share.context_btn') || 'Поделиться'}
+              {t('modpacks.share_btn')}
             </button>
             <button
               type="button"
