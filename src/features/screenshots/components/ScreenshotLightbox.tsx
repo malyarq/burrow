@@ -195,7 +195,7 @@ export function ScreenshotLightbox({
                     {screenshots.length > 1 && (
                         <button
                             type="button"
-                            className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/88 text-secondary shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-200 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))]"
+                            className="absolute left-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/88 text-secondary shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-200 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                             aria-label={t('screenshots.previous')}
                             onClick={goPrevious}
                         >
@@ -212,7 +212,7 @@ export function ScreenshotLightbox({
                     {screenshots.length > 1 && (
                         <button
                             type="button"
-                            className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/88 text-secondary shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-200 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))]"
+                            className="absolute right-4 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border/60 bg-background/88 text-secondary shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition-all duration-200 hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                             aria-label={t('screenshots.next')}
                             onClick={goNext}
                         >

@@ -150,7 +150,7 @@ export function ScreenshotsTab({ instancePath }: ScreenshotsTabProps) {
                         </div>
                         <button
                             type="button"
-                            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-background/88 text-secondary shadow-[0_10px_24px_rgba(0,0,0,0.18)] opacity-0 transition-all duration-200 hover:border-red-500/40 hover:bg-red-500/12 hover:text-red-200 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400/70 group-hover:opacity-100"
+                            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-background/88 text-secondary shadow-[0_10px_24px_rgba(0,0,0,0.18)] opacity-0 transition-all duration-200 hover:border-red-500/40 hover:bg-red-500/12 hover:text-red-200 focus:opacity-100 focus:outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-400/70 group-focus-within:opacity-100 group-hover:opacity-100"
                             aria-label={t('screenshots.deleteAction', { name: screenshot.name })}
                             onClick={() => {
                                 void handleDelete(screenshot);

@@ -237,7 +237,7 @@ export const MirrorsSettings: React.FC = () => {
                                             disabled={isTesting[mirror.id] || mirror.isDisabled}
                                             aria-busy={isTesting[mirror.id] || undefined}
                                             aria-label={`${t('mirrors.testSpeed')}: ${mirror.name}`}
-                                            className="flex items-center gap-1 text-xs text-blue-600 transition-colors hover:text-blue-700 disabled:text-zinc-400 dark:text-blue-400 dark:hover:text-blue-300 dark:disabled:text-zinc-500"
+                                            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-blue-600 transition-colors hover:bg-blue-500/10 hover:text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:text-zinc-400 dark:text-blue-400 dark:hover:text-blue-300 dark:disabled:text-zinc-500"
                                         >
                                             {mirror.isDisabled ? (
                                                 t('mirrors.disabledBadge')

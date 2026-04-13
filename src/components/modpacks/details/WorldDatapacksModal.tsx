@@ -170,7 +170,7 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                 aria-selected={isActive}
                                 aria-controls={`datapacks-panel-${entry}`}
                                 className={cn(
-                                    'rounded-xl px-4 py-2 text-sm font-medium transition-colors',
+                                    'rounded-xl px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                                     isActive
                                         ? 'bg-[rgb(var(--accent-main))] text-[rgb(var(--accent-content))]'
                                         : 'text-secondary hover:bg-card/72 hover:text-foreground'

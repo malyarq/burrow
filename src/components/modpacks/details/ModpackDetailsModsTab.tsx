@@ -190,7 +190,7 @@ const ModItem = React.memo<{
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <button
           type="button"
-          className="min-w-0 flex-1 text-left"
+          className="min-w-0 flex-1 rounded-2xl text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           onClick={() => toggleExpand(mod.id)}
           aria-expanded={isExpanded}
         >

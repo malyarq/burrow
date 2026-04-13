@@ -5,6 +5,7 @@ import { useSettings } from '../../../contexts/SettingsContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { CollapsibleSection } from '../../../components/ui/CollapsibleSection';
 import { Button } from '../../../components/ui/Button';
+import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { dialogIPC } from '../../../services/ipc/dialogIPC';
 import { statisticsIPC } from '../../../services/ipc/statisticsIPC';
 
@@ -65,7 +66,12 @@ export const StatisticsTab: React.FC = () => {
     };
 
     if (!stats) {
-        return <div role="status" className="surface-inline p-4 text-center text-secondary">{t('stats.loading')}</div>;
+        return (
+            <div role="status" className="surface-inline flex items-center justify-center gap-3 p-4 text-center text-secondary">
+                <LoadingSpinner size="sm" variant="accent" />
+                {t('stats.loading')}
+            </div>
+        );
     }
 
     const averageSessionTime = stats.global.totalLaunches > 0
