@@ -1,0 +1,96 @@
+# Requirements: FriendLauncher (FMCL)
+
+**Defined:** 2026-04-13  
+**Core Value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
+
+## v1 Requirements
+
+Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap phases 11-14.
+
+### Adaptive Layout
+
+- [ ] **ADPT-01**: User can use FMCL at first-launch default bounds and at resized window sizes without clipped primary controls, broken shell structure, or unreadable crowding
+- [ ] **ADPT-02**: User sees consistent button sizing, row rhythm, and card density across refreshed high-traffic launcher surfaces instead of mixed sizing rules
+- [ ] **ADPT-03**: User can open action menus, dropdowns, and overlays that stay anchored to their trigger and remain inside the current window bounds
+
+### Theme Fidelity And Readability
+
+- [ ] **THEME-01**: User can apply any shipped preset theme in either light or dark mode and see the refreshed launcher update immediately and consistently
+- [ ] **THEME-02**: User can read cards, inputs, overlays, and helper text in every shipped preset without white-on-white or low-contrast regressions
+
+### Settings Navigation
+
+- [ ] **NAV-01**: User can reach common settings tasks without drilling through excessive nested tabs, collapsible groups, or embedded sub-panels
+
+### Launch Trust
+
+- [ ] **LAUNCH-01**: User can tell from the main play surface whether FMCL is preparing, downloading, launching, waiting, failed, or already running
+- [ ] **LAUNCH-02**: User cannot accidentally spam conflicting launch actions while FMCL is busy, and launch failures remain visible until the user can react
+
+### Modpack Ergonomics
+
+- [ ] **MPUX-01**: User can create a modpack and see required runtime dependencies such as Minecraft version and selected loader accurately
+- [ ] **MPUX-02**: User can browse remote modpacks through clearer scanning, filtering, and paging ergonomics on common window sizes
+- [ ] **MPUX-03**: User can manage installed modpacks from cards with stable quick actions and menus that do not jump or overflow
+
+### Visual Trust
+
+- [ ] **VIS-01**: User no longer sees placeholder logos, placeholder art, or broken fallback assets on shipped classic and easter-egg surfaces
+
+### Verification And Release Truth
+
+- [ ] **VER-01**: Maintainers execute live browser walkthroughs for milestone-owned UX flows at multiple window sizes before closure
+- [ ] **DOC-01**: README and public roadmap docs describe the shipped UX-hardening changes and remaining future parity work truthfully after rollout lands
+
+## v2 Requirements
+
+Deferred until after the current UX-hardening milestone.
+
+### Future Launcher Ergonomics
+
+- **PARY-01**: User can compare richer modpack metadata, dependency context, and changelog detail directly in browsing and install flows
+- **PARY-02**: User can choose from additional dashboard density or layout presets beyond the adaptive default shell
+- **PARY-03**: User can monitor downloads, installs, and background tasks in a dedicated activity center instead of only inline surface states
+- **PARY-04**: User can use deeper account and session conveniences such as richer account switching and session-state UX
+
+## Out of Scope
+
+Explicitly excluded from `v0.3.0` to keep the milestone centered on trust and ergonomics instead of another scope explosion.
+
+| Feature | Reason |
+|---------|--------|
+| Rewriting the Electron, React, TypeScript, or Tailwind architecture | The product gap is UX execution inside the current stack, not platform choice |
+| Cloning other launchers feature-for-feature | Research should guide bounded improvements, not create unlimited parity scope |
+| Automated visual-regression infrastructure as a hard release gate | Useful later, but not required to close the current UX-hardening milestone |
+| Broad new multiplayer, cloud, or social features unrelated to current pain points | Expands the milestone away from the current trust and usability problems |
+| Full visual rebranding beyond fixing broken placeholders and asset truth | The priority is dependable interaction design and product correctness |
+
+## Traceability
+
+Which phases cover which requirements. Filled during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| ADPT-01 | TBD | Pending |
+| ADPT-02 | TBD | Pending |
+| ADPT-03 | TBD | Pending |
+| THEME-01 | TBD | Pending |
+| THEME-02 | TBD | Pending |
+| NAV-01 | TBD | Pending |
+| LAUNCH-01 | TBD | Pending |
+| LAUNCH-02 | TBD | Pending |
+| MPUX-01 | TBD | Pending |
+| MPUX-02 | TBD | Pending |
+| MPUX-03 | TBD | Pending |
+| VIS-01 | TBD | Pending |
+| VER-01 | TBD | Pending |
+| DOC-01 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 14 total
+- Mapped to phases: 0
+- Unmapped: 14 ⚠️
+
+---
+*Requirements defined: 2026-04-13*  
+*Last updated: 2026-04-13 after initial definition*
