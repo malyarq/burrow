@@ -245,6 +245,8 @@ describe('secondary content tabs', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Search Modrinth' }));
 
+    expect(screen.getByRole('tab', { name: 'Search Modrinth' }).getAttribute('aria-selected')).toBe('true');
+
     expect(await screen.findByText('Dungeon Boost')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Install datapack' }));

@@ -109,6 +109,7 @@ describe('SettingsPage secondary utility routes', () => {
     render(<SettingsPage onClose={onCloseMock} />);
 
     fireEvent.click(screen.getByRole('tab', { name: 'Downloads' }));
+    expect(screen.getByRole('tab', { name: 'Downloads' }).getAttribute('aria-selected')).toBe('true');
     expect(screen.getByRole('tabpanel', { name: 'Downloads' })).toBeTruthy();
     expect(screen.getByText('Downloads utility surface')).toBeTruthy();
     expect(screen.getByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeTruthy();
