@@ -19,11 +19,12 @@ import { StatisticsTab } from '../features/settings/statistics/StatisticsTab';
 
 interface SettingsPageProps {
     onClose: () => void;
+    initialTab?: SettingsTabId;
 }
 
 // Settings modal for appearance and launcher preferences.
-const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
-    const [activeTab, setActiveTab] = useState<SettingsTabId>('appearance');
+const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appearance' }) => {
+    const [activeTab, setActiveTab] = useState<SettingsTabId>(initialTab);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const {
         hideLauncher, setHideLauncher,

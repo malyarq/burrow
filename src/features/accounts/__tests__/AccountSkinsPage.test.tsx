@@ -149,12 +149,13 @@ describe('AccountsPage skin panel', () => {
       name: 'OfflineOnly',
     }
 
-    getAccountsMock.mockResolvedValueOnce([offlineAccount])
-    getSelectedAccountMock.mockResolvedValueOnce(offlineAccount)
+    getAccountsMock.mockResolvedValue([offlineAccount])
+    getSelectedAccountMock.mockResolvedValue(offlineAccount)
 
     render(<AccountsPage />)
 
     await screen.findByText('Skin Management')
+    await screen.findByText('OfflineOnly')
     await screen.findByText('Offline accounts do not have a provider skin page.')
 
     await waitFor(() => {
