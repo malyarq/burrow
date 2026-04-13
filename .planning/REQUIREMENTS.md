@@ -17,7 +17,7 @@ Requirements for the current UI-system and experience-rework milestone. These ma
 
 - [x] **LOCL-01**: User sees complete English and Russian UI copy across labels, placeholders, helper text, validation, tooltips, and empty states on refreshed surfaces
 - [x] **THEME-01**: User can switch theme and accent settings and see the launcher shell plus refreshed screens update consistently instead of only isolated controls changing
-- [ ] **A11Y-04**: User can use the refreshed UI with visible focus states, sufficient contrast, and reduced-motion-respecting behavior
+- [x] **A11Y-04**: User can use the refreshed UI with visible focus states, sufficient contrast, and reduced-motion-respecting behavior
 
 ### Core UX Flows
 
@@ -27,7 +27,7 @@ Requirements for the current UI-system and experience-rework milestone. These ma
 
 ### Advanced Surface Alignment
 
-- [ ] **UX-04**: User can use secondary launcher surfaces such as sharing, statistics, mirrors, and content-management views without them feeling like a different product
+- [x] **UX-04**: User can use secondary launcher surfaces such as sharing, statistics, mirrors, and content-management views without them feeling like a different product
 
 ### Verification And Release Truth
 
@@ -68,11 +68,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DSYS-03 | Phase 8 | Complete |
 | LOCL-01 | Phase 8 | Complete |
 | THEME-01 | Phase 7 | Complete |
-| A11Y-04 | Phase 9 | Pending |
+| A11Y-04 | Phase 9 | Complete |
 | UX-01 | Phase 8 | Complete |
 | UX-02 | Phase 8 | Complete |
 | UX-03 | Phase 8 | Complete |
-| UX-04 | Phase 9 | Pending |
+| UX-04 | Phase 9 | Complete |
 | VER-01 | Phase 10 | Pending |
 | DOC-03 | Phase 10 | Pending |
 
@@ -83,4 +83,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after Phase 8 completion*
+*Last updated: 2026-04-13 after Phase 9 completion*

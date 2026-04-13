@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.2.0
 milestone_name: ui-system-and-experience-rework
 status: active
-stopped_at: Planned Phase 9 execution
-last_updated: "2026-04-13T07:59:45Z"
-last_activity: 2026-04-13 - Planned Phase 9 (secondary surface alignment and UX polish)
+stopped_at: Phase 9 complete; Phase 10 planning next
+last_updated: "2026-04-13T09:47:00Z"
+last_activity: 2026-04-13 - Completed Phase 9 (secondary surface alignment and UX polish)
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 13
-  completed_plans: 8
-  percent: 62
+  completed_plans: 13
+  percent: 100
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Execute Phase 9 for milestone v0.2.0 UI System And Experience Rework
+**Current focus:** Plan Phase 10 for milestone v0.2.0 UI System And Experience Rework
 
 ## Current Position
 
-Phase: 9 - Secondary Surface Alignment And UX Polish
-Plan: Planned
-Status: Phase 9 planning is complete; execution is next
-Last activity: 2026-04-13 - Planned Phase 9 (secondary surface alignment and UX polish)
+Phase: 10 - Manual Experience Verification And Release Truth
+Plan: Pending
+Status: Phase 9 execution is complete; Phase 10 planning is next
+Last activity: 2026-04-13 - Completed Phase 9 (secondary surface alignment and UX polish)
 
-Progress: [######----] 62%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 37
-- Active phase plans completed: 8
+- Total plans completed: 42
+- Active phase plans completed: 13
 - Average duration: 19 min
-- Total execution time: 2.5 hours
+- Total execution time: 4.0 hours
 
 **By Phase:**
 
@@ -46,11 +46,11 @@ Progress: [######----] 62%
 |-------|-------|-------|----------|
 | 7. UI System Foundations | 4 | 1.1h | 17 min |
 | 8. Core Route Rollout And UI Correctness | 4 | 1.4h | 21 min |
-| 9. Secondary Surface Alignment And UX Polish | 0 | Planned | — |
+| 9. Secondary Surface Alignment And UX Polish | 5 | 1.5h | 18 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-01, 08-02, 08-03, 08-04, 09-planning
-- Trend: Phase 9 is now decomposed into five plans across three waves; execution can start on the secondary-surface rollout
+- Last 5 plans: 09-01, 09-02, 09-03, 09-04, 09-05
+- Trend: Phase 9 completed cleanly under focused tests plus live browser sanity; planning can move to the milestone-wide Phase 10 walkthrough
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -99,6 +99,7 @@ Recent decisions affecting current work:
 - [Phase 09]: Treat the remaining launcher debt as owner-surface rollout across share/screenshots, settings utilities, and content-management tabs instead of generic global polish.
 - [Phase 09]: Close A11Y-04 explicitly across the updated secondary surfaces, with a dedicated accessibility or atmosphere slice rather than assuming Phase 7 foundations are enough.
 - [Phase 09]: Keep Phase 9 browser sanity narrow and surface-owned so Phase 10 still owns the milestone-wide walkthrough and release-truth claims.
+- [Phase 09]: Close the phase on focused seam tests, repo gates, and temporary same-origin browser sanity evidence instead of pulling broader release messaging into the execution wave.
 
 ### Pending Todos
 
@@ -110,12 +111,13 @@ None yet.
 
 - `npm run build -- --publish never` was not rerun in Phase 8 because this milestone phase closes on route integration evidence, not packaging changes; packaging should be rechecked during the later release-truth phase.
 - Phase 8 captured real browser sanity through temporary same-origin harness runs against the live dev server, but Phase 10 should still perform the broader milestone walkthrough on refreshed routes without relying on phase-scoped scaffolding.
-- Phase 9 planning proceeded without a `09-CONTEXT.md`; the plan is grounded in roadmap requirements, Phase 8 history, and direct repo evidence only.
+- Phase 9 execution closed on focused repo gates (`npm test`, `npm run lint`, `npx tsc --noEmit`) plus narrow live browser sanity; the broader packaging or release-truth gate is still deferred to Phase 10.
+- Phase 10 is not planned yet; roadmap truth now depends on planning that broader walkthrough and documentation closeout honestly.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 - `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from planning and execution commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T07:59:45Z
-Stopped at: Planned Phase 9 execution
-Resume file: .planning/phases/09-secondary-surface-alignment-and-ux-polish/09-01-PLAN.md
+Last session: 2026-04-13T09:47:00Z
+Stopped at: Phase 9 complete; plan Phase 10 next
+Resume file: .planning/phases/09-secondary-surface-alignment-and-ux-polish/09-05-SUMMARY.md

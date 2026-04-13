@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 7: UI System Foundations** - Establish the shared visual system, theme source of truth, and icon/shell contracts that every later screen rollout depends on. Completed 2026-04-13.
 - [x] **Phase 8: Core Route Rollout And UI Correctness** - Move the highest-traffic launcher flows onto the shared system while removing visible translation, icon, and state defects. Completed 2026-04-13.
-- [ ] **Phase 9: Secondary Surface Alignment And UX Polish** - Bring advanced or lower-traffic launcher surfaces into the same product language and close accessibility and atmosphere fallout.
+- [x] **Phase 9: Secondary Surface Alignment And UX Polish** - Bring advanced or lower-traffic launcher surfaces into the same product language and close accessibility and atmosphere fallout. Completed 2026-04-13.
 - [ ] **Phase 10: Manual Experience Verification And Release Truth** - Validate the refreshed launcher through real browser walkthroughs, land fallout fixes, and update release-facing documentation.
 
 ## Phase Details
@@ -71,5 +71,5 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 |-------|----------------|--------|-----------|
 | 7. UI System Foundations | 4/4 | Complete | 2026-04-13 |
 | 8. Core Route Rollout And UI Correctness | 4/4 | Complete | 2026-04-13 |
-| 9. Secondary Surface Alignment And UX Polish | 0/5 | Planned | — |
+| 9. Secondary Surface Alignment And UX Polish | 5/5 | Complete | 2026-04-13 |
 | 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |
