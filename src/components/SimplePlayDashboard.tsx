@@ -534,7 +534,7 @@ function ContentManagerSection({
 
   if (!instancePath) {
     return (
-      <div className="surface-muted text-center py-4 text-secondary text-sm">
+      <div className="surface-muted py-4 text-center text-sm text-secondary">
         {t('dashboard.no_minecraft_path') || 'Minecraft path not set'}
       </div>
     );
@@ -549,9 +549,16 @@ function ContentManagerSection({
 
   return (
     <div className="space-y-4">
-      {/* Tab buttons */}
+      <div className="surface-card space-y-2 p-4">
+        <div className="kicker-label">{t('dashboard.content') || 'Content'}</div>
+        <h3 className="text-lg font-semibold text-foreground">{t('dashboard.content') || 'Content'}</h3>
+        <p className="text-sm text-secondary">{t('modpacks.secondary_content_description')}</p>
+      </div>
+
       <div
-        className="flex gap-2 border-b border-border overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden"
+        className="surface-inline flex gap-2 overflow-x-auto overflow-y-hidden p-2 [&::-webkit-scrollbar]:hidden"
+        role="tablist"
+        aria-label={t('dashboard.content') || 'Content'}
         style={{ scrollbarWidth: 'none' }}
         onWheel={(e) => {
           if (e.deltaY !== 0) {
@@ -560,25 +567,31 @@ function ContentManagerSection({
           }
         }}
       >
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={cn(
-              'px-3 py-2 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap',
-              activeTab !== tab.key && 'border-transparent text-secondary hover:text-foreground'
-            )}
-            style={activeTab === tab.key ? {
-              borderColor: accentHex,
-              color: accentHex
-            } : undefined}
-          >
-            {tab.label}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.key;
+
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              role="tab"
+              id={`simple-content-tab-${tab.key}`}
+              aria-selected={isActive}
+              aria-controls={`simple-content-panel-${tab.key}`}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                'rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
+                !isActive && 'text-secondary hover:bg-card/72 hover:text-foreground'
+              )}
+              style={isActive ? { backgroundColor: accentHex, color: 'white' } : undefined}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
-      {/* Tab content */}
-      <div className="w-full">
+
+      <div className="w-full" role="tabpanel" id={`simple-content-panel-${activeTab}`} aria-labelledby={`simple-content-tab-${activeTab}`}>
         {activeTab === 'mods' && modpackId && (
           <ModsTab
             modpackId={modpackId}
