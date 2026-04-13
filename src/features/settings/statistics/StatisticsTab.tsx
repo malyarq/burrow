@@ -65,7 +65,7 @@ export const StatisticsTab: React.FC = () => {
     };
 
     if (!stats) {
-        return <div role="status" className="p-4 text-center text-secondary">{t('stats.loading')}</div>;
+        return <div role="status" className="surface-inline p-4 text-center text-secondary">{t('stats.loading')}</div>;
     }
 
     const averageSessionTime = stats.global.totalLaunches > 0
@@ -77,12 +77,17 @@ export const StatisticsTab: React.FC = () => {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-end">
+            <div className="surface-card flex flex-col gap-4 p-4 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-2">
+                    <div className="kicker-label">{t('settings.tab_statistics')}</div>
+                    <h3 className="text-lg font-bold text-foreground">{t('stats.global_stats')}</h3>
+                    <p className="text-sm text-secondary">{t('stats.description')}</p>
+                </div>
                 <Button
                     onClick={() => void handleExport()}
                     isLoading={isExporting}
                     disabled={isExporting}
-                    className="gap-2"
+                    className="gap-2 md:self-start"
                 >
                     <Download size={16} />
                     {isExporting ? t('stats.exporting') : t('stats.export')}
@@ -91,17 +96,17 @@ export const StatisticsTab: React.FC = () => {
 
             <CollapsibleSection title={t('stats.global_stats')} defaultExpanded>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+                    <div className="surface-card p-4">
                         <div className="text-sm text-secondary">{t('stats.total_play_time')}</div>
-                        <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{formatTime(stats.global.totalPlayTime)}</div>
+                        <div className="text-2xl font-bold text-foreground">{formatTime(stats.global.totalPlayTime)}</div>
                     </div>
-                    <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+                    <div className="surface-card p-4">
                         <div className="text-sm text-secondary">{t('stats.total_launches')}</div>
-                        <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{stats.global.totalLaunches}</div>
+                        <div className="text-2xl font-bold text-foreground">{stats.global.totalLaunches}</div>
                     </div>
-                    <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-lg">
+                    <div className="surface-card p-4">
                         <div className="text-sm text-secondary">{t('stats.average_session')}</div>
-                        <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{formatTime(averageSessionTime)}</div>
+                        <div className="text-2xl font-bold text-foreground">{formatTime(averageSessionTime)}</div>
                     </div>
                 </div>
             </CollapsibleSection>
@@ -112,10 +117,10 @@ export const StatisticsTab: React.FC = () => {
                         <div
                             key={modpack.instanceId}
                             role="listitem"
-                            className="flex items-center justify-between bg-zinc-100 dark:bg-zinc-800 p-3 rounded-lg"
+                            className="surface-card flex items-center justify-between gap-4 p-3"
                         >
                             <div>
-                                <div className="font-medium text-zinc-900 dark:text-zinc-100">
+                                <div className="font-medium text-foreground">
                                     {index + 1}. {modpack.name}
                                 </div>
                                 <div className="text-xs text-secondary">
@@ -123,7 +128,7 @@ export const StatisticsTab: React.FC = () => {
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className="font-mono text-zinc-700 dark:text-zinc-300">{formatTime(modpack.playTime)}</div>
+                                <div className="font-mono text-foreground">{formatTime(modpack.playTime)}</div>
                                 <div className="text-xs text-secondary">
                                     {t('stats.last_played')}: {modpack.lastPlayed ? new Date(modpack.lastPlayed).toLocaleDateString() : '—'}
                                 </div>
@@ -131,7 +136,7 @@ export const StatisticsTab: React.FC = () => {
                         </div>
                     ))}
                     {stats.popularModpacks.length === 0 && (
-                        <div className="text-center text-zinc-500 py-4">{t('stats.no_popular_modpacks')}</div>
+                        <div className="surface-inline py-4 text-center text-secondary">{t('stats.no_popular_modpacks')}</div>
                     )}
                 </div>
             </CollapsibleSection>
@@ -139,8 +144,8 @@ export const StatisticsTab: React.FC = () => {
             <CollapsibleSection title={t('stats.usage_trend')} defaultExpanded>
                 <div className="space-y-3" role="list" aria-label={t('stats.usage_trend')}>
                     {trendPoints.map((point) => (
-                        <div key={point.date} role="listitem" className="space-y-2 bg-zinc-100 dark:bg-zinc-800 p-3 rounded-lg">
-                            <div className="flex items-center justify-between text-sm text-zinc-700 dark:text-zinc-200">
+                        <div key={point.date} role="listitem" className="surface-card space-y-2 p-3">
+                            <div className="flex items-center justify-between text-sm text-foreground">
                                 <span>{formatTrendDate(point.date)}</span>
                                 <span>
                                     {point.launches} {t('stats.trend_launches')} · {formatTime(point.playTime)}
@@ -152,7 +157,7 @@ export const StatisticsTab: React.FC = () => {
                                         <span>{t('stats.trend_launches')}</span>
                                         <span>{point.launches}</span>
                                     </div>
-                                    <div aria-hidden="true" className="h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 overflow-hidden">
+                                    <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-background/80">
                                         <div
                                             className="h-full rounded-full bg-emerald-500"
                                             style={{ width: `${(point.launches / maxTrendLaunches) * 100}%` }}
@@ -164,7 +169,7 @@ export const StatisticsTab: React.FC = () => {
                                         <span>{t('stats.trend_play_time')}</span>
                                         <span>{formatTime(point.playTime)}</span>
                                     </div>
-                                    <div aria-hidden="true" className="h-2 rounded-full bg-zinc-300 dark:bg-zinc-700 overflow-hidden">
+                                    <div aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-background/80">
                                         <div
                                             className="h-full rounded-full bg-blue-500"
                                             style={{ width: `${(point.playTime / maxTrendPlayTime) * 100}%` }}
@@ -175,7 +180,7 @@ export const StatisticsTab: React.FC = () => {
                         </div>
                     ))}
                     {trendPoints.length === 0 && (
-                        <div className="text-center text-zinc-500 py-4">{t('stats.no_usage_trend')}</div>
+                        <div className="surface-inline py-4 text-center text-secondary">{t('stats.no_usage_trend')}</div>
                     )}
                 </div>
             </CollapsibleSection>
@@ -183,20 +188,20 @@ export const StatisticsTab: React.FC = () => {
             <CollapsibleSection title={t('stats.instance_stats')} defaultExpanded={false}>
                 <div className="space-y-2" role="list" aria-label={t('stats.instance_stats')}>
                     {Object.entries(stats.instances).map(([id, instance]) => (
-                        <div key={id} role="listitem" className="flex justify-between items-center bg-zinc-100 dark:bg-zinc-800 p-3 rounded-lg">
+                        <div key={id} role="listitem" className="surface-card flex items-center justify-between gap-4 p-3">
                             <div>
-                                <div className="font-medium text-zinc-900 dark:text-zinc-100">{instance.name || id}</div>
+                                <div className="font-medium text-foreground">{instance.name || id}</div>
                                 <div className="text-xs text-secondary">
                                     {t('stats.launches')}: {instance.launches}
                                 </div>
                             </div>
-                            <div className="font-mono text-zinc-700 dark:text-zinc-300">
+                            <div className="font-mono text-foreground">
                                 {formatTime(instance.playTime)}
                             </div>
                         </div>
                     ))}
                     {Object.keys(stats.instances).length === 0 && (
-                        <div className="text-center text-zinc-500 py-4">{t('stats.no_instance_stats')}</div>
+                        <div className="surface-inline py-4 text-center text-secondary">{t('stats.no_instance_stats')}</div>
                     )}
                 </div>
             </CollapsibleSection>

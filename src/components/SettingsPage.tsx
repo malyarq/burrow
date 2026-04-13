@@ -48,6 +48,30 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
         }
     }, [status]);
 
+    const getPanelHint = () => {
+        if (activeTab === 'accounts') {
+            return t('accounts.description');
+        }
+
+        if (activeTab === 'downloads') {
+            return t('settings.downloadsHint');
+        }
+
+        if (activeTab === 'launcher') {
+            return t('settings.launcherHint');
+        }
+
+        if (activeTab === 'storage') {
+            return t('settings.storage.description');
+        }
+
+        if (activeTab === 'statistics') {
+            return t('stats.description');
+        }
+
+        return t('settings.doneHint');
+    };
+
     const renderActiveTab = () => {
         if (activeTab === 'appearance') {
             return <AppearanceTab />;
@@ -122,16 +146,14 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
                     role="tabpanel"
                     aria-labelledby={getSettingsTabId(activeTab)}
                     tabIndex={0}
-                    className="surface-muted min-h-[26rem] outline-none p-4 sm:p-5"
+                    className="surface-panel min-h-[26rem] outline-none p-4 sm:p-5"
                 >
                     {renderActiveTab()}
                 </div>
 
                 <div className="surface-inline flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-secondary">
-                        {activeTab === 'accounts'
-                            ? t('accounts.description')
-                            : (t('settings.doneHint') || 'Changes are saved automatically as you work.')}
+                        {getPanelHint()}
                     </p>
                     <Button
                         onClick={onClose}
