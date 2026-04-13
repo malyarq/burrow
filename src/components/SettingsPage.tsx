@@ -107,7 +107,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
             isOpen={true}
             onClose={onClose}
             title={t('settings.title')}
-            className="max-w-2xl"
+            className="max-w-4xl"
         >
             <div className="space-y-4">
                 <SettingsTabsHeader
@@ -122,15 +122,20 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose }) => {
                     role="tabpanel"
                     aria-labelledby={getSettingsTabId(activeTab)}
                     tabIndex={0}
-                    className="outline-none"
+                    className="surface-muted min-h-[26rem] outline-none p-4 sm:p-5"
                 >
                     {renderActiveTab()}
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <div className="surface-inline flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-secondary">
+                        {activeTab === 'accounts'
+                            ? t('accounts.description')
+                            : (t('settings.doneHint') || 'Changes are saved automatically as you work.')}
+                    </p>
                     <Button
                         onClick={onClose}
-                        className={cn("text-white", getAccentStyles('bg').className)}
+                        className={cn("text-white sm:min-w-[9rem]", getAccentStyles('bg').className)}
                         style={getAccentStyles('bg').style}
                     >
                         {t('settings.done')}
