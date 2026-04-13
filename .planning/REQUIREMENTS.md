@@ -9,9 +9,9 @@ Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap 
 
 ### Adaptive Layout
 
-- [ ] **ADPT-01**: User can use FMCL at first-launch default bounds and at resized window sizes without clipped primary controls, broken shell structure, or unreadable crowding
-- [ ] **ADPT-02**: User sees consistent button sizing, row rhythm, and card density across refreshed high-traffic launcher surfaces instead of mixed sizing rules
-- [ ] **ADPT-03**: User can open action menus, dropdowns, and overlays that stay anchored to their trigger and remain inside the current window bounds
+- [x] **ADPT-01**: User can use FMCL at first-launch default bounds and at resized window sizes without clipped primary controls, broken shell structure, or unreadable crowding
+- [x] **ADPT-02**: User sees consistent button sizing, row rhythm, and card density across refreshed high-traffic launcher surfaces instead of mixed sizing rules
+- [x] **ADPT-03**: User can open action menus, dropdowns, and overlays that stay anchored to their trigger and remain inside the current window bounds
 
 ### Theme Fidelity And Readability
 
@@ -35,7 +35,7 @@ Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap 
 
 ### Visual Trust
 
-- [ ] **VIS-01**: User no longer sees placeholder logos, placeholder art, or broken fallback assets on shipped classic and easter-egg surfaces
+- [x] **VIS-01**: User no longer sees placeholder logos, placeholder art, or broken fallback assets on shipped classic and easter-egg surfaces
 
 ### Verification And Release Truth
 
@@ -71,9 +71,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ADPT-01 | Phase 11 | Pending |
-| ADPT-02 | Phase 11 | Pending |
-| ADPT-03 | Phase 11 | Pending |
+| ADPT-01 | Phase 11 | Completed |
+| ADPT-02 | Phase 11 | Completed |
+| ADPT-03 | Phase 11 | Completed |
 | THEME-01 | Phase 12 | Pending |
 | THEME-02 | Phase 12 | Pending |
 | NAV-01 | Phase 12 | Pending |
@@ -82,7 +82,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MPUX-01 | Phase 13 | Pending |
 | MPUX-02 | Phase 13 | Pending |
 | MPUX-03 | Phase 13 | Pending |
-| VIS-01 | Phase 11 | Pending |
+| VIS-01 | Phase 11 | Completed |
 | VER-01 | Phase 14 | Pending |
 | DOC-01 | Phase 14 | Pending |
 
@@ -93,4 +93,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after roadmap creation*
+*Last updated: 2026-04-13 after Phase 11 completion*

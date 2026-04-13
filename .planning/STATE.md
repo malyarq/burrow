@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Ready to execute Phase 11
-last_updated: "2026-04-13T12:55:00Z"
-last_activity: 2026-04-13 - Planned Phase 11 adaptive layout foundations
+stopped_at: Ready to plan Phase 12
+last_updated: "2026-04-13T13:49:37Z"
+last_activity: 2026-04-13 - Completed Phase 11 adaptive layout foundations
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 17
-  completed_plans: 0
-  percent: 0
+  completed_plans: 4
+  percent: 24
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Ready to execute Phase 11 adaptive layout foundations
+**Current focus:** Ready to plan Phase 12 theme truth and settings IA simplification
 
 ## Current Position
 
-Phase: 11
-Plan: planned
-Status: Ready to execute Phase 11
-Last activity: 2026-04-13 - Planned Phase 11 adaptive layout foundations
+Phase: 12
+Plan: unplanned
+Status: Ready to plan Phase 12
+Last activity: 2026-04-13 - Completed Phase 11 adaptive layout foundations
 
-Progress: [----------] 0%
+Progress: [##--------] 24%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 46
-- Active phase plans completed: 17
+- Total plans completed: 50
+- Active phase plans completed: 21
 - Average duration: 19 min
-- Total execution time: 5.8 hours
+- Total execution time: 6.7 hours
 
 **By Phase:**
 
@@ -48,10 +48,11 @@ Progress: [----------] 0%
 | 8. Core Route Rollout And UI Correctness | 4 | 1.4h | 21 min |
 | 9. Secondary Surface Alignment And UX Polish | 5 | 1.5h | 18 min |
 | 10. Manual Experience Verification And Release Truth | 4 | 1.8h | 27 min |
+| 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
 
 **Recent Trend:**
-- Last 5 plans: 10-01, 10-02, 10-03, 10-04, milestone kickoff
-- Trend: v0.3.0 is now structured as four phases: adaptive foundations -> theme/settings truth -> launch/modpack ergonomics -> live verification
+- Last 5 plans: milestone kickoff, 11-01, 11-02, 11-03, 11-04
+- Trend: v0.3.0 moved from planning into execution, and Phase 11 is now a verified shell/overlay/fallback foundation for the remaining UX-hardening work
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -103,6 +104,9 @@ Recent decisions affecting current work:
 - [Phase 09]: Close the phase on focused seam tests, repo gates, and temporary same-origin browser sanity evidence instead of pulling broader release messaging into the execution wave.
 - [Phase 10]: Reuse one same-origin manual verification entry across core and secondary walkthroughs instead of building phase-specific browser harnesses.
 - [Phase 10]: Refresh public docs from walkthrough evidence first, then mark the milestone complete only after the packaging-aware gate passes.
+- [Phase 11]: Express adaptive layout through shared shell and control seams rather than per-screen breakpoint fixes.
+- [Phase 11]: Fix overlay overflow with one anchored overlay contract reused by tooltips, onboarding, and installed-modpack actions.
+- [Phase 11]: Replace placeholder-feeling logo reuse with one shipped launcher mark shared by classic surfaces and fallback seams.
 
 ### Pending Todos
 
@@ -114,11 +118,12 @@ None yet.
 
 - Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- Phase 11 is planned and ready for execution; later phases remain unplanned.
+- Phase 11 is complete and verified; the next workflow step is planning Phase 12.
+- Live Phase 11 evidence also surfaced a pre-existing raw settings i18n key (`settings.tab_storage`), which is outside Phase 11 acceptance but should be cleaned up in later UX/i18n work.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T12:55:00Z
-Stopped at: Ready to execute Phase 11
+Last session: 2026-04-13T13:49:37Z
+Stopped at: Ready to plan Phase 12
 Resume file: .planning/PROJECT.md

@@ -19,10 +19,10 @@
 
 Plans:
 
-- [ ] 11-01: Normalize responsive shell and surface rhythm
-- [ ] 11-02: Harden anchored menus and overflow-safe overlays
-- [ ] 11-03: Close placeholder and asset-fallback truth gaps
-- [ ] 11-04: Run the adaptive layout integration gate and close Phase 11
+- [x] 11-01: Normalize responsive shell and surface rhythm
+- [x] 11-02: Harden anchored menus and overflow-safe overlays
+- [x] 11-03: Close placeholder and asset-fallback truth gaps
+- [x] 11-04: Run the adaptive layout integration gate and close Phase 11
 
 **Details:**
 - Establish consistent button/card sizing and responsive behavior across the highest-traffic launcher surfaces.
