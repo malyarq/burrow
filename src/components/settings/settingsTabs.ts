@@ -50,6 +50,14 @@ export function getSettingsTabId(tabId: SettingsTabId): string {
   return `settings-tab-${tabId}`;
 }
 
+export function getSettingsTabLabelId(tabId: SettingsTabId): string {
+  return `${getSettingsTabId(tabId)}-label`;
+}
+
+export function getSettingsTabDescriptionId(tabId: SettingsTabId): string {
+  return `${getSettingsTabId(tabId)}-description`;
+}
+
 export function getSettingsPanelId(tabId: SettingsTabId): string {
   return `settings-panel-${tabId}`;
 }

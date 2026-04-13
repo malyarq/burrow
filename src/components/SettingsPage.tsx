@@ -8,7 +8,7 @@ import { SettingsTabsHeader } from './settings/SettingsTabsHeader';
 import {
     getSettingsPanelId,
     getSettingsTabConfig,
-    getSettingsTabId,
+    getSettingsTabLabelId,
     type SettingsTabId,
 } from './settings/settingsTabs';
 
@@ -140,7 +140,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                 <div
                     id={getSettingsPanelId(activeTab)}
                     role="tabpanel"
-                    aria-labelledby={getSettingsTabId(activeTab)}
+                    aria-labelledby={getSettingsTabLabelId(activeTab)}
                     tabIndex={0}
                     className="surface-panel min-h-[22rem] outline-none p-4 sm:p-5"
                 >

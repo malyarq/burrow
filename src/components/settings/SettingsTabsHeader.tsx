@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { cn } from '../../utils/cn';
 import {
   getSettingsPanelId,
+  getSettingsTabDescriptionId,
   getSettingsTabId,
+  getSettingsTabLabelId,
   SETTINGS_TABS,
   type SettingsTabId,
 } from './settingsTabs';
@@ -85,8 +87,8 @@ export function SettingsTabsHeader(props: {
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const accentBorderStyle = isActive ? getAccentStyles('border').style : undefined;
-        const tabLabelId = `${getSettingsTabId(tab.id)}-label`;
-        const tabDescriptionId = `${getSettingsTabId(tab.id)}-description`;
+        const tabLabelId = getSettingsTabLabelId(tab.id);
+        const tabDescriptionId = getSettingsTabDescriptionId(tab.id);
 
         return (
           <button
