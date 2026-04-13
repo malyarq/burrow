@@ -38,7 +38,7 @@ Plans:
 
 - [x] 12-01: Repair the preset theme application contract
 - [x] 12-02: Close preset readability and contrast regressions
-- [ ] 12-03: Simplify settings information architecture
+- [x] 12-03: Simplify settings information architecture
 - [ ] 12-04: Run the theme and settings integration gate and close Phase 12
 
 **Details:**
