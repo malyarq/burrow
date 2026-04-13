@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { LAUNCHER_MARK_PATH } from '../app/assets/branding';
 import { Boxes, Settings2, Sparkles } from 'lucide-react';
 import { useSettings, useUIMode } from '../contexts/SettingsContext';
 import { useModpack } from '../contexts/ModpackContext';
@@ -312,8 +313,9 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           />
           <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl shadow-black/20 border border-zinc-200/60 dark:border-zinc-700/60 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm">
             <img
-              src="/icon.png"
+              src={LAUNCHER_MARK_PATH}
               alt="FriendLauncher"
+              data-testid="dashboard-launcher-mark"
               className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-300"
               style={{
                 transform: !reducedMotion && showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
@@ -367,7 +369,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
                 }
               }
             >
-              <img src="/icon.png" alt="" className="w-full h-full object-contain" style={{ filter: `drop-shadow(0 0 6px ${accentHex}) drop-shadow(0 0 12px ${accentHex}60)` }} />
+              <img src={LAUNCHER_MARK_PATH} alt="" aria-hidden="true" className="w-full h-full object-contain" style={{ filter: `drop-shadow(0 0 6px ${accentHex}) drop-shadow(0 0 12px ${accentHex}60)` }} />
             </div>
           );
         })}

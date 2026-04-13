@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { LAUNCHER_MARK_PATH } from '../app/assets/branding';
 import { useSettings } from '../contexts/SettingsContext';
 
 interface Particle {
@@ -132,8 +133,9 @@ export const SimplePlayHome: React.FC = () => {
           />
           <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl shadow-black/30 border border-zinc-200/80 dark:border-zinc-700/80 bg-zinc-900/90 flex items-center justify-center backdrop-blur-sm">
             <img
-              src="/icon.png"
+              src={LAUNCHER_MARK_PATH}
               alt="FriendLauncher"
+              data-testid="classic-launcher-mark"
               className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-300"
               style={{
                 transform: showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
@@ -188,8 +190,9 @@ export const SimplePlayHome: React.FC = () => {
             }}
           >
             <img
-              src="/icon.png"
+              src={LAUNCHER_MARK_PATH}
               alt=""
+              aria-hidden="true"
               className="w-full h-full object-contain"
               style={{
                 filter: `drop-shadow(0 0 6px ${accentHex}) drop-shadow(0 0 12px ${accentHex}60)`,
@@ -257,5 +260,4 @@ export const SimplePlayHome: React.FC = () => {
     </div>
   );
 };
-
 
