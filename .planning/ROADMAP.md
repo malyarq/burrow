@@ -32,7 +32,7 @@ Plans:
 
 **Goal:** Preset themes become reliable in light and dark mode, and settings stop feeling like nested navigation traps.  
 **Depends on:** Phase 11  
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 

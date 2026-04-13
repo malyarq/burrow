@@ -20,7 +20,7 @@ Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap 
 
 ### Settings Navigation
 
-- [ ] **NAV-01**: User can reach common settings tasks without drilling through excessive nested tabs, collapsible groups, or embedded sub-panels
+- [x] **NAV-01**: User can reach common settings tasks without drilling through excessive nested tabs, collapsible groups, or embedded sub-panels
 
 ### Launch Trust
 
@@ -76,7 +76,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADPT-03 | Phase 11 | Completed |
 | THEME-01 | Phase 12 | Completed |
 | THEME-02 | Phase 12 | Completed |
-| NAV-01 | Phase 12 | Pending |
+| NAV-01 | Phase 12 | Complete |
 | LAUNCH-01 | Phase 13 | Pending |
 | LAUNCH-02 | Phase 13 | Pending |
 | MPUX-01 | Phase 13 | Pending |

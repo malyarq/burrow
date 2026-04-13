@@ -1,16 +1,19 @@
 ---
 gsd_state_version: 1.0
-milestone: v0.3.0
-milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
-status: active
-stopped_at: Completed 12-02-PLAN.md
-last_updated: "2026-04-13T14:49:34.606Z"
-last_activity: 2026-04-13 - Executed 12-02 preset readability contrast cleanup
+milestone: v0.2
+milestone_name: milestone
+current_phase: 12
+current_phase_name: theme-truth-and-settings-ia-simplification
+current_plan: 4
+status: executing
+stopped_at: Completed 12-03-PLAN.md
+last_updated: "2026-04-13T15:12:34.976Z"
+last_activity: 2026-04-13
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 17
-  completed_plans: 6
+  total_plans: 8
+  completed_plans: 7
   percent: 35
 ---
 
@@ -25,10 +28,15 @@ See: .planning/PROJECT.md (updated 2026-04-13)
 
 ## Current Position
 
+Current Phase: 12
+Current Phase Name: theme-truth-and-settings-ia-simplification
+Total Phases: 4
+Current Plan: 4
+Total Plans in Phase: 4
 Phase: 12
-Plan: 03/04 ready
+Plan: 03/04
 Status: Ready to execute 12-03
-Last activity: 2026-04-13 - Executed 12-02 preset readability contrast cleanup
+Last activity: 2026-04-13
 
 Progress: [####------] 35%
 
@@ -57,6 +65,7 @@ Progress: [####------] 35%
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
 | Phase 12 P02 | 14min | 2 tasks | 19 files |
+| Phase 12 P03 | 17min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -112,6 +121,9 @@ Recent decisions affecting current work:
 - [Phase 12]: Resolve the full document token contract from preset mode variants so applying a preset repaints shell, overlay, helper-text, and border tokens immediately.
 - [Phase 12]: Reuse shared semantic theme seams for contrast cleanup instead of per-screen zinc/white overrides.
 - [Phase 12]: Lock preset readability with focused DOM-class regression tests on the highest-risk settings and modpack import surfaces.
+- [Phase 12]: Drive settings tab labels, descriptions, and panel hints from shared metadata so the shell stays consistent.
+- [Phase 12]: Expose presets, language, accent, launch behavior, mirrors, and tuning in the first visible card groups while leaving low-frequency controls secondary.
+- [Phase 12]: Flatten utility settings by pairing current state with the main action instead of adding nested routes or extra tab layers.
 
 ### Pending Todos
 
@@ -129,6 +141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-13T14:49:34.604Z
-Stopped at: Completed 12-02-PLAN.md
-Resume file: .planning/phases/12-theme-truth-and-settings-ia-simplification/12-03-PLAN.md
+Last session: 2026-04-13T15:12:34.974Z
+Stopped at: Completed 12-03-PLAN.md
+Resume file: None
