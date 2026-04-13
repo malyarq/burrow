@@ -49,8 +49,8 @@ completed: 2026-04-13
 
 ## Task Commits
 
-1. **Task 1: Sweep the updated secondary surfaces for focus, keyboard, contrast, and destructive-action semantics** - pending commit
-2. **Task 2: Tune backdrop, contrast, and reduced-motion behavior without losing launcher atmosphere** - pending commit
+1. **Task 1: Sweep the updated secondary surfaces for focus, keyboard, contrast, and destructive-action semantics** - `ff21706` (`fix(09-04): harden secondary surface accessibility`)
+2. **Task 2: Tune backdrop, contrast, and reduced-motion behavior without losing launcher atmosphere** - `bc20019` (`test(09-04): cover reduced motion and tab focus seams`)
 
 ## Files Created/Modified
 
