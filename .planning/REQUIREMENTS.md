@@ -16,7 +16,7 @@ Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap 
 ### Theme Fidelity And Readability
 
 - [x] **THEME-01**: User can apply any shipped preset theme in either light or dark mode and see the refreshed launcher update immediately and consistently
-- [ ] **THEME-02**: User can read cards, inputs, overlays, and helper text in every shipped preset without white-on-white or low-contrast regressions
+- [x] **THEME-02**: User can read cards, inputs, overlays, and helper text in every shipped preset without white-on-white or low-contrast regressions
 
 ### Settings Navigation
 
@@ -75,7 +75,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADPT-02 | Phase 11 | Completed |
 | ADPT-03 | Phase 11 | Completed |
 | THEME-01 | Phase 12 | Completed |
-| THEME-02 | Phase 12 | Pending |
+| THEME-02 | Phase 12 | Completed |
 | NAV-01 | Phase 12 | Pending |
 | LAUNCH-01 | Phase 13 | Pending |
 | LAUNCH-02 | Phase 13 | Pending |
@@ -93,4 +93,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-13 after Phase 12 plan 01 completion*
+*Last updated: 2026-04-13 after Phase 12 plan 02 completion*

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Completed 12-01-PLAN.md
-last_updated: "2026-04-13T14:26:56Z"
-last_activity: 2026-04-13 - Executed 12-01 preset theme truth contract
+stopped_at: Completed 12-02-PLAN.md
+last_updated: "2026-04-13T14:49:34.606Z"
+last_activity: 2026-04-13 - Executed 12-02 preset readability contrast cleanup
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 17
-  completed_plans: 5
-  percent: 29
+  completed_plans: 6
+  percent: 35
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Ready to execute Phase 12 plan 02 contrast cleanup on top of the new preset truth seam
+**Current focus:** Ready to execute Phase 12 plan 03 settings IA simplification on top of theme-safe shared surfaces
 
 ## Current Position
 
 Phase: 12
-Plan: 02/04 ready
-Status: Ready to execute 12-02
-Last activity: 2026-04-13 - Executed 12-01 preset theme truth contract
+Plan: 03/04 ready
+Status: Ready to execute 12-03
+Last activity: 2026-04-13 - Executed 12-02 preset readability contrast cleanup
 
-Progress: [###-------] 29%
+Progress: [####------] 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 50
-- Active phase plans completed: 22
+- Total plans completed: 51
+- Active phase plans completed: 23
 - Average duration: 19 min
-- Total execution time: 6.9 hours
+- Total execution time: 7.1 hours
 
 **By Phase:**
 
@@ -51,11 +51,12 @@ Progress: [###-------] 29%
 | 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
 
 **Recent Trend:**
-- Last 5 plans: 11-02, 11-03, 11-04, 12 planning, 12-01
-- Trend: v0.3.0 moved from adaptive foundation work into theme-truth execution, with 12-01 establishing a truthful preset runtime contract and 12-02 next for contrast cleanup
+- Last 5 plans: 11-03, 11-04, 12 planning, 12-01, 12-02
+- Trend: v0.3.0 now has both truthful preset application and contrast-safe high-risk theme surfaces, with 12-03 next to simplify settings IA on top of the stabilized theme seam
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
+| Phase 12 P02 | 14min | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - [Phase 11]: Replace placeholder-feeling logo reuse with one shipped launcher mark shared by classic surfaces and fallback seams.
 - [Phase 12]: Persist preset identity separately from custom theme overrides and infer it once from legacy preset-shaped storage for brownfield-safe migration.
 - [Phase 12]: Resolve the full document token contract from preset mode variants so applying a preset repaints shell, overlay, helper-text, and border tokens immediately.
+- [Phase 12]: Reuse shared semantic theme seams for contrast cleanup instead of per-screen zinc/white overrides.
+- [Phase 12]: Lock preset readability with focused DOM-class regression tests on the highest-risk settings and modpack import surfaces.
 
 ### Pending Todos
 
@@ -120,12 +123,12 @@ None yet.
 
 - Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- Phase 12 plan 01 is complete; plan 02 contrast cleanup is the next execution target.
+- Phase 12 plans 01-02 are complete; plan 03 settings IA simplification is the next execution target.
 - Live Phase 11 evidence also surfaced a pre-existing raw settings i18n key (`settings.tab_storage`), which is outside Phase 11 acceptance but should be cleaned up in later UX/i18n work.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T14:26:56Z
-Stopped at: Completed 12-01-PLAN.md
-Resume file: .planning/PROJECT.md
+Last session: 2026-04-13T14:49:34.604Z
+Stopped at: Completed 12-02-PLAN.md
+Resume file: .planning/phases/12-theme-truth-and-settings-ia-simplification/12-03-PLAN.md
