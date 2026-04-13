@@ -13,7 +13,7 @@ This roadmap continues from the completed `v1.0` release-hardening milestone int
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 7: UI System Foundations** - Establish the shared visual system, theme source of truth, and icon/shell contracts that every later screen rollout depends on. Completed 2026-04-13.
-- [ ] **Phase 8: Core Route Rollout And UI Correctness** - Move the highest-traffic launcher flows onto the shared system while removing visible translation, icon, and state defects. Wave 1 complete 2026-04-13.
+- [ ] **Phase 8: Core Route Rollout And UI Correctness** - Move the highest-traffic launcher flows onto the shared system while removing visible translation, icon, and state defects. Waves 1 and 2 complete 2026-04-13.
 - [ ] **Phase 9: Secondary Surface Alignment And UX Polish** - Bring advanced or lower-traffic launcher surfaces into the same product language and close accessibility and atmosphere fallout.
 - [ ] **Phase 10: Manual Experience Verification And Release Truth** - Validate the refreshed launcher through real browser walkthroughs, land fallout fixes, and update release-facing documentation.
 
@@ -70,6 +70,6 @@ Phases execute in numeric order: 7 -> 8 -> 9 -> 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 7. UI System Foundations | 4/4 | Complete | 2026-04-13 |
-| 8. Core Route Rollout And UI Correctness | 2/4 | In Progress | — |
+| 8. Core Route Rollout And UI Correctness | 3/4 | In Progress | — |
 | 9. Secondary Surface Alignment And UX Polish | 0/0 | Planned | — |
 | 10. Manual Experience Verification And Release Truth | 0/0 | Planned | — |
