@@ -26,6 +26,7 @@ import {
 import { ScreenshotsTab } from '../../features/screenshots/components/ScreenshotsTab';
 import { useVersions } from '../../features/launcher/hooks/useVersions';
 import { useModSupportedVersions } from '../../features/launcher/hooks/useModSupportedVersions';
+import { ArrowLeft } from 'lucide-react';
 
 interface ModpackDetailsProps {
   modpackId: string;
@@ -270,7 +271,7 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({ modpackId, onBac
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-      <div className="flex flex-col border-b border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/40 px-6 py-4 gap-4 flex-shrink-0">
+      <div className="flex flex-col border-b border-border/70 bg-card/78 px-6 py-4 gap-4 backdrop-blur-md flex-shrink-0">
         <Breadcrumbs
           items={[
             { label: t('modpacks.title') || 'Modpacks', onClick: onBack },
@@ -279,12 +280,15 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({ modpackId, onBac
         />
         <div className="flex items-center gap-4">
           <Button variant="secondary" size="sm" onClick={onBack} className="flex items-center gap-2">
-            <span>←</span>
+            <ArrowLeft className="h-4 w-4" />
             {t('general.back') || 'Назад'}
           </Button>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
-            {t('modpacks.settings_title') || t('modpacks.tab_settings') || 'Modpack settings'}
-          </h2>
+          <div className="min-w-0">
+            <div className="kicker-label">{t('modpacks.details_title') || 'Modpack details'}</div>
+            <h2 className="text-xl font-bold text-foreground">
+              {t('modpacks.details_title') || 'Modpack details'}
+            </h2>
+          </div>
         </div>
       </div>
 
