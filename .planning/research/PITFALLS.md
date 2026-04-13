@@ -1,178 +1,149 @@
-# Pitfalls Research
+# Project Research: Pitfalls
 
-**Domain:** Brownfield desktop-launcher UI system and UX redesign
-**Researched:** 2026-04-13
-**Confidence:** MEDIUM
+**Project:** FriendLauncher (FMCL)  
+**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
+**Researched:** 2026-04-13  
+**Confidence:** HIGH
 
-## Critical Pitfalls
+## Question
 
-### Pitfall 1: Foundation Drift Disguised As Progress
+What are the main ways this milestone could look “busy” in git while still failing to improve the real launcher UX?
 
-**What goes wrong:**
-Screens get individually prettier, but the launcher still looks inconsistent because tokens, shells, and primitives never become the real source of truth.
+## Primary Risks
 
-**Why it happens:**
-Brownfield UI work often starts from the most visible page instead of from the most repeated visual contracts.
+### 1. Adaptive Work That Only Fits One Window Size
 
-**How to avoid:**
-Start with shared tokens, shared shells, and shared primitive variants before broad screen restyles.
+**Failure mode**
+- Layout looks fixed at the developer's current window size
+- Menus, button groups, or cards break once the user resizes or starts from different default bounds
 
-**Warning signs:**
-New screens still add one-off shadows, colors, icon sizes, or spacing values that do not exist in shared primitives.
+**Current evidence**
+- Modpack action menus are placed from raw coordinates and assumed width
+- Multiple surfaces use fixed-feeling card/button proportions
 
-**Phase to address:**
-Foundation phase first.
+**Prevention**
+- Verify at several viewport sizes
+- Prefer anchored overlays and responsive layout rules over hand-tuned offsets
 
----
+**Likely phase**
+- Phase 11
 
-### Pitfall 2: Theme Settings That Persist But Do Not Visually Matter
+### 2. Theme Presets That Change State But Not Product Truth
 
-**What goes wrong:**
-Theme, accent, or appearance settings save correctly but large parts of the UI ignore them.
+**Failure mode**
+- Preset selector updates stored values, but some real surfaces keep old assumptions
+- Dark-mode presets fail until the user flips base theme manually
+- Some inputs or cards end up white on white or white text on white surfaces
 
-**Why it happens:**
-Legacy screens keep hardcoded classes or direct color choices while only a subset of components use shared CSS variables.
+**Current evidence**
+- User-reported preset failures
+- Theme application currently sets a limited semantic variable set
 
-**How to avoid:**
-Treat theme tokens as the only valid source of app colors and explicitly migrate high-traffic screens onto them.
+**Prevention**
+- Treat preset application as a tested contract
+- Add readable-surface checks for cards, fields, overlays, and secondary text
 
-**Warning signs:**
-Toggling theme changes buttons or background only, while cards, shells, dialogs, or feature screens stay visually stale.
+**Likely phase**
+- Phase 12
 
-**Phase to address:**
-Foundation and rollout phases.
+### 3. “Flattened” Settings That Still Feel Nested
 
----
+**Failure mode**
+- A tab is removed, but the same complexity survives inside collapsibles and embedded sub-sections
+- Users still traverse tab -> section -> collapsible -> embedded editor to reach common actions
 
-### Pitfall 3: Translation Cleanup Stops At Headlines
+**Current evidence**
+- `SettingsPage` already tabs top-level categories, while some tabs add multiple `CollapsibleSection` groups and even feature-level embedded panels
 
-**What goes wrong:**
-Visible titles are translated, but placeholders, helper text, tooltips, and empty states still leak hardcoded copy or wrong locale content.
+**Prevention**
+- Redesign by user intent, not by preserving every existing grouping
+- Separate common actions from advanced utilities
 
-**Why it happens:**
-Teams audit only the obvious strings and skip deeper interactive states.
+**Likely phase**
+- Phase 12
 
-**How to avoid:**
-Include a full string inventory pass and require EN/RU parity for every touched UI flow.
+### 4. Launch Feedback That Still Feels Frozen
 
-**Warning signs:**
-Search placeholders, modal buttons, validation messages, and “coming soon” strings differ between locales or remain in raw English/Russian.
+**Failure mode**
+- Backend emits progress, but the UI only shows a generic percent or stale status string
+- Users can still click active controls because the launcher never clearly enters a guarded busy state
 
-**Phase to address:**
-UI correctness phase.
+**Current evidence**
+- `useLauncher` and `useLauncherIPC` expose limited product-level state
+- User explicitly reports “looks hung, so I click everything”
 
----
+**Prevention**
+- Model launch stages explicitly
+- Show busy/blocked states on the main action surface, not only in console/log output
 
-### Pitfall 4: Visual Polish That Reintroduces Accessibility And Performance Debt
+**Likely phase**
+- Phase 13
 
-**What goes wrong:**
-Blur, particles, gradients, and animations make the launcher look impressive in screenshots but reduce contrast, readability, and responsiveness.
+### 5. Dependency UX That Ignores Real Metadata
 
-**Why it happens:**
-Late-stage polish is often treated as decoration instead of product ergonomics.
+**Failure mode**
+- Create/export/install flows show incomplete or misleading dependency information
+- Required runtime dependencies like Minecraft or Forge disappear even though contracts already know them
 
-**How to avoid:**
-Keep motion and atmosphere subordinate to contrast, focus, reduced-motion behavior, and frame stability.
+**Current evidence**
+- User reports missing Minecraft/Forge dependencies during modpack creation
+- Shared contracts already model `minecraft` and loader/runtime information
 
-**Warning signs:**
-Text becomes harder to read on themed backgrounds, focus rings disappear, or the launcher feels heavier after style changes.
+**Prevention**
+- Make dependency UI derive from typed metadata/contracts instead of local assumptions
+- Distinguish required runtime dependencies from optional content
 
-**Phase to address:**
-Visual polish and verification phases.
+**Likely phase**
+- Phase 13
 
----
+### 6. Placeholder And Fallback Leaks Surviving Into Release
 
-### Pitfall 5: “Manual Testing” Means One Screenshot And A Guess
+**Failure mode**
+- Main happy path looks polished, but classic mode, easter eggs, or fallbacks still expose placeholders
 
-**What goes wrong:**
-The milestone claims real browser verification, but in practice only the home screen or a static screenshot gets checked.
+**Current evidence**
+- User reports placeholder leaks on classic main screen and easter egg
 
-**Why it happens:**
-Manual verification sounds expensive, so it shrinks unless it is explicitly scoped as required work.
+**Prevention**
+- Treat asset/fallback review as release work, not a nice-to-have cleanup
+- Include fallback paths in manual verification
 
-**How to avoid:**
-Define a browser walkthrough across core routes and critical interactions, and make it a completion artifact.
+**Likely phases**
+- Phase 11 and Phase 14
 
-**Warning signs:**
-No checklist exists for settings, accounts, modpacks, dialogs, theme switching, and keyboard/focus behavior.
+### 7. Browser Verification That Proves Only One Polished Snapshot
 
-**Phase to address:**
-Verification phase.
+**Failure mode**
+- The team captures screenshots of the most polished route but does not verify resize behavior, launch feedback, or secondary UX branches
 
-## Technical Debt Patterns
+**Prevention**
+- Record walkthroughs at multiple window sizes and through actual interaction flows
+- Explicitly include classic, settings, launch, modpack browser, modpack creation, and menu/overlay checks
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Fixing styling in feature files only | Faster local polish | Drift returns on the next screen | Only for one-off emergency bugs, not for milestone foundations |
-| Leaving hardcoded strings in touched screens | Faster edits | EN/RU parity silently regresses | Never for user-facing milestone work |
-| Keeping multiple icon styles during transition | Avoids asset cleanup | UI hierarchy stays noisy and inconsistent | Only temporarily within the same phase, with a clear cleanup endpoint |
-| Treating browser walkthroughs as optional | Saves time now | Shipped UI quality becomes guesswork | Never for this milestone |
+**Likely phase**
+- Phase 14
 
-## Integration Gotchas
+## Anti-Patterns To Avoid
 
-| Integration | Common Mistake | Correct Approach |
-|-------------|----------------|------------------|
-| Theme settings ↔ root document | Toggling class names without migrating screen styles to token usage | Make `theme.ts` + CSS variables the enforced palette contract |
-| Locales ↔ renderer copy | Translating only visible labels while placeholders and helper text stay hardcoded | Audit all user-facing copy states on touched screens |
-| Shared primitives ↔ feature screens | Adding “just for this screen” variants directly in feature files | Promote repeated patterns back into `src/components/ui/*` |
-
-## Performance Traps
-
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| Too much blur and layered shadow on every surface | UI feels muddy or sluggish | Limit heavy visual effects to key surfaces and test live runtime | Breaks first on lower-end desktops or busy screens |
-| Theme changes causing broad synchronous rerenders | Noticeable stutter when switching appearance | Keep theme work token-driven and avoid effect-driven cascades | Breaks as more screens subscribe to duplicated theme state |
-| Remote or dynamic visual assets bypassing shared handling | Icons/images load inconsistently or flash | Reuse existing shared image and fallback seams | Breaks on unstable network or low-cache flows |
-
-## Security Mistakes
-
-| Mistake | Risk | Prevention |
-|---------|------|------------|
-| Adding rich visual content that bypasses existing safety seams | Reopens unsafe external-asset or path-handling issues | Keep new UI features on existing validated IPC and asset flows |
-| Reintroducing unsafe external-link patterns in polished screens | Users can be navigated to untrusted content unexpectedly | Reuse existing guarded external-link handling from the hardened milestone |
-
-## UX Pitfalls
-
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| Different interaction patterns for similar cards and dialogs | Users relearn controls on each screen | Standardize actions, affordances, and feedback through shared shells |
-| Dense “power user” screens without hierarchy cleanup | Launcher feels harder to use despite more polish | Rework information hierarchy first, especially in modpack and settings flows |
-| Theme and accent options with weak visible payoff | Settings feel broken or pointless | Make theme changes obvious on the full shell and high-traffic surfaces |
-
-## "Looks Done But Isn't" Checklist
-
-- [ ] **Theme:** Often missing shell/dialog/card rollout — verify light, dark, and accent changes on multiple routes
-- [ ] **Localization:** Often missing placeholders and helper copy — verify EN/RU on modals, forms, and empty states
-- [ ] **Icons:** Often missing non-happy paths — verify loading, empty, warning, and secondary-action states
-- [ ] **Browser verification:** Often missing route coverage — verify launcher home, settings, accounts, modpacks, and dialogs
-- [ ] **UX polish:** Often missing keyboard/focus checks after visual changes — verify tab order and visible focus on refreshed screens
-
-## Recovery Strategies
-
-| Pitfall | Recovery Cost | Recovery Steps |
-|---------|---------------|----------------|
-| Foundation drift | HIGH | Pull repeated styling back into shared primitives, then re-rollout affected screens |
-| Theme inconsistency | MEDIUM | Audit hardcoded colors and migrate route-by-route onto shared tokens |
-| Translation leakage | MEDIUM | Build a touched-screen string checklist and patch both locale files together |
-| Weak manual verification | LOW | Add a route checklist and rerun the browser walkthrough before phase close |
-
-## Pitfall-to-Phase Mapping
-
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| Foundation drift | Phase 7 | Shared primitives, shell tokens, and appearance source of truth are in place before broad screen refreshes |
-| Theme inconsistency | Phase 7-8 | Theme and accent visibly affect all refreshed core routes |
-| Translation leakage | Phase 8 | EN/RU walkthrough shows no placeholder or hardcoded-copy leaks on targeted surfaces |
-| Accessibility/performance regressions from polish | Phase 9 | Visual updates still pass contrast, reduced-motion, and live-runtime checks |
-| Weak manual verification | Phase 10 | Browser checklist exists and is executed against the final refreshed flows |
+- Fixing one preset by special-casing one surface
+- Rebuilding settings tabs without removing nested cognitive depth
+- Measuring success by visual novelty rather than reduced user confusion
+- Treating competitor research as permission to add unlimited scope
+- Closing the milestone without a resize-aware browser walkthrough
 
 ## Sources
 
-- Local repo inspection: `docs/KNOWN_ISSUES.md`
-- Local repo inspection: `src/index.css`, `src/contexts/settings/theme.ts`
-- Current milestone framing in `.planning/PROJECT.md`
-- Brownfield experience inferred from the current FMCL renderer structure and active UI changes
+- Local repo inspection of:
+  - `src/components/modpacks/ModpackList.tsx`
+  - `src/components/settings/tabs/AppearanceTab.tsx`
+  - `src/contexts/settings/theme.ts`
+  - `src/components/SettingsPage.tsx`
+  - `src/features/launcher/hooks/useLauncher.ts`
+  - `src/features/launcher/hooks/useLauncherIPC.ts`
+  - `src/components/modpacks/CreateModpackModal.tsx`
+- User-provided pain points captured in the milestone kickoff conversation
+- Modrinth modpack dependency specification: https://support.modrinth.com/en/articles/8802351-modrinth-modpack-format-mrpack
 
 ---
-*Pitfalls research for: FMCL v0.2.0 UI system and UX redesign*
-*Researched: 2026-04-13*
+*Research completed: 2026-04-13*
+*Ready for roadmap: yes*

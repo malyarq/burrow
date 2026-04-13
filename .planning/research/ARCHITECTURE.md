@@ -1,178 +1,145 @@
-# Architecture Research
+# Project Research: Architecture
 
-**Domain:** Brownfield desktop-launcher UI system and UX redesign
-**Researched:** 2026-04-13
-**Confidence:** MEDIUM
+**Project:** FriendLauncher (FMCL)  
+**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
+**Researched:** 2026-04-13  
+**Confidence:** HIGH
 
-## Standard Architecture
+## Question
 
-### System Overview
+How should the milestone integrate into the existing FMCL architecture without turning UX hardening into another unstable screen-by-screen rewrite?
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                    Renderer Screen Layer                    │
-├─────────────────────────────────────────────────────────────┤
-│  Welcome / Play / Modpacks / Accounts / Settings / Dialogs │
-│          consume shared layout, tokens, icons, copy        │
-├─────────────────────────────────────────────────────────────┤
-│                 Shared Presentation Layer                   │
-├─────────────────────────────────────────────────────────────┤
-│  ui/ primitives   shell components   surface classes       │
-│  icon rules       focus/motion rules locale key contracts  │
-├─────────────────────────────────────────────────────────────┤
-│                 State + Integration Layer                   │
-├─────────────────────────────────────────────────────────────┤
-│  SettingsContext  theme.ts  locales/*.json  IPC wrappers   │
-└─────────────────────────────────────────────────────────────┘
-```
+## Architectural Approach
 
-### Component Responsibilities
+This milestone should be delivered as a surface-owned rollout on top of shared UI and state contracts, not as a framework or navigation rewrite.
 
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| Shared UI primitives | Own button/input/select/modal/card semantics and variants | `src/components/ui/*` backed by token-driven class composition |
-| App shell components | Own launcher-wide hierarchy, navigation chrome, and section framing | `TitleBar`, `Sidebar`, welcome/home shell, section headers |
-| Settings/theme seam | Own theme, accent, motion, and appearance state as source of truth | `SettingsContext` + `src/contexts/settings/theme.ts` + CSS variables in `src/index.css` |
-| Localization layer | Own all user-facing strings and keep EN/RU parity | `src/locales/en.json` and `src/locales/ru.json` only, no hardcoded screen copy |
-| Feature screens | Compose the shared system and add workflow-specific content | `src/features/*` and `src/components/*` screens should not invent new visual systems |
+The architecture already has the right seams. The work is to tighten them and stop feature-local exceptions from bypassing them.
 
-## Recommended Project Structure
+## Key Integration Areas
 
-```text
-src/
-├── components/ui/            # Shared primitives and reusable visual contracts
-├── components/layout/        # Background, shell, and layout-specific wrappers
-├── components/sidebar/       # Launcher chrome and navigation controls
-├── components/settings/      # Settings shells and tabs consuming shared system
-├── features/                 # Domain screens like accounts and share
-├── contexts/settings/        # Theme, accent, appearance source of truth
-├── locales/                  # EN/RU user-facing copy
-└── services/ipc/             # Typed renderer-to-main seams that UI consumes
-```
+### 1. Appearance And Theme Source Of Truth
 
-### Structure Rationale
+**Owners**
+- `src/contexts/SettingsContext.tsx`
+- `src/contexts/settings/theme.ts`
+- `src/contexts/settings/theme-presets.ts`
+- `src/index.css`
+- `src/components/settings/tabs/AppearanceTab.tsx`
 
-- **`components/ui/`:** should be the main source of truth for shared affordances, variant logic, and visual states.
-- **`contexts/settings/`:** should remain the single owner of theme and appearance decisions instead of duplicating state across screens.
-- **`locales/`:** should be treated as required completion scope for any user-facing UI change.
-- **`features/` and screen components:** should consume the system rather than define it.
+**Needed changes**
+- One preset-application path for dark/light/preset/accent behavior
+- Semantic color variables expanded enough to cover cards, fields, overlays, and focus states
+- Safe preset validation so shipped presets cannot produce unreadable combinations
 
-## Architectural Patterns
+### 2. Adaptive Shell And Surface Rhythm
 
-### Pattern 1: Token-First Theming
+**Owners**
+- `src/components/AppLayout.tsx`
+- `src/components/Sidebar.tsx`
+- `src/components/SimplePlayDashboard.tsx`
+- `src/components/SimplePlayHome.tsx`
+- `src/components/ui/*`
 
-**What:** Apply theme and accent through document-level CSS custom properties and shared utility classes.
-**When to use:** Any surface that must react to theme, accent, motion, or contrast choices.
-**Trade-offs:** Centralizes behavior well, but requires disciplined rollout because old hardcoded classes remain visible until migrated.
+**Needed changes**
+- Shared control sizing and spacing tokens
+- Responsive container behavior for main surfaces
+- No reliance on default window dimensions as an unspoken layout contract
 
-**Example:**
-```typescript
-applyThemeToDocument(theme, accentColor, customTheme);
-// Shared surfaces and controls then read the same CSS variables.
-```
+### 3. Settings Navigation
 
-### Pattern 2: Shared-Primitive Ownership
+**Owners**
+- `src/components/SettingsPage.tsx`
+- `src/components/settings/settingsTabs.ts`
+- `src/components/settings/SettingsTabsHeader.tsx`
+- settings tabs under `src/components/settings/tabs/`
 
-**What:** Put visual and interaction consistency into shared buttons, inputs, selects, cards, modals, and shell wrappers.
-**When to use:** Any repeated control or state pattern across more than one screen.
-**Trade-offs:** Requires up-front cleanup, but prevents screen-local drift from returning.
+**Needed changes**
+- Flatter top-level IA for common settings
+- Fewer nested collapsible groups in already-tabbed contexts
+- Clear split between routine settings and advanced utilities
 
-**Example:**
-```tsx
-<Button variant="primary" size="lg">
-  {t('general.play')}
-</Button>
-```
+### 4. Launch Feedback
 
-### Pattern 3: Locale-First UI Text
+**Owners**
+- `src/features/launcher/hooks/useLauncher.ts`
+- `src/features/launcher/hooks/useLauncherState.ts`
+- `src/features/launcher/hooks/useLauncherIPC.ts`
+- `src/features/launcher/services/launcherService.ts`
+- `src/components/SimplePlayDashboard.tsx`
+- `src/features/console/ConsolePage.tsx`
 
-**What:** Treat every user-visible string as a localization key backed by EN/RU parity.
-**When to use:** All renderer copy, including placeholders, empty states, tooltips, and modal titles.
-**Trade-offs:** Slightly slower for quick edits, but avoids the current placeholder/hardcoded-string regressions.
+**Needed changes**
+- Normalize launcher backend progress events into product-facing stages
+- Represent “busy”, “waiting”, “failed”, and “running” distinctly
+- Disable or guard repeated launch actions while preserving visible feedback
 
-## Data Flow
+### 5. Modpack Authoring And Browser Ergonomics
 
-### Request Flow
+**Owners**
+- `src/components/modpacks/CreateModpackModal.tsx`
+- `src/components/modpacks/ModpackBrowser.tsx`
+- `src/components/modpacks/ModpackList.tsx`
+- `src/components/modpacks/details/*`
+- `src/services/ipc/modpacksIPC.ts`
+- `shared/contracts/modpacks.ts`
 
-```text
-[User changes appearance setting]
-    ↓
-[Settings UI] → [SettingsContext] → [theme.ts] → [document CSS variables]
-    ↓
-[Shared primitives + screens re-render with tokenized styles]
-```
+**Needed changes**
+- Surface dependency truth from existing metadata/contracts
+- Keep installed-pack actions stable under resize and varying card widths
+- Improve browser density, filtering, and action clarity without redoing backend search contracts
 
-### State Management
+### 6. Asset And Fallback Truth
 
-```text
-[Persisted appearance settings]
-    ↓
-[SettingsContext]
-    ↓
-[Components subscribe through props/hooks]
-    ↓
-[Theme + layout updates stay consistent across screens]
-```
+**Owners**
+- `src/components/SimplePlayDashboard.tsx`
+- `src/components/SimplePlayHome.tsx`
+- `src/components/ui/LazyImage.tsx`
+- launcher asset paths in `public/`
 
-### Key Data Flows
+**Needed changes**
+- Remove placeholder leaks
+- Ensure fallback imagery is intentional and theme-safe
+- Verify easter-egg and classic paths separately from the main happy path
 
-1. **Theme propagation:** Settings change updates root CSS variables, then shared primitives and screen surfaces inherit the same palette and contrast rules.
-2. **Localization coverage:** Screen copy resolves through locale keys, then EN/RU files remain the shipped source of truth.
-3. **Manual verification:** Dev server run plus browser walkthrough validates actual composition, theme, navigation, and focus behavior on live screens.
+## Proposed Phase Architecture
 
-## Scaling Considerations
+### Phase 11: Adaptive Layout And Interaction Foundations
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| 5-10 core screens | Shared primitives and shell components are enough; avoid new state layers |
-| 10-25 complex surfaces | Add stricter visual contracts and focused component tests around shared primitives and route shells |
-| 25+ heavily distinct surfaces | Add stronger system documentation and a surface rollout checklist to stop feature-local divergence |
+Stabilize layout tokens, control rhythm, overlay anchoring, and asset/fallback truth. This creates the visual and interaction contract that later phases can safely consume.
 
-### Scaling Priorities
+### Phase 12: Theme Truth And Settings IA Simplification
 
-1. **First bottleneck:** theme and surface drift between old and newly refreshed screens — fix by making tokens and shared surfaces mandatory.
-2. **Second bottleneck:** translation and icon coverage drift — fix by including string and icon audit in each rollout wave.
+Repair preset behavior and readable surfaces, then simplify the settings structure while the appearance and utility seams are already in focus.
 
-## Anti-Patterns
+### Phase 13: Launch Trust And Modpack Workflow Ergonomics
 
-### Anti-Pattern 1: Screen-Local Design Systems
+Use the stabilized shell/theme/settings foundation to fix the two most trust-critical functional flows: launching and modpack management.
 
-**What people do:** Each screen invents its own spacing, surfaces, icon style, and empty states.
-**Why it's wrong:** The launcher starts looking like multiple products glued together.
-**Do this instead:** Move repeated visual decisions into shared primitives, shell wrappers, and token classes.
+### Phase 14: Verification, Release Truth, And Bounded Parity Notes
 
-### Anti-Pattern 2: Theme Toggle Without Theme Ownership
+Close with live adaptive-size walkthroughs, release-facing docs, and a bounded record of future parity opportunities rather than carrying silent scope into the next milestone.
 
-**What people do:** Persist a light/dark setting but leave large sections on hardcoded colors.
-**Why it's wrong:** Users experience the theme switch as broken even when settings persist correctly.
-**Do this instead:** Make the token layer the only accepted source of app colors and migrate screens onto it.
+## What Should Not Happen
 
-## Integration Points
-
-### External Services
-
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| Manual browser runtime | `npm run dev` / preview + browser walkthrough | Required for milestone verification of live UI behavior |
-| Existing test runner | Focused Vitest component and utility tests | Useful for shared primitive and theme regressions, but not a replacement for browser walkthroughs |
-
-### Internal Boundaries
-
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| `SettingsContext` ↔ `theme.ts` | Direct API and document side effects | Primary theme source of truth; keep it centralized |
-| `theme.ts` ↔ `src/index.css` | CSS variable contract | Token names must remain stable once the design system starts depending on them |
-| `components/ui/*` ↔ feature screens | Props and shared variants | Screens should compose, not fork, primitive behavior |
-| Feature screens ↔ `locales/*.json` | Localization keys | No direct hardcoded user copy in renderer components |
+- No screen-local responsive hacks that fight shared primitives
+- No second theme path for presets
+- No ad-hoc menu placement logic per feature
+- No “settings redesign” that creates new nesting under new names
+- No launch feedback implemented only in logs
 
 ## Sources
 
-- Local repo inspection: `.planning/PROJECT.md`
-- Local repo inspection: `src/index.css`
-- Local repo inspection: `src/contexts/settings/theme.ts`
-- Local repo inspection: `src/components/ui/Button.tsx`
-- Local repo inspection: `docs/KNOWN_ISSUES.md`
+- Local repo inspection of:
+  - `src/components/SettingsPage.tsx`
+  - `src/components/settings/settingsTabs.ts`
+  - `src/components/settings/tabs/AppearanceTab.tsx`
+  - `src/features/launcher/hooks/useLauncher.ts`
+  - `src/features/launcher/hooks/useLauncherState.ts`
+  - `src/features/launcher/hooks/useLauncherIPC.ts`
+  - `src/components/modpacks/CreateModpackModal.tsx`
+  - `src/components/modpacks/ModpackList.tsx`
+  - `src/components/modpacks/ModpackBrowser.tsx`
 
 ---
-*Architecture research for: FMCL v0.2.0 UI system and UX redesign*
-*Researched: 2026-04-13*
+*Research completed: 2026-04-13*
+*Ready for roadmap: yes*

@@ -1,118 +1,129 @@
-# Feature Research
+# Project Research: Features
 
-**Domain:** Brownfield desktop-launcher UI system and UX redesign
-**Researched:** 2026-04-13
-**Confidence:** MEDIUM
+**Project:** FriendLauncher (FMCL)  
+**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
+**Researched:** 2026-04-13  
+**Confidence:** HIGH
 
-## Feature Landscape
+## Question
 
-### Table Stakes (Users Expect These)
+What are the real table-stakes and high-value UX fixes for the next milestone, given the user-reported pain and current launcher patterns in Prism Launcher, ATLauncher, and Modrinth?
 
-Features users assume exist. Missing these = product feels incomplete.
+## Recommended Feature Categories
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Shared visual language across cards, forms, dialogs, shells, and empty states | A launcher with mixed styles feels unfinished even if features work | MEDIUM | Must be driven by shared primitives and token usage, not isolated screen rewrites |
-| Full EN/RU text correctness with no placeholder or missing translation leaks | Broken language coverage reads as broken product quality immediately | MEDIUM | Includes inventorying hardcoded strings and ensuring both locales ship together |
-| Theme fidelity that actually changes the app, not only isolated controls | Users expect light/dark/accent choices to affect the whole interface | MEDIUM | Requires document-level tokens and screen adoption, not only settings persistence |
-| Consistent iconography and control states | Missing icons and mixed symbols make navigation feel unreliable | LOW | One icon system, explicit loading/error/empty states, and consistent affordances |
-| Critical-screen manual verification | UI polish claims are not credible without real interaction checks | LOW | Must cover launcher home, settings, modpacks, accounts, and modal flows |
+### 1. Adaptive Layout And Interaction Safety
 
-### Differentiators (Competitive Advantage)
+**Table stakes**
+- Shell, dashboard, settings, and modpack surfaces adapt to different window sizes without clipped controls or broken density
+- Context menus and floating actions stay anchored to their trigger and inside the window bounds
+- Shared controls use consistent height, spacing, and action hierarchy
 
-Features that set the product apart. Not required, but valuable.
+**Differentiators**
+- Graceful adaptation across first-launch default bounds and later user-resized windows
+- Dense but readable layouts for modpack-heavy workflows instead of oversized empty chrome
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Modpack-first information hierarchy | Makes FMCL feel purpose-built for its strongest audience instead of generic Minecraft chrome | MEDIUM | Prioritize install, browse, play, share, and manage flows around modpack usage |
-| Atmosphere without sacrificing readability | Gives the launcher a deliberate identity beyond “utility app” while still feeling usable | MEDIUM | Backgrounds, accent, and motion should support hierarchy rather than compete with it |
-| Theme and accent customization that propagates cleanly | Turns a settings feature into a real product identity system | MEDIUM | Valuable only if implemented through shared tokens, not per-screen overrides |
-| Unified treatment of advanced surfaces | Accounts, mirrors, statistics, sharing, and content screens should feel like the same product as onboarding and play | HIGH | Important brownfield differentiator because these surfaces often lag behind the shell |
+### 2. Theme Truth And Readability
 
-### Anti-Features (Commonly Requested, Often Problematic)
+**Table stakes**
+- Preset themes apply immediately and reliably in both dark and light mode
+- Text, inputs, cards, and overlays remain readable in every shipped preset
+- Theme changes affect the real launcher, not only isolated widgets
 
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| Full visual rewrite of every screen before foundations | Feels like the fastest path to a “new UI” | Guarantees inconsistency and regressions because foundations remain unstable | Establish shared system first, then roll it through high-traffic surfaces |
-| Decorative motion everywhere | Makes screenshots look more “alive” | Hurts readability, focus, and reduced-motion compliance in a desktop launcher | Keep a restrained motion language tied to hierarchy and state changes |
-| New UI framework adoption as part of the milestone | Seems like a shortcut to consistency | Replaces UX work with migration work and explodes scope | Stay on current stack and unify existing primitives |
-| Cosmetic fixes without browser walkthroughs | Feels efficient when time is tight | Misses dead toggles, theme leaks, clipped layouts, and navigation friction | Treat manual browser verification as part of definition of done |
+**Differentiators**
+- Presets feel intentional instead of being thin wrappers around one light-mode success path
+- Accent and preset behavior remains safe on content-heavy modpack/settings screens
 
-## Feature Dependencies
+**External evidence**
+- Prism Launcher exposes both widget themes and icon themes as explicit UI choices, reinforcing that appearance controls must have visible and understandable effects.
 
-```
-Shared tokens + primitives
-    └──requires──> theme source of truth
-                          └──requires──> screen rollout
+### 3. Settings Information Architecture
 
-Locale cleanup
-    └──requires──> user-facing string inventory
+**Table stakes**
+- Users can reach appearance, launcher, downloads, storage, statistics, and accounts without getting trapped in nested tab-inside-tab patterns
+- Advanced controls stay available, but the common path is flatter and easier to scan
 
-Manual browser verification
-    └──requires──> critical-screen checklist
+**Differentiators**
+- Core preferences and advanced utilities are separated cleanly by intent
+- Repeated “detail panel inside settings panel inside collapsible section” patterns are reduced
 
-UX flow redesign
-    └──enhances──> visual-system rollout
-```
+### 4. Launch Trust And Busy-State Feedback
 
-### Dependency Notes
+**Table stakes**
+- User can tell whether FMCL is preparing versions, downloading assets, resolving dependencies, launching Java, or running the game
+- Primary buttons reflect busy/blocked state clearly enough to stop spam-clicking
+- Failures and waits are visible as launcher states, not only as buried logs
 
-- **Shared tokens + primitives require theme source of truth:** visual consistency collapses if screens can bypass the token layer.
-- **Locale cleanup requires user-facing string inventory:** missing translation issues usually survive unless they are systematically hunted.
-- **Manual browser verification requires a critical-screen checklist:** ad hoc clicking is too easy to under-scope.
-- **UX flow redesign enhances visual-system rollout:** stronger flow polish matters more once screens already share structure and affordances.
+**Differentiators**
+- A compact launch timeline or stage model that turns raw backend progress into understandable product feedback
+- Better separation between “still working” and “waiting for user attention”
 
-## MVP Definition
+**External evidence**
+- ATLauncher keeps the launch action explicit and exposes logs/output in a separate, clearly acknowledged launch surface instead of pretending nothing is happening.
 
-### Launch With (v0.2.0)
+### 5. Modpack Creation And Dependency Truth
 
-- [ ] Shared UI system for shells, cards, forms, dialogs, and visual states — essential because every later screen fix should inherit it
-- [ ] EN/RU correctness pass for visible launcher UI text — essential because placeholder and missing copy are currently user-visible defects
-- [ ] Real theme/icon consistency across the launcher — essential because settings credibility depends on it
-- [ ] Focused redesign of the highest-traffic launcher flows — essential because convenience and visual clarity are part of the milestone goal
-- [ ] Manual browser-based verification of the redesigned experience — essential because this milestone is explicitly about perceived quality
+**Table stakes**
+- Modpack creation shows required runtime dependencies correctly, including Minecraft and selected loader/runtime choices
+- Required and optional dependency states are distinguishable
+- Users do not leave creation flows with false assumptions about what the modpack contains
 
-### Add After Validation (v0.2.x)
+**Differentiators**
+- Dependency summaries are visible before commit, not hidden behind later detail screens
+- Export/import flows stay consistent with creation-time metadata
 
-- [ ] Richer secondary visual presets or curated theme packs — add after the base token system and theme propagation prove stable
-- [ ] Broader pass over low-traffic management screens — add once the primary shell and modpack/play/account flows are coherent
+**External evidence**
+- Modrinth's `.mrpack` format explicitly lists `minecraft`, `forge`, `neoforge`, `fabric-loader`, and `quilt-loader` in `dependencies`, so launchers should surface these as first-class dependencies rather than omit them.
+- Modrinth also recommends a chooser dialog for optional files, which implies FMCL should distinguish required vs optional content clearly instead of flattening everything into one vague dependency list.
 
-### Future Consideration (v0.3+)
+### 6. Modpack Browser And Installed-Pack Ergonomics
 
-- [ ] Deeper personalization or layout modes beyond current settings — defer until the base design system is stable
-- [ ] Visual regression tooling or screenshot baselines — defer until the desired UI has settled enough to be worth locking visually
+**Table stakes**
+- Browser states are easy to scan and filter
+- Installed-pack cards expose actions predictably without mispositioned menus
+- Core actions such as details, duplicate, rename, export, and browse do not feel hidden or unstable
 
-## Feature Prioritization Matrix
+**Differentiators**
+- Better density, sorting, and browsing ergonomics for modpack-heavy use
+- Clearer distinction between browsing remote packs and managing installed ones
 
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| Shared design tokens and primitives | HIGH | MEDIUM | P1 |
-| Translation and placeholder cleanup | HIGH | MEDIUM | P1 |
-| Theme and accent propagation | HIGH | MEDIUM | P1 |
-| Core launcher/modpack/account flow polish | HIGH | HIGH | P1 |
-| Unified advanced-surface restyle | MEDIUM | HIGH | P2 |
-| Extra visual presets and cosmetic variety | MEDIUM | MEDIUM | P3 |
+**External evidence**
+- ATLauncher and Modrinth both emphasize pack browsing as a first-class surface with explicit install flows, version selection, and platform grouping.
 
-**Priority key:**
-- P1: Must have for launch
-- P2: Should have, add when possible
-- P3: Nice to have, future consideration
+### 7. Visual Trust And Asset Correctness
 
-## Competitor Feature Analysis
+**Table stakes**
+- No placeholder logo or asset leaks on shipped classic, welcome, or easter-egg surfaces
+- Fallback imagery is intentional and product-safe
+- White-on-white or broken-field regressions are treated as blockers
 
-| Feature | Competitor A | Competitor B | Our Approach |
-|---------|--------------|--------------|--------------|
-| Visual consistency | Dedicated launcher brands usually keep one shell language across home, installs, and settings | Many technical launchers expose feature depth but drift visually between modules | FMCL should keep its breadth while unifying shell, cards, dialogs, and settings surfaces |
-| Theme support | Better launchers make theme changes obvious and holistic | Weaker launchers expose a toggle that barely changes content surfaces | FMCL should make theme and accent visibly reshape the full experience |
-| Modpack UX | Modpack-oriented launchers win by making browse/install/play/manage feel close together | Generic launchers often bury modpack actions behind technical navigation | FMCL should lean into its modpack-first product identity rather than flatten it |
+## Explicit Defer List
+
+These are useful, but too broad for `v0.3.0` unless they directly unblock current UX pain:
+
+- Full dashboard personalization/layout presets
+- Broad new launcher domains unrelated to current pain points
+- Full competitor feature parity sweep
+- Automated visual regression infrastructure
 
 ## Sources
 
-- Local repo inspection: `docs/KNOWN_ISSUES.md`
-- Local repo inspection: `src/index.css`, `src/contexts/settings/theme.ts`
-- Existing milestone framing in `.planning/PROJECT.md`
-- Current brownfield scope and local UI work-in-progress in `src/components/` and `src/features/`
+### Official ecosystem references
+
+- Prism Launcher theme and icon workflow: https://prismlauncher.org/wiki/getting-started/change-themes/
+- ATLauncher launch basics: https://wiki.atlauncher.com/getting-started/launching-minecraft/
+- ATLauncher create pack/server flow with modloader/version choice: https://wiki.atlauncher.com/getting-started/creating-a-server/
+- Modrinth modpacks overview: https://support.modrinth.com/en/articles/8802250-modpacks-on-modrinth
+- Modrinth `.mrpack` dependency format: https://support.modrinth.com/en/articles/8802351-modrinth-modpack-format-mrpack
+
+### Local evidence
+
+- `src/components/settings/tabs/AppearanceTab.tsx`
+- `src/components/SettingsPage.tsx`
+- `src/components/modpacks/CreateModpackModal.tsx`
+- `src/components/modpacks/ModpackBrowser.tsx`
+- `src/components/modpacks/ModpackList.tsx`
+- `src/components/SimplePlayDashboard.tsx`
 
 ---
-*Feature research for: FMCL v0.2.0 UI system and UX redesign*
-*Researched: 2026-04-13*
+*Research completed: 2026-04-13*
+*Ready for requirements: yes*

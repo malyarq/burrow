@@ -1,133 +1,100 @@
 # Project Research Summary
 
-**Project:** FriendLauncher (FMCL)
-**Domain:** Brownfield desktop-launcher UI system and UX redesign
-**Researched:** 2026-04-13
-**Confidence:** MEDIUM
+**Project:** FriendLauncher (FMCL)  
+**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
+**Researched:** 2026-04-13  
+**Confidence:** HIGH
 
 ## Executive Summary
 
-FMCL is not missing core launcher capability; it is missing product coherence. The research points to a brownfield-safe approach: keep the current Electron + React + TypeScript + Tailwind architecture, make shared tokens/primitives/theme state the real source of truth, then roll that system through the most visible launcher flows and only after that spend time on broader polish.
+`v0.3.0` should be a UX-trust milestone, not another broad visual refresh. FMCL already has the main launcher capability surface. The next release needs to make that surface adaptive, readable, predictable, and honest under real usage conditions.
 
-The highest leverage work is not a framework migration or isolated visual tweaks. It is system-first cleanup of shells, cards, dialogs, forms, iconography, and localization, followed by route-level UX refinement for the launcher's most-used flows. The main risks are false progress through screen-local styling, theme settings that do not materially affect the UI, and “manual testing” that never becomes a repeatable browser walkthrough.
+The highest-value work is:
+
+1. fix layout and interaction safety across window sizes
+2. make preset themes truly apply in light and dark modes
+3. flatten settings IA enough to remove “tab inside tab inside tab” fatigue
+4. make launch state understandable so users stop guessing whether the launcher is frozen
+5. repair modpack creation/browser/list ergonomics where metadata or actions are currently misleading
 
 ## Key Findings
 
-### Recommended Stack
+### Stack
 
-The current stack is already sufficient. React 19, TypeScript 5.9, Tailwind 4, CSS custom properties, and the existing settings/theme seams are appropriate for this milestone. The recommended move is to standardize how FMCL uses them, not to replace them. `lucide-react` should become the default icon language, and the existing Vitest + Testing Library setup is enough for shared UI regression coverage.
+The current Electron + React + TypeScript + TailwindCSS + Vite stack is sufficient. The milestone should not introduce a UI-framework migration. It should strengthen shared theme, layout, overlay, and busy-state contracts inside the existing architecture.
 
-**Core technologies:**
-- React — renderer composition and screen/state orchestration without a platform rewrite
-- TypeScript — typed variants, theme contracts, and locale-safe UI refactors
-- TailwindCSS + CSS variables — shared design tokens and consistent theme propagation
+### Table Stakes
 
-### Expected Features
+- adaptive shell and route layouts across varying window sizes
+- anchored menus and overlays that stay within the window
+- consistent control sizing and spacing rhythm
+- preset themes that work in dark and light mode
+- readable fields/cards in every shipped preset
+- flatter settings navigation for common tasks
+- explicit launch and background-operation states
+- truthful dependency visibility in modpack creation
+- safer, clearer modpack browser and installed-pack actions
+- no placeholder/logo leaks on shipped surfaces
 
-The must-haves are a coherent shared visual system, EN/RU correctness, theme/icon consistency, focused redesign of critical launcher flows, and explicit browser-based verification of those flows.
+### Critical Watch-Outs
 
-**Must have (table stakes):**
-- Shared shells, surfaces, forms, dialogs, and visual states — users expect one product, not mixed modules
-- Full translation correctness across visible UI states — placeholder or missing-copy leaks are product-quality defects
-- Real theme propagation and consistent iconography — appearance settings must visibly matter
-- Manual browser walkthrough of critical routes — the milestone is about actual experience, not only code health
+- raw coordinate menu placement will keep breaking on resize
+- preset themes will remain fake unless semantic tokens cover real surfaces
+- settings can still feel deeply nested even after superficial tab cleanup
+- launch progress must become a stage model, not only a percent label
+- dependency UI must derive from typed metadata instead of local assumptions
 
-**Should have (competitive):**
-- Modpack-first information hierarchy — aligns the launcher with its strongest product identity
-- Atmosphere that supports readability — background and motion should give identity without reducing usability
-- Unified treatment of advanced surfaces — accounts, mirrors, stats, and sharing should feel like the same launcher
+## Suggested Phase Structure
 
-**Defer (v2+):**
-- Large framework migration or full UI-kit replacement — too much scope, not necessary for the product goal
-- Deeper personalization and visual-regression infrastructure — valuable later, but not required to validate the milestone
+### Phase 11: Adaptive Layout And Interaction Foundations
 
-### Architecture Approach
+Stabilize responsive layout, control rhythm, overlay anchoring, and placeholder/fallback truth.
 
-The renderer should be treated as three layers: feature screens, a shared presentation system, and a state/integration layer. `SettingsContext` plus `theme.ts` plus `src/index.css` should stay the appearance source of truth; `src/components/ui/*` should own reusable visual semantics; and `src/locales/*.json` should remain the only allowed source for user-facing copy. Feature screens should consume this system rather than define parallel ones.
+### Phase 12: Theme Truth And Settings IA Simplification
 
-**Major components:**
-1. Shared UI primitives — own repeated affordances and state styling
-2. App shell and high-traffic routes — own hierarchy, navigation, and launcher identity
-3. Theme/localization seams — own document-level appearance and EN/RU parity
+Repair preset behavior, close contrast regressions, and simplify the settings structure around common tasks.
 
-### Critical Pitfalls
+### Phase 13: Launch Trust And Modpack Workflow Ergonomics
 
-1. **Foundation drift disguised as progress** — fix shared tokens and primitives before wide screen polish
-2. **Theme settings with weak visible payoff** — migrate screens onto tokenized colors instead of relying on persistence alone
-3. **Translation cleanup that stops at headlines** — include placeholders, helper text, and modal states in scope
-4. **Decorative polish that reintroduces accessibility debt** — keep readability, focus, contrast, and motion discipline first
-5. **Manual testing reduced to a screenshot** — define and execute a browser walkthrough as milestone evidence
+Make launching understandable and fix the most important modpack authoring/browser/list interaction pain.
 
-## Implications for Roadmap
+### Phase 14: Manual Verification And Release Truth
 
-Based on research, suggested phase structure:
+Close the milestone with resize-aware browser walkthroughs, doc truth, and a bounded list of future parity opportunities.
 
-### Phase 7: UI System Foundations
-**Rationale:** Shared primitives, theme tokens, icon rules, and shell contracts must stabilize before broad restyling.
-**Delivers:** Design-token enforcement, primitive cleanup, shell consistency, theme source-of-truth rollout.
-**Addresses:** Shared visual-language and theme-fidelity table stakes.
-**Avoids:** Foundation drift and fake theme support.
+## Recommended Scope Boundary
 
-### Phase 8: UI Correctness And Core Flow Rollout
-**Rationale:** Once the system exists, high-traffic routes should consume it while translation and icon defects are removed.
-**Delivers:** EN/RU cleanup, icon consistency, and refreshed launcher/modpack/account/settings flows.
-**Uses:** Shared primitives and localization contracts from Phase 7.
-**Implements:** The highest-value route rollout first.
+Do this in `v0.3.0`:
 
-### Phase 9: Secondary Surface Polish And UX Refinement
-**Rationale:** Advanced or lower-traffic surfaces should be aligned only after the main shell feels coherent.
-**Delivers:** Unified treatment of share/statistics/mirror/content-management surfaces and any remaining visual hierarchy cleanup.
-**Uses:** The same system instead of inventing new exceptions.
+- UX hardening of current launcher surfaces
+- real fixes to theme, layout, settings, launch, and modpack trust gaps
+- milestone-wide browser verification at multiple sizes
 
-### Phase 10: Manual Experience Verification And Release Truth
-**Rationale:** The milestone explicitly requires browser-based validation, and documentation should reflect the refreshed UI truthfully.
-**Delivers:** Real browser walkthrough evidence, final UI fallout fixes, and documentation updates tied to shipped UX.
+Do not do this in `v0.3.0`:
 
-### Phase Ordering Rationale
+- clone other launchers wholesale
+- add large new domains unrelated to current UX pain
+- rewrite the frontend stack
+- turn the milestone into a visual-regression tooling project
 
-- Foundations come first because theme, icon, and surface drift are structural, not cosmetic.
-- Core routes come before secondary surfaces because they define whether the launcher feels coherent in everyday use.
-- Verification closes the milestone because visual and interaction quality must be judged on the live product, not inferred from code.
+## External References Used
 
-### Research Flags
+- Prism Launcher theme workflow: https://prismlauncher.org/wiki/getting-started/change-themes/
+- ATLauncher launch behavior: https://wiki.atlauncher.com/getting-started/launching-minecraft/
+- ATLauncher explicit modloader/version creation flow: https://wiki.atlauncher.com/getting-started/creating-a-server/
+- Modrinth modpack overview: https://support.modrinth.com/en/articles/8802250-modpacks-on-modrinth
+- Modrinth dependency format for `.mrpack`: https://support.modrinth.com/en/articles/8802351-modrinth-modpack-format-mrpack
 
-Phases likely needing deeper research during planning:
-- **Phase 9:** Secondary surface grouping should be scoped against the actual current UI drift, not assumed from feature names alone.
-- **Phase 10:** Manual verification should define an explicit walkthrough/checklist so the completion claim stays concrete.
+## Local Evidence Used
 
-Phases with standard patterns (skip research-phase):
-- **Phase 7:** Uses established token/primitives/source-of-truth patterns already visible in the codebase.
-- **Phase 8:** Mostly rollout and cleanup work on known screens rather than new technical terrain.
-
-## Confidence Assessment
-
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | Current codebase already exposes the right tools for this milestone |
-| Features | MEDIUM | User intent is clear, but exact route scope still needs requirement-level scoping |
-| Architecture | MEDIUM | Strong local evidence exists, though some screen-level drift still needs direct planning inspection |
-| Pitfalls | HIGH | Brownfield UI-system risks are well aligned with the repo's known issues and current seams |
-
-**Overall confidence:** MEDIUM
-
-### Gaps to Address
-
-- Exact set of core routes that must be refreshed in Phase 8 versus Phase 9
-- Concrete browser walkthrough checklist and evidence format for milestone completion
-
-## Sources
-
-### Primary (HIGH confidence)
-- Local repo inspection: `package.json` — active runtime and tooling stack
-- Local repo inspection: `src/index.css`, `src/contexts/settings/theme.ts`, `src/components/ui/Button.tsx` — current theme and shared UI seams
-- Local repo inspection: `docs/KNOWN_ISSUES.md` — active correctness gaps and brownfield risks
-
-### Secondary (MEDIUM confidence)
-- `.planning/PROJECT.md` — milestone framing and current product priorities
-- Current uncommitted UI work in `src/components/` and `src/features/` — evidence of likely rollout seams
-
-### Tertiary (LOW confidence)
-- Inference from brownfield launcher UX patterns rather than external ecosystem benchmarking in this run
+- `src/components/SettingsPage.tsx`
+- `src/components/settings/tabs/AppearanceTab.tsx`
+- `src/contexts/settings/theme.ts`
+- `src/features/launcher/hooks/useLauncher.ts`
+- `src/components/modpacks/CreateModpackModal.tsx`
+- `src/components/modpacks/ModpackBrowser.tsx`
+- `src/components/modpacks/ModpackList.tsx`
+- `docs/KNOWN_ISSUES.md`
 
 ---
 *Research completed: 2026-04-13*
