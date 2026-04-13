@@ -36,6 +36,7 @@ export function SettingsTabsHeader(props: {
   const tabs = SETTINGS_TABS.map((tab) => ({
     ...tab,
     label: t(tab.labelKey),
+    description: t(tab.descriptionKey),
   }));
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, currentTab: SettingsTabId) => {
@@ -76,7 +77,7 @@ export function SettingsTabsHeader(props: {
 
   return (
     <div
-      className="-mx-1 flex gap-2 overflow-x-auto border-b border-border/70 px-1 pb-1 custom-scrollbar"
+      className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3"
       role="tablist"
       aria-label={t('settings.title')}
       aria-orientation="horizontal"
@@ -84,6 +85,9 @@ export function SettingsTabsHeader(props: {
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const accentBorderStyle = isActive ? getAccentStyles('border').style : undefined;
+        const tabLabelId = `${getSettingsTabId(tab.id)}-label`;
+        const tabDescriptionId = `${getSettingsTabId(tab.id)}-description`;
+
         return (
           <button
             key={tab.id}
@@ -96,16 +100,23 @@ export function SettingsTabsHeader(props: {
             role="tab"
             aria-selected={isActive}
             aria-controls={getSettingsPanelId(tab.id)}
+            aria-labelledby={tabLabelId}
+            aria-describedby={tabDescriptionId}
             tabIndex={isActive ? 0 : -1}
             className={cn(
-              'shrink-0 whitespace-nowrap rounded-xl border px-4 py-2.5 text-sm font-medium transition-all',
+              'flex min-h-[5.75rem] flex-col items-start rounded-2xl border px-4 py-3 text-left transition-all',
               isActive
                 ? 'border-border bg-card text-foreground shadow-sm'
-                : 'border-transparent text-secondary hover:border-border/60 hover:bg-background/70 hover:text-foreground'
+                : 'border-border/60 bg-background/68 text-secondary hover:border-border hover:bg-card/72 hover:text-foreground'
             )}
             style={accentBorderStyle}
           >
-            {tab.label}
+            <span id={tabLabelId} className="text-sm font-semibold text-foreground">
+              {tab.label}
+            </span>
+            <span id={tabDescriptionId} className="mt-1 text-xs leading-5 text-secondary">
+              {tab.description}
+            </span>
           </button>
         );
       })}

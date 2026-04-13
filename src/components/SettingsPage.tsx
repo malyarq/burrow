@@ -5,7 +5,12 @@ import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
 import { cn } from '../utils/cn';
 import { SettingsTabsHeader } from './settings/SettingsTabsHeader';
-import { getSettingsPanelId, getSettingsTabId, type SettingsTabId } from './settings/settingsTabs';
+import {
+    getSettingsPanelId,
+    getSettingsTabConfig,
+    getSettingsTabId,
+    type SettingsTabId,
+} from './settings/settingsTabs';
 
 // Import all tabs directly to avoid loading delay when switching tabs
 import { AppearanceTab } from './settings/tabs/AppearanceTab';
@@ -49,29 +54,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
         }
     }, [status]);
 
-    const getPanelHint = () => {
-        if (activeTab === 'accounts') {
-            return t('accounts.description');
-        }
-
-        if (activeTab === 'downloads') {
-            return t('settings.downloadsHint');
-        }
-
-        if (activeTab === 'launcher') {
-            return t('settings.launcherHint');
-        }
-
-        if (activeTab === 'storage') {
-            return t('settings.storage.description');
-        }
-
-        if (activeTab === 'statistics') {
-            return t('stats.description');
-        }
-
-        return t('settings.doneHint');
-    };
+    const activeTabConfig = getSettingsTabConfig(activeTab);
 
     const renderActiveTab = () => {
         if (activeTab === 'appearance') {
@@ -142,6 +125,18 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                     getAccentStyles={(type) => getAccentStyles(type)}
                 />
 
+                <div className="surface-inline flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="space-y-1">
+                        <div className="kicker-label">{t(activeTabConfig.labelKey)}</div>
+                        <p className="text-sm leading-6 text-secondary">
+                            {t(activeTabConfig.descriptionKey)}
+                        </p>
+                    </div>
+                    <p className="max-w-xl text-sm leading-6 text-secondary">
+                        {t(activeTabConfig.panelHintKey)}
+                    </p>
+                </div>
+
                 <div
                     id={getSettingsPanelId(activeTab)}
                     role="tabpanel"
@@ -154,7 +149,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
 
                 <div className="surface-inline flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-secondary">
-                        {getPanelHint()}
+                        {t(activeTabConfig.panelHintKey)}
                     </p>
                     <Button
                         onClick={onClose}
