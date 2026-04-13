@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v0.2.0
 milestone_name: ui-system-and-experience-rework
-status: ready_for_milestone_closeout
-stopped_at: Phase 10 complete; milestone audit or archive next
-last_updated: "2026-04-13T12:11:00Z"
-last_activity: 2026-04-13 - Completed Phase 10 (manual experience verification and release truth)
+status: awaiting_next_milestone
+stopped_at: v0.2.0 archived; next milestone planning pending
+last_updated: "2026-04-13T11:43:41.959Z"
+last_activity: 2026-04-13 - Archived v0.2.0 milestone
 progress:
   total_phases: 4
   completed_phases: 4
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Milestone closeout for v0.2.0 UI System And Experience Rework
+**Current focus:** Planning the next milestone after shipping v0.2.0
 
 ## Current Position
 
 Phase: none
 Plan: none
-Status: All Phase 10 plans are complete; milestone audit or archive is next
-Last activity: 2026-04-13 - Completed Phase 10 (manual experience verification and release truth)
+Status: v0.2.0 is archived; define the next milestone with `$gsd-new-milestone`
+Last activity: 2026-04-13 - Archived v0.2.0 milestone
 
 Progress: [##########] 100%
 
@@ -51,7 +51,7 @@ Progress: [##########] 100%
 
 **Recent Trend:**
 - Last 5 plans: 09-05, 10-01, 10-02, 10-03, 10-04
-- Trend: The milestone now closes on reusable browser evidence, refreshed public docs, and a green packaging-aware repository gate
+- Trend: v0.2.0 is now archived; the next session should define the next milestone instead of reopening shipped scope
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -112,13 +112,14 @@ None yet.
 
 ### Blockers/Concerns
 
-- Final gate is green, including `npm run build -- --publish never`.
+- Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
+- No active milestone is defined yet; create one with `$gsd-new-milestone`.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 - `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from planning and execution commits.
 
 ## Session Continuity
 
 Last session: 2026-04-13T12:11:00Z
-Stopped at: Phase 10 complete; milestone audit or archive next
-Resume file: .planning/phases/10-manual-experience-verification-and-release-truth/10-VERIFICATION.md
+Stopped at: v0.2.0 archived; next milestone planning pending
+Resume file: .planning/PROJECT.md
