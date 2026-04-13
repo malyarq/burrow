@@ -8,6 +8,7 @@ import { createTranslator } from '../../../contexts/settings/i18n';
 const listWithMetadataMock = vi.fn();
 const selectMock = vi.fn();
 const refreshMock = vi.fn();
+const onNavigateMock = vi.fn();
 const t = createTranslator('en');
 
 vi.mock('../../../contexts/ModpackContext', () => ({
@@ -35,6 +36,7 @@ vi.mock('../../../contexts/ToastContext', () => ({
   useToast: () => ({
     success: vi.fn(),
     error: vi.fn(),
+    warning: vi.fn(),
   }),
 }));
 
@@ -59,12 +61,13 @@ vi.mock('../../../features/share/ImportShareModal', () => ({
   ImportShareModal: () => null,
 }));
 
-describe('ModpackList keyboard accessibility', () => {
+describe('ModpackList action truth', () => {
   beforeEach(() => {
     cleanup();
     listWithMetadataMock.mockReset();
     selectMock.mockReset();
     refreshMock.mockReset();
+    onNavigateMock.mockReset();
 
     selectMock.mockResolvedValue(undefined);
     refreshMock.mockResolvedValue(undefined);
@@ -75,7 +78,7 @@ describe('ModpackList keyboard accessibility', () => {
         path: '/packs/alpha',
         selected: false,
         metadata: {
-          description: 'Keyboard friendly pack',
+          description: 'Route truth test pack',
           minecraftVersion: '1.20.1',
           modLoader: { type: 'fabric' },
         },
@@ -83,29 +86,20 @@ describe('ModpackList keyboard accessibility', () => {
     ]);
   });
 
-  it('allows selecting a modpack card from the keyboard', async () => {
-    render(<ModpackList />);
+  it('routes the contextual details action to the details screen and does not expose a fake play action', async () => {
+    render(<ModpackList onNavigate={onNavigateMock} />);
 
-    const cardButton = await screen.findByRole('button', { name: 'Alpha Pack' });
-    fireEvent.keyDown(cardButton, { key: 'Enter' });
+    const actionButton = await screen.findByRole('button', { name: 'More actions: Alpha Pack' });
+    fireEvent.click(actionButton);
 
-    await waitFor(() => {
-      expect(selectMock).toHaveBeenCalledWith('alpha');
-    });
-  });
+    expect(await screen.findByRole('menu', { name: 'More actions: Alpha Pack' })).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Play' })).toBeNull();
+    expect(screen.queryByRole('menuitem', { name: 'Settings' })).toBeNull();
 
-  it('opens the action menu from the keyboard with labeled menu semantics', async () => {
-    render(<ModpackList />);
-
-    const cardButton = await screen.findByRole('button', { name: 'Alpha Pack' });
-    fireEvent.keyDown(cardButton, { key: 'F10', shiftKey: true });
-
-    const menu = await screen.findByRole('menu', { name: 'More actions: Alpha Pack' });
-    expect(menu).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'More actions: Alpha Pack' }).getAttribute('aria-expanded')).toBe('true');
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Open details' }));
 
     await waitFor(() => {
-      expect(document.activeElement?.getAttribute('role')).toBe('menuitem');
+      expect(onNavigateMock).toHaveBeenCalledWith({ type: 'details', modpackId: 'alpha' });
     });
   });
 });
