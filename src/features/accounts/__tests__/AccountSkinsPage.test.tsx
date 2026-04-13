@@ -122,9 +122,9 @@ describe('AccountsPage skin panel', () => {
     render(<AccountsPage />)
 
     expect((await screen.findAllByText('LittleSkin')).length).toBeGreaterThan(0)
-    const refreshButton = await screen.findByRole('button', { name: 'Refresh Preview' })
+    const refreshButton = await screen.findByRole('button', { name: 'Refresh Preview' }) as HTMLButtonElement
     await waitFor(() => {
-      expect(refreshButton.hasAttribute('disabled')).toBe(false)
+      expect(refreshButton.disabled).toBe(false)
     })
     fireEvent.click(refreshButton)
 
@@ -157,7 +157,9 @@ describe('AccountsPage skin panel', () => {
     await screen.findByText('Skin Management')
     await screen.findByText('Offline accounts do not have a provider skin page.')
 
-    expect(screen.getByRole('button', { name: 'Refresh Preview' }).hasAttribute('disabled')).toBe(true)
-    expect(screen.getByRole('button', { name: 'Open Skin Site' }).hasAttribute('disabled')).toBe(true)
+    await waitFor(() => {
+      expect((screen.getByRole('button', { name: 'Refresh Preview' }) as HTMLButtonElement).disabled).toBe(true)
+      expect((screen.getByRole('button', { name: 'Open Skin Site' }) as HTMLButtonElement).disabled).toBe(true)
+    })
   })
 })
