@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.2.0
 milestone_name: ui-system-and-experience-rework
 status: active
-stopped_at: Completed Phase 8 planning
-last_updated: "2026-04-12T22:38:13Z"
-last_activity: 2026-04-13 - Planned Phase 8 core route rollout and UI correctness
+stopped_at: Completed Phase 8 wave 1 execution
+last_updated: "2026-04-13T06:02:00Z"
+last_activity: 2026-04-13 - Executed Phase 8 wave 1 (plans 08-01 and 08-02)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 8
-  completed_plans: 4
-  percent: 25
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 8 execution readiness for milestone v0.2.0 UI System And Experience Rework
+**Current focus:** Phase 8 wave 2 modpack-route rollout for milestone v0.2.0 UI System And Experience Rework
 
 ## Current Position
 
 Phase: 8 - Core Route Rollout And UI Correctness
-Plan: Not started
-Status: Planned and ready to execute
-Last activity: 2026-04-13 - Planned Phase 8 core route rollout and UI correctness
+Plan: 03 - Core modpack route rollout
+Status: Wave 1 complete; Wave 2 ready to execute
+Last activity: 2026-04-13 - Executed Phase 8 wave 1 (plans 08-01 and 08-02)
 
-Progress: [###-------] 25%
+Progress: [#######---] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
-- Active phase plans completed: 4
+- Total plans completed: 35
+- Active phase plans completed: 6
 - Average duration: 17 min
 - Total execution time: 1.1 hours
 
@@ -45,10 +45,11 @@ Progress: [###-------] 25%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 7. UI System Foundations | 4 | 1.1h | 17 min |
+| 8. Core Route Rollout And UI Correctness | 2 | 22 min | 11 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-03, 07-01, 07-02, 07-03, 07-04
-- Trend: Phase 7 completed; Phase 8 is now split into entry, settings/accounts, modpack, and integration rollout plans
+- Last 5 plans: 07-02, 07-03, 07-04, 08-01, 08-02
+- Trend: Phase 8 wave 1 is complete; modpack route rollout and integration closeout remain
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -92,6 +93,7 @@ Recent decisions affecting current work:
 - [Phase 07]: Treat live browser renders as required evidence for foundation work, but record environment-level browser scripting limits explicitly instead of hiding them.
 - [Phase 08]: Treat route rollout as owner-surface work, not a router rewrite; preserve the state-driven app structure while aligning the highest-traffic flows.
 - [Phase 08]: Fix route truth as part of UI work, especially misleading onboarding guidance and any modpack actions that promise behavior they do not perform.
+- [Phase 08]: Route quick actions, settings/accounts copy, and provider-aware skin actions should ship together with seam-level tests so refreshed surfaces stay behaviorally honest.
 
 ### Pending Todos
 
@@ -104,10 +106,10 @@ None yet.
 - `npm run build -- --publish never` was not rerun in Phase 7 because this milestone phase closes on UI-system foundations, not packaging changes; packaging should be rechecked during the later release-truth phase.
 - Browser scripting in this CLI environment was partially constrained during live sanity work (`Safari` blocks JavaScript-from-Apple-Events and sandboxed Node could not reach Chromium DevTools), so Phase 10 should still perform the full interactive walkthrough on refreshed routes.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
-- Local route edits in `src/components/onboarding/WelcomePage.tsx`, `src/features/accounts/AccountsPage.tsx`, and `src/features/accounts/AddAccountDialog.tsx` are active in-flight seams and must stay out of planning-only commits.
+- `src/contexts/instances/services/legacySeed.ts` remains an unrelated local modification and is intentionally excluded from Phase 8 commits.
 
 ## Session Continuity
 
-Last session: 2026-04-12T22:38:13Z
-Stopped at: Completed Phase 8 planning
-Resume file: .planning/phases/08-core-route-rollout-and-ui-correctness/08-01-PLAN.md
+Last session: 2026-04-13T06:02:00Z
+Stopped at: Completed Phase 8 wave 1 execution
+Resume file: .planning/phases/08-core-route-rollout-and-ui-correctness/08-03-PLAN.md
