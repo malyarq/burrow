@@ -1,149 +1,154 @@
 # Project Research: Pitfalls
 
 **Project:** FriendLauncher (FMCL)  
-**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
-**Researched:** 2026-04-13  
+**Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
+**Researched:** 2026-04-14  
 **Confidence:** HIGH
 
-## Question
+## Research Question
 
-What are the main ways this milestone could look “busy” in git while still failing to improve the real launcher UX?
+What are the common mistakes when fixing screenshot-backed truth and polish bugs in an already-shipped launcher UI, especially around contradictory state sources, localization drift, fallback rendering, overflow handling, and “fix everything” scope creep?
 
 ## Primary Risks
 
-### 1. Adaptive Work That Only Fits One Window Size
+### 1. Fixing labels without fixing the shared state contract
 
 **Failure mode**
-- Layout looks fixed at the developer's current window size
-- Menus, button groups, or cards break once the user resizes or starts from different default bounds
+- one part of the launch surface shows the “right” value, but another control still reads stale loader or progress state
+- a localized status title hides the fact that percent, CTA state, and log summary still disagree
 
 **Current evidence**
-- Modpack action menus are placed from raw coordinates and assumed width
-- Multiple surfaces use fixed-feeling card/button proportions
+- the audit shows conflicting modloader values and `done` while progress remains `0%`
+- `SimplePlayDashboard.tsx` already consumes several parallel launch-status fields
 
 **Prevention**
-- Verify at several viewport sizes
-- Prefer anchored overlays and responsive layout rules over hand-tuned offsets
+- fix shared launch-state mapping first
+- require one source of truth for launch stage, progress, and user-facing status text
 
-**Likely phase**
-- Phase 11
+**Best contained in**
+- the first roadmap phase
 
-### 2. Theme Presets That Change State But Not Product Truth
+### 2. Treating raw i18n keys as one-off copy defects
 
 **Failure mode**
-- Preset selector updates stored values, but some real surfaces keep old assumptions
-- Dark-mode presets fail until the user flips base theme manually
-- Some inputs or cards end up white on white or white text on white surfaces
+- a visible raw key is replaced with hardcoded text in one component
+- locale catalogs stay incomplete, so the same key leaks elsewhere later
 
 **Current evidence**
-- User-reported preset failures
-- Theme application currently sets a limited semantic variable set
+- the audit calls out `settings.tab_storage`, `general.show_advanced`, `settings.java_auto`, and `general.rescan`
+- `theme-presets.ts` stores preset labels as hard-coded English names
 
 **Prevention**
-- Treat preset application as a tested contract
-- Add readable-surface checks for cards, fields, overlays, and secondary text
+- fix missing locale ownership, not just the current screen
+- require every touched visible string to resolve cleanly in both `en` and `ru`
 
-**Likely phase**
-- Phase 12
+**Best contained in**
+- the shared localization or settings polish phase
 
-### 3. “Flattened” Settings That Still Feel Nested
+### 3. Solving dense tabs with another discoverability trap
 
 **Failure mode**
-- A tab is removed, but the same complexity survives inside collapsibles and embedded sub-sections
-- Users still traverse tab -> section -> collapsible -> embedded editor to reach common actions
+- the tab row stops truncating one screen but gains another scroll region or a harder-to-find overflow control
 
 **Current evidence**
-- `SettingsPage` already tabs top-level categories, while some tabs add multiple `CollapsibleSection` groups and even feature-level embedded panels
+- the audit already flags detail-tab discoverability on long modpack pages
 
 **Prevention**
-- Redesign by user intent, not by preserving every existing grouping
-- Separate common actions from advanced utilities
+- prefer wrap, compact grouping, or a stable `More` affordance
+- avoid adding inner horizontal scrolling unless the result is demonstrably easier to use
 
-**Likely phase**
-- Phase 12
+**Best contained in**
+- the modpack-detail navigation phase
 
-### 4. Launch Feedback That Still Feels Frozen
+### 4. Rendering platform/runtime requirements as missing mods
 
 **Failure mode**
-- Backend emits progress, but the UI only shows a generic percent or stale status string
-- Users can still click active controls because the launcher never clearly enters a guarded busy state
+- dependency UI keeps treating `minecraft`, `forge`, or similar runtime facts as absent because the screen only checks installed mod files
 
 **Current evidence**
-- `useLauncher` and `useLauncherIPC` expose limited product-level state
-- User explicitly reports “looks hung, so I click everything”
+- the audit shows `minecraft` and `forge` incorrectly marked missing
+- pack runtime metadata and scanner output likely live in different seams
 
 **Prevention**
-- Model launch stages explicitly
-- Show busy/blocked states on the main action surface, not only in console/log output
+- resolve dependency truth from pack runtime metadata before rendering status badges
+- separate runtime requirements from file-based mod dependencies in the UI
 
-**Likely phase**
-- Phase 13
+**Best contained in**
+- the modpack detail integrity phase
 
-### 5. Dependency UX That Ignores Real Metadata
+### 5. Duplicating fallback behavior per surface
 
 **Failure mode**
-- Create/export/install flows show incomplete or misleading dependency information
-- Required runtime dependencies like Minecraft or Forge disappear even though contracts already know them
+- the launch surface gets one emergency image fix while catalog cards still show gray blocks
+- each missing-art surface invents its own fallback behavior and the product still feels inconsistent
 
 **Current evidence**
-- User reports missing Minecraft/Forge dependencies during modpack creation
-- Shared contracts already model `minecraft` and loader/runtime information
+- the audit shows broken or empty imagery on both launch and catalog flows
 
 **Prevention**
-- Make dependency UI derive from typed metadata/contracts instead of local assumptions
-- Distinguish required runtime dependencies from optional content
+- define one branded fallback policy and reuse it
+- treat empty, broken, and missing imagery as one product-quality problem
 
-**Likely phase**
-- Phase 13
+**Best contained in**
+- the shared truth or polish foundation work
 
-### 6. Placeholder And Fallback Leaks Surviving Into Release
+### 6. Letting “full polish” reopen unrelated backlog work
 
 **Failure mode**
-- Main happy path looks polished, but classic mode, easter eggs, or fallbacks still expose placeholders
+- chunk-splitting, workflow drift, architecture cleanup, or new launcher features absorb time meant for visible shipped-surface defects
 
 **Current evidence**
-- User reports placeholder leaks on classic main screen and easter egg
+- the user asked for deep cleanup, but the screenshot audit remains the clearest defect ledger
+- `PROJECT.md` already tracks other non-blocking debt that can easily sprawl
 
 **Prevention**
-- Treat asset/fallback review as release work, not a nice-to-have cleanup
-- Include fallback paths in manual verification
+- keep the milestone anchored to documented defects plus directly related proven cleanup
+- force every extra task to answer which audited user-facing problem it closes
 
-**Likely phases**
-- Phase 11 and Phase 14
+**Best contained in**
+- requirements and roadmap scoping
 
-### 7. Browser Verification That Proves Only One Polished Snapshot
+### 7. Proving only static visuals, not user trust
 
 **Failure mode**
-- The team captures screenshots of the most polished route but does not verify resize behavior, launch feedback, or secondary UX branches
+- screenshots look cleaner, but runtime status, compact-nav affordances, or fallback behavior still break during real interaction
+
+**Current evidence**
+- several audited defects are interaction or state-sync problems, not just layout bugs
 
 **Prevention**
-- Record walkthroughs at multiple window sizes and through actual interaction flows
-- Explicitly include classic, settings, launch, modpack browser, modpack creation, and menu/overlay checks
+- verify through live walkthrough plus targeted tests, not image review alone
+- explicitly exercise launch progress, dense tabs, collapsed nav, and missing-art paths
 
-**Likely phase**
-- Phase 14
+**Best contained in**
+- the final verification or release-truth phase
 
 ## Anti-Patterns To Avoid
 
-- Fixing one preset by special-casing one surface
-- Rebuilding settings tabs without removing nested cognitive depth
-- Measuring success by visual novelty rather than reduced user confusion
-- Treating competitor research as permission to add unlimited scope
-- Closing the milestone without a resize-aware browser walkthrough
+- fixing a raw key with inline text instead of adding the missing locale key
+- changing only the displayed loader label while the effective launch config still disagrees
+- adding a new scrollable strip to solve existing overflow
+- implementing a launch-art fallback only on the play screen while catalog cards stay untreated
+- turning the polish milestone into a generic tech-debt sweep with no direct user-visible closure
+
+## Roadmap Guidance From These Risks
+
+- put shared truth and locale ownership before cosmetic cleanup
+- isolate dependency semantics into a phase that can test them directly
+- keep verification as a dedicated closeout step; do not assume screenshot comparison is enough
+- reject requirements that do not map back to the audit or a directly related proven inconsistency
 
 ## Sources
 
-- Local repo inspection of:
-  - `src/components/modpacks/ModpackList.tsx`
-  - `src/components/settings/tabs/AppearanceTab.tsx`
-  - `src/contexts/settings/theme.ts`
-  - `src/components/SettingsPage.tsx`
-  - `src/features/launcher/hooks/useLauncher.ts`
-  - `src/features/launcher/hooks/useLauncherIPC.ts`
-  - `src/components/modpacks/CreateModpackModal.tsx`
-- User-provided pain points captured in the milestone kickoff conversation
-- Modrinth modpack dependency specification: https://support.modrinth.com/en/articles/8802351-modrinth-modpack-format-mrpack
+- `.planning/PROJECT.md`
+- `docs/ru/ui-qa-audit-2026-04-14.md`
+- `.planning/codebase/CONCERNS.md`
+- `.planning/codebase/TESTING.md`
+- `src/components/SimplePlayDashboard.tsx`
+- `src/components/modpacks/ModpackDetails.tsx`
+- `src/components/settings/settingsTabs.ts`
+- `src/contexts/settings/theme-presets.ts`
 
 ---
-*Research completed: 2026-04-13*
+*Research completed: 2026-04-14*  
 *Ready for roadmap: yes*

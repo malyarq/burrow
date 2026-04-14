@@ -1,101 +1,146 @@
 # Project Research Summary
 
 **Project:** FriendLauncher (FMCL)  
-**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
-**Researched:** 2026-04-13  
+**Domain:** Electron desktop Minecraft launcher polish and bug-fix planning  
+**Researched:** 2026-04-14  
 **Confidence:** HIGH
 
 ## Executive Summary
 
-`v0.3.0` should be a UX-trust milestone, not another broad visual refresh. FMCL already has the main launcher capability surface. The next release needs to make that surface adaptive, readable, predictable, and honest under real usage conditions.
+`v0.4.0` should be a release-truth and finish-quality milestone, not a new-feature milestone. The screenshot audit and codebase review both point to the same problem: the already-shipped launcher surface still leaks contradictory state, raw localization keys, broken or empty imagery, and dense navigation that feels unfinished.
 
-The highest-value work is:
-
-1. fix layout and interaction safety across window sizes
-2. make preset themes truly apply in light and dark modes
-3. flatten settings IA enough to remove “tab inside tab inside tab” fatigue
-4. make launch state understandable so users stop guessing whether the launcher is frozen
-5. repair modpack creation/browser/list ergonomics where metadata or actions are currently misleading
+The current stack is sufficient. The milestone should not add new frameworks or major tooling. Instead, it should tighten shared launch-state mapping, locale ownership, fallback-art policy, and modpack-detail semantics, then prove the fixes through the existing manual verification seam plus targeted automated tests.
 
 ## Key Findings
 
-### Stack
+### Recommended Stack
 
-The current Electron + React + TypeScript + TailwindCSS + Vite stack is sufficient. The milestone should not introduce a UI-framework migration. It should strengthen shared theme, layout, overlay, and busy-state contracts inside the existing architecture.
+The current Electron, React, TypeScript, Tailwind, and Vitest setup already covers the milestone needs. The repo should reuse existing status, image, locale, and verification seams rather than introducing a new state, UI, or visual-regression platform.
 
-### Table Stakes
+**Core technologies:**
+- `Electron` — source of launcher, filesystem, and dependency truth
+- `React + TypeScript` — render and normalize product-facing state safely
+- `TailwindCSS` — repair overflow, compact controls, and branded fallback presentation
+- `Vitest + Testing Library` — add focused regressions for the exact bugs already captured in screenshots
 
-- adaptive shell and route layouts across varying window sizes
-- anchored menus and overlays that stay within the window
-- consistent control sizing and spacing rhythm
-- preset themes that work in dark and light mode
-- readable fields/cards in every shipped preset
-- flatter settings navigation for common tasks
-- explicit launch and background-operation states
-- truthful dependency visibility in modpack creation
-- safer, clearer modpack browser and installed-pack actions
-- no placeholder/logo leaks on shipped surfaces
+### Expected Features
 
-### Critical Watch-Outs
+Research and the audit converge on four categories that define this milestone:
 
-- raw coordinate menu placement will keep breaking on resize
-- preset themes will remain fake unless semantic tokens cover real surfaces
-- settings can still feel deeply nested even after superficial tab cleanup
-- launch progress must become a stage model, not only a percent label
-- dependency UI must derive from typed metadata instead of local assumptions
+**Must have (table stakes):**
+- truthful launch surface and runtime feedback
+- correct modpack dependency semantics with readable requirement formatting
+- catalog and compact navigation scanability plus branded fallbacks
+- complete settings and launch-surface localization without raw keys or inconsistent preset naming
 
-## Suggested Phase Structure
+**Should have (bounded polish):**
+- clearer user-facing launch stage wording
+- compact overflow treatment for dense tabs and controls
+- shared fallback behavior across launch and catalog imagery
 
-### Phase 11: Adaptive Layout And Interaction Foundations
+**Defer (future milestones):**
+- new launcher routes or large feature additions
+- full settings IA redesign
+- competitor parity sweeps
+- new visual-regression infrastructure
 
-Stabilize responsive layout, control rhythm, overlay anchoring, and placeholder/fallback truth.
+### Architecture Approach
 
-### Phase 12: Theme Truth And Settings IA Simplification
+The fixes should land on existing seams instead of bypassing them. Launch truth belongs in launcher hooks and status mapping, dependency truth belongs in modpack metadata plus scanner interpretation, fallback-art behavior belongs in shared visual seams, and settings localization belongs in locale catalogs plus shared settings metadata.
 
-Repair preset behavior, close contrast regressions, and simplify the settings structure around common tasks.
+**Major components:**
+1. Launch state pipeline — `useLauncher*`, `launcherService`, `taskRunner`, and `SimplePlayDashboard`
+2. Modpack detail pipeline — `ModpackDetails`, detail tabs, metadata IPC, and dependency scanning
+3. Surface polish pipeline — modpack browser or list, sidebar, settings metadata, theme presets, and locale catalogs
 
-### Phase 13: Launch Trust And Modpack Workflow Ergonomics
+### Critical Pitfalls
 
-Make launching understandable and fix the most important modpack authoring/browser/list interaction pain.
+1. **Local label fixes hiding shared state drift** — fix upstream truth contracts before polishing individual widgets
+2. **Inline copy masking missing locale ownership** — add missing locale keys in both languages instead of patching the visible screen only
+3. **Overflow fixes that add new discoverability debt** — avoid replacing one horizontal-scroll problem with another nested control trap
+4. **Runtime dependencies rendered as missing mods** — separate pack-level runtime requirements from file-based dependency checks
+5. **Unbounded “full polish” sprawl** — keep every requirement tied to the screenshot audit or a directly related proven inconsistency
 
-### Phase 14: Manual Verification And Release Truth
+## Implications for Roadmap
 
-Close the milestone with resize-aware browser walkthroughs, doc truth, and a bounded list of future parity opportunities.
+Based on research, suggested phase structure:
 
-## Recommended Scope Boundary
+### Phase 15: Launch Truth And Shared Surface Contracts
+**Rationale:** Shared truth defects break user trust fastest and will contaminate later polish work if left unresolved.  
+**Delivers:** Correct launch-stage mapping, synchronized progress and CTA behavior, localized runtime status, and shared fallback ownership for broken launch imagery.  
+**Addresses:** launch-surface truth plus shared localization or fallback ownership.  
+**Avoids:** patching visible labels while upstream state remains contradictory.
 
-Do this in `v0.3.0`:
+### Phase 16: Modpack Detail Integrity And Discoverable Dense Navigation
+**Rationale:** Once shared truth is stable, dependency semantics and dense detail navigation can be fixed as one coherent modpack-detail slice.  
+**Delivers:** correct dependency satisfaction rules, readable version-range formatting, and discoverable detail tabs without default horizontal-scroll tax.  
+**Uses:** existing modpack metadata, scanner output, and detail-tab seams.  
+**Implements:** the modpack-detail integration points called out in `ARCHITECTURE.md`.
 
-- UX hardening of current launcher surfaces
-- real fixes to theme, layout, settings, launch, and modpack trust gaps
-- milestone-wide browser verification at multiple sizes
+### Phase 17: Catalog, Compact Nav, And Settings Localization Polish
+**Rationale:** Remaining defects cluster around scanability, compact-state affordances, missing cover fallbacks, and raw or inconsistent settings copy.  
+**Delivers:** legible catalog filters, branded card fallbacks, coherent collapsed navigation, and finished settings or preset-name localization.  
+**Addresses:** the shipped-surface polish bucket without reopening new feature scope.  
+**Avoids:** a full redesign of the browser, sidebar, or settings IA.
 
-Do not do this in `v0.3.0`:
+### Phase 18: Verification And Release Truth
+**Rationale:** Several defects are interaction and trust issues, so the milestone needs explicit verification rather than visual cleanup alone.  
+**Delivers:** targeted tests, walkthrough evidence through the existing manual verification seam, updated docs/locales where needed, and green lint or typecheck or build gates.  
+**Addresses:** proof that the screenshot-backed defect set is actually closed.  
+**Avoids:** relying only on static screenshots or code-review intuition.
 
-- clone other launchers wholesale
-- add large new domains unrelated to current UX pain
-- rewrite the frontend stack
-- turn the milestone into a visual-regression tooling project
+### Phase Ordering Rationale
 
-## External References Used
+- launch and shared truth work comes first because multiple surfaces consume the same state or locale patterns
+- modpack detail integrity deserves its own slice because dependency truth and dense-tab discoverability are tightly coupled
+- catalog/settings/nav polish comes after shared fallback and locale rules are established
+- verification stays a dedicated closeout step because several failures are behavioral, not purely visual
 
-- Prism Launcher theme workflow: https://prismlauncher.org/wiki/getting-started/change-themes/
-- ATLauncher launch behavior: https://wiki.atlauncher.com/getting-started/launching-minecraft/
-- ATLauncher explicit modloader/version creation flow: https://wiki.atlauncher.com/getting-started/creating-a-server/
-- Modrinth modpack overview: https://support.modrinth.com/en/articles/8802250-modpacks-on-modrinth
-- Modrinth dependency format for `.mrpack`: https://support.modrinth.com/en/articles/8802351-modrinth-modpack-format-mrpack
+### Research Flags
 
-## Local Evidence Used
+Phases likely needing deeper research during planning:
+- **Phase 15:** confirm how launcher progress and status text are assembled across hooks and main-process events before choosing the exact implementation cut
+- **Phase 16:** inspect current dependency-shape data from scanner output and modpack metadata to avoid fixing only one dependency subtype
 
-- `src/components/SettingsPage.tsx`
-- `src/components/settings/tabs/AppearanceTab.tsx`
-- `src/contexts/settings/theme.ts`
-- `src/features/launcher/hooks/useLauncher.ts`
-- `src/components/modpacks/CreateModpackModal.tsx`
-- `src/components/modpacks/ModpackBrowser.tsx`
-- `src/components/modpacks/ModpackList.tsx`
-- `docs/KNOWN_ISSUES.md`
+Phases with standard patterns:
+- **Phase 17:** mostly renderer layout, fallback, and locale-completion work on existing surfaces
+- **Phase 18:** uses established project verification and release-truth practices
+
+## Confidence Assessment
+
+| Area | Confidence | Notes |
+| --- | --- | --- |
+| Stack | HIGH | Current dependencies and tooling already cover the milestone needs |
+| Features | HIGH | The screenshot audit gives a concrete, user-visible defect ledger |
+| Architecture | HIGH | Affected seams are visible in the current codebase and map cleanly to the audit categories |
+| Pitfalls | HIGH | Risks are specific to the audited failures and repeated patterns in the repo |
+
+**Overall confidence:** HIGH
+
+### Gaps To Address
+
+- confirm the exact source of launch-status desynchronization between renderer-visible progress and task-completion logs
+- confirm whether detail tabs should wrap, compact, or overflow into a `More` affordance on current widths
+- confirm whether preset naming should become localized descriptions or remain intentional product names in both locales
+
+## Sources
+
+### Primary
+
+- `.planning/PROJECT.md`
+- `docs/ru/ui-qa-audit-2026-04-14.md`
+- `package.json`
+- `.planning/research/STACK.md`
+- `.planning/research/FEATURES.md`
+- `.planning/research/ARCHITECTURE.md`
+- `.planning/research/PITFALLS.md`
+
+### Secondary
+
+- `.planning/codebase/ARCHITECTURE.md`
+- `.planning/codebase/CONCERNS.md`
+- `.planning/codebase/TESTING.md`
 
 ---
-*Research completed: 2026-04-13*
+*Research completed: 2026-04-14*  
 *Ready for roadmap: yes*

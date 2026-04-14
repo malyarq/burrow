@@ -1,109 +1,248 @@
 # Project Research: Stack
 
 **Project:** FriendLauncher (FMCL)  
-**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
-**Researched:** 2026-04-13  
+**Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
+**Researched:** 2026-04-14  
 **Confidence:** HIGH
 
 ## Question
 
-What stack changes are actually needed to fix FMCL's current UX failures: broken preset themes, weak adaptivity, inconsistent sizing, nested settings IA, unclear launch progress, and awkward modpack flows?
+What stack additions or changes are actually needed to fix screenshot-backed UI truth defects in FMCL around localization, adaptive overflow, fallback imagery, and runtime-status consistency without expanding beyond the existing Electron + React + TypeScript + TailwindCSS + Vite architecture?
 
 ## Conclusion
 
-FMCL does not need a stack rewrite for this milestone. The current Electron + React + TypeScript + TailwindCSS + Vite stack is already sufficient for the work. The gap is not missing platform capability; it is inconsistent use of the existing presentation, theme, and flow seams.
+FMCL does not need new core frontend or runtime libraries for `v0.4.0`.
 
-The only stack-level recommendation is to strengthen shared UI primitives and document-level theme behavior before touching more route surfaces. If anchored overlays keep failing, add one small overlay-positioning primitive around the existing component layer instead of hand-placing menus with raw screen coordinates in feature code.
+The current Electron + React + TypeScript + TailwindCSS + Vite stack is already sufficient for the audited defects. The gap is not missing platform capability. The gap is that a few existing seams are still too weak or too inconsistent:
 
-## Keep
+- locale lookup falls back to raw keys, so untranslated labels leak visibly
+- overflow behavior is still surface-local in a few dense controls
+- fallback imagery exists, but is not applied with one product policy across launcher and modpack surfaces
+- launcher truth is still derived from a mix of generic progress events and log parsing, which makes status, percent, and CTA state drift apart
 
-- **Electron main/preload/renderer split**
-  - Existing IPC seams are already the right boundary for launcher, modpack, and settings work.
-- **React + TypeScript strict mode**
-  - Needed for state-heavy UI cleanup, typed settings contracts, and safer refactors across shared surfaces.
-- **TailwindCSS + CSS custom properties**
-  - Already supports adaptive layout, tokenized spacing, and reliable theme application without importing a new design framework.
-- **Vitest-based UI regression coverage**
-  - Sufficient for seam tests around theme application, settings IA, launch feedback, and modpack ergonomics.
+For this milestone, the stack recommendation is therefore:
 
-## Strengthen
+- keep the current runtime stack unchanged
+- add no new npm runtime dependencies
+- add at most small repo-local guards or shared primitives where the current seams are too weak
 
-### 1. Theme Contract
+## Recommended Stack
 
-Use `SettingsContext` + `src/contexts/settings/theme.ts` + document CSS variables as the only source of truth for:
+### Core Technologies To Keep
 
-- light/dark mode
-- preset application
-- accent propagation
-- readable text/background pairings
-- focus and contrast-safe tokens
+| Technology | Current version | Role in `v0.4.0` | Recommendation |
+| --- | --- | --- | --- |
+| Electron | `^40.0.0` | desktop shell, preload, IPC | Keep. This milestone is about shipped UI truth, not shell replacement. |
+| React | `^19.2.3` | renderer UI and stateful surfaces | Keep. The affected defects are already inside existing React seams. |
+| TypeScript | `^5.9.3` | typed UI and IPC contracts | Keep. Strong typing is the cheapest way to tighten launcher truth and locale-safe copy. |
+| TailwindCSS | `^4.1.18` | layout, density, theme tokens, overflow behavior | Keep. It already covers the adaptive and fallback work needed here. |
+| Vite | `^7.3.1` | build/dev/manual verification entry | Keep. The manual verification seam already runs on it. |
 
-Preset application should no longer be a best-effort combination of `theme`, `customTheme`, and per-surface fallback styles.
+### Existing Supporting Pieces That Are Already Sufficient
 
-### 2. Layout Contract
+| Existing piece | Current use | Why it is sufficient |
+| --- | --- | --- |
+| `src/contexts/settings/i18n.ts` + `src/locales/en.json` / `ru.json` | EN/RU translation lookup | Sufficient for a two-locale launcher. The defect is missing-key discipline, not missing i18n infrastructure. |
+| `src/components/ui/LazyImage.tsx` + cache IPC | remote image loading, fallback image path, cached local URLs | Sufficient for fallback imagery. The defect is inconsistent product usage, not missing image tooling. |
+| `shared/contracts/launcher.ts` + `src/features/launcher/*` | typed launcher progress and UI state | Sufficient if the shared payload gets richer and becomes the main truth source. |
+| `vitest` + `@testing-library/react` | route and seam regression coverage | Sufficient for localization, overflow, fallback-art, and status-sync regressions. |
+| `src/verification/manual/*` | browser-backed walkthrough and screenshot proof | Already the right verification seam for screenshot-audited polish. |
 
-Use shared sizing tokens and stable card/control variants across:
+## Minimal Additions Or Changes
 
-- shell navigation
-- settings
-- classic play
-- modpack list and browser
-- modal and context menus
+### 1. Localization Truth
 
-The milestone should prefer CSS grid/flex/container-query style adaptation over feature-local width math.
+**Recommendation**
 
-### 3. Overlay Contract
+- Keep the current JSON-based translator and EN/RU locale files.
+- Add one repo-local locale completeness guard:
+  - either `scripts/check-locales.cjs`
+  - or a focused Vitest contract
+- Localize audited preset/status labels through the existing locale files, or explicitly document them as intentional product names if they must stay English.
 
-Context menus, dropdowns, and popovers should use one shared anchoring strategy. Current raw `x/y` placement is too fragile for window resizing and non-default bounds.
+**Why**
 
-### 4. Busy-State Contract
+- `createTranslator()` currently returns the key itself when a translation is missing.
+- `settings.tab_storage` is already wired in `src/components/settings/settingsTabs.ts`, and raw-key leakage is a known shipped defect.
+- `src/contexts/settings/theme-presets.ts` currently stores preset labels as hard-coded English names, which explains the audit finding around preset naming policy.
 
-Launch, download, install, and background operations need a stable state model with explicit stages. A single percent string is not enough for user trust.
+**What this does not require**
+
+- no `i18next`
+- no `react-intl`
+- no `formatjs`
+- no extraction or translation-platform runtime SDKs
+
+The milestone only needs completeness and truth for two shipped locales, not a new internationalization platform.
+
+### 2. Adaptive Overflow
+
+**Recommendation**
+
+- Fix dense overflow cases with the current Tailwind + browser stack first:
+  - `min-w-0`
+  - `flex-wrap`
+  - grid/minmax layouts
+  - `clamp()` sizing where needed
+  - content-priority hiding or “More” grouping for secondary actions
+- If the audited tab/filter rows still need behavior beyond CSS, add one small in-repo overflow primitive, not a dependency.
+
+**Why**
+
+- `src/components/modpacks/details/ModpackDetailsHeader.tsx` currently relies on `overflow-x-auto` for the tab strip, which matches the audit failure directly.
+- That is a local layout-policy problem, not evidence that FMCL needs a component framework or overflow library.
+
+**What this does not require**
+
+- no Radix UI
+- no Headless UI
+- no MUI / Chakra / shadcn
+- no layout manager or split-pane library
+
+If one shared primitive is needed, it should be an internal FMCL component owned inside `src/components/ui/`.
+
+### 3. Fallback Imagery
+
+**Recommendation**
+
+- Reuse `src/components/ui/LazyImage.tsx`, the existing cache IPC bridge, and bundled branding assets.
+- Add a small product-owned fallback asset policy for:
+  - launcher hero / instance artwork
+  - modpack cover missing-state
+  - compact thumbnail variants where a full hero asset is inappropriate
+
+**Why**
+
+- `LazyImage` already supports `fallback`, bundled asset detection, and remote-image caching.
+- The audit defect is about broken or empty states, not about missing image transport or rendering capability.
+
+**What this does not require**
+
+- no new image component library
+- no skeleton-loader dependency just for cover art
+- no external placeholder-image service
+- no CDN rewrite
+
+This should stay a local asset-and-component contract inside the current renderer.
+
+### 4. Runtime-Status Consistency
+
+**Recommendation**
+
+- Evolve the existing launcher payload beyond the current generic `{ type, task, total }` model.
+- Keep the solution inside the shared contract and launcher service seam.
+- Prefer an explicit product-facing status model such as:
+  - `stage`
+  - `titleKey` or `detailKey`
+  - `detailParams`
+  - `progressPercent` or `current/total`
+  - optional terminal flags such as `canForceRestart`
+
+**Why**
+
+- `shared/types/task.ts` and `shared/contracts/launcher.ts` only expose a very thin progress shape today.
+- `src/features/launcher/services/launcherService.ts` and `useLauncherIPC.ts` still infer too much product truth from raw logs and generic task types.
+- That explains how “done”, `0%`, and the CTA state can drift apart on the same screen.
+
+**What this does not require**
+
+- no `xstate`
+- no `rxjs`
+- no Redux-style migration
+- no log-only state model as the long-term source of truth
+
+This is a typed contract cleanup, not a state-management rewrite.
+
+### 5. Verification Tooling
+
+**Recommendation**
+
+- Keep using `vitest` + `@testing-library/react` for deterministic UI truth coverage.
+- Reuse `src/verification/manual/*` for screenshot-backed browser checks at the exact audited routes and window sizes.
+- If capture ergonomics need improvement, add a thin repo-local Chromium/CDP helper script only.
+
+**Suggested coverage additions**
+
+- locale parity / no raw-key leakage for the audited settings and launch surfaces
+- responsive overflow behavior for modpack details tabs and catalog filters
+- fallback-art rendering when icon or launch artwork is missing
+- stage/progress/CTA synchronization for launcher status
+- preset-label policy coverage in RU
+
+**What this does not require**
+
+- no Playwright
+- no Cypress
+- no Percy
+- no Chromatic
+- no Storybook rollout
+
+The repo already has a reusable manual verification seam because this launcher needs screenshot-backed truth checks, and that seam should be extended rather than replaced.
+
+## Installation
+
+No package installation is recommended for this milestone.
+
+If extra enforcement is needed, prefer repo-local additions only:
+
+- `scripts/check-locales.cjs`
+- a focused Vitest locale-parity test
+- an internal overflow primitive such as `ResponsiveTabs` or `OverflowActions`
+- a richer shared launcher status type in `shared/contracts/launcher.ts`
+
+## Alternatives Considered
+
+| Recommended | Alternative | Why the alternative is not justified in `v0.4.0` |
+| --- | --- | --- |
+| Keep custom EN/RU translator + add parity guard | `i18next` / `react-intl` | The problem is missing-key enforcement, not pluralization, message formatting, or runtime locale loading. |
+| CSS-first overflow fixes, optional internal primitive | external tab/menu framework | Too much dependency weight for a narrow set of audited overflow defects. |
+| Richer shared launcher status contract | XState / RxJS | Overfits one status flow and expands scope into infrastructure instead of product truth. |
+| Existing manual verification seam + focused Vitest tests | Playwright / visual regression platform | More harness than this bounded polish milestone needs, especially with an existing browser-backed seam already in place. |
 
 ## What Not To Add
 
-- No design-system framework migration
-- No renderer rewrite
-- No route library rewrite just to flatten settings IA
-- No visual-only polish dependency spree
-- No launcher-clone feature expansion during this milestone
+| Avoid | Why | Use instead |
+| --- | --- | --- |
+| New UI framework or component kit | The audited issues are local truth and adaptivity defects, not missing widget inventory. | Existing React + Tailwind components, plus one small internal primitive if needed. |
+| New i18n framework | Adds migration cost without solving the real failure mode: missing keys and inconsistent copy ownership. | Existing locale JSON files plus parity checks. |
+| New state-management library for launcher status | Expands architecture for a single flow and delays the real fix. | Strengthen the typed launcher contract and normalizer. |
+| Browser E2E or visual-regression platform | Too much new infrastructure for a milestone that already has a reusable screenshot-backed manual seam. | Existing manual verification entry and focused Vitest coverage. |
+| Image/fallback dependency spree | The repo already has lazy loading, caching, and fallback hooks. | Standardize bundled placeholder assets and existing `LazyImage` usage. |
 
-## Local Evidence
+## Recommended Scope Boundary
 
-- `src/components/settings/tabs/AppearanceTab.tsx`
-  - Presets currently set `theme` and `customTheme`, but the behavior remains vulnerable to inconsistent token usage across screens.
-- `src/contexts/settings/theme.ts`
-  - Theme application is centralized, but only a subset of semantic variables is normalized there.
-- `src/components/modpacks/ModpackList.tsx`
-  - Action menu placement uses direct coordinates and fixed width assumptions.
+Do in `v0.4.0`:
+
+- strengthen truth inside the current renderer and IPC seams
+- add small repo-local guards where truth currently leaks
+- reuse the existing manual verification workflow for screenshot-backed proof
+
+Do not do in `v0.4.0`:
+
+- frontend stack migration
+- design-system rollout
+- locale-platform migration
+- broad E2E infrastructure project
+- feature expansion disguised as polish
+
+## Local Evidence Used
+
+- `package.json`
+- `.planning/PROJECT.md`
+- `docs/ru/ui-qa-audit-2026-04-14.md`
+- `src/contexts/settings/i18n.ts`
+- `src/components/settings/settingsTabs.ts`
+- `src/contexts/settings/theme-presets.ts`
+- `src/components/ui/LazyImage.tsx`
+- `src/components/modpacks/details/ModpackDetailsHeader.tsx`
+- `shared/types/task.ts`
+- `shared/contracts/launcher.ts`
+- `src/features/launcher/services/launcherService.ts`
 - `src/features/launcher/hooks/useLauncher.ts`
-  - Launch state exposes only `progress`, `statusText`, logs, and `isLaunching`; this is too weak for clear staged UX.
-
-## Recommended Build Order
-
-1. Adaptive layout and shared control rhythm
-2. Theme preset truth and contrast safety
-3. Settings IA flattening
-4. Launch-state clarity
-5. Modpack creation/browser/list ergonomics
-6. Milestone-wide browser verification and release-truth cleanup
-
-## Sources
-
-### Primary
-
-- Local repo inspection of `src/components/settings/tabs/AppearanceTab.tsx`
-- Local repo inspection of `src/contexts/settings/theme.ts`
-- Local repo inspection of `src/components/modpacks/ModpackList.tsx`
-- Local repo inspection of `src/features/launcher/hooks/useLauncher.ts`
-- Local repo inspection of `docs/KNOWN_ISSUES.md`
-
-### Secondary
-
-- Prism Launcher theme workflow: https://prismlauncher.org/wiki/getting-started/change-themes/
-- ATLauncher launch flow: https://wiki.atlauncher.com/getting-started/launching-minecraft/
-- ATLauncher server/start logs model: https://wiki.atlauncher.com/getting-started/starting-a-server/
+- `src/features/launcher/hooks/useLauncherIPC.ts`
+- `src/components/sidebar/__tests__/LaunchControls.status.test.tsx`
+- `src/verification/manual/ManualVerificationApp.tsx`
 
 ---
-*Research completed: 2026-04-13*
-*Ready for requirements: yes*
+*Research completed: 2026-04-14*  
+*Ready for milestone planning: yes*

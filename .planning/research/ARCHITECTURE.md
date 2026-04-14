@@ -1,145 +1,150 @@
 # Project Research: Architecture
 
 **Project:** FriendLauncher (FMCL)  
-**Milestone:** `v0.3.0 Adaptive UX Hardening And Launcher Ergonomics`  
-**Researched:** 2026-04-13  
+**Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
+**Researched:** 2026-04-14  
 **Confidence:** HIGH
 
-## Question
+## Research Question
 
-How should the milestone integrate into the existing FMCL architecture without turning UX hardening into another unstable screen-by-screen rewrite?
+How should launch-state truth, dependency resolution truth, localization completion, fallback assets, and adaptive navigation fixes integrate with the existing Electron main process, preload bridges, renderer services, and shared UI seams?
 
 ## Architectural Approach
 
-This milestone should be delivered as a surface-owned rollout on top of shared UI and state contracts, not as a framework or navigation rewrite.
+`v0.4.0` should be delivered as a surface-owned truth and polish rollout on top of current FMCL seams, not as a rewrite. The architecture already has the right layers:
 
-The architecture already has the right seams. The work is to tighten them and stop feature-local exceptions from bypassing them.
+- Electron main process owns launcher, filesystem, and dependency truth
+- preload bridges expose capabilities into the renderer
+- renderer hooks and service wrappers translate those capabilities into product-facing UI
+
+The failures in the screenshot audit come from drift between these layers. Several screens are rendering stale, incomplete, or unlocalized interpretations of data that already exists elsewhere in the app.
 
 ## Key Integration Areas
 
-### 1. Appearance And Theme Source Of Truth
+### 1. Launch Truth And Runtime Feedback
 
-**Owners**
-- `src/contexts/SettingsContext.tsx`
-- `src/contexts/settings/theme.ts`
-- `src/contexts/settings/theme-presets.ts`
-- `src/index.css`
-- `src/components/settings/tabs/AppearanceTab.tsx`
-
-**Needed changes**
-- One preset-application path for dark/light/preset/accent behavior
-- Semantic color variables expanded enough to cover cards, fields, overlays, and focus states
-- Safe preset validation so shipped presets cannot produce unreadable combinations
-
-### 2. Adaptive Shell And Surface Rhythm
-
-**Owners**
-- `src/components/AppLayout.tsx`
-- `src/components/Sidebar.tsx`
+**Primary owners**
 - `src/components/SimplePlayDashboard.tsx`
-- `src/components/SimplePlayHome.tsx`
-- `src/components/ui/*`
-
-**Needed changes**
-- Shared control sizing and spacing tokens
-- Responsive container behavior for main surfaces
-- No reliance on default window dimensions as an unspoken layout contract
-
-### 3. Settings Navigation
-
-**Owners**
-- `src/components/SettingsPage.tsx`
-- `src/components/settings/settingsTabs.ts`
-- `src/components/settings/SettingsTabsHeader.tsx`
-- settings tabs under `src/components/settings/tabs/`
-
-**Needed changes**
-- Flatter top-level IA for common settings
-- Fewer nested collapsible groups in already-tabbed contexts
-- Clear split between routine settings and advanced utilities
-
-### 4. Launch Feedback
-
-**Owners**
 - `src/features/launcher/hooks/useLauncher.ts`
-- `src/features/launcher/hooks/useLauncherState.ts`
 - `src/features/launcher/hooks/useLauncherIPC.ts`
 - `src/features/launcher/services/launcherService.ts`
-- `src/components/SimplePlayDashboard.tsx`
-- `src/features/console/ConsolePage.tsx`
+- `electron/services/runtime/taskRunner.ts`
 
-**Needed changes**
-- Normalize launcher backend progress events into product-facing stages
-- Represent “busy”, “waiting”, “failed”, and “running” distinctly
-- Disable or guard repeated launch actions while preserving visible feedback
+**What to integrate**
+- one renderer-facing launch stage model
+- one source for status title, detail, progress, and CTA disabled/loading state
+- localized runtime status text derived from typed launch stages rather than raw log phrasing
 
-### 5. Modpack Authoring And Browser Ergonomics
+**Why this seam matters**
+- `SimplePlayDashboard.tsx` already consumes `launchStage`, `statusText`, `statusDetail`, and `progress`
+- the audit proves those cues can currently disagree on one screen
 
-**Owners**
-- `src/components/modpacks/CreateModpackModal.tsx`
-- `src/components/modpacks/ModpackBrowser.tsx`
-- `src/components/modpacks/ModpackList.tsx`
+### 2. Modpack Detail Integrity And Dependency Semantics
+
+**Primary owners**
+- `src/components/modpacks/ModpackDetails.tsx`
+- `src/components/modpacks/details/ModsTab.tsx`
 - `src/components/modpacks/details/*`
 - `src/services/ipc/modpacksIPC.ts`
 - `shared/contracts/modpacks.ts`
+- `electron/services/mods/scanner.ts`
 
-**Needed changes**
-- Surface dependency truth from existing metadata/contracts
-- Keep installed-pack actions stable under resize and varying card widths
-- Improve browser density, filtering, and action clarity without redoing backend search contracts
+**What to integrate**
+- pack-level runtime metadata with mod dependency status rendering
+- readable dependency requirement formatting before values reach the UI
+- dense detail navigation that does not depend on dedicated horizontal scrolling as the default behavior
 
-### 6. Asset And Fallback Truth
+**Why this seam matters**
+- `ModpackDetails.tsx` assembles metadata, mod state, tabs, and active content panes
+- dependency truth is likely split between pack runtime data and scanner output
 
-**Owners**
-- `src/components/SimplePlayDashboard.tsx`
-- `src/components/SimplePlayHome.tsx`
+### 3. Catalog Scanability, Fallback States, And Compact Navigation Safety
+
+**Primary owners**
+- `src/components/modpacks/ModpackBrowser.tsx`
+- `src/components/modpacks/ModpackList.tsx`
+- `src/components/Sidebar.tsx`
 - `src/components/ui/LazyImage.tsx`
-- launcher asset paths in `public/`
+- `src/app/assets/branding`
 
-**Needed changes**
-- Remove placeholder leaks
-- Ensure fallback imagery is intentional and theme-safe
-- Verify easter-egg and classic paths separately from the main happy path
+**What to integrate**
+- shared fallback art and empty-state treatment
+- filter and toolbar layout that remains legible with the sidebar open
+- collapsed navigation with consistent icon-based active states
 
-## Proposed Phase Architecture
+**Why this seam matters**
+- the audit defects are renderer-surface problems, but they should share one fallback and compact-state policy instead of multiple feature-local hacks
 
-### Phase 11: Adaptive Layout And Interaction Foundations
+### 4. Settings Localization And Preset Naming Cohesion
 
-Stabilize layout tokens, control rhythm, overlay anchoring, and asset/fallback truth. This creates the visual and interaction contract that later phases can safely consume.
+**Primary owners**
+- `src/components/settings/settingsTabs.ts`
+- `src/components/settings/SettingsTabsHeader.tsx`
+- `src/components/settings/tabs/AppearanceTab.tsx`
+- `src/contexts/settings/theme-presets.ts`
+- `src/locales/en.json`
+- `src/locales/ru.json`
 
-### Phase 12: Theme Truth And Settings IA Simplification
+**What to integrate**
+- complete locale coverage for shipped settings and launch-adjacent labels
+- one deliberate preset naming rule across RU and EN
+- shared settings metadata that never leaks raw locale keys into the tabs shell
 
-Repair preset behavior and readable surfaces, then simplify the settings structure while the appearance and utility seams are already in focus.
+**Why this seam matters**
+- the audit shows both missing translation coverage and preset labels that are defined outside locale files
 
-### Phase 13: Launch Trust And Modpack Workflow Ergonomics
+## Suggested Build Order
 
-Use the stabilized shell/theme/settings foundation to fix the two most trust-critical functional flows: launching and modpack management.
+### 1. Shared Truth Seams First
 
-### Phase 14: Verification, Release Truth, And Bounded Parity Notes
+Stabilize launch-state mapping, locale ownership, and shared fallback-art policy first.
 
-Close with live adaptive-size walkthroughs, release-facing docs, and a bounded record of future parity opportunities rather than carrying silent scope into the next milestone.
+This prevents later polish work from making one surface prettier while another surface still lies or leaks raw strings.
 
-## What Should Not Happen
+### 2. Modpack Detail Integrity Second
 
-- No screen-local responsive hacks that fight shared primitives
-- No second theme path for presets
-- No ad-hoc menu placement logic per feature
-- No “settings redesign” that creates new nesting under new names
-- No launch feedback implemented only in logs
+Then fix dependency semantics and dense detail navigation as one coherent slice.
+
+This work depends on honest metadata interpretation but stays within one product area once that truth is available.
+
+### 3. Catalog, Compact Nav, And Settings Polish Third
+
+After the shared truth rules exist, finish the remaining scanability, fallback, and localization defects across browser, cards, sidebar, and settings shell.
+
+### 4. Verification And Release Truth Last
+
+Close with targeted tests, manual walkthrough evidence, and green repo gates rather than assuming the product is fixed because the screens look cleaner.
+
+## What Should NOT Happen
+
+- no screen-local launch-state patches that bypass shared launcher status mapping
+- no separate dependency interpretation rules in multiple tabs or cards
+- no second fallback-art system for launch hero versus modpack cover cards
+- no localization cleanup that edits copy in one component but leaves locale catalogs incomplete
+- no scope expansion into new routes or feature work unrelated to the audited shipped surfaces
+
+## Likely Files And Seams To Touch
+
+| Area | Likely files or modules |
+| --- | --- |
+| Launch truth | `src/components/SimplePlayDashboard.tsx`, `src/features/launcher/hooks/useLauncher.ts`, `src/features/launcher/services/launcherService.ts`, `electron/services/runtime/taskRunner.ts` |
+| Modpack detail semantics | `src/components/modpacks/ModpackDetails.tsx`, `src/components/modpacks/details/ModsTab.tsx`, `electron/services/mods/scanner.ts`, `shared/contracts/modpacks.ts` |
+| Catalog fallbacks and filters | `src/components/modpacks/ModpackBrowser.tsx`, `src/components/modpacks/ModpackList.tsx`, `src/components/ui/LazyImage.tsx`, branding assets |
+| Compact nav | `src/components/Sidebar.tsx` and sidebar subcomponents |
+| Settings localization | `src/components/settings/settingsTabs.ts`, `src/components/settings/tabs/AppearanceTab.tsx`, `src/contexts/settings/theme-presets.ts`, locale JSON files |
 
 ## Sources
 
-- Local repo inspection of:
-  - `src/components/SettingsPage.tsx`
-  - `src/components/settings/settingsTabs.ts`
-  - `src/components/settings/tabs/AppearanceTab.tsx`
-  - `src/features/launcher/hooks/useLauncher.ts`
-  - `src/features/launcher/hooks/useLauncherState.ts`
-  - `src/features/launcher/hooks/useLauncherIPC.ts`
-  - `src/components/modpacks/CreateModpackModal.tsx`
-  - `src/components/modpacks/ModpackList.tsx`
-  - `src/components/modpacks/ModpackBrowser.tsx`
+- `.planning/PROJECT.md`
+- `docs/ru/ui-qa-audit-2026-04-14.md`
+- `.planning/codebase/ARCHITECTURE.md`
+- `.planning/codebase/STRUCTURE.md`
+- `.planning/codebase/CONVENTIONS.md`
+- `src/components/SimplePlayDashboard.tsx`
+- `src/components/modpacks/ModpackDetails.tsx`
+- `src/components/settings/settingsTabs.ts`
+- `src/contexts/settings/theme-presets.ts`
 
 ---
-*Research completed: 2026-04-13*
+*Research completed: 2026-04-14*  
 *Ready for roadmap: yes*
