@@ -49,7 +49,7 @@ Plans:
 
 **Goal:** Users understand what the launcher is doing during launch and can manage modpacks through truthful, lower-friction flows.  
 **Depends on:** Phase 12  
-**Plans:** 5 plans
+**Plans:** 5 planned
 
 Plans:
 
