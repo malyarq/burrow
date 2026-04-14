@@ -10,12 +10,12 @@
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
 - Current phase: `15` — Launch Truth And Shared Surface Contracts
-- Next step: `$gsd-discuss-phase 15` or `$gsd-plan-phase 15`
+- Next step: `$gsd-execute-phase 15`
 
 ## Active Milestone
 
 **Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
-**Status:** READY FOR PHASE PLANNING  
+**Status:** PHASE 15 PLANNED  
 **Phases:** 15-18  
 **Mapped requirements:** 12
 
@@ -87,4 +87,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 0/0 | Planned | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 0/4 | Phase 15 planned | — |
