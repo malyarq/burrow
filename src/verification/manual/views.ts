@@ -6,6 +6,7 @@ export type ManualVerificationView =
   | 'settings-accounts'
   | 'accounts'
   | 'modpack-list'
+  | 'modpack-create'
   | 'modpack-browser'
   | 'modpack-details'
   | 'modpack-export'
@@ -23,6 +24,7 @@ export const CORE_VIEWS: Array<{ id: ManualVerificationView; label: string; desc
   { id: 'settings-accounts', label: 'Settings -> Accounts', description: 'Settings shell with accounts continuity.' },
   { id: 'accounts', label: 'Accounts', description: 'Standalone account management and skin panel.' },
   { id: 'modpack-list', label: 'Modpack List', description: 'Installed modpack cards and actions.' },
+  { id: 'modpack-create', label: 'Create Modpack', description: 'Create flow with explicit runtime dependencies.' },
   { id: 'modpack-browser', label: 'Modpack Browser', description: 'Browser search, history, and results.' },
   { id: 'modpack-details', label: 'Modpack Details', description: 'Details overview and primary actions.' },
   { id: 'modpack-export', label: 'Export', description: 'Export flow on the shared page surface.' },
