@@ -17,7 +17,7 @@ export type ManualVerificationView =
   | 'content';
 
 export const CORE_VIEWS: Array<{ id: ManualVerificationView; label: string; description: string }> = [
-  { id: 'overview', label: 'Overview', description: 'Manual verification hub for Phase 10 core flows.' },
+  { id: 'overview', label: 'Overview', description: 'Manual verification hub for milestone-owned v0.3.0 flows.' },
   { id: 'welcome', label: 'Welcome', description: 'First-run welcome overlay.' },
   { id: 'tour', label: 'Tour', description: 'Onboarding spotlight with stable targets.' },
   { id: 'dashboard', label: 'Dashboard', description: 'Classic play dashboard and quick actions.' },

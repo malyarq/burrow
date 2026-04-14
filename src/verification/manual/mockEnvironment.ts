@@ -115,7 +115,7 @@ const modpackVersions: ModpackVersionDescriptor[] = [
     versionNumber: '1.4.2',
     mcVersions: ['1.20.1'],
     loaders: ['fabric'],
-    changelog: 'Stabilized the FMCL Phase 10 verification fixture.',
+    changelog: 'Stabilized the FMCL manual verification fixture.',
     files: [
       {
         url: 'https://example.invalid/alpha-pack-1.4.2.mrpack',

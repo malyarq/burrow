@@ -244,7 +244,7 @@ function ModpackListScenario({ onReady }: ManualVerificationScenarioProps) {
 function ModpackCreateScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['Create new modpack', 'Runtime dependencies', 'Minecraft Version'],
+    ['Create New Modpack', 'Runtime dependencies', 'Minecraft Version'],
     'Create-modpack flow rendered with explicit runtime dependency summary.',
   );
 
