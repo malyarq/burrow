@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Phase 13 planned; execution next
-last_updated: "2026-04-14T06:32:47Z"
-last_activity: 2026-04-14 - Planned Phase 13 (launch trust and modpack workflow ergonomics)
+stopped_at: Phase 14 planning next
+last_updated: "2026-04-14T08:58:00Z"
+last_activity: 2026-04-14 - Completed Phase 13 (launch trust and modpack workflow ergonomics)
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 17
-  completed_plans: 8
-  percent: 47
+  completed_plans: 13
+  percent: 76
 ---
 
 # Project State
@@ -21,25 +21,25 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Execute Phase 13 for milestone v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
+**Current focus:** Plan Phase 14 for milestone v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
 
 ## Current Position
 
-Phase: 13 - Launch Trust And Modpack Workflow Ergonomics
-Plan: Planned
-Status: Phase 13 planning is approved; execution is next
+Phase: 14 - Manual Verification And Release Truth
+Plan: Planning next
+Status: Phase 13 execution is complete; Phase 14 planning is next
 Total Phases: 4
-Last activity: 2026-04-14 - Planned Phase 13 (launch trust and modpack workflow ergonomics)
+Last activity: 2026-04-14 - Completed Phase 13 (launch trust and modpack workflow ergonomics)
 
-Progress: [#####-----] 47%
+Progress: [########--] 76%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 54
-- Active phase plans completed: 8
+- Total plans completed: 59
+- Active phase plans completed: 13
 - Average duration: 16 min
-- Total execution time: 2.0 hours
+- Total execution time: 3.2 hours
 
 **By Phase:**
 
@@ -51,10 +51,11 @@ Progress: [#####-----] 47%
 | 10. Manual Experience Verification And Release Truth | 4 | 1.8h | 27 min |
 | 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
 | 12. Theme Truth And Settings IA Simplification | 4 | 0.9h | 14 min |
+| 13. Launch Trust And Modpack Workflow Ergonomics | 5 | 1.2h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 12-01, 12-02, 12-03, 12-04, 13-planning
-- Trend: v0.3.0 now has adaptive shell foundations, truthful presets, a flatter settings IA, and an approved Phase 13 plan for launch trust plus modpack ergonomics
+- Last 5 plans: 13-01, 13-02, 13-03, 13-04, 13-05
+- Trend: v0.3.0 now has adaptive shell foundations, truthful presets, a flatter settings IA, explicit launch-state trust, truthful modpack dependencies, and cleaner browser plus installed-card ergonomics
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -120,6 +121,11 @@ Recent decisions affecting current work:
 - [Phase 12]: Expose presets, language, accent, launch behavior, mirrors, and tuning in the first visible card groups while leaving low-frequency controls secondary.
 - [Phase 12]: Flatten utility settings by pairing current state with the main action instead of adding nested routes or extra tab layers.
 - [Phase 12]: Close the phase on reviewed dark and light preset screenshots plus focused navigation and accounts tests when the direct settings-path Chromium capture is machine-flaky.
+- [Phase 13]: Promote launch-trust from one generic loading state to an explicit stage model shared by launcher hooks, dashboard, and shared launch controls.
+- [Phase 13]: Keep create-modpack dependency truth bound to the persisted manifest data instead of layering a pretty but lossy summary over malformed state.
+- [Phase 13]: Improve remote modpack browsing through clearer scan and filter context plus honest provider availability messaging without rewriting the platform browser subsystem.
+- [Phase 13]: Rebalance installed-card actions around the next likely user task while reusing the anchored-overlay contract from Phase 11 instead of reopening placement work.
+- [Phase 13]: Close on focused seam tests plus reviewed browser evidence, and keep closeout fallout limited to verification seams such as legacy bootstrap cleanup.
 
 ### Pending Todos
 
@@ -131,11 +137,11 @@ None yet.
 
 - `npm run build -- --publish never` is still deferred to Phase 14 because Phase 12 closes on theme/settings integration evidence rather than packaging changes.
 - The direct settings-accounts browser capture path hung under Chromium CLI during 12-04 closeout, so Phase 12 records only the manually reviewed dark and light preset screenshots and relies on focused navigation or accounts tests for the rest of NAV-01 evidence.
-- Phase 13 execution is not started yet; the next routing step is executing launch trust and modpack ergonomics.
+- Phase 14 still owns the milestone-wide walkthrough set, future-opportunity capture, public release docs, and the packaging-aware final gate.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-14T06:32:47Z
-Stopped at: Phase 13 planned; execution next
-Resume file: .planning/phases/13-launch-trust-and-modpack-workflow-ergonomics/13-VALIDATION.md
+Last session: 2026-04-14T08:58:00Z
+Stopped at: Phase 14 planning next
+Resume file: .planning/ROADMAP.md

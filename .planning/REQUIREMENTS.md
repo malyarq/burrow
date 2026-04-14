@@ -24,14 +24,14 @@ Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap 
 
 ### Launch Trust
 
-- [ ] **LAUNCH-01**: User can tell from the main play surface whether FMCL is preparing, downloading, launching, waiting, failed, or already running
-- [ ] **LAUNCH-02**: User cannot accidentally spam conflicting launch actions while FMCL is busy, and launch failures remain visible until the user can react
+- [x] **LAUNCH-01**: User can tell from the main play surface whether FMCL is preparing, downloading, launching, waiting, failed, or already running
+- [x] **LAUNCH-02**: User cannot accidentally spam conflicting launch actions while FMCL is busy, and launch failures remain visible until the user can react
 
 ### Modpack Ergonomics
 
-- [ ] **MPUX-01**: User can create a modpack and see required runtime dependencies such as Minecraft version and selected loader accurately
-- [ ] **MPUX-02**: User can browse remote modpacks through clearer scanning, filtering, and paging ergonomics on common window sizes
-- [ ] **MPUX-03**: User can manage installed modpacks from cards with stable quick actions and menus that do not jump or overflow
+- [x] **MPUX-01**: User can create a modpack and see required runtime dependencies such as Minecraft version and selected loader accurately
+- [x] **MPUX-02**: User can browse remote modpacks through clearer scanning, filtering, and paging ergonomics on common window sizes
+- [x] **MPUX-03**: User can manage installed modpacks from cards with stable quick actions and menus that do not jump or overflow
 
 ### Visual Trust
 
@@ -77,11 +77,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | THEME-01 | Phase 12 | Completed |
 | THEME-02 | Phase 12 | Completed |
 | NAV-01 | Phase 12 | Completed |
-| LAUNCH-01 | Phase 13 | Pending |
-| LAUNCH-02 | Phase 13 | Pending |
-| MPUX-01 | Phase 13 | Pending |
-| MPUX-02 | Phase 13 | Pending |
-| MPUX-03 | Phase 13 | Pending |
+| LAUNCH-01 | Phase 13 | Completed |
+| LAUNCH-02 | Phase 13 | Completed |
+| MPUX-01 | Phase 13 | Completed |
+| MPUX-02 | Phase 13 | Completed |
+| MPUX-03 | Phase 13 | Completed |
 | VIS-01 | Phase 11 | Completed |
 | VER-01 | Phase 14 | Pending |
 | DOC-01 | Phase 14 | Pending |
@@ -93,4 +93,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-14 after Phase 12 completion*
+*Last updated: 2026-04-14 after Phase 13 completion*

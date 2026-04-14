@@ -49,15 +49,15 @@ Plans:
 
 **Goal:** Users understand what the launcher is doing during launch and can manage modpacks through truthful, lower-friction flows.  
 **Depends on:** Phase 12  
-**Plans:** 5 planned
+**Plans:** 5/5 plans executed
 
 Plans:
 
-- [ ] 13-01: Model explicit launch stages and busy-state feedback
-- [ ] 13-02: Surface truthful modpack creation dependencies
-- [ ] 13-03: Improve modpack browser scanning, filtering, and adaptive density
-- [ ] 13-04: Stabilize installed-modpack card actions and quick flows
-- [ ] 13-05: Run the core UX trust gate and close Phase 13
+- [x] 13-01: Model explicit launch stages and busy-state feedback
+- [x] 13-02: Surface truthful modpack creation dependencies
+- [x] 13-03: Improve modpack browser scanning, filtering, and adaptive density
+- [x] 13-04: Stabilize installed-modpack card actions and quick flows
+- [x] 13-05: Run the core UX trust gate and close Phase 13
 
 **Details:**
 - Turn launch progress into understandable product states instead of vague waiting.
