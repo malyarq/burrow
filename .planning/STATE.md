@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
 status: active
-stopped_at: Phase 14 planning next
-last_updated: "2026-04-14T08:58:00Z"
-last_activity: 2026-04-14 - Completed Phase 13 (launch trust and modpack workflow ergonomics)
+stopped_at: Phase 14 planned; execution next
+last_updated: "2026-04-14T10:20:00Z"
+last_activity: 2026-04-14 - Planned Phase 14 (manual verification and release truth)
 progress:
   total_phases: 4
   completed_phases: 3
@@ -21,15 +21,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Plan Phase 14 for milestone v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
+**Current focus:** Execute Phase 14 for milestone v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
 
 ## Current Position
 
 Phase: 14 - Manual Verification And Release Truth
-Plan: Planning next
-Status: Phase 13 execution is complete; Phase 14 planning is next
+Plan: Planned
+Status: Phase 14 planning is approved; execution is next
 Total Phases: 4
-Last activity: 2026-04-14 - Completed Phase 13 (launch trust and modpack workflow ergonomics)
+Last activity: 2026-04-14 - Planned Phase 14 (manual verification and release truth)
 
 Progress: [########--] 76%
 
@@ -55,7 +55,7 @@ Progress: [########--] 76%
 
 **Recent Trend:**
 - Last 5 plans: 13-01, 13-02, 13-03, 13-04, 13-05
-- Trend: v0.3.0 now has adaptive shell foundations, truthful presets, a flatter settings IA, explicit launch-state trust, truthful modpack dependencies, and cleaner browser plus installed-card ergonomics
+- Trend: v0.3.0 now routes into a final evidence-first closeout: adaptive multi-size walkthroughs, bounded follow-up capture, public docs truth, and the deferred packaging-aware final gate
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -126,6 +126,8 @@ Recent decisions affecting current work:
 - [Phase 13]: Improve remote modpack browsing through clearer scan and filter context plus honest provider availability messaging without rewriting the platform browser subsystem.
 - [Phase 13]: Rebalance installed-card actions around the next likely user task while reusing the anchored-overlay contract from Phase 11 instead of reopening placement work.
 - [Phase 13]: Close on focused seam tests plus reviewed browser evidence, and keep closeout fallout limited to verification seams such as legacy bootstrap cleanup.
+- [Phase 14]: Reuse the existing `manual-verification.html` seam for milestone closeout instead of inventing another phase-specific browser harness.
+- [Phase 14]: Capture bounded future parity opportunities from live evidence, but keep Phase 14 execution limited to closure blockers plus release-truth docs and final gating.
 
 ### Pending Todos
 
@@ -142,6 +144,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14T08:58:00Z
-Stopped at: Phase 14 planning next
-Resume file: .planning/ROADMAP.md
+Last session: 2026-04-14T10:20:00Z
+Stopped at: Phase 14 planned; execution next
+Resume file: .planning/phases/14-manual-verification-and-release-truth/14-VALIDATION.md
