@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-status: Phase 15 completed; Phase 16 ready for discussion
-stopped_at: Phase 15 complete
-last_updated: "2026-04-14T20:03:00.000Z"
-last_activity: 2026-04-14 - Phase 15 completed with green focused gates, repo lint/type gates, and browser-backed dashboard proof
+status: Phase 16 context captured; ready for planning
+stopped_at: Phase 16 context captured
+last_updated: "2026-04-14T20:28:00.000Z"
+last_activity: 2026-04-14 - Phase 16 context captured with runtime dependency truth locked; readable ranges and dense navigation left within phase discretion
 progress:
   total_phases: 4
   completed_phases: 1
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 
 Phase: 16
 Plan: pending
-Status: Phase 15 completed; Phase 16 ready for discussion
-Last activity: 2026-04-14 - Phase 15 completed with green focused gates, repo lint/type gates, and browser-backed dashboard proof
+Status: Phase 16 context captured; ready for planning
+Last activity: 2026-04-14 - Phase 16 context captured with runtime dependency truth locked; readable ranges and dense navigation left within phase discretion
 
 Progress: [██░░░░░░░░] 25%
 
@@ -55,7 +55,7 @@ Progress: [██░░░░░░░░] 25%
 
 **Recent Trend:**
 - Last 5 plans: 15-01, 15-02, 15-03, 15-04, Phase 15 closeout
-- Trend: v0.4.0 has its launch-truth phase implemented and verified; the next active discovery track is Phase 16 detail and navigation integrity
+- Trend: v0.4.0 has its launch-truth phase implemented and verified, and Phase 16 context now locks dependency truth before planning the remaining detail-surface polish
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -140,12 +140,13 @@ None yet.
 - Final gate for `v0.3.0` is green, including `npm run build -- --publish never`.
 - `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
 - Phase 15 browser-backed proof now lives on `manual-verification.html?view=dashboard` and covers fallback art, loader truth, localized waiting/download/failure states, and read-only advanced settings.
+- Phase 16 context locks pack runtime as the source of truth for detail-page dependency satisfaction and requires incompatible runtime versions to remain distinct from missing dependencies.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
 - Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-14T20:03:00.000Z
-Stopped at: Phase 15 complete
-Resume file: .planning/phases/15-launch-truth-and-shared-surface-contracts/15-04-SUMMARY.md
+Last session: 2026-04-14T20:28:00.000Z
+Stopped at: Phase 16 context captured
+Resume file: .planning/phases/16-modpack-detail-integrity-and-discoverable-dense-navigation/16-CONTEXT.md
