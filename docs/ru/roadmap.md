@@ -2,54 +2,46 @@
 
 ## Текущий Milestone
 
-- Milestone: `v0.3.0`
-- Тема: адаптивный UX-hardening и эргономика лаунчера
-- Статус: завершён
+- Milestone: `v0.4.0`
+- Тема: Launcher Truth And Product Polish
+- Статус: активен, Phase 15 завершена
 - Обновлено: `2026-04-14`
 
 ## Зачем Нужен Этот Milestone
 
-У FMCL уже был широкий набор функций, но в ежедневном использовании оставались дыры в доверии: неадаптивные layout-ы, готовые темы без честного применения в обоих режимах, чрезмерно вложенные settings, неочевидное состояние запуска и неудобные или нестабильные modpack-сценарии. Milestone `v0.3.0` закрывает именно эти проблемы, не меняя базовую архитектуру лаунчера.
+У FMCL уже есть широкий набор сценариев, но screenshot-backed аудит от `2026-04-14` показал более узкий, но важный класс дефектов доверия: противоречивые launch states, устаревшие loader summaries, broken-looking fallback art, raw localization keys и несколько оставшихся проблем на плотных surface-ах. Milestone `v0.4.0` закрывает эти дефекты без расширения архитектурного scope и без новых feature-направлений.
 
-## Проверенные Поверхности Лаунчера
+## Что Уже Проверено
 
-В live walkthrough этого milestone были пройдены поверхности лаунчера на `1440x1100` и `900x1180`:
+Текущий browser-backed walkthrough этого milestone пока покрывает classic dashboard через `manual-verification.html?view=dashboard` и подтверждает:
 
-- экран приветствия и onboarding tour
-- домашний dashboard и явные состояния запуска
-- settings, accounts и continuity до управления скинами
-- create, list, browser, details, export и add-mod маршруты для модпаков
-- share flow и import-share сценарий
-- screenshots gallery и lightbox
-- utilities: mirrors и statistics
-- secondary content flow на примере datapack management
+- branded fallback art на классическом hero, когда у сборки нет artwork
+- truthful loader summary для активной launch-конфигурации
+- локализованные waiting, downloading и failure states на launch surface
+- видимые read-only advanced settings во время активного запуска
 
 ## Статус Фаз
 
 | Фаза | Статус | Результат |
 |------|--------|-----------|
-| 11. Adaptive Layout And Interaction Foundations | Завершена | Адаптивный shell rhythm, anchored overlays, безопасные относительно окна меню и shipped fallback assets |
-| 12. Theme Truth And Settings IA Simplification | Завершена | Честные preset themes в светлом и тёмном режиме, лучший contrast и более плоская навигация по settings |
-| 13. Launch Trust And Modpack Workflow Ergonomics | Завершена | Явные launch stages, busy-state feedback, truthful modpack dependencies и более устойчивые browser/card flows |
-| 14. Manual Verification And Release Truth | Завершена | Multi-size browser walkthrough evidence, bounded follow-up capture, обновлённые release docs и зелёный финальный gate |
+| 15. Launch Truth And Shared Surface Contracts | Завершена | Branded fallback art, truthful loader summary, синхронизированные launch stages, локализованный runtime copy и read-only busy-state settings |
+| 16. Modpack Detail Integrity And Discoverable Dense Navigation | Запланирована | Truthful dependency semantics, читаемый requirement copy и discoverable dense navigation |
+| 17. Catalog, Compact Nav, And Settings Localization Polish | Запланирована | Каталожная legibility, fallback imagery, compact-nav truth и оставшаяся localization cleanup |
+| 18. Verification And Release Truth | Запланирована | Focused automation, полный walkthrough, release docs и финальные milestone gates |
 
-## Что Даёт `v0.3.0`
+## Что Уже Даёт `v0.4.0`
 
-- Адаптивный layout и interaction safety на стартовом размере окна и на более узких desktop-ширинах
-- Согласованный sizing rhythm для основных контролов, карточек и overlays на обновлённых поверхностях
-- Preset themes, которые действительно перекрашивают лаунчер в light и dark mode без нечитаемых состояний
-- Более плоскую settings-навигацию для частых задач вместо глубокого tab-inside-tab drill-down
-- Явный launch progress и busy-state truth на основном play surface
-- Более надёжные create, browse и installed-modpack quick-action сценарии
-- Очистку placeholder и fallback assets на классических поверхностях лаунчера
-- Manual browser verification на нескольких размерах окна как часть release truth, а не необязательный polish
+- Launch progress больше не скатывается к ложному `0%`, когда реальный прогресс ещё неопределён
+- Classic launch feedback теперь согласован между CTA, status card и runtime stage transitions
+- Отсутствующий hero artwork заменяется осмысленным FMCL fallback вместо broken-image состояния
+- Advanced launch settings остаются видимыми для справки и становятся read-only во время активного запуска
+- Runtime settings и launch-adjacent controls теперь уважают выбранный язык лаунчера на audited classic surface
 
 ## Следующие Кандидаты
 
-Это вероятные следующие шаги после `v0.3.0`, но не зафиксированный scope текущего milestone:
+Это ближайшие milestone-owned шаги после Phase 15:
 
-- automated visual-regression coverage для reusable manual-verification seam
-- более богатый modpack metadata, dependency context и changelog detail в browser/install сценариях
-- отдельный activity-center UX для downloads, installs и background tasks
-- дополнительные dashboard density или layout presets сверх текущего adaptive shell
-- более глубокие account/session conveniences и финальный аудит low-traffic localization и fallback seams
+- truthful dependency satisfaction и более понятный requirement copy на modpack details
+- плотная detail navigation без горизонтального tab-friction по умолчанию
+- полировка catalog fallback imagery, compact-nav truth и оставшихся localization defects
+- финальный milestone-wide walkthrough, docs refresh и packaging-aware release gates

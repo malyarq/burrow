@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-status: Phase 15 planned; ready to execute
-stopped_at: Phase 15 plans created
-last_updated: "2026-04-14T19:10:11.000Z"
-last_activity: 2026-04-14 - Phase 15 planned with 4 plans across 3 waves
+status: Phase 15 completed; Phase 16 ready for discussion
+stopped_at: Phase 15 complete
+last_updated: "2026-04-14T20:03:00.000Z"
+last_activity: 2026-04-14 - Phase 15 completed with green focused gates, repo lint/type gates, and browser-backed dashboard proof
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 0
-  percent: 0
+  completed_plans: 4
+  percent: 25
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 15 execution ready for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 16 planning for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
-Phase: 15
-Plan: 01-04
-Status: Phase 15 planned; ready to execute
-Last activity: 2026-04-14 - Phase 15 planned with 4 plans across 3 waves
+Phase: 16
+Plan: pending
+Status: Phase 15 completed; Phase 16 ready for discussion
+Last activity: 2026-04-14 - Phase 15 completed with green focused gates, repo lint/type gates, and browser-backed dashboard proof
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 63
-- Active phase plans completed: 17
+- Total plans completed: 67
+- Active phase plans completed: 21
 - Average duration: 16 min
-- Total execution time: 4.0 hours
+- Total execution time: 5.0 hours
 
 **By Phase:**
 
@@ -54,8 +54,8 @@ Progress: [░░░░░░░░░░] 0%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-05, 14-01, 14-02, 14-03, 15-01..04 planned
-- Trend: v0.4.0 now has Phase 15 fully planned with 4 execution plans across 3 waves for the audited launch-truth bug cluster
+- Last 5 plans: 15-01, 15-02, 15-03, 15-04, Phase 15 closeout
+- Trend: v0.4.0 has its launch-truth phase implemented and verified; the next active discovery track is Phase 16 detail and navigation integrity
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -125,6 +125,9 @@ Recent decisions affecting current work:
 - [Phase 13]: Close on focused seam tests plus reviewed browser evidence, and keep closeout fallout limited to verification seams such as legacy bootstrap cleanup.
 - [Phase 14]: Reuse the existing `manual-verification.html` seam for milestone closeout instead of inventing another phase-specific browser harness.
 - [Phase 14]: Capture bounded future parity opportunities from live evidence, but keep Phase 14 execution limited to closure blockers plus release-truth docs and final gating.
+- [Phase 15]: Reuse the bundled launcher mark through the shared `LazyImage` seam instead of letting the classic hero fail open on missing art.
+- [Phase 15]: Treat pending launch config as the visible source of truth for classic loader or version summary, and let structured runtime state stay authoritative over supporting logs.
+- [Phase 15]: Keep advanced settings visible during active launch work by rendering them read-only on the classic surface instead of hiding them behind a blocking state.
 
 ### Pending Todos
 
@@ -136,12 +139,13 @@ None yet.
 
 - Final gate for `v0.3.0` is green, including `npm run build -- --publish never`.
 - `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
+- Phase 15 browser-backed proof now lives on `manual-verification.html?view=dashboard` and covers fallback art, loader truth, localized waiting/download/failure states, and read-only advanced settings.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
 - Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-14T18:48:54.671Z
-Stopped at: Phase 15 context gathered
-Resume file: .planning/phases/15-launch-truth-and-shared-surface-contracts/15-CONTEXT.md
+Last session: 2026-04-14T20:03:00.000Z
+Stopped at: Phase 15 complete
+Resume file: .planning/phases/15-launch-truth-and-shared-surface-contracts/15-04-SUMMARY.md

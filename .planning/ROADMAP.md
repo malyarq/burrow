@@ -9,13 +9,13 @@
 ## Current Status
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
-- Current phase: `15` — Launch Truth And Shared Surface Contracts
-- Next step: `$gsd-execute-phase 15`
+- Current phase: `16` — Modpack Detail Integrity And Discoverable Dense Navigation
+- Next step: `$gsd-discuss-phase 16`
 
 ## Active Milestone
 
 **Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
-**Status:** PHASE 15 PLANNED  
+**Status:** PHASE 15 COMPLETE; PHASE 16 READY  
 **Phases:** 15-18  
 **Mapped requirements:** 12
 
@@ -34,6 +34,7 @@ The milestone focuses on four workstreams:
 
 ### Phase 15: Launch Truth And Shared Surface Contracts
 
+**Status:** Complete (`2026-04-14`)  
 **Goal:** FMCL's main play surface stops showing contradictory launcher state and missing-art failure modes by moving launch truth, progress, and localized runtime feedback onto one reliable shared contract.  
 **Depends on:** Phase 14  
 **Requirements:** `LAUNCH-01`, `LAUNCH-02`, `LAUNCH-03`, `LAUNCH-04`
@@ -87,4 +88,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 0/4 | Phase 15 planned | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 4/4 | Phase 15 complete | — |

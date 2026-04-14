@@ -48,6 +48,15 @@ function ModpackProviders(props: { children: React.ReactNode }) {
   );
 }
 
+function ManualDashboardProviders(props: { language: 'en' | 'ru'; children: React.ReactNode }) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('settings_language', props.language);
+    localStorage.setItem('simple_play_welcome_dismissed', 'true');
+  }
+
+  return <ModpackProviders>{props.children}</ModpackProviders>;
+}
+
 function useReadyByText(onReady: (message: string) => void, needles: string[], message: string) {
   const readyKey = needles.join('|');
 
@@ -166,34 +175,98 @@ function TourScenario({ onReady }: ManualVerificationScenarioProps) {
 function DashboardScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['Welcome to FriendLauncher!', 'Quick actions', 'Downloading runtime'],
-    'Classic dashboard rendered with explicit launch-stage feedback.',
+    ['Vanilla', 'Ожидание Minecraft', 'Запуск не удался'],
+    'Classic dashboard rendered with fallback art, loader truth, localized launch feedback, and read-only busy-state settings.',
   );
 
   return (
-    <ModpackProviders>
-      <SimplePlayDashboard
-        launch={{
-          version: '1.20.1',
-          nickname: 'Steve',
-          loaderType: 'fabric',
-          ram: 6,
-          isOffline: true,
-        }}
-        runtime={{
-          isLaunching: true,
-          progress: 68,
-          launchStage: 'downloading',
-          statusText: 'Downloading runtime',
-          statusDetail: 'Fetching client, libraries, and assets for the selected pack.',
-          onLaunch: () => undefined,
-        }}
-        actions={{
-          onShowMultiplayer: () => undefined,
-          onShowSettings: () => undefined,
-        }}
-      />
-    </ModpackProviders>
+    <ManualDashboardProviders language="ru">
+      <div className="space-y-8">
+        <section className="space-y-3">
+          <div>
+            <div className="kicker-label mb-2">Waiting + read-only</div>
+            <h2 className="text-xl font-semibold text-foreground">Localized waiting state with visible advanced settings</h2>
+          </div>
+          <SimplePlayDashboard
+            launch={{
+              version: '1.20.1',
+              nickname: 'Steve',
+              loaderType: 'vanilla',
+              ram: 6,
+              isOffline: true,
+            }}
+            runtime={{
+              isLaunching: true,
+              progress: undefined,
+              launchStage: 'waiting',
+              statusText: 'Ожидание Minecraft',
+              statusDetail: 'Процесс Minecraft уже запущен. Ждем окно игры и первые логи.',
+              onLaunch: () => undefined,
+            }}
+            actions={{
+              onShowMultiplayer: () => undefined,
+              onShowSettings: () => undefined,
+            }}
+          />
+        </section>
+
+        <section className="space-y-3">
+          <div>
+            <div className="kicker-label mb-2">Download truth</div>
+            <h2 className="text-xl font-semibold text-foreground">Progress stays numeric only while files are actually downloading</h2>
+          </div>
+          <SimplePlayDashboard
+            launch={{
+              version: '1.20.1',
+              nickname: 'Steve',
+              loaderType: 'fabric',
+              ram: 6,
+              isOffline: true,
+            }}
+            runtime={{
+              isLaunching: true,
+              progress: 68,
+              launchStage: 'downloading',
+              statusText: 'Загрузка',
+              statusDetail: 'Подготавливаем файлы игры и необходимые зависимости.',
+              onLaunch: () => undefined,
+            }}
+            actions={{
+              onShowMultiplayer: () => undefined,
+              onShowSettings: () => undefined,
+            }}
+          />
+        </section>
+
+        <section className="space-y-3">
+          <div>
+            <div className="kicker-label mb-2">Failure persistence</div>
+            <h2 className="text-xl font-semibold text-foreground">Failure remains visible after controls unlock</h2>
+          </div>
+          <SimplePlayDashboard
+            launch={{
+              version: '1.20.1',
+              nickname: 'Steve',
+              loaderType: 'fabric',
+              ram: 6,
+              isOffline: true,
+            }}
+            runtime={{
+              isLaunching: false,
+              progress: undefined,
+              launchStage: 'failed',
+              statusText: 'Запуск не удался',
+              statusDetail: 'Minecraft завершился с кодом 1',
+              onLaunch: () => undefined,
+            }}
+            actions={{
+              onShowMultiplayer: () => undefined,
+              onShowSettings: () => undefined,
+            }}
+          />
+        </section>
+      </div>
+    </ManualDashboardProviders>
   );
 }
 
