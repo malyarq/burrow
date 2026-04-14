@@ -70,24 +70,24 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 | Requirement | Phase | Status |
 | --- | --- | --- |
-| LAUNCH-01 | — | Pending |
-| LAUNCH-02 | — | Pending |
-| LAUNCH-03 | — | Pending |
-| LAUNCH-04 | — | Pending |
-| DETAIL-01 | — | Pending |
-| DETAIL-02 | — | Pending |
-| DETAIL-03 | — | Pending |
-| CATALOG-01 | — | Pending |
-| CATALOG-02 | — | Pending |
-| CATALOG-03 | — | Pending |
-| SET-01 | — | Pending |
-| SET-02 | — | Pending |
+| LAUNCH-01 | Phase 15 | Pending |
+| LAUNCH-02 | Phase 15 | Pending |
+| LAUNCH-03 | Phase 15 | Pending |
+| LAUNCH-04 | Phase 15 | Pending |
+| DETAIL-01 | Phase 16 | Pending |
+| DETAIL-02 | Phase 16 | Pending |
+| DETAIL-03 | Phase 16 | Pending |
+| CATALOG-01 | Phase 17 | Pending |
+| CATALOG-02 | Phase 17 | Pending |
+| CATALOG-03 | Phase 17 | Pending |
+| SET-01 | Phase 17 | Pending |
+| SET-02 | Phase 17 | Pending |
 
 **Coverage:**
 - v0.4.0 requirements: 12 total
-- Mapped to phases: 0
-- Unmapped: 12 ⚠️
+- Mapped to phases: 12
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-14*  
-*Last updated: 2026-04-14 after research-backed milestone scoping*
+*Last updated: 2026-04-14 after roadmap creation*

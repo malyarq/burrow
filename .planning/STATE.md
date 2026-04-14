@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: launcher-truth-and-product-polish
-status: defining_requirements
-stopped_at: defining milestone requirements for v0.4.0
-last_updated: "2026-04-14T17:43:04Z"
-last_activity: 2026-04-14 - Milestone v0.4.0 started
+status: roadmap_created
+stopped_at: roadmap created; phase 15 planning pending
+last_updated: "2026-04-14T18:38:31Z"
+last_activity: 2026-04-14 - Roadmap created for milestone v0.4.0
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Defining milestone v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 15 planning pending for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 15
 Plan: -
-Status: Defining requirements
-Last activity: 2026-04-14 - Milestone v0.4.0 started
+Status: Roadmap created; ready to discuss or plan Phase 15
+Last activity: 2026-04-14 - Roadmap created for milestone v0.4.0
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -55,7 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 
 **Recent Trend:**
 - Last 5 plans: 13-04, 13-05, 14-01, 14-02, 14-03
-- Trend: v0.3.0 is archived; v0.4.0 begins as a screenshot-audited bug-fix and polish milestone on the shipped launcher surface
+- Trend: v0.3.0 is archived; v0.4.0 now has a 4-phase roadmap starting at Phase 15 for screenshot-audited truth and polish fixes
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -142,6 +142,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14T17:43:04Z
-Stopped at: defining milestone requirements for v0.4.0
+Last session: 2026-04-14T18:38:31Z
+Stopped at: roadmap created; phase 15 planning pending
 Resume file: .planning/PROJECT.md
