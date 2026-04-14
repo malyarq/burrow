@@ -10,11 +10,12 @@ const selectMock = vi.fn();
 const refreshMock = vi.fn();
 const onNavigateMock = vi.fn();
 const t = createTranslator('en');
+let selectedIdState = '';
 
 vi.mock('../../../contexts/ModpackContext', () => ({
   useModpackListContext: () => ({
     modpacks: [{ id: 'alpha', name: 'Alpha Pack' }],
-    selectedId: '',
+    selectedId: selectedIdState,
     select: (...args: unknown[]) => selectMock(...args),
     remove: vi.fn(),
     rename: vi.fn(),
@@ -61,9 +62,10 @@ vi.mock('../../../features/share/ImportShareModal', () => ({
   ImportShareModal: () => null,
 }));
 
-describe('ModpackList action truth', () => {
+describe('ModpackList quick actions', () => {
   beforeEach(() => {
     cleanup();
+    selectedIdState = '';
     listWithMetadataMock.mockReset();
     selectMock.mockReset();
     refreshMock.mockReset();
@@ -76,9 +78,9 @@ describe('ModpackList action truth', () => {
         id: 'alpha',
         name: 'Alpha Pack',
         path: '/packs/alpha',
-        selected: false,
+        selected: selectedIdState === 'alpha',
         metadata: {
-          description: 'Route truth test pack',
+          description: 'Quick action pack',
           minecraftVersion: '1.20.1',
           modLoader: { type: 'fabric' },
         },
@@ -86,46 +88,41 @@ describe('ModpackList action truth', () => {
     ]);
   });
 
-  it('routes the contextual details action to the details screen and does not expose a fake play action', async () => {
+  it('prioritizes opening details while keeping activation as a fast secondary action', async () => {
     render(<ModpackList onNavigate={onNavigateMock} />);
 
-    const actionButton = await screen.findByRole('button', { name: 'More actions: Alpha Pack' });
-    fireEvent.click(actionButton);
-
-    expect(await screen.findByRole('menu', { name: 'More actions: Alpha Pack' })).toBeTruthy();
-    expect(screen.queryByRole('menuitem', { name: 'Play' })).toBeNull();
-    expect(screen.queryByRole('menuitem', { name: 'Settings' })).toBeNull();
-
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Open details' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Open details: Alpha Pack' }));
 
     await waitFor(() => {
       expect(onNavigateMock).toHaveBeenCalledWith({ type: 'details', modpackId: 'alpha' });
     });
-  });
 
-  it('opens the action menu from the keyboard and focuses the first menu item', async () => {
-    render(<ModpackList onNavigate={onNavigateMock} />);
-
-    const cardActivator = await screen.findByRole('button', { name: 'Alpha Pack' });
-    Object.defineProperty(cardActivator, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => ({
-        top: 96,
-        left: 220,
-        right: 260,
-        bottom: 128,
-        width: 40,
-        height: 32,
-      }),
-    });
-
-    fireEvent.keyDown(cardActivator, { key: 'ContextMenu' });
-
-    const menu = await screen.findByRole('menu', { name: 'More actions: Alpha Pack' });
-    expect(menu).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Make active: Alpha Pack' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('menuitem', { name: 'Open details' })).toBe(document.activeElement);
+      expect(selectMock).toHaveBeenCalledWith('alpha');
     });
+  });
+
+  it('keeps the primary manage action visible even when the card is already active', async () => {
+    selectedIdState = 'alpha';
+    listWithMetadataMock.mockResolvedValue([
+      {
+        id: 'alpha',
+        name: 'Alpha Pack',
+        path: '/packs/alpha',
+        selected: true,
+        metadata: {
+          description: 'Quick action pack',
+          minecraftVersion: '1.20.1',
+          modLoader: { type: 'fabric' },
+        },
+      },
+    ]);
+
+    render(<ModpackList onNavigate={onNavigateMock} />);
+
+    expect(await screen.findByRole('button', { name: 'Open details: Alpha Pack' })).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Active now: Alpha Pack' }) as HTMLButtonElement).disabled).toBe(true);
   });
 });

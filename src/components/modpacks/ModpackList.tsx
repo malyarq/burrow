@@ -33,6 +33,16 @@ function isActivationKey(key: string) {
   return key === 'Enter' || key === ' ';
 }
 
+function translateWithFallback(
+  t: (key: string, params?: Record<string, string | number>) => string,
+  key: string,
+  fallback: string,
+  params?: Record<string, string | number>,
+): string {
+  const value = t(key, params);
+  return value === key ? fallback : value;
+}
+
 // Uses ModpackListContext — only updates when modpacks/selectedId change, not when config changes (downloads).
 function useModpackListValues() {
   const { modpacks, selectedId, select, remove, rename, duplicate, refresh } = useModpackListContext();
@@ -505,7 +515,10 @@ const ModpackListComponentInternal: React.FC<{
     const iconSrc = useMemo(() => getModpackIcon(modpack), [modpack]);
     const sourceBadge = useMemo(() => getModpackSourceBadge(modpack.metadata?.source), [modpack.metadata?.source]);
     const actionMenuId = `modpack-actions-menu-${modpack.id}`;
-    const actionMenuLabel = `${t('modpacks.actions_title') || 'More actions'}: ${modpack.name}`;
+    const actionMenuLabel = `${translateWithFallback(t, 'modpacks.actions_title', 'More actions')}: ${modpack.name}`;
+    const openDetailsText = translateWithFallback(t, 'modpacks.open_details', 'Open details');
+    const makeActiveText = translateWithFallback(t, 'modpacks.make_active', 'Make active');
+    const activeNowText = translateWithFallback(t, 'modpacks.active_now', 'Active now');
 
     return (
       <div
@@ -608,7 +621,18 @@ const ModpackListComponentInternal: React.FC<{
         {/* Actions - всегда снизу */}
         <div className="relative z-10 flex flex-wrap gap-2 mt-auto pt-1" onClick={(e) => e.stopPropagation()}>
           <Button
-            variant={isSelected ? 'secondary' : 'primary'}
+            variant="primary"
+            size="md"
+            onClick={() => onShowDetails(modpack.id)}
+            className="flex-1 min-w-0 transition-all duration-200"
+            style={getAccentStyles('bg').style}
+            aria-label={`${openDetailsText}: ${modpack.name}`}
+          >
+            <FolderOpen className="h-4 w-4" />
+            {openDetailsText}
+          </Button>
+          <Button
+            variant="secondary"
             size="md"
             onClick={() => {
               if (!isSelected) {
@@ -616,19 +640,10 @@ const ModpackListComponentInternal: React.FC<{
               }
             }}
             disabled={isSelected}
-            className="flex-1 min-w-0 transition-all duration-200"
-            style={!isSelected ? getAccentStyles('bg').style : undefined}
-          >
-            {isSelected ? t('modpacks.selected') : t('modpacks.select')}
-          </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => onShowDetails(modpack.id)}
             className="shrink-0 transition-all duration-200"
+            aria-label={`${isSelected ? activeNowText : makeActiveText}: ${modpack.name}`}
           >
-            <FolderOpen className="h-4 w-4" />
-            {t('modpacks.open_details') || 'Open details'}
+            {isSelected ? activeNowText : makeActiveText}
           </Button>
           <Button
             variant="secondary"
@@ -852,17 +867,6 @@ const ModpackListComponentInternal: React.FC<{
               <button
                 type="button"
                 role="menuitem"
-                className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-background/70"
-                onClick={() => {
-                  handleSelect(contextMenu!.modpackId);
-                  closeContextMenu();
-                }}
-              >
-                {t('modpacks.select')}
-              </button>
-              <button
-                type="button"
-                role="menuitem"
                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-foreground hover:bg-background/70"
                 onClick={() => {
                   onNavigate?.({ type: 'details', modpackId: contextMenu!.modpackId });
@@ -870,7 +874,22 @@ const ModpackListComponentInternal: React.FC<{
                 }}
               >
                 <FolderOpen className="h-4 w-4" />
-                {t('modpacks.open_details') || 'Open details'}
+                {translateWithFallback(t, 'modpacks.open_details', 'Open details')}
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-background/70"
+                disabled={selectedId === contextMenu.modpackId}
+                aria-disabled={selectedId === contextMenu.modpackId}
+                onClick={() => {
+                  handleSelect(contextMenu!.modpackId);
+                  closeContextMenu();
+                }}
+              >
+                {selectedId === contextMenu.modpackId
+                  ? translateWithFallback(t, 'modpacks.active_now', 'Active now')
+                  : translateWithFallback(t, 'modpacks.make_active', 'Make active')}
               </button>
               <div className="my-1 h-px bg-border/60" />
               <button
