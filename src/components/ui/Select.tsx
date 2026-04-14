@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -17,15 +17,19 @@ export const Select: React.FC<SelectProps> = ({
     children,
     ...props
 }) => {
+    const generatedId = useId();
+    const selectId = props.id ?? generatedId;
+
     return (
         <div className={cn("flex flex-col gap-1.5", className?.match(/\bw-/) ? undefined : "w-full", className)}>
             {label && (
-                <label className="control-label">
+                <label htmlFor={selectId} className="control-label">
                     {label}
                 </label>
             )}
             <div className="relative w-full min-w-0">
                 <select
+                    id={selectId}
                     className={cn(
                         'control-frame min-h-11 w-full appearance-none py-2.5 pl-4 pr-9 text-sm leading-normal hover:bg-card/92',
                         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
