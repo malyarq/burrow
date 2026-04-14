@@ -14,6 +14,7 @@ import { OptifineToggle } from './sidebar/OptifineToggle';
 import { Button } from './ui/Button';
 import { Select } from './ui/Select';
 import { Tooltip } from './ui/Tooltip';
+import type { LaunchStage } from '../features/launcher/services/launcherService';
 
 
 import { cn } from '../utils/cn';
@@ -47,7 +48,10 @@ export type SidebarLaunchModel = {
 export type SidebarRuntimeModel = {
     isLaunching: boolean;
     progress: number;
+    launchStage?: LaunchStage;
     statusText: string;
+    statusDetail?: string;
+    canForceRestart?: boolean;
     onLaunch: () => void;
 };
 
@@ -71,6 +75,7 @@ const Sidebar = ({
     const { modpacks, selectedId, effectiveModpackId } = useModpack();
     const lastGame = useMemo(() => loadLastGame(effectiveModpackId), [effectiveModpackId]);
     const sidebarContentId = 'launcher-sidebar-content';
+    const liveStatus = [runtime.statusText, runtime.statusDetail].filter(Boolean).join(' - ');
     const [isCollapsed, setIsCollapsed] = useState(() => {
         const saved = localStorage.getItem('sidebar_collapsed');
         return saved === 'true';
@@ -130,7 +135,7 @@ const Sidebar = ({
             </div>
 
             <div className="sr-only" aria-live="polite">
-                {runtime.statusText || ''}
+                {liveStatus}
             </div>
 
             {!isCollapsed && (
@@ -247,7 +252,10 @@ const Sidebar = ({
                 <LaunchControls
                     isLaunching={runtime.isLaunching}
                     progress={runtime.progress}
+                    launchStage={runtime.launchStage}
                     statusText={runtime.statusText}
+                    statusDetail={runtime.statusDetail}
+                    canForceRestart={runtime.canForceRestart}
                     onLaunch={runtime.onLaunch}
                     t={t}
                     getAccentHex={getAccentHex}

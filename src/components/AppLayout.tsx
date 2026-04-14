@@ -18,6 +18,7 @@ import SettingsPage from './SettingsPage';
 import MultiplayerPage from './MultiplayerPage';
 import { cn } from '../utils/cn';
 import { useSettings } from '../contexts/SettingsContext';
+import type { LaunchStage } from '../features/launcher/services/launcherService';
 
 export type AppLayoutProps = {
   theme: 'light' | 'dark';
@@ -71,7 +72,10 @@ export type AppLayoutProps = {
   runtime: {
     isLaunching: boolean;
     progress: number;
+    launchStage: LaunchStage;
     statusText: string;
+    statusDetail: string;
+    canForceRestart: boolean;
     onLaunch: () => void;
     showConsole: boolean;
     logs: string[];

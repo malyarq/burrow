@@ -104,7 +104,10 @@ function createProps(): AppLayoutProps {
     runtime: {
       isLaunching: false,
       progress: 0,
+      launchStage: 'idle',
       statusText: '',
+      statusDetail: '',
+      canForceRestart: false,
       onLaunch: vi.fn(),
       showConsole: false,
       logs: [],
