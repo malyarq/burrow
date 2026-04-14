@@ -2,19 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
-current_phase: 12
-current_phase_name: theme-truth-and-settings-ia-simplification
-current_plan: 4
 status: active
-stopped_at: Completed 12-03-PLAN.md
-last_updated: "2026-04-13T15:12:34.976Z"
-last_activity: 2026-04-13 - Executed 12-03 settings IA simplification
+stopped_at: Phase 12 complete; Phase 13 planning next
+last_updated: "2026-04-14T06:16:42Z"
+last_activity: 2026-04-14 - Completed Phase 12 (theme truth and settings IA simplification)
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 17
-  completed_plans: 7
-  percent: 41
+  completed_plans: 8
+  percent: 47
 ---
 
 # Project State
@@ -24,29 +21,25 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Ready to execute Phase 12 plan 04 focused theme/settings integration verification on top of the flattened settings IA
+**Current focus:** Plan Phase 13 for milestone v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
 
 ## Current Position
 
-Current Phase: 12
-Current Phase Name: theme-truth-and-settings-ia-simplification
+Phase: 13 - Launch Trust And Modpack Workflow Ergonomics
+Plan: Pending
+Status: Phase 12 execution is complete; Phase 13 planning is next
 Total Phases: 4
-Current Plan: 4
-Total Plans in Phase: 4
-Phase: 12
-Plan: 04/04 ready
-Status: Ready to execute 12-04
-Last activity: 2026-04-13 - Executed 12-03 settings IA simplification
+Last activity: 2026-04-14 - Completed Phase 12 (theme truth and settings IA simplification)
 
-Progress: [####------] 41%
+Progress: [#####-----] 47%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 51
-- Active phase plans completed: 23
-- Average duration: 19 min
-- Total execution time: 7.1 hours
+- Total plans completed: 54
+- Active phase plans completed: 8
+- Average duration: 16 min
+- Total execution time: 2.0 hours
 
 **By Phase:**
 
@@ -57,15 +50,17 @@ Progress: [####------] 41%
 | 9. Secondary Surface Alignment And UX Polish | 5 | 1.5h | 18 min |
 | 10. Manual Experience Verification And Release Truth | 4 | 1.8h | 27 min |
 | 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
+| 12. Theme Truth And Settings IA Simplification | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 11-04, 12 planning, 12-01, 12-02, 12-03
-- Trend: v0.3.0 now has truthful presets, contrast-safe theme surfaces, and a flattened settings IA, leaving 12-04 to verify the integrated theme/settings closure
+- Last 5 plans: 11-04, 12-01, 12-02, 12-03, 12-04
+- Trend: v0.3.0 now has adaptive shell foundations plus truthful presets, readable theme surfaces, and a flatter settings IA; Phase 13 can move on to launch trust and modpack ergonomics
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
 | Phase 12 P02 | 14min | 2 tasks | 19 files |
 | Phase 12 P03 | 17min | 2 tasks | 14 files |
+| Phase 12 P04 | 16min | 1 task | 11 files |
 
 ## Accumulated Context
 
@@ -124,6 +119,7 @@ Recent decisions affecting current work:
 - [Phase 12]: Drive settings tab labels, descriptions, and panel hints from shared metadata so the shell stays consistent.
 - [Phase 12]: Expose presets, language, accent, launch behavior, mirrors, and tuning in the first visible card groups while leaving low-frequency controls secondary.
 - [Phase 12]: Flatten utility settings by pairing current state with the main action instead of adding nested routes or extra tab layers.
+- [Phase 12]: Close the phase on reviewed dark and light preset screenshots plus focused navigation and accounts tests when the direct settings-path Chromium capture is machine-flaky.
 
 ### Pending Todos
 
@@ -133,13 +129,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- Final gate for `v0.2.0` is green, including `npm run build -- --publish never`.
-- Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- Phase 12 plan 04 focused theme/settings integration verification is the next execution target.
+- `npm run build -- --publish never` is still deferred to Phase 14 because Phase 12 closes on theme/settings integration evidence rather than packaging changes.
+- The direct settings-accounts browser capture path hung under Chromium CLI during 12-04 closeout, so Phase 12 records only the manually reviewed dark and light preset screenshots and relies on focused navigation or accounts tests for the rest of NAV-01 evidence.
+- Phase 13 is not planned yet; the next routing step is planning launch trust and modpack ergonomics.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-13T15:12:34.974Z
-Stopped at: Completed 12-03-PLAN.md
-Resume file: None
+Last session: 2026-04-14T06:16:42Z
+Stopped at: Phase 12 complete; Phase 13 planning next
+Resume file: .planning/phases/12-theme-truth-and-settings-ia-simplification/12-VERIFICATION.md

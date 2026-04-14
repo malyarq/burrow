@@ -32,14 +32,14 @@ Plans:
 
 **Goal:** Preset themes become reliable in light and dark mode, and settings stop feeling like nested navigation traps.  
 **Depends on:** Phase 11  
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 
 - [x] 12-01: Repair the preset theme application contract
 - [x] 12-02: Close preset readability and contrast regressions
 - [x] 12-03: Simplify settings information architecture
-- [ ] 12-04: Run the theme and settings integration gate and close Phase 12
+- [x] 12-04: Run the theme and settings integration gate and close Phase 12
 
 **Details:**
 - Make preset themes update the real launcher immediately and safely.
