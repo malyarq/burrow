@@ -152,6 +152,7 @@ export const MirrorsSettings: React.FC = () => {
                                     type="checkbox"
                                     checked={autoSelect}
                                     onChange={(e) => handleAutoSelectChange(e.target.checked)}
+                                    aria-label={t('mirrors.autoSelect')}
                                     aria-describedby="mirrors-auto-select-hint"
                                     className="h-4 w-4 cursor-pointer rounded border-border bg-card text-[rgb(var(--accent-main))] focus:ring-[rgb(var(--accent-main))] focus:ring-offset-background"
                                 />

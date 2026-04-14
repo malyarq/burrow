@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SettingsProvider } from '../../../contexts/SettingsContext';
 import { AppearanceTab } from '../tabs/AppearanceTab';
@@ -18,12 +18,7 @@ function renderAppearanceTab() {
 }
 
 function getPresetSelect() {
-  const presetsCard = screen.getByText('Theme Presets').closest('.surface-card') as HTMLElement | null;
-  if (!presetsCard) {
-    throw new Error('Theme presets card not found');
-  }
-
-  return within(presetsCard).getByRole('combobox', {
+  return screen.getByRole('combobox', {
     name: 'Theme Presets',
   }) as HTMLSelectElement;
 }

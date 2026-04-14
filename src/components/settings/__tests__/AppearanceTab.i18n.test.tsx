@@ -128,11 +128,11 @@ describe('AppearanceTab i18n seams', () => {
     const { container } = render(<AppearanceTab />);
 
     expect(screen.getByText('Launcher Accent')).toBeTruthy();
-    expect(screen.getByText('Theme Presets')).toBeTruthy();
+    expect(screen.getAllByText('Theme Presets').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Advanced Appearance' })).toBeTruthy();
     expect(screen.getByText('Background Type')).toBeTruthy();
     expect(screen.getByText('Particle Type')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'UI Scalability' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Interface Zoom' })).toBeTruthy();
     expect(screen.getByText('Sidebar Position')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Reset Custom Theme' })).toBeTruthy();
 
@@ -150,11 +150,11 @@ describe('AppearanceTab i18n seams', () => {
     const { container } = render(<AppearanceTab />);
 
     expect(screen.getByText('Акцент лаунчера')).toBeTruthy();
-    expect(screen.getByText('Готовые темы')).toBeTruthy();
+    expect(screen.getAllByText('Готовые темы').length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Расширенный внешний вид' })).toBeTruthy();
     expect(screen.getByText('Тип фона')).toBeTruthy();
     expect(screen.getByText('Тип частиц')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Масштабирование интерфейса' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Масштаб интерфейса' })).toBeTruthy();
     expect(screen.getByText('Положение сайдбара')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Сбросить кастомную тему' })).toBeTruthy();
 
