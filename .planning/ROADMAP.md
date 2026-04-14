@@ -67,14 +67,14 @@ Plans:
 
 **Goal:** The milestone closes on resize-aware live experience evidence and truthful documentation instead of inferred confidence.  
 **Depends on:** Phase 13  
-**Plans:** 4 plans
+**Plans:** 4/4 plans executed
 
 Plans:
 
-- [ ] 14-01: Record milestone-wide browser walkthroughs across adaptive sizes
-- [ ] 14-02: Capture bounded future parity opportunities from live evidence
-- [ ] 14-03: Refresh README and public roadmap truth
-- [ ] 14-04: Run the final repo gate and publish verification artifacts
+- [x] 14-01: Record milestone-wide browser walkthroughs across adaptive sizes
+- [x] 14-02: Capture bounded future parity opportunities from live evidence
+- [x] 14-03: Refresh README and public roadmap truth
+- [x] 14-04: Run the final repo gate and publish verification artifacts
 
 **Details:**
 - Verify the milestone-owned flows through live browser passes at multiple window sizes.

@@ -39,8 +39,8 @@ Requirements for the `v0.3.0` UX-hardening milestone. These will map to roadmap 
 
 ### Verification And Release Truth
 
-- [ ] **VER-01**: Maintainers execute live browser walkthroughs for milestone-owned UX flows at multiple window sizes before closure
-- [ ] **DOC-01**: README and public roadmap docs describe the shipped UX-hardening changes and remaining future parity work truthfully after rollout lands
+- [x] **VER-01**: Maintainers execute live browser walkthroughs for milestone-owned UX flows at multiple window sizes before closure
+- [x] **DOC-01**: README and public roadmap docs describe the shipped UX-hardening changes and remaining future parity work truthfully after rollout lands
 
 ## v2 Requirements
 
@@ -83,8 +83,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MPUX-02 | Phase 13 | Completed |
 | MPUX-03 | Phase 13 | Completed |
 | VIS-01 | Phase 11 | Completed |
-| VER-01 | Phase 14 | Pending |
-| DOC-01 | Phase 14 | Pending |
+| VER-01 | Phase 14 | Completed |
+| DOC-01 | Phase 14 | Completed |
 
 **Coverage:**
 - v1 requirements: 14 total
@@ -93,4 +93,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-13*  
-*Last updated: 2026-04-14 after Phase 13 completion*
+*Last updated: 2026-04-14 after Phase 14 completion*
