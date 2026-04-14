@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v0.3.0
 milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
-status: active
-stopped_at: Phase 14 complete; milestone audit next
-last_updated: "2026-04-14T09:38:23Z"
-last_activity: 2026-04-14 - Completed Phase 14 (manual verification and release truth)
+status: awaiting_next_milestone
+stopped_at: v0.3.0 archived; next milestone planning pending
+last_updated: "2026-04-14T09:59:29Z"
+last_activity: 2026-04-14 - Archived v0.3.0 milestone
 progress:
   total_phases: 4
   completed_phases: 4
@@ -18,28 +18,27 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-13)
+See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Audit milestone v0.3.0 Adaptive UX Hardening And Launcher Ergonomics for archival readiness
+**Current focus:** Planning the next milestone after shipping v0.3.0
 
 ## Current Position
 
-Phase: None - milestone execution complete
-Plan: Complete
-Status: All four phases for `v0.3.0` are complete; milestone audit is next
-Total Phases: 4
-Last activity: 2026-04-14 - Completed Phase 14 (manual verification and release truth)
+Phase: none
+Plan: none
+Status: v0.3.0 is archived; define the next milestone with `$gsd-new-milestone`
+Last activity: 2026-04-14 - Archived v0.3.0 milestone
 
 Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 59
-- Active phase plans completed: 13
+- Total plans completed: 63
+- Active phase plans completed: 17
 - Average duration: 16 min
-- Total execution time: 3.2 hours
+- Total execution time: 4.0 hours
 
 **By Phase:**
 
@@ -52,16 +51,14 @@ Progress: [##########] 100%
 | 11. Adaptive Layout And Interaction Foundations | 4 | 1.0h | 15 min |
 | 12. Theme Truth And Settings IA Simplification | 4 | 0.9h | 14 min |
 | 13. Launch Trust And Modpack Workflow Ergonomics | 5 | 1.2h | 14 min |
+| 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 13-01, 13-02, 13-03, 13-04, 13-05
-- Trend: v0.3.0 now routes into a final evidence-first closeout: adaptive multi-size walkthroughs, bounded follow-up capture, public docs truth, and the deferred packaging-aware final gate
+- Last 5 plans: 13-04, 13-05, 14-01, 14-02, 14-03
+- Trend: v0.3.0 is now archived; the next session should define the next milestone instead of reopening shipped scope
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
-| Phase 12 P02 | 14min | 2 tasks | 19 files |
-| Phase 12 P03 | 17min | 2 tasks | 14 files |
-| Phase 12 P04 | 16min | 1 task | 11 files |
 
 ## Accumulated Context
 
@@ -137,12 +134,14 @@ None yet.
 
 ### Blockers/Concerns
 
-- The direct settings-accounts browser capture path hung under Chromium CLI during 12-04 closeout, so Phase 12 records only the manually reviewed dark and light preset screenshots and relies on focused navigation or accounts tests for the rest of NAV-01 evidence.
-- Phase 14 closed successfully, but `package.json` still lacks `description` and `author`, and the build still emits the existing large-renderer-chunk warning.
+- Final gate for `v0.3.0` is green, including `npm run build -- --publish never`.
+- Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
+- Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
+- No active milestone is defined yet; create one with `$gsd-new-milestone`.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-14T09:38:23Z
-Stopped at: Phase 14 complete; milestone audit next
-Resume file: .planning/phases/14-manual-verification-and-release-truth/14-VERIFICATION.md
+Last session: 2026-04-14T09:59:29Z
+Stopped at: v0.3.0 archived; next milestone planning pending
+Resume file: .planning/PROJECT.md
