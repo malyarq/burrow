@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v0.3.0
-milestone_name: adaptive-ux-hardening-and-launcher-ergonomics
-status: awaiting_next_milestone
-stopped_at: v0.3.0 archived; next milestone planning pending
-last_updated: "2026-04-14T09:59:29Z"
-last_activity: 2026-04-14 - Archived v0.3.0 milestone
+milestone: v0.4.0
+milestone_name: launcher-truth-and-product-polish
+status: defining_requirements
+stopped_at: defining milestone requirements for v0.4.0
+last_updated: "2026-04-14T17:43:04Z"
+last_activity: 2026-04-14 - Milestone v0.4.0 started
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 17
-  completed_plans: 17
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Planning the next milestone after shipping v0.3.0
+**Current focus:** Defining milestone v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
-Phase: none
-Plan: none
-Status: v0.3.0 is archived; define the next milestone with `$gsd-new-milestone`
-Last activity: 2026-04-14 - Archived v0.3.0 milestone
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
+Last activity: 2026-04-14 - Milestone v0.4.0 started
 
-Progress: [##########] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -55,7 +55,7 @@ Progress: [##########] 100%
 
 **Recent Trend:**
 - Last 5 plans: 13-04, 13-05, 14-01, 14-02, 14-03
-- Trend: v0.3.0 is now archived; the next session should define the next milestone instead of reopening shipped scope
+- Trend: v0.3.0 is archived; v0.4.0 begins as a screenshot-audited bug-fix and polish milestone on the shipped launcher surface
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -135,13 +135,13 @@ None yet.
 ### Blockers/Concerns
 
 - Final gate for `v0.3.0` is green, including `npm run build -- --publish never`.
+- `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
 - Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
-- No active milestone is defined yet; create one with `$gsd-new-milestone`.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-14T09:59:29Z
-Stopped at: v0.3.0 archived; next milestone planning pending
+Last session: 2026-04-14T17:43:04Z
+Stopped at: defining milestone requirements for v0.4.0
 Resume file: .planning/PROJECT.md

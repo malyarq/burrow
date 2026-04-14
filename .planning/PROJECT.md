@@ -6,6 +6,15 @@
 
 FMCL is now a shipped desktop Minecraft launcher with an adaptive shell, truthful preset themes, flatter settings navigation, explicit launch-state feedback, steadier modpack ergonomics, a reusable browser-backed verification seam, and a green packaging-aware repository gate.
 
+## Current Milestone: v0.4.0 Launcher Truth And Product Polish
+
+**Goal:** Make the shipped launcher surfaces trustworthy and cohesive by fixing screenshot-backed defects, closing adjacent state mismatches we can prove in code, and polishing existing flows without adding new feature scope.
+
+**Target features:**
+- truthful launch and runtime status surfaces, including resilient launch artwork, synchronized progress or CTA state, and localized live status copy
+- correct modpack detail integrity for dependency resolution, version-range presentation, and tab navigation across dense content areas
+- polished catalog, settings, and navigation surfaces with complete localization, adaptive controls, and branded fallback states for missing imagery or compact layouts
+
 ## What This Is
 
 FriendLauncher is an Electron-based Minecraft launcher focused on modpack-heavy desktop workflows, with built-in P2P multiplayer through FriendTunnel. It combines instance management, modpack browsing, content-management tools, settings and account flows, and multiplayer sharing into one local-first desktop application.
@@ -13,17 +22,6 @@ FriendLauncher is an Electron-based Minecraft launcher focused on modpack-heavy 
 ## Core Value
 
 Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-
-## Next Milestone Goals
-
-- Define the next milestone with `$gsd-new-milestone`.
-- Choose whether the next cycle focuses on release-build cleanup, deeper ergonomics, or broader automation.
-- Likely candidates carried forward from the shipped milestone:
-  - reduce large renderer chunks in production build
-  - add missing package metadata and release polish
-  - normalize workflow metadata drift in archived summaries and milestone routing
-  - consider automated visual-regression coverage for key launcher surfaces
-  - evaluate richer modpack metadata, activity-center UX, layout presets, and account/session conveniences
 
 ## Context
 
@@ -36,6 +34,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
   - `.planning/milestones/v0.3.0-REQUIREMENTS.md`
   - `.planning/milestones/v0.3.0-MILESTONE-AUDIT.md`
 - The launcher now has a reusable browser-backed manual verification seam for milestone walkthroughs.
+- Screenshot-backed defects for this milestone are captured in `docs/ru/ui-qa-audit-2026-04-14.md` and the linked `screens/` attachments.
 - Remaining non-blocking debt after `v0.3.0`:
   - large renderer chunk warning in production build
   - missing `description` and `author` in `package.json`
@@ -47,6 +46,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - Keep shared IPC contracts, preload bridges, and renderer IPC wrappers as the preferred integration pattern.
 - Maintain green quality gates for `npm test`, `npm run lint`, and `npx tsc --noEmit`.
 - Keep EN/RU user-facing strings synchronized when launcher behavior changes.
+- Keep `v0.4.0` bounded to shipped bug-fix and polish work on current launcher surfaces, not new product-feature expansion.
 - Treat public docs as part of shipped truth, not afterthought cleanup.
 
 ## Key Decisions
@@ -64,6 +64,8 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Express adaptive layout through shared shell and overlay seams | The launcher needed resilient resizing and overlay behavior without per-screen hacks | Validated in `v0.3.0` |
 | Make launch truth and modpack ergonomics clearer inside existing flows first | The main UX gap was comprehension and reliability, not route explosion | Validated in `v0.3.0` |
 | Capture future parity ideas as bounded follow-up, not silent scope creep | Evidence from live walkthroughs should inform later milestones without bloating current execution | Validated in `v0.3.0` |
+| Make `v0.4.0` a screenshot-audited bug-fix and polish milestone | The next product gap is trust in the already-shipped launcher surface, not another round of new capability | Pending in `v0.4.0` |
+| Bound `v0.4.0` to documented defects and directly related proven cleanup | The user asked for a deep polish pass, but the milestone still needs tight edges to stay buildable and reviewable | Pending in `v0.4.0` |
 
 ## Archived Milestone Definition
 
@@ -84,4 +86,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-14 after archiving v0.3.0*
+*Last updated: 2026-04-14 after starting v0.4.0*
