@@ -350,10 +350,56 @@ function ModpackBrowserScenario({ onReady }: ManualVerificationScenarioProps) {
 }
 
 function ModpackDetailsScenario({ onReady }: ManualVerificationScenarioProps) {
+  useEffect(() => {
+    let cancelled = false;
+    const deadline = Date.now() + 4_000;
+
+    const activatePhaseFixture = () => {
+      if (cancelled) {
+        return;
+      }
+
+      const modsTab = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="tab"]')).find(
+        (button) => button.textContent?.trim() === 'Mods',
+      );
+
+      if (modsTab && modsTab.getAttribute('aria-selected') !== 'true') {
+        modsTab.click();
+      }
+
+      const bodyText = document.body.textContent ?? '';
+      if (!bodyText.includes('Provided by pack runtime')) {
+        const gammaButton = Array.from(document.querySelectorAll<HTMLButtonElement>('button')).find((button) =>
+          button.textContent?.includes('Gamma Runtime'),
+        );
+
+        gammaButton?.click();
+      }
+
+      if (
+        bodyText.includes('Provided by pack runtime') &&
+        bodyText.includes('Pack runtime mismatch') &&
+        bodyText.includes('requires 0.17.0')
+      ) {
+        return;
+      }
+
+      if (Date.now() < deadline) {
+        window.setTimeout(activatePhaseFixture, 50);
+      }
+    };
+
+    activatePhaseFixture();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useReadyByText(
     onReady,
-    ['Modpack details', 'Alpha Pack', 'Export'],
-    'Modpack details overview rendered with refreshed hero actions.',
+    ['Gamma Runtime', 'Provided by pack runtime', 'Pack runtime mismatch', 'requires 0.17.0'],
+    'Modpack details rendered with dense navigation plus runtime-provided and incompatible dependency truth.',
   );
 
   return (

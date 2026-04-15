@@ -127,19 +127,58 @@ const modpackVersions: ModpackVersionDescriptor[] = [
 
 const modEntries: ModEntry[] = [
   {
-    id: 'sodium',
-    name: 'Sodium',
-    version: '0.5.11',
+    id: 'alpha',
+    name: 'Alpha Utilities',
+    version: '1.0.0',
     loaders: ['fabric'],
     deps: [],
     file: {
-      path: '/mock/.minecraft/mods/sodium.jar',
-      name: 'sodium.jar',
+      path: '/mock/.minecraft/mods/alpha.jar',
+      name: 'alpha.jar',
       size: 1024,
       mtimeMs: Date.now() - 10_000,
     },
     hash: {
-      sha1: 'sodium-sha1',
+      sha1: 'alpha-sha1',
+    },
+    enabled: true,
+  },
+  {
+    id: 'beta',
+    name: 'Beta Tweaks',
+    version: '2.0.0',
+    loaders: ['fabric'],
+    deps: [],
+    file: {
+      path: '/mock/.minecraft/mods/beta.jar.disabled',
+      name: 'beta.jar.disabled',
+      size: 768,
+      mtimeMs: Date.now() - 7_500,
+    },
+    hash: {
+      sha1: 'beta-sha1',
+    },
+    enabled: false,
+  },
+  {
+    id: 'gamma',
+    name: 'Gamma Runtime',
+    version: '3.1.0',
+    loaders: ['fabric'],
+    deps: [
+      { id: 'minecraft', versionRange: '[1.20.1]', kind: 'depends' },
+      { id: 'fabricloader', versionRange: '[0.17.0]', kind: 'depends' },
+      { id: 'alpha', versionRange: '[1.0.0]', kind: 'depends' },
+      { id: 'beta', versionRange: '[2.0.0]', kind: 'depends' },
+    ],
+    file: {
+      path: '/mock/.minecraft/mods/gamma.jar',
+      name: 'gamma.jar',
+      size: 1536,
+      mtimeMs: Date.now() - 5_000,
+    },
+    hash: {
+      sha1: 'gamma-sha1',
     },
     enabled: true,
   },
