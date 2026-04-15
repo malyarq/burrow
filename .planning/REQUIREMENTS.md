@@ -9,16 +9,16 @@ Requirements committed for milestone `v0.4.0 Launcher Truth And Product Polish`.
 
 ### Launch Truth
 
-- [ ] **LAUNCH-01**: User sees a deliberate branded fallback instead of a broken or empty launch image when instance artwork is missing or invalid.
-- [ ] **LAUNCH-02**: User sees one consistent modloader value across launch controls, summaries, and effective launch settings on the main play surface.
-- [ ] **LAUNCH-03**: User can trust launch progress because the visible progress indicator, CTA state, and launch status text all advance from the same current stage.
-- [ ] **LAUNCH-04**: User sees launch-status and runtime-progress copy in the active launcher language instead of mixed-language or raw technical messages.
+- [x] **LAUNCH-01**: User sees a deliberate branded fallback instead of a broken or empty launch image when instance artwork is missing or invalid.
+- [x] **LAUNCH-02**: User sees one consistent modloader value across launch controls, summaries, and effective launch settings on the main play surface.
+- [x] **LAUNCH-03**: User can trust launch progress because the visible progress indicator, CTA state, and launch status text all advance from the same current stage.
+- [x] **LAUNCH-04**: User sees launch-status and runtime-progress copy in the active launcher language instead of mixed-language or raw technical messages.
 
 ### Modpack Details
 
-- [ ] **DETAIL-01**: User sees pack-level runtime dependencies such as `minecraft` and `forge` marked as satisfied when the installed modpack configuration already provides them.
-- [ ] **DETAIL-02**: User sees dependency version requirements rendered in readable product copy instead of raw range syntax.
-- [ ] **DETAIL-03**: User can reach the primary modpack detail sections without relying on a separate horizontal-scroll strip as the default navigation pattern.
+- [x] **DETAIL-01**: User sees pack-level runtime dependencies such as `minecraft` and `forge` marked as satisfied when the installed modpack configuration already provides them.
+- [x] **DETAIL-02**: User sees dependency version requirements rendered in readable product copy instead of raw range syntax.
+- [x] **DETAIL-03**: User can reach the primary modpack detail sections without relying on a separate horizontal-scroll strip as the default navigation pattern.
 
 ### Catalog & Navigation
 
@@ -70,13 +70,13 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 | Requirement | Phase | Status |
 | --- | --- | --- |
-| LAUNCH-01 | Phase 15 | Pending |
-| LAUNCH-02 | Phase 15 | Pending |
-| LAUNCH-03 | Phase 15 | Pending |
-| LAUNCH-04 | Phase 15 | Pending |
-| DETAIL-01 | Phase 16 | Pending |
-| DETAIL-02 | Phase 16 | Pending |
-| DETAIL-03 | Phase 16 | Pending |
+| LAUNCH-01 | Phase 15 | Complete |
+| LAUNCH-02 | Phase 15 | Complete |
+| LAUNCH-03 | Phase 15 | Complete |
+| LAUNCH-04 | Phase 15 | Complete |
+| DETAIL-01 | Phase 16 | Complete |
+| DETAIL-02 | Phase 16 | Complete |
+| DETAIL-03 | Phase 16 | Complete |
 | CATALOG-01 | Phase 17 | Pending |
 | CATALOG-02 | Phase 17 | Pending |
 | CATALOG-03 | Phase 17 | Pending |
@@ -90,4 +90,4 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-14*  
-*Last updated: 2026-04-14 after roadmap creation*
+*Last updated: 2026-04-15 after Phase 16 execution*

@@ -9,13 +9,13 @@
 ## Current Status
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
-- Current phase: `16` — Modpack Detail Integrity And Discoverable Dense Navigation
-- Next step: `$gsd-discuss-phase 16`
+- Current phase: `17` — Catalog, Compact Nav, And Settings Localization Polish
+- Next step: `$gsd-discuss-phase 17`
 
 ## Active Milestone
 
 **Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
-**Status:** PHASE 15 COMPLETE; PHASE 16 READY  
+**Status:** PHASE 16 COMPLETE; PHASE 17 READY  
 **Phases:** 15-18  
 **Mapped requirements:** 12
 
@@ -47,6 +47,7 @@ The milestone focuses on four workstreams:
 
 ### Phase 16: Modpack Detail Integrity And Discoverable Dense Navigation
 
+**Status:** Complete (`2026-04-15`)  
 **Goal:** Users can trust what modpack details say about runtime dependencies and reach primary detail sections without fighting dense-screen navigation.  
 **Depends on:** Phase 15  
 **Requirements:** `DETAIL-01`, `DETAIL-02`, `DETAIL-03`
@@ -88,4 +89,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 4/4 | Phase 15 complete | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 8/8 | Phase 16 complete | — |

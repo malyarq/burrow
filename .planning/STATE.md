@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-status: Phase 16 context captured; ready for planning
-stopped_at: Phase 16 context captured
-last_updated: "2026-04-14T20:28:00.000Z"
-last_activity: 2026-04-14 - Phase 16 context captured with runtime dependency truth locked; readable ranges and dense navigation left within phase discretion
+status: Phase 16 complete; ready for Phase 17 discussion
+stopped_at: Phase 16 complete
+last_updated: "2026-04-15T03:32:00.000Z"
+last_activity: 2026-04-15 - Phase 16 executed with truthful runtime dependency states, readable requirement copy, dense detail navigation, and green repo gates
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 25
+  completed_phases: 2
+  total_plans: 8
+  completed_plans: 8
+  percent: 50
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 16 planning for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 17 discussion for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
-Phase: 16
+Phase: 17
 Plan: pending
-Status: Phase 16 context captured; ready for planning
-Last activity: 2026-04-14 - Phase 16 context captured with runtime dependency truth locked; readable ranges and dense navigation left within phase discretion
+Status: Phase 16 complete; ready for Phase 17 discussion
+Last activity: 2026-04-15 - Phase 16 executed with truthful runtime dependency states, readable requirement copy, dense detail navigation, and green repo gates
 
-Progress: [██░░░░░░░░] 25%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -54,8 +54,8 @@ Progress: [██░░░░░░░░] 25%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-01, 15-02, 15-03, 15-04, Phase 15 closeout
-- Trend: v0.4.0 has its launch-truth phase implemented and verified, and Phase 16 context now locks dependency truth before planning the remaining detail-surface polish
+- Last 5 plans: 15-04, 16-01, 16-02, 16-03, 16-04
+- Trend: v0.4.0 now has both launch-truth and modpack-details integrity phases implemented; the remaining work shifts to catalog, compact navigation, and localization polish
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -140,13 +140,14 @@ None yet.
 - Final gate for `v0.3.0` is green, including `npm run build -- --publish never`.
 - `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
 - Phase 15 browser-backed proof now lives on `manual-verification.html?view=dashboard` and covers fallback art, loader truth, localized waiting/download/failure states, and read-only advanced settings.
-- Phase 16 context locks pack runtime as the source of truth for detail-page dependency satisfaction and requires incompatible runtime versions to remain distinct from missing dependencies.
+- Phase 16 shipped pack-runtime dependency truth, readable requirement copy, discoverable dense detail navigation, and a refreshed manual detail seam.
+- Headless Chromium capture of the refreshed `manual-verification.html?view=modpack-details` seam was sandbox-flaky during Phase 16 closeout, so Phase 18 should re-run manual evidence capture in a cleaner browser session.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
 - Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-14T20:28:00.000Z
-Stopped at: Phase 16 context captured
-Resume file: .planning/phases/16-modpack-detail-integrity-and-discoverable-dense-navigation/16-CONTEXT.md
+Last session: 2026-04-15T03:32:00.000Z
+Stopped at: Phase 16 complete
+Resume file: None
