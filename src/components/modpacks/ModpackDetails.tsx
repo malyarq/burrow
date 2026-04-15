@@ -344,6 +344,10 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({ modpackId, onBac
                         onRemoveMod={handleRemoveMod}
                         onModToggle={handleModToggle}
                         onRefresh={loadMods}
+                        runtimeContext={{
+                          minecraft: effectiveConfig?.runtime.minecraft ?? metadata?.minecraftVersion,
+                          modLoader: effectiveConfig?.runtime.modLoader ?? metadata?.modLoader,
+                        }}
                         t={t}
                         getAccentStyles={getAccentStyles}
                       />
