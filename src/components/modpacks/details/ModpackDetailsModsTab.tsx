@@ -216,6 +216,19 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
   }, [mods, modSearchQuery, modFilterStatus]);
 
   const enabledCount = React.useMemo(() => mods.filter((mod) => mod.enabled).length, [mods]);
+  const renderModItem = (mod: ModpackModEntry) => (
+    <ModItem
+      key={mod.id}
+      mod={mod}
+      isExpanded={expandedModId === mod.id}
+      toggleExpand={toggleExpand}
+      onModToggle={onModToggle}
+      onRemoveMod={onRemoveMod}
+      onOpenExternalLink={handleOpenExternalLink}
+      resolveDependency={resolveDependency}
+      t={t}
+    />
+  );
 
   return (
     <div className="space-y-4">
@@ -288,22 +301,18 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
         </div>
       ) : (
         <div className="surface-card h-[800px] overflow-hidden p-2">
-          <Virtuoso
-            style={{ height: '100%' }}
-            data={filteredMods}
-            itemContent={(_index, mod) => (
-              <ModItem
-                mod={mod}
-                isExpanded={expandedModId === mod.id}
-                toggleExpand={toggleExpand}
-                onModToggle={onModToggle}
-                onRemoveMod={onRemoveMod}
-                onOpenExternalLink={handleOpenExternalLink}
-                resolveDependency={resolveDependency}
-                t={t}
-              />
-            )}
-          />
+          {filteredMods.length <= 8 ? (
+            <div className="h-full overflow-y-auto pr-1 custom-scrollbar">
+              {filteredMods.map(renderModItem)}
+            </div>
+          ) : (
+            <Virtuoso
+              style={{ height: '100%' }}
+              data={filteredMods}
+              initialItemCount={8}
+              itemContent={(_index, mod) => renderModItem(mod)}
+            />
+          )}
         </div>
       )}
     </div>
