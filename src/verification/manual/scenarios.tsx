@@ -1,11 +1,14 @@
+import type { ModpackSearchResultItem, ModpackVersionDescriptor } from '@shared/contracts';
 import React, { useEffect, useMemo, useState } from 'react';
-import { SettingsProvider } from '../../contexts/SettingsContext';
+import { SettingsProvider, useSettings } from '../../contexts/SettingsContext';
 import { ToastProvider } from '../../contexts/ToastContext';
 import { ConfirmProvider } from '../../contexts/ConfirmContext';
 import { ModpackProvider } from '../../contexts/ModpackContext';
 import { createTranslator } from '../../contexts/settings/i18n';
 import type { UIMode } from '../../contexts/settings/types';
 import { LAUNCHER_MARK_PATH } from '../../app/assets/branding';
+import TitleBar from '../../components/TitleBar';
+import Sidebar, { type SidebarLaunchModel, type SidebarRuntimeModel } from '../../components/Sidebar';
 import SettingsPage from '../../components/SettingsPage';
 import { WelcomePage } from '../../components/onboarding/WelcomePage';
 import { OnboardingTour, type TourStep } from '../../components/onboarding/OnboardingTour';
@@ -13,9 +16,16 @@ import { SimplePlayDashboard } from '../../components/SimplePlayDashboard';
 import { ModpackList } from '../../components/modpacks/ModpackList';
 import { ModpackBrowser } from '../../components/modpacks/ModpackBrowser';
 import { ModpackDetails } from '../../components/modpacks/ModpackDetails';
-import { CreateModpackModal } from '../../components/modpacks/CreateModpackModal';
+import { ModpackCreationWizard } from '../../components/modpacks/ModpackCreationWizard';
+import { AddModPage } from '../../components/modpacks/AddModPage';
 import { ExportModpackPage } from '../../components/modpacks/ExportModpackPage';
+import { InstallModpackPage } from '../../components/modpacks/InstallModpackPage';
+import { ImportModpackPreviewPage } from '../../components/modpacks/ImportModpackPreviewPage';
 import { AddModModal } from '../../components/modpacks/AddModModal';
+import {
+  setModpackPrimaryActionOwnership,
+  type ModpackPrimaryActionOwnership,
+} from '../../components/modpacks/primaryActionOwnership';
 import { SidebarHeader } from '../../components/sidebar/SidebarHeader';
 import { DEFAULT_MODPACK_BROWSER_STATE } from '../../features/modpacks/hooks/useModpackNavigation';
 import { AccountsPage } from '../../features/accounts/AccountsPage';
@@ -24,6 +34,7 @@ import { ScreenshotsTab } from '../../features/screenshots/components/Screenshot
 import { MirrorsSettings } from '../../features/settings/mirrors/MirrorsSettings';
 import { StatisticsTab } from '../../features/settings/statistics/StatisticsTab';
 import { WorldDatapacksModal } from '../../components/modpacks/details/WorldDatapacksModal';
+import { cn } from '../../utils/cn';
 import { CORE_VIEWS, type ManualVerificationView } from './views';
 import { getManualVerificationModEntries, getManualVerificationModpackMetadata } from './mockEnvironment';
 
@@ -53,14 +64,107 @@ function ModpackProviders(props: { children: React.ReactNode }) {
   );
 }
 
-function ManualDashboardProviders(props: { language: 'en' | 'ru'; children: React.ReactNode }) {
+function ManualShellProviders(props: { mode: UIMode; language?: 'en' | 'ru'; children: React.ReactNode }) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('settings_language', props.language);
+    localStorage.setItem('settings_uiMode', props.mode);
+    localStorage.setItem('settings_language', props.language ?? 'en');
     localStorage.setItem('simple_play_welcome_dismissed', 'true');
+    localStorage.setItem('sidebar_collapsed', 'false');
   }
 
   return <ModpackProviders>{props.children}</ModpackProviders>;
 }
+
+const MANUAL_SHELL_ACTIONS = {
+  onShowMultiplayer: () => undefined,
+  onShowSettings: () => undefined,
+};
+
+const MANUAL_MC_VERSIONS = [
+  {
+    id: '1.20.1',
+    type: 'release',
+    url: 'https://example.invalid/versions/1.20.1.json',
+    time: '2026-04-13T00:00:00.000Z',
+    releaseTime: '2026-04-13T00:00:00.000Z',
+  },
+];
+
+const MANUAL_SIDEBAR_LAUNCH: SidebarLaunchModel = {
+  nickname: 'Steve',
+  setNickname: () => undefined,
+  version: '1.20.1',
+  setVersion: () => undefined,
+  versions: MANUAL_MC_VERSIONS,
+  useForge: false,
+  setUseForge: () => undefined,
+  useFabric: false,
+  setUseFabric: () => undefined,
+  useOptiFine: false,
+  setUseOptiFine: () => undefined,
+  useNeoForge: false,
+  setUseNeoForge: () => undefined,
+  setLoader: () => undefined,
+  isOffline: true,
+  currentHint: null,
+  supportedVersions: {
+    forge: ['1.20.1'],
+    fabric: ['1.20.1'],
+    optiFine: ['1.20.1'],
+    neoForge: ['1.20.1'],
+  },
+  isModloadersLoading: false,
+};
+
+const MANUAL_SHELL_RUNTIME: SidebarRuntimeModel = {
+  isLaunching: false,
+  progress: 0,
+  launchStage: 'idle',
+  statusText: '',
+  statusDetail: '',
+  canForceRestart: false,
+  onLaunch: () => undefined,
+};
+
+const MANUAL_DASHBOARD_LAUNCH = {
+  version: '1.20.1',
+  nickname: 'Steve',
+  loaderType: 'vanilla' as const,
+  ram: 6,
+  isOffline: true,
+};
+
+const MANUAL_BROWSER_RESULT: ModpackSearchResultItem = {
+  platform: 'modrinth',
+  projectId: 'alpha-pack',
+  slug: 'alpha-pack',
+  title: 'Alpha Pack',
+  description: 'Route-owned install proof fixture for the Phase 19 shell-integrated harness.',
+  iconUrl: '/icon.png',
+  downloads: 1337,
+  dateCreated: '2026-04-01T10:00:00.000Z',
+  dateModified: '2026-04-13T08:30:00.000Z',
+};
+
+const MANUAL_BROWSER_VERSIONS: ModpackVersionDescriptor[] = [
+  {
+    platform: 'modrinth',
+    versionId: 'alpha-pack-1.4.2',
+    name: 'Alpha Pack 1.4.2',
+    versionNumber: '1.4.2',
+    mcVersions: ['1.20.1'],
+    loaders: ['fabric'],
+    changelog: 'Phase 19 shell-integrated proof fixture.',
+    files: [
+      {
+        url: 'https://example.invalid/alpha-pack-1.4.2.mrpack',
+        filename: 'alpha-pack-1.4.2.mrpack',
+      },
+    ],
+  },
+];
+
+const MANUAL_IMPORT_FILE_PATH = '/mock/Desktop/alpha-pack-1.4.2.mrpack';
 
 function useReadyByText(onReady: (message: string) => void, needles: string[], message: string) {
   const readyKey = needles.join('|');
@@ -93,6 +197,75 @@ function useReadyByText(onReady: (message: string) => void, needles: string[], m
       cancelled = true;
     };
   }, [message, needles, onReady, readyKey]);
+}
+
+function useManualPrimaryActionOwnership(ownership: ModpackPrimaryActionOwnership) {
+  useEffect(() => {
+    setModpackPrimaryActionOwnership(ownership);
+
+    return () => {
+      setModpackPrimaryActionOwnership('shell');
+    };
+  }, [ownership]);
+}
+
+function Phase19ShellChrome(props: {
+  ownership: ModpackPrimaryActionOwnership;
+  launch?: SidebarLaunchModel;
+  runtime?: SidebarRuntimeModel;
+  children: React.ReactNode;
+}) {
+  const { theme, sidebarPosition } = useSettings();
+
+  useManualPrimaryActionOwnership(props.ownership);
+
+  return (
+    <div className={theme === 'dark' ? 'dark h-full w-full' : 'h-full w-full'}>
+      <div className="relative h-full w-full overflow-hidden text-foreground">
+        <div className="flex h-full w-full bg-background text-foreground sm:p-2">
+          <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border shadow-2xl transition-colors duration-300 sm:rounded-[28px]">
+            <TitleBar />
+
+            <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden pt-2">
+              <div
+                className={cn(
+                  'relative flex min-h-0 flex-1 overflow-hidden',
+                  sidebarPosition === 'right' ? 'flex-row-reverse' : 'flex-row',
+                )}
+              >
+                <Sidebar
+                  launch={props.launch ?? MANUAL_SIDEBAR_LAUNCH}
+                  runtime={props.runtime ?? MANUAL_SHELL_RUNTIME}
+                  actions={MANUAL_SHELL_ACTIONS}
+                />
+
+                <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background transition-all duration-300">
+                  <div className="mode-switch-enter flex min-h-0 flex-1 flex-col">{props.children}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Phase19ShellFrame(props: {
+  mode: UIMode;
+  ownership: ModpackPrimaryActionOwnership;
+  language?: 'en' | 'ru';
+  launch?: SidebarLaunchModel;
+  runtime?: SidebarRuntimeModel;
+  children: React.ReactNode;
+}) {
+  return (
+    <ManualShellProviders mode={props.mode} language={props.language}>
+      <Phase19ShellChrome ownership={props.ownership} launch={props.launch} runtime={props.runtime}>
+        {props.children}
+      </Phase19ShellChrome>
+    </ManualShellProviders>
+  );
 }
 
 function OverviewScenario() {
@@ -180,98 +353,18 @@ function TourScenario({ onReady }: ManualVerificationScenarioProps) {
 function DashboardScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['Vanilla', 'Ожидание Minecraft', 'Запуск не удался'],
-    'Classic dashboard rendered with fallback art, loader truth, localized launch feedback, and read-only busy-state settings.',
+    ['FriendLauncher', 'Vanilla', 'Play'],
+    'Phase 19 launcher-home proof rendered inside the real shell with title-bar clearance and one shell-owned primary Play action.',
   );
 
   return (
-    <ManualDashboardProviders language="ru">
-      <div className="space-y-8">
-        <section className="space-y-3">
-          <div>
-            <div className="kicker-label mb-2">Waiting + read-only</div>
-            <h2 className="text-xl font-semibold text-foreground">Localized waiting state with visible advanced settings</h2>
-          </div>
-          <SimplePlayDashboard
-            launch={{
-              version: '1.20.1',
-              nickname: 'Steve',
-              loaderType: 'vanilla',
-              ram: 6,
-              isOffline: true,
-            }}
-            runtime={{
-              isLaunching: true,
-              progress: undefined,
-              launchStage: 'waiting',
-              statusText: 'Ожидание Minecraft',
-              statusDetail: 'Процесс Minecraft уже запущен. Ждем окно игры и первые логи.',
-              onLaunch: () => undefined,
-            }}
-            actions={{
-              onShowMultiplayer: () => undefined,
-              onShowSettings: () => undefined,
-            }}
-          />
-        </section>
-
-        <section className="space-y-3">
-          <div>
-            <div className="kicker-label mb-2">Download truth</div>
-            <h2 className="text-xl font-semibold text-foreground">Progress stays numeric only while files are actually downloading</h2>
-          </div>
-          <SimplePlayDashboard
-            launch={{
-              version: '1.20.1',
-              nickname: 'Steve',
-              loaderType: 'fabric',
-              ram: 6,
-              isOffline: true,
-            }}
-            runtime={{
-              isLaunching: true,
-              progress: 68,
-              launchStage: 'downloading',
-              statusText: 'Загрузка',
-              statusDetail: 'Подготавливаем файлы игры и необходимые зависимости.',
-              onLaunch: () => undefined,
-            }}
-            actions={{
-              onShowMultiplayer: () => undefined,
-              onShowSettings: () => undefined,
-            }}
-          />
-        </section>
-
-        <section className="space-y-3">
-          <div>
-            <div className="kicker-label mb-2">Failure persistence</div>
-            <h2 className="text-xl font-semibold text-foreground">Failure remains visible after controls unlock</h2>
-          </div>
-          <SimplePlayDashboard
-            launch={{
-              version: '1.20.1',
-              nickname: 'Steve',
-              loaderType: 'fabric',
-              ram: 6,
-              isOffline: true,
-            }}
-            runtime={{
-              isLaunching: false,
-              progress: undefined,
-              launchStage: 'failed',
-              statusText: 'Запуск не удался',
-              statusDetail: 'Minecraft завершился с кодом 1',
-              onLaunch: () => undefined,
-            }}
-            actions={{
-              onShowMultiplayer: () => undefined,
-              onShowSettings: () => undefined,
-            }}
-          />
-        </section>
-      </div>
-    </ManualDashboardProviders>
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <SimplePlayDashboard
+        launch={MANUAL_DASHBOARD_LAUNCH}
+        runtime={MANUAL_SHELL_RUNTIME}
+        actions={MANUAL_SHELL_ACTIONS}
+      />
+    </Phase19ShellFrame>
   );
 }
 
@@ -446,14 +539,14 @@ function ModpackListScenario({ onReady }: ManualVerificationScenarioProps) {
 function ModpackCreateScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['Create New Modpack', 'Runtime dependencies', 'Minecraft Version'],
-    'Create-modpack flow rendered with explicit runtime dependency summary.',
+    ['FriendLauncher', 'Create New Modpack', 'Next'],
+    'Phase 19 create-wizard proof rendered inside the real shell with title-bar clearance and one route-owned primary step action.',
   );
 
   return (
-    <ModpackProviders>
-      <CreateModpackModal isOpen={true} onClose={() => undefined} />
-    </ModpackProviders>
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <ModpackCreationWizard onBack={() => undefined} />
+    </Phase19ShellFrame>
   );
 }
 
@@ -484,13 +577,101 @@ function ModpackDetailsScenario({ onReady }: ManualVerificationScenarioProps) {
 
   useReadyByText(
     onReady,
-    ['Gamma Runtime', 'Provided by pack runtime', 'Pack runtime mismatch', 'requires 0.17.0'],
-    'Modpack details rendered with dense navigation plus runtime-provided and incompatible dependency truth.',
+    ['FriendLauncher', 'Gamma Runtime', 'Update Available'],
+    'Phase 19 modpack-details proof rendered inside the real shell with title-bar clearance, demoted shell launch, and one route-owned primary action.',
   );
 
   return (
-    <ModpackProviders>
-      <div className="min-h-screen p-6">
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <ModpackDetails
+        modpackId="alpha"
+        initialTab="mods"
+        initialExpandedModId="gamma"
+        initialMetadata={fixtureMetadata}
+        initialMods={fixtureMods}
+        hydrateFromIpc={false}
+        onBack={() => undefined}
+        onNavigate={() => undefined}
+        onLaunch={() => undefined}
+      />
+    </Phase19ShellFrame>
+  );
+}
+
+function ExportScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Export Modpack', 'Format'],
+    'Phase 19 export-route proof rendered inside the real shell with title-bar clearance, demoted shell launch, and visible final action edges.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <ExportModpackPage modpackId="alpha" onBack={() => undefined} />
+    </Phase19ShellFrame>
+  );
+}
+
+function AddModScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Modrinth', 'Sodium'],
+    'Phase 19 add-content proof rendered inside the real shell with title-bar clearance, demoted shell launch, and one route-owned add action.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <AddModPage modpackId="alpha" onBack={() => undefined} />
+    </Phase19ShellFrame>
+  );
+}
+
+function InstallScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Alpha Pack', 'Install modpack'],
+    'Phase 19 install-route proof rendered inside the real shell with title-bar clearance, demoted shell launch, and one route-owned install action.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <InstallModpackPage
+        modpack={MANUAL_BROWSER_RESULT}
+        versions={MANUAL_BROWSER_VERSIONS}
+        platform="modrinth"
+        onBack={() => undefined}
+      />
+    </Phase19ShellFrame>
+  );
+}
+
+function ImportPreviewScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Alpha Pack', 'Import'],
+    'Phase 19 import-preview proof rendered inside the real shell with title-bar clearance, demoted shell launch, and visible final import controls.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <ImportModpackPreviewPage filePath={MANUAL_IMPORT_FILE_PATH} onBack={() => undefined} />
+    </Phase19ShellFrame>
+  );
+}
+
+function AddModModalScenario({ onReady }: ManualVerificationScenarioProps) {
+  const fixtureMetadata = useMemo(() => getManualVerificationModpackMetadata('modpack-details'), []);
+  const fixtureMods = useMemo(() => getManualVerificationModEntries(), []);
+
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Gamma Runtime', 'Add mods', 'Sodium'],
+    'Phase 19 add-mod modal proof rendered over the real shell with title-bar clearance, demoted shell launch, and visible final helper and action edges.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <>
         <ModpackDetails
           modpackId="alpha"
           initialTab="mods"
@@ -502,37 +683,6 @@ function ModpackDetailsScenario({ onReady }: ManualVerificationScenarioProps) {
           onNavigate={() => undefined}
           onLaunch={() => undefined}
         />
-      </div>
-    </ModpackProviders>
-  );
-}
-
-function ExportScenario({ onReady }: ManualVerificationScenarioProps) {
-  useReadyByText(
-    onReady,
-    ['Export Modpack', 'Format', 'Modpacks'],
-    'Export page rendered with shared page chrome and output controls.',
-  );
-
-  return (
-    <SettingsProviders>
-      <div className="min-h-screen p-6">
-        <ExportModpackPage modpackId="alpha" onBack={() => undefined} />
-      </div>
-    </SettingsProviders>
-  );
-}
-
-function AddModScenario({ onReady }: ManualVerificationScenarioProps) {
-  useReadyByText(
-    onReady,
-    ['Add mods', 'Modrinth', 'Sodium'],
-    'Add-mod modal rendered with live search results and batch action controls.',
-  );
-
-  return (
-    <SettingsProviders>
-      <div className="min-h-screen p-6">
         <AddModModal
           modpackId="alpha"
           isOpen={true}
@@ -541,8 +691,8 @@ function AddModScenario({ onReady }: ManualVerificationScenarioProps) {
           defaultMCVersion="1.20.1"
           defaultLoader="fabric"
         />
-      </div>
-    </SettingsProviders>
+      </>
+    </Phase19ShellFrame>
   );
 }
 
@@ -662,6 +812,18 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 
   if (props.view === 'modpack-add') {
     return <AddModScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'modpack-install') {
+    return <InstallScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'modpack-import-preview') {
+    return <ImportPreviewScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'modpack-add-modal') {
+    return <AddModModalScenario {...scenarioProps} />;
   }
 
   if (props.view === 'share') {

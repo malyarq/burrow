@@ -557,7 +557,7 @@ export function installManualVerificationEnvironment() {
     }),
     createFromManifest: async () => ({ id: 'alpha' }),
     exportModpack: async () => ({ ok: true }),
-    getModpackInfoFromFile: async () => ({ format: 'modrinth' as const, manifest: null }),
+    getModpackInfoFromFile: async () => ({ format: 'modrinth' as const, manifest: structuredClone(sharedManifest) }),
     importModpack: async () => ({
       id: 'alpha',
       config: structuredClone(baseConfigs.alpha),
