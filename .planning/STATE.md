@@ -4,17 +4,17 @@ milestone: v0.5
 milestone_name: milestone
 current_phase: 21
 current_phase_name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-current_plan: 3
-status: executing
-stopped_at: Completed 21-03-PLAN.md
-last_updated: "2026-04-17T23:24:42.571Z"
-last_activity: 2026-04-18 - Completed Phase 21 plan 03 runtime-summary truth across create and edit configuration flows
+current_plan: 4
+status: complete
+stopped_at: Completed 21-04-PLAN.md
+last_updated: "2026-04-17T23:42:48.636Z"
+last_activity: 2026-04-18 - Completed Phase 21 plan 04 crowded proof fixtures and focused density closeout
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 11
-  percent: 83
+  completed_plans: 12
+  percent: 100
 ---
 
 # Project State
@@ -24,29 +24,29 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 21 is in progress after landing 21-03 runtime-summary truth across create and edit configuration flows; the next step is executing 21-04 crowded proof fixtures and closeout verification.
+**Current focus:** Phase 21 is complete after landing 21-04 crowded proof fixtures and focused density closeout; the next step is planning Phase 22 theme truth and interaction-state fidelity work.
 
 ## Current Position
 
 Current Phase: 21
 Current Phase Name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-Current Plan: 3
+Current Plan: 4
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 21
-Plan: 03
-Status: In Progress
-Last activity: 2026-04-18 - Completed Phase 21 plan 03 runtime-summary truth across create and edit configuration flows
+Plan: 04
+Status: Complete
+Last activity: 2026-04-18 - Completed Phase 21 plan 04 crowded proof fixtures and focused density closeout
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 - Total plans completed: 81
-- Active phase plans completed: 35
+- Active phase plans completed: 36
 - Average duration: 16 min
-- Total execution time: 5.9 hours
+- Total execution time: 6.0 hours
 
 **By Phase:**
 
@@ -62,8 +62,8 @@ Progress: [████████░░] 83%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 20-03, 20-04, 21-01, 21-02, 21-03
-- Trend: Phase 21 now covers dense catalog, details-route hierarchy, and runtime-summary truth, leaving only crowded proof and closeout verification.
+- Last 5 plans: 20-04, 21-01, 21-02, 21-03, 21-04
+- Trend: Phase 21 closed on crowded shell proof and focused density regression coverage, clearing the way for Phase 22 theme and interaction-state work.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -91,6 +91,7 @@ Progress: [████████░░] 83%
 | Phase 21 P01 | 7 min | 2 tasks | 7 files |
 | Phase 21 P02 | 5 min | 2 tasks | 8 files |
 | Phase 21 P03 | 10 min | 2 tasks | 9 files |
+| Phase 21 P04 | 10min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -199,6 +200,8 @@ Recent decisions affecting current work:
 - [Phase 21]: Let the shared Modal body own world-datapack scrolling and replace raw dense ratios with labeled summary cards on representative secondary tabs.
 - [Phase 21]: Extended modpackRuntimeDependencies.ts and ModpackDependencySummary.tsx into the single create/edit runtime-summary contract instead of adding a settings-only summary path.
 - [Phase 21]: Sanitized runtime loader edits in useModpackDetailsConfig so loader switches clear stale loader versions and incompatible OptiFine state before header or settings surfaces can drift.
+- [Phase 21]: Added dedicated Phase 21 proof views instead of overloading legacy manual routes so crowded-shell closeout states are directly reviewable.
+- [Phase 21]: Seeded create and edit proof from one shared runtime fixture and used a harness-only wizard priming helper instead of widening product props beyond the plan-owned manual seam.
 
 ### Pending Todos
 
@@ -215,6 +218,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:24:42.569Z
-Stopped at: Completed 21-03-PLAN.md
+Last session: 2026-04-17T23:42:48.633Z
+Stopped at: Completed 21-04-PLAN.md
 Resume file: None
