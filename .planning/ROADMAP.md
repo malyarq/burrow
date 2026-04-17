@@ -2,10 +2,10 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Phase 20 in progress after plan 03 `2026-04-17`  
+**Status:** Phase 20 complete `2026-04-18`  
 **Phases:** 19-24  
 **Requirements:** 23  
-**Next step:** Execute `20-04-PLAN.md`
+**Next step:** Plan Phase 21 dense-surface IA and CTA hierarchy
 
 ## Overview
 
@@ -96,4 +96,4 @@ The roadmap is intentionally ordered to prevent another "screen-by-screen repain
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-24 | 7/8 | Phase 20 in progress | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-24 | 8/8 | Phase 20 complete | — |

@@ -4,17 +4,17 @@ milestone: v0.5
 milestone_name: milestone
 current_phase: 20
 current_phase_name: 20-brand-system-shared-tokens-and-surface-migration
-current_plan: 3
-status: executing
-stopped_at: Completed 20-03-PLAN.md
-last_updated: "2026-04-17T21:18:00.380Z"
-last_activity: 2026-04-17 - Completed Phase 20 plan 03 artwork fallback policy and route adoption
+current_plan: 4
+status: complete
+stopped_at: Completed 20-04-PLAN.md
+last_updated: "2026-04-17T21:31:42.182Z"
+last_activity: 2026-04-18 - Completed Phase 20 plan 04 shell-integrated brand proof and closeout matrix
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 8
-  completed_plans: 7
-  percent: 88
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -24,29 +24,29 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 20 plan 03 is complete with shared artwork fallback policy and route adoption; the next execution step is plan 04 phase closeout and verification.
+**Current focus:** Phase 20 is complete with shell-integrated brand proof and a green closeout matrix; the next step is planning Phase 21 dense-surface IA and CTA hierarchy.
 
 ## Current Position
 
 Current Phase: 20
 Current Phase Name: 20-brand-system-shared-tokens-and-surface-migration
-Current Plan: 3
+Current Plan: 4
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 20
-Plan: 03
-Status: Ready to execute
-Last activity: 2026-04-17 - Completed Phase 20 plan 03 artwork fallback policy and route adoption
+Plan: 04
+Status: Complete
+Last activity: 2026-04-18 - Completed Phase 20 plan 04 shell-integrated brand proof and closeout matrix
 
-Progress: [█████████░] 88%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 79
-- Active phase plans completed: 33
+- Total plans completed: 80
+- Active phase plans completed: 34
 - Average duration: 16 min
-- Total execution time: 5.6 hours
+- Total execution time: 5.8 hours
 
 **By Phase:**
 
@@ -62,8 +62,8 @@ Progress: [█████████░] 88%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 19-03, 19-04, 20-01, 20-02, 20-03
-- Trend: Phase 20 has moved from shell-owned brand truth into shared artwork fallback policy and route adoption, leaving plan 04 as the phase closeout slice.
+- Last 5 plans: 19-04, 20-01, 20-02, 20-03, 20-04
+- Trend: Phase 20 closed on shell-integrated proof and a green brand/fallback matrix, leaving the next milestone step as Phase 21 planning rather than more Phase 20 cleanup.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -87,6 +87,7 @@ Progress: [█████████░] 88%
 | Phase 20 P01 | 18 min | 2 tasks | 17 files |
 | Phase 20 P02 | 6 min | 2 tasks | 11 files |
 | Phase 20 P03 | 6 min | 2 tasks | 14 files |
+| Phase 20 P04 | 10 min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -186,6 +187,9 @@ Recent decisions affecting current work:
 - [Phase 20]: Missing content artwork now defaults to the neutral media fallback at the LazyImage seam instead of the launcher mark or app icon.
 - [Phase 20]: Planned artwork slots render through LazyImage even when source URLs are absent so route surfaces no longer hide placeholders or override them with `/icon.png`.
 - [Phase 20]: Phase 20 plan 03 stays limited to fallback truth and route adoption, leaving richer degraded-state copy and error handling to Phase 23.
+- [Phase 20]: Reused the existing manual verification shell and status JSON instead of adding a Phase 20-only harness.
+- [Phase 20]: Used ResourcePacksTab as the deep media proof representative because it exercises LazyImage fallback truth directly inside real shell chrome.
+- [Phase 20]: Recorded task 2 as a verification-only empty commit because the planned Phase 20 regression matrix was already green and scope-aligned.
 
 ### Pending Todos
 
@@ -202,6 +206,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T21:18:00.378Z
-Stopped at: Completed 20-03-PLAN.md
+Last session: 2026-04-17T21:31:42.180Z
+Stopped at: Completed 20-04-PLAN.md
 Resume file: None
