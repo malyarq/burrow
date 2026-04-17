@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-status: Phase 19 plan 02 complete; ready for plan 03
-stopped_at: Completed 19-02-PLAN.md
-last_updated: "2026-04-17T19:27:51Z"
-last_activity: 2026-04-17 - Completed Phase 19 plan 02 shared CTA ownership seam and modpack-details primary-action truth
+status: Phase 19 plan 03 complete; ready for plan 04
+stopped_at: Completed 19-03-PLAN.md
+last_updated: "2026-04-17T19:45:53Z"
+last_activity: 2026-04-17 - Completed Phase 19 plan 03 flow-first dense route cleanup and overflow-safe add-content flows
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 75
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 19 execution is underway after landing CTA ownership truth; the next work is dense-route flow cleanup and shell-integrated proof.
+**Current focus:** Phase 19 execution continues with shell-integrated proof after landing dense-route flow cleanup and overflow-safe add-content flows.
 
 ## Current Position
 
 Phase: 19
-Plan: 03
-Status: Phase 19 plan 02 complete; ready for plan 03
-Last activity: 2026-04-17 - Completed Phase 19 plan 02 shared CTA ownership seam and modpack-details primary-action truth
+Plan: 04
+Status: Phase 19 plan 03 complete; ready for plan 04
+Last activity: 2026-04-17 - Completed Phase 19 plan 03 flow-first dense route cleanup and overflow-safe add-content flows
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 76
-- Active phase plans completed: 30
+- Total plans completed: 77
+- Active phase plans completed: 31
 - Average duration: 16 min
 - Total execution time: 5.3 hours
 
@@ -54,8 +54,8 @@ Progress: [█████░░░░░] 50%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 18-02, 18-03, 18-04, 19-01, 19-02
-- Trend: Phase 19 is progressing on green focused UI seams, with shared shell geometry and CTA truth now established before dense-route cleanup.
+- Last 5 plans: 18-03, 18-04, 19-01, 19-02, 19-03
+- Trend: Phase 19 now has the shell baseline, CTA ownership, and dense-route flow cleanup in place before shell-integrated proof.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -74,6 +74,7 @@ Progress: [█████░░░░░] 50%
 | Phase 18 P04 | 11 min | 1 task | 2 files |
 | Phase 19 P01 | 5 min | 2 tasks | 6 files |
 | Phase 19 P02 | 12 min | 2 tasks | 8 files |
+| Phase 19 P03 | 11 min | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -159,6 +160,8 @@ Recent decisions affecting current work:
 - [Phase 19]: Sidebar collapse moved into SidebarHeader so the sidebar no longer needs an absolute top strip with local pt-6 compensation.
 - [Phase 19]: ModpackRouter owns shell-versus-route CTA classification and publishes it through a shared seam so Sidebar can demote launch without route-aware button logic.
 - [Phase 19]: Modpack details expose update as the sole route-primary action when available and keep play as a secondary action instead of competing primaries.
+- [Phase 19]: Dense routes and add-content flows now end in one owning page or modal scroll instead of footer-like action rows.
+- [Phase 19]: Shared Modal exposes its body as the dense-content scroll region so add-content helpers, results, and final actions stay in one flow.
 
 ### Pending Todos
 
@@ -168,13 +171,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 19 is now in progress; remaining execution covers CTA ownership, dense-route flow cleanup, and proof closure for the redesign baseline.
+- Phase 19 is now in progress; remaining execution is focused on shell-integrated proof closure for the redesign baseline.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T19:27:51Z
-Stopped at: Completed 19-02-PLAN.md
+Last session: 2026-04-17T19:45:40.033Z
+Stopped at: Completed 19-03-PLAN.md
 Resume file: None
