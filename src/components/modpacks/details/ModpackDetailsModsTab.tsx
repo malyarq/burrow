@@ -1,6 +1,5 @@
 import React from 'react';
 import { ExternalLink, Filter, PackagePlus, RefreshCw, Trash2 } from 'lucide-react';
-import { Virtuoso } from 'react-virtuoso';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { LoadingSpinner } from '../../ui/LoadingSpinner';
@@ -302,19 +301,8 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
           <p className="max-w-xl text-sm text-secondary">{t('modpacks.mods_filter_hint')}</p>
         </div>
       ) : (
-        <div className="surface-card h-[800px] overflow-hidden p-2">
-          {filteredMods.length <= 8 ? (
-            <div className="h-full overflow-y-auto pr-1 custom-scrollbar">
-              {filteredMods.map(renderModItem)}
-            </div>
-          ) : (
-            <Virtuoso
-              style={{ height: '100%' }}
-              data={filteredMods}
-              initialItemCount={8}
-              itemContent={(_index, mod) => renderModItem(mod)}
-            />
-          )}
+        <div className="space-y-2">
+          {filteredMods.map(renderModItem)}
         </div>
       )}
     </div>

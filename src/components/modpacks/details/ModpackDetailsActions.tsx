@@ -33,49 +33,51 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
   const primaryAction = hasUpdate ? 'update' : 'play';
 
   return (
-  <div className="surface-inline mx-6 mb-6 flex flex-shrink-0 flex-wrap gap-2 px-4 py-4">
-    {primaryAction === 'play' ? (
-      <Button
-        variant="primary"
-        onClick={onLaunch}
-        className="flex-1"
-        style={getAccentStyles('bg').style}
-        data-primary-action="route"
-        data-route-action="play"
-      >
-        {t('general.play')}
-      </Button>
-    ) : (
-      <>
-        <Button
-          variant="primary"
-          onClick={onShowUpdate}
-          className={cn('flex-1', getAccentStyles('bg').className)}
-          style={getAccentStyles('bg').style}
-          data-primary-action="route"
-          data-route-action="update"
-        >
-          {t('modpacks.update_available') || 'Обновление доступно'}
+    <section className="surface-card flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        {primaryAction === 'play' ? (
+          <Button
+            variant="primary"
+            onClick={onLaunch}
+            className="w-full sm:min-w-[14rem] sm:flex-1"
+            style={getAccentStyles('bg').style}
+            data-primary-action="route"
+            data-route-action="play"
+          >
+            {t('general.play')}
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant="primary"
+              onClick={onShowUpdate}
+              className={cn('w-full sm:min-w-[14rem] sm:flex-1', getAccentStyles('bg').className)}
+              style={getAccentStyles('bg').style}
+              data-primary-action="route"
+              data-route-action="update"
+            >
+              {t('modpacks.update_available') || 'Обновление доступно'}
+            </Button>
+            <Button variant="secondary" onClick={onLaunch} className="w-full sm:w-auto" data-route-action="play">
+              {t('general.play')}
+            </Button>
+          </>
+        )}
+        <Button variant="secondary" onClick={onRename} className="w-full sm:w-auto">
+          {t('modpacks.rename')}
         </Button>
-        <Button variant="secondary" onClick={onLaunch} data-route-action="play">
-          {t('general.play')}
+        <Button variant="secondary" onClick={onDuplicate} className="w-full sm:w-auto">
+          {t('modpacks.duplicate')}
         </Button>
-      </>
-    )}
-    <Button variant="secondary" onClick={onRename}>
-      {t('modpacks.rename')}
-    </Button>
-    <Button variant="secondary" onClick={onDuplicate}>
-      {t('modpacks.duplicate')}
-    </Button>
-    <Button variant="secondary" onClick={onExport}>
-      {t('modpacks.export') || 'Экспорт'}
-    </Button>
-    {canDelete && (
-      <Button variant="danger" onClick={onDelete}>
-        {t('modpacks.delete')}
-      </Button>
-    )}
-  </div>
+        <Button variant="secondary" onClick={onExport} className="w-full sm:w-auto">
+          {t('modpacks.export') || 'Экспорт'}
+        </Button>
+        {canDelete && (
+          <Button variant="danger" onClick={onDelete} className="w-full sm:w-auto">
+            {t('modpacks.delete')}
+          </Button>
+        )}
+      </div>
+    </section>
   );
 };

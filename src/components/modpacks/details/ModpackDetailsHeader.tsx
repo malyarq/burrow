@@ -109,8 +109,8 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
   };
 
   return (
-    <div className="flex-shrink-0 px-6 pt-6 pb-0">
-      <div className="surface-card mb-6 flex items-start gap-4 p-5">
+    <div className="space-y-6">
+      <div className="surface-card flex items-start gap-4 p-5">
         {metadata?.iconUrl && (
           <LazyImage
             src={metadata.iconUrl}
@@ -152,7 +152,7 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
       </div>
 
       <div
-        className="surface-inline mb-4 flex flex-wrap gap-2 p-2"
+        className="surface-inline flex flex-wrap gap-2 p-2"
         role="tablist"
         aria-label={t('modpacks.details_title') || 'Modpack details'}
         aria-orientation="horizontal"
