@@ -9,13 +9,13 @@
 ## Current Status
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
-- Current phase: `17` — Catalog, Compact Nav, And Settings Localization Polish
-- Next step: finish the remaining Phase 17 plans
+- Current phase: `18` — Verification And Release Truth
+- Next step: plan Phase 18 verification and release-truth closeout
 
 ## Active Milestone
 
 **Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
-**Status:** PHASE 17 IN PROGRESS  
+**Status:** READY TO PLAN PHASE 18  
 **Phases:** 15-18  
 **Mapped requirements:** 12
 
@@ -60,7 +60,7 @@ The milestone focuses on four workstreams:
 
 ### Phase 17: Catalog, Compact Nav, And Settings Localization Polish
 
-**Status:** In Progress (`2026-04-17`)  
+**Status:** Completed (`2026-04-17`)  
 **Goal:** The remaining shipped-surface polish defects across catalog browsing, compact navigation, and settings localization are removed without reopening broader feature or IA redesign scope.  
 **Depends on:** Phase 16  
 **Requirements:** `CATALOG-01`, `CATALOG-02`, `CATALOG-03`, `SET-01`, `SET-02`
@@ -90,4 +90,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 10/12 | Phase 17 in progress | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 12/12 | Ready to plan Phase 18 | — |

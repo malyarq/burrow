@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-status: Phase 17 in progress
-stopped_at: Completed 17-03-PLAN.md
-last_updated: "2026-04-17T14:18:00.000Z"
-last_activity: 2026-04-17 - Phase 17 settings shell now resists raw-key leakage and theme presets follow a localized naming contract with stable IDs
+status: Ready to plan Phase 18
+stopped_at: Completed 17-04-PLAN.md
+last_updated: "2026-04-17T14:31:35.000Z"
+last_activity: 2026-04-17 - Phase 17 closed on browser-backed proof for constrained catalog cards, compact nav, and Russian settings localization
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 10
-  percent: 83
+  completed_plans: 12
+  percent: 100
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 17 execution for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 18 planning for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
-Phase: 17
-Plan: 04
-Status: Phase 17 in progress
-Last activity: 2026-04-17 - Phase 17 settings shell now resists raw-key leakage and theme presets follow a localized naming contract with stable IDs
+Phase: 18
+Plan: Planning
+Status: Ready to plan Phase 18
+Last activity: 2026-04-17 - Phase 17 closed on browser-backed proof for constrained catalog cards, compact nav, and Russian settings localization
 
-Progress: [█████████░] 92%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 70
-- Active phase plans completed: 24
+- Total plans completed: 71
+- Active phase plans completed: 25
 - Average duration: 16 min
 - Total execution time: 5.0 hours
 
@@ -54,8 +54,8 @@ Progress: [█████████░] 92%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 16-03, 16-04, 17-01, 17-02, 17-03
-- Trend: v0.4.0 has moved from catalog and compact-nav polish into the final manual-proof and closeout slice for Phase 17.
+- Last 5 plans: 16-04, 17-01, 17-02, 17-03, 17-04
+- Trend: v0.4.0 Phase 17 is complete on integrated proof, and the milestone now moves into Phase 18 verification and release-truth closeout.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -67,6 +67,7 @@ Progress: [█████████░] 92%
 | Phase 17 P01 | 8 min | 2 tasks | 4 files |
 | Phase 17 P02 | 7 min | 2 tasks | 2 files |
 | Phase 17 P03 | 8 min | 2 tasks | 10 files |
+| Phase 17 P04 | 11 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -141,6 +142,8 @@ Recent decisions affecting current work:
 - [Phase 17]: Replaced the collapsed modpacks placeholder letter with icon-led compact navigation so both launcher modes share one intentional shell language.
 - [Phase 17]: Hardened the settings shell with curated fallback copy for high-risk tab summaries and hints instead of trusting raw translator misses to stay hidden.
 - [Phase 17]: Localized preset display names through stable preset IDs so appearance labels and exported summaries can change per language without breaking persistence.
+- [Phase 17]: Closed proof on a dedicated `manual-verification.html?view=phase-17-polish` route instead of introducing another phase-specific browser harness.
+- [Phase 17]: Treated repo-wide closeout fallout as a test-alignment fix for shipped fallback labels, not as a reason to reopen settings-shell behavior.
 
 ### Pending Todos
 
@@ -157,10 +160,11 @@ None yet.
 - Headless Chromium capture of the refreshed `manual-verification.html?view=modpack-details` seam was sandbox-flaky during Phase 16 closeout, so Phase 18 should re-run manual evidence capture in a cleaner browser session.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
 - Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
+- Phase 17 browser-backed proof now lives on `manual-verification.html?view=phase-17-polish`; Chromium DOM capture still prefers an isolated user-data-dir, but screenshot and DOM artifacts were recorded successfully.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
 Last session: 2026-04-17T14:03:53.124Z
-Stopped at: Completed 17-03-PLAN.md
+Stopped at: Completed 17-04-PLAN.md
 Resume file: None
