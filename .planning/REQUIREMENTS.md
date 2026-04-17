@@ -28,8 +28,8 @@ Requirements committed for milestone `v0.4.0 Launcher Truth And Product Polish`.
 
 ### Settings & Locale
 
-- [ ] **SET-01**: User never sees raw localization keys on the shipped settings surface or launch-adjacent controls.
-- [ ] **SET-02**: User sees theme preset names presented through one deliberate RU/EN naming policy instead of accidental English-only leakage in the localized UI.
+- [x] **SET-01**: User never sees raw localization keys on the shipped settings surface or launch-adjacent controls.
+- [x] **SET-02**: User sees theme preset names presented through one deliberate RU/EN naming policy instead of accidental English-only leakage in the localized UI.
 
 ## Future Requirements
 
@@ -80,8 +80,8 @@ Which phases cover which requirements. Filled during roadmap creation.
 | CATALOG-01 | Phase 17 | Complete |
 | CATALOG-02 | Phase 17 | Complete |
 | CATALOG-03 | Phase 17 | Complete |
-| SET-01 | Phase 17 | Pending |
-| SET-02 | Phase 17 | Pending |
+| SET-01 | Phase 17 | Complete |
+| SET-02 | Phase 17 | Complete |
 
 **Coverage:**
 - v0.4.0 requirements: 12 total
@@ -90,4 +90,4 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-14*  
-*Last updated: 2026-04-17 after Phase 17 plan 01 execution*
+*Last updated: 2026-04-17 after Phase 18 plan 01 execution*

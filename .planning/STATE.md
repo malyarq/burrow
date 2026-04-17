@@ -2,16 +2,19 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-status: Ready to plan Phase 18
-stopped_at: Completed 17-04-PLAN.md
-last_updated: "2026-04-17T14:31:35.000Z"
-last_activity: 2026-04-17 - Phase 17 closed on browser-backed proof for constrained catalog cards, compact nav, and Russian settings localization
+current_phase: 18
+current_phase_name: Verification And Release Truth
+current_plan: 2
+status: Executing Phase 18
+stopped_at: Completed 18-01-PLAN.md
+last_updated: "2026-04-17T15:37:16.837Z"
+last_activity: 2026-04-17 - Phase 18 plan 01 locked the authoritative v0.4.0 closeout matrix and translated launch-state proof
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 12
-  completed_plans: 12
-  percent: 100
+  total_plans: 16
+  completed_plans: 13
+  percent: 81
 ---
 
 # Project State
@@ -21,24 +24,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 18 planning for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 18 execution for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
 Phase: 18
-Plan: Planning
-Status: Ready to plan Phase 18
-Last activity: 2026-04-17 - Phase 17 closed on browser-backed proof for constrained catalog cards, compact nav, and Russian settings localization
+Plan: 2 of 4 in current phase
+Status: In progress
+Last activity: 2026-04-17 - Phase 18 plan 01 locked the authoritative v0.4.0 closeout matrix and translated launch-state proof
 
-Progress: [██████████] 100%
+Progress: [████████░░] 81%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 71
-- Active phase plans completed: 25
+- Total plans completed: 72
+- Active phase plans completed: 26
 - Average duration: 16 min
-- Total execution time: 5.0 hours
+- Total execution time: 5.1 hours
 
 **By Phase:**
 
@@ -54,8 +57,8 @@ Progress: [██████████] 100%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 16-04, 17-01, 17-02, 17-03, 17-04
-- Trend: v0.4.0 Phase 17 is complete on integrated proof, and the milestone now moves into Phase 18 verification and release-truth closeout.
+- Last 5 plans: 17-01, 17-02, 17-03, 17-04, 18-01
+- Trend: Phase 18 is executing; the authoritative closeout regression matrix is locked and Wave 2 now moves into refreshed browser-backed proof.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -68,6 +71,7 @@ Progress: [██████████] 100%
 | Phase 17 P02 | 7 min | 2 tasks | 2 files |
 | Phase 17 P03 | 8 min | 2 tasks | 10 files |
 | Phase 17 P04 | 11 min | 2 tasks | 5 files |
+| Phase 18 P01 | 4 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -144,6 +148,8 @@ Recent decisions affecting current work:
 - [Phase 17]: Localized preset display names through stable preset IDs so appearance labels and exported summaries can change per language without breaking persistence.
 - [Phase 17]: Closed proof on a dedicated `manual-verification.html?view=phase-17-polish` route instead of introducing another phase-specific browser harness.
 - [Phase 17]: Treated repo-wide closeout fallout as a test-alignment fix for shipped fallback labels, not as a reason to reopen settings-shell behavior.
+- [Phase 18]: Make 18-VALIDATION.md the authoritative v0.4.0 requirement-to-seam map instead of relying on phase-memory summaries.
+- [Phase 18]: Use `LaunchControls.status.test.tsx` as the LAUNCH-03/04 owner seam by deriving visible launch copy through the active translator instead of hard-coded English fixtures.
 
 ### Pending Todos
 
@@ -165,6 +171,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T14:03:53.124Z
-Stopped at: Completed 17-04-PLAN.md
+Last session: 2026-04-17T15:37:16.835Z
+Stopped at: Completed 18-01-PLAN.md
 Resume file: None

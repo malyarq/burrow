@@ -10,12 +10,12 @@
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
 - Current phase: `18` — Verification And Release Truth
-- Next step: plan Phase 18 verification and release-truth closeout
+- Next step: execute Phase 18 plan 02 browser-proof closeout
 
 ## Active Milestone
 
 **Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
-**Status:** READY TO PLAN PHASE 18  
+**Status:** EXECUTING PHASE 18  
 **Phases:** 15-18  
 **Mapped requirements:** 12
 
@@ -74,6 +74,7 @@ The milestone focuses on four workstreams:
 
 ### Phase 18: Verification And Release Truth
 
+**Status:** In Progress (`2026-04-17`)  
 **Goal:** The milestone closes on proof, not assumption, by validating repaired surfaces through focused tests, manual walkthrough evidence, and truthful release-facing state.  
 **Depends on:** Phase 17  
 **Requirements:** Closeout phase
@@ -90,4 +91,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 12/12 | Ready to plan Phase 18 | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 13/16 | In Progress | — |
