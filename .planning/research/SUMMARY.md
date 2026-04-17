@@ -1,146 +1,177 @@
 # Project Research Summary
 
 **Project:** FriendLauncher (FMCL)  
-**Domain:** Electron desktop Minecraft launcher polish and bug-fix planning  
-**Researched:** 2026-04-14  
+**Domain:** Electron desktop Minecraft launcher redesign and brand reset  
+**Researched:** 2026-04-17  
 **Confidence:** HIGH
 
 ## Executive Summary
 
-`v0.4.0` should be a release-truth and finish-quality milestone, not a new-feature milestone. The screenshot audit and codebase review both point to the same problem: the already-shipped launcher surface still leaks contradictory state, raw localization keys, broken or empty imagery, and dense navigation that feels unfinished.
+`v0.5.0` should be planned as a redesign-quality milestone for the shipped launcher, not as a new-capability milestone. The research is consistent across stack, features, architecture, and pitfalls: FMCL already has the right runtime foundation, but it lacks shared shell rules, trustworthy action and state hierarchy, productized fallback/error behavior, and a coherent brand system across dense desktop surfaces.
 
-The current stack is sufficient. The milestone should not add new frameworks or major tooling. Instead, it should tighten shared launch-state mapping, locale ownership, fallback-art policy, and modpack-detail semantics, then prove the fixes through the existing manual verification seam plus targeted automated tests.
+The milestone recommendation is to keep the current Electron + React + TypeScript + Tailwind + Vite architecture and invest in renderer-local foundations first: semantic brand tokens, shell and overlay metrics, shared control and fallback primitives, and proof on the existing manual verification seam. The main delivery risk is trying to repaint screens one by one while baseline shell defects, CTA conflicts, locale leaks, and degraded-state behavior remain unresolved.
 
 ## Key Findings
 
-### Recommended Stack
+### Stack Additions / Changes
 
-The current Electron, React, TypeScript, Tailwind, and Vitest setup already covers the milestone needs. The repo should reuse existing status, image, locale, and verification seams rather than introducing a new state, UI, or visual-regression platform.
+Keep the core stack. `v0.5.0` does not justify a new UI framework, router, state manager, theming library, or IPC-heavy redesign.
 
-**Core technologies:**
-- `Electron` — source of launcher, filesystem, and dependency truth
-- `React + TypeScript` — render and normalize product-facing state safely
-- `TailwindCSS` — repair overflow, compact controls, and branded fallback presentation
-- `Vitest + Testing Library` — add focused regressions for the exact bugs already captured in screenshots
+Add or strengthen these repo-local capabilities:
 
-### Expected Features
+- brand tokens on top of Tailwind v4 and the current runtime theme system
+- shared shell metrics for title bar, content insets, sticky regions, action bars, overlays, and elevation
+- one branded fallback and error-state layer for missing art, empty states, recoverable errors, and fatal crashes
+- screenshot regression coverage on top of `manual-verification.html`
+- repo-level guards for raw locale keys, unresolved template placeholders, and locale drift
 
-Research and the audit converge on four categories that define this milestone:
+### Table Stakes
 
-**Must have (table stakes):**
-- truthful launch surface and runtime feedback
-- correct modpack dependency semantics with readable requirement formatting
-- catalog and compact navigation scanability plus branded fallbacks
-- complete settings and launch-surface localization without raw keys or inconsistent preset naming
+These are the minimum milestone outcomes users now expect from the existing launcher:
 
-**Should have (bounded polish):**
-- clearer user-facing launch stage wording
-- compact overflow treatment for dense tabs and controls
-- shared fallback behavior across launch and catalog imagery
+- window-safe shell behavior so content does not clip under the custom title bar or behind fixed footers
+- one truthful primary action and one truthful runtime state model per route
+- graceful fallback, empty, missing-media, and fatal-error behavior that does not leak raw implementation detail
+- readable dense desktop navigation, tabs, filters, helpers, and action rows at shipped window sizes
+- reliable contrast, selection, disabled, hover, and locale behavior across theme presets
 
-**Defer (future milestones):**
-- new launcher routes or large feature additions
-- full settings IA redesign
-- competitor parity sweeps
-- new visual-regression infrastructure
+### Differentiators
 
-### Architecture Approach
+These are the bounded redesign gains that make `v0.5.0` worth doing:
 
-The fixes should land on existing seams instead of bypassing them. Launch truth belongs in launcher hooks and status mapping, dependency truth belongs in modpack metadata plus scanner interpretation, fallback-art behavior belongs in shared visual seams, and settings localization belongs in locale catalogs plus shared settings metadata.
+- an FMCL-specific brand reset across welcome, sidebar, browser, modpack details, settings, modal, and degraded states
+- clearer modpack-first confidence surfaces so loader, dependency health, pack identity, and local actions read immediately
+- an authored theme system with a smaller number of sharper, more truthful presets
+- stronger product judgment in secondary states such as empty labels, modal focus, microcopy, and default/fallback visuals
 
-**Major components:**
-1. Launch state pipeline — `useLauncher*`, `launcherService`, `taskRunner`, and `SimplePlayDashboard`
-2. Modpack detail pipeline — `ModpackDetails`, detail tabs, metadata IPC, and dependency scanning
-3. Surface polish pipeline — modpack browser or list, sidebar, settings metadata, theme presets, and locale catalogs
+### Anti-Features
 
-### Critical Pitfalls
+These are attractive but incorrect directions for this milestone:
 
-1. **Local label fixes hiding shared state drift** — fix upstream truth contracts before polishing individual widgets
-2. **Inline copy masking missing locale ownership** — add missing locale keys in both languages instead of patching the visible screen only
-3. **Overflow fixes that add new discoverability debt** — avoid replacing one horizontal-scroll problem with another nested control trap
-4. **Runtime dependencies rendered as missing mods** — separate pack-level runtime requirements from file-based dependency checks
-5. **Unbounded “full polish” sprawl** — keep every requirement tied to the screenshot audit or a directly related proven inconsistency
+- a bug-fix-only pass without shared shell, token, and fallback rules
+- new capability expansion during the redesign
+- preset proliferation, effect-heavy customization, or screenshot-first novelty styling
+- raw technical transparency in user-facing crash and fallback surfaces
+- duplicate CTAs kept for “discoverability” instead of deciding route ownership
 
-## Implications for Roadmap
+## Architecture And Build Order
 
-Based on research, suggested phase structure:
+The redesign should stay primarily inside `src/`. `electron/` and `shared/` only need changes when packaged assets or native window behavior truly require them. The architecture guidance is stable:
 
-### Phase 15: Launch Truth And Shared Surface Contracts
-**Rationale:** Shared truth defects break user trust fastest and will contaminate later polish work if left unresolved.  
-**Delivers:** Correct launch-stage mapping, synchronized progress and CTA behavior, localized runtime status, and shared fallback ownership for broken launch imagery.  
-**Addresses:** launch-surface truth plus shared localization or fallback ownership.  
-**Avoids:** patching visible labels while upstream state remains contradictory.
+- redesign token-first, not page-by-page utility overrides
+- make shell geometry shell-owned, not route-owned
+- keep one primary CTA owner per route
+- centralize brand assets, missing-media handling, empty states, and fatal-error presentation
+- extend the existing manual verification hub instead of inventing a new proof system
 
-### Phase 16: Modpack Detail Integrity And Discoverable Dense Navigation
-**Rationale:** Once shared truth is stable, dependency semantics and dense detail navigation can be fixed as one coherent modpack-detail slice.  
-**Delivers:** correct dependency satisfaction rules, readable version-range formatting, and discoverable detail tabs without default horizontal-scroll tax.  
-**Uses:** existing modpack metadata, scanner output, and detail-tab seams.  
-**Implements:** the modpack-detail integration points called out in `ARCHITECTURE.md`.
+### Build Order
 
-### Phase 17: Catalog, Compact Nav, And Settings Localization Polish
-**Rationale:** Remaining defects cluster around scanability, compact-state affordances, missing cover fallbacks, and raw or inconsistent settings copy.  
-**Delivers:** legible catalog filters, branded card fallbacks, coherent collapsed navigation, and finished settings or preset-name localization.  
-**Addresses:** the shipped-surface polish bucket without reopening new feature scope.  
-**Avoids:** a full redesign of the browser, sidebar, or settings IA.
+1. **Baseline stability and shell invariants**  
+   Clear crash-capable baseline debt, freeze defect scope, and define shared titlebar, footer, scroll, and overlay contracts.
 
-### Phase 18: Verification And Release Truth
-**Rationale:** Several defects are interaction and trust issues, so the milestone needs explicit verification rather than visual cleanup alone.  
-**Delivers:** targeted tests, walkthrough evidence through the existing manual verification seam, updated docs/locales where needed, and green lint or typecheck or build gates.  
-**Addresses:** proof that the screenshot-backed defect set is actually closed.  
-**Avoids:** relying only on static screenshots or code-review intuition.
+2. **Brand tokens and chrome metrics**  
+   Formalize spacing, radius, shadows, typography, surface tiers, accent behavior, and shell metrics in `index.css`, `theme.ts`, and related renderer seams.
 
-### Phase Ordering Rationale
+3. **Brand and fallback foundation**  
+   Expand `branding.ts`, unify empty and error states, and replace raw crash output with one product-owned degraded-state language.
 
-- launch and shared truth work comes first because multiple surfaces consume the same state or locale patterns
-- modpack detail integrity deserves its own slice because dependency truth and dense-tab discoverability are tightly coupled
-- catalog/settings/nav polish comes after shared fallback and locale rules are established
-- verification stays a dedicated closeout step because several failures are behavioral, not purely visual
+4. **Shared controls and state visibility**  
+   Normalize button, input, select, tab, segmented, and action-bar behavior so selected, disabled, focus, and accent states are consistent.
 
-### Research Flags
+5. **High-traffic surface migration**  
+   Rebuild shell-owned screens on top of those foundations: settings, dashboard, sidebar, modpack list/browser/details, then secondary flows.
 
-Phases likely needing deeper research during planning:
-- **Phase 15:** confirm how launcher progress and status text are assembled across hooks and main-process events before choosing the exact implementation cut
-- **Phase 16:** inspect current dependency-shape data from scanner output and modpack metadata to avoid fixing only one dependency subtype
+6. **Verification, locale, and release truth**  
+   Extend `src/verification/manual/*`, add screenshot checks, verify EN/RU plus wide/narrow and degraded states, and only then roll forward roadmap/docs truth.
 
-Phases with standard patterns:
-- **Phase 17:** mostly renderer layout, fallback, and locale-completion work on existing surfaces
-- **Phase 18:** uses established project verification and release-truth practices
+### Planning Buckets For REQUIREMENTS.md And ROADMAP.md
+
+These are the natural milestone buckets implied by the research:
+
+- baseline stability, scope, and shell invariants
+- brand system, shared tokens, and surface migration
+- dense surface IA, navigation, and CTA hierarchy
+- theme truth and interaction-state fidelity
+- fallback, error, and placeholder productization
+- verification, locale, and release truth
+
+## Major Pitfalls
+
+1. **Starting on an unstable baseline**  
+   Do not begin broad visual migration while crash-prone or lint-breaking shared surfaces remain unresolved.
+
+2. **Painting over broken shell geometry**  
+   Do not solve titlebar, sticky-header, or footer collisions with route-local spacing hacks; define shared shell contracts first.
+
+3. **Running the brand reset as a per-screen repaint**  
+   Do not refresh hero screens while sidebars, modals, controls, and degraded states keep the old visual language.
+
+4. **Preserving old CTA hierarchy under new chrome**  
+   Do not keep both shell-level and route-level primary actions visible on the same screen.
+
+5. **Designing dense surfaces against happy-path content only**  
+   Plan against long names, RU strings, narrow windows, missing art, and contradictory metadata from day one.
+
+6. **Making themes expressive but not state-truthful**  
+   Theme work must prove selected, focus, disabled, hover, slider, scrollbar, and segmented states, not just resting surfaces.
+
+7. **Treating degraded states as cleanup**  
+   Missing art, placeholders, empty states, and fatal-error presentation need owned scope, not end-of-milestone leftovers.
+
+8. **Declaring done from curated screenshots**  
+   Close the milestone through the existing verification seam with theme, locale, size, and degraded-state proof.
+
+9. **Letting redesign become scope drift**  
+   Keep every requirement tied back to current shipped trust issues and brand-consistency gaps, not net-new product surface area.
+
+### Additional Guardrails
+
+- avoid heavy blur and layered effects that degrade desktop performance on integrated GPUs
+- avoid JS resize or scroll math when CSS shell contracts can solve layout
+- avoid remount-heavy theme or locale switching that causes flicker or lost state
+- avoid rendering raw `Error` objects, IPC payloads, file paths, or template variables in user-visible UI
+
+## Implications For Next Documents
+
+### REQUIREMENTS.md should be framed around outcomes, not feature expansion
+
+- redesign existing surfaces only
+- make shell geometry, CTA truth, theme truth, fallback quality, and locale truth explicit acceptance areas
+- require degraded-state behavior and verification proof as first-class scope
+- forbid framework swaps, route expansion, and cosmetic-only repaint work
+
+### ROADMAP.md should sequence foundation before migration
+
+- start with baseline and shell/token foundations
+- migrate shared fallbacks and controls before screen-by-screen redesign
+- move high-traffic surfaces before secondary flows
+- end with verification and documentation truth, not with a purely visual closeout
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 | --- | --- | --- |
-| Stack | HIGH | Current dependencies and tooling already cover the milestone needs |
-| Features | HIGH | The screenshot audit gives a concrete, user-visible defect ledger |
-| Architecture | HIGH | Affected seams are visible in the current codebase and map cleanly to the audit categories |
-| Pitfalls | HIGH | Risks are specific to the audited failures and repeated patterns in the repo |
+| Stack | HIGH | All research points to strengthening the current stack rather than replacing it |
+| Features | HIGH | Table stakes, differentiators, and anti-features are directly grounded in current product evidence |
+| Architecture | HIGH | Existing renderer seams and verification seams already support the recommended build order |
+| Pitfalls | HIGH | The main failure modes are concrete and repeatedly evidenced in the current launcher state |
 
 **Overall confidence:** HIGH
 
-### Gaps To Address
+### Gaps To Carry Into Planning
 
-- confirm the exact source of launch-status desynchronization between renderer-visible progress and task-completion logs
-- confirm whether detail tabs should wrap, compact, or overflow into a `More` affordance on current widths
-- confirm whether preset naming should become localized descriptions or remain intentional product names in both locales
+- confirm exact CTA ownership decisions on routes where shell and page actions currently compete
+- confirm the final overflow pattern for dense tab sets under real EN/RU content pressure
+- confirm whether any additional packaged brand assets require narrow shared-contract changes beyond the current icon path
 
 ## Sources
 
-### Primary
-
-- `.planning/PROJECT.md`
-- `docs/ru/ui-qa-audit-2026-04-14.md`
-- `package.json`
 - `.planning/research/STACK.md`
 - `.planning/research/FEATURES.md`
 - `.planning/research/ARCHITECTURE.md`
 - `.planning/research/PITFALLS.md`
-
-### Secondary
-
-- `.planning/codebase/ARCHITECTURE.md`
-- `.planning/codebase/CONCERNS.md`
-- `.planning/codebase/TESTING.md`
+- `/Users/kszinikov/.codex/get-shit-done/templates/research-project/SUMMARY.md`
 
 ---
-*Research completed: 2026-04-14*  
-*Ready for roadmap: yes*
+*Research completed: 2026-04-17*  
+*Ready for milestone planning: yes*
