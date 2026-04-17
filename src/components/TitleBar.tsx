@@ -3,12 +3,17 @@ import { APP_ICON_PATH, LAUNCHER_MARK_PATH, isBundledAssetSource } from '../app/
 import { useAppIcon } from '../app/hooks/useAppIcon';
 import { windowControlsIPC } from '../services/ipc/windowControlsIPC';
 
+export const TITLE_BAR_TEST_ID = 'app-title-bar';
+
 // Custom draggable title bar with window controls.
 const TitleBar = () => {
     const { iconPath } = useAppIcon();
 
     return (
-        <div className="app-drag-region sticky top-0 z-[100] flex h-9 select-none items-center justify-between border-b border-border/70 bg-card/82 px-2 shadow-[0_6px_18px_rgba(0,0,0,0.1)] backdrop-blur-xl">
+        <div
+            data-testid={TITLE_BAR_TEST_ID}
+            className="app-drag-region relative z-[100] flex h-9 select-none items-center justify-between border-b border-border/70 bg-card/82 px-2 shadow-[0_6px_18px_rgba(0,0,0,0.1)] backdrop-blur-xl"
+        >
             <div className="flex items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary">
                 <img src={iconPath} alt="Icon" className="w-4 h-4 opacity-75" onError={(e) => {
                     if (!isBundledAssetSource(e.currentTarget.currentSrc || e.currentTarget.src, LAUNCHER_MARK_PATH)) {
