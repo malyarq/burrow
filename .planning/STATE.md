@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-status: Phase 19 plan 03 complete; ready for plan 04
-stopped_at: Completed 19-03-PLAN.md
-last_updated: "2026-04-17T19:45:53Z"
-last_activity: 2026-04-17 - Completed Phase 19 plan 03 flow-first dense route cleanup and overflow-safe add-content flows
+status: Phase 19 complete; ready for phase 20 planning
+stopped_at: Completed 19-04-PLAN.md
+last_updated: "2026-04-17T19:57:59Z"
+last_activity: 2026-04-17 - Completed Phase 19 plan 04 shell-integrated proof and focused shell-invariant closeout matrix
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
-  percent: 75
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 19 execution continues with shell-integrated proof after landing dense-route flow cleanup and overflow-safe add-content flows.
+**Current focus:** Phase 19 is complete with shell-integrated proof and a green closeout matrix; the next planning step is Phase 20 brand-system work.
 
 ## Current Position
 
 Phase: 19
 Plan: 04
-Status: Phase 19 plan 03 complete; ready for plan 04
-Last activity: 2026-04-17 - Completed Phase 19 plan 03 flow-first dense route cleanup and overflow-safe add-content flows
+Status: Phase 19 complete; ready for phase 20 planning
+Last activity: 2026-04-17 - Completed Phase 19 plan 04 shell-integrated proof and focused shell-invariant closeout matrix
 
-Progress: [███████░░░] 75%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 77
-- Active phase plans completed: 31
+- Total plans completed: 78
+- Active phase plans completed: 32
 - Average duration: 16 min
-- Total execution time: 5.3 hours
+- Total execution time: 5.5 hours
 
 **By Phase:**
 
@@ -54,8 +54,8 @@ Progress: [███████░░░] 75%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 18-03, 18-04, 19-01, 19-02, 19-03
-- Trend: Phase 19 now has the shell baseline, CTA ownership, and dense-route flow cleanup in place before shell-integrated proof.
+- Last 5 plans: 18-04, 19-01, 19-02, 19-03, 19-04
+- Trend: Phase 19 now closes with shell-integrated proof, truthful CTA ownership, and a green focused shell-invariant matrix.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -75,6 +75,7 @@ Progress: [███████░░░] 75%
 | Phase 19 P01 | 5 min | 2 tasks | 6 files |
 | Phase 19 P02 | 12 min | 2 tasks | 8 files |
 | Phase 19 P03 | 11 min | 2 tasks | 13 files |
+| Phase 19 P04 | 11 min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -162,6 +163,9 @@ Recent decisions affecting current work:
 - [Phase 19]: Modpack details expose update as the sole route-primary action when available and keep play as a secondary action instead of competing primaries.
 - [Phase 19]: Dense routes and add-content flows now end in one owning page or modal scroll instead of footer-like action rows.
 - [Phase 19]: Shared Modal exposes its body as the dense-content scroll region so add-content helpers, results, and final actions stay in one flow.
+- [Phase 19]: Phase 19 proof states should mount the real title bar and sidebar chrome instead of isolated route children so shell clearance and CTA hierarchy stay observable.
+- [Phase 19]: Import preview proof can reuse the shared manual manifest fixture instead of a view-local stub or empty fallback.
+- [Phase 19]: When the planned regression matrix is already green and scope-aligned, record it as a verification-only task commit instead of inventing churn in stable tests.
 
 ### Pending Todos
 
@@ -171,13 +175,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 19 is now in progress; remaining execution is focused on shell-integrated proof closure for the redesign baseline.
+- Phase 19 is complete; phase 20 can start from the shell-integrated proof baseline without reopening shell-invariant work.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T19:45:40.033Z
-Stopped at: Completed 19-03-PLAN.md
+Last session: 2026-04-17T19:59:44.146Z
+Stopped at: Completed 19-04-PLAN.md
 Resume file: None
