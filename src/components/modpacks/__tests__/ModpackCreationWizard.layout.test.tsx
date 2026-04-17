@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTranslator } from '../../../contexts/settings/i18n';
 import { ModpackCreationWizard } from '../ModpackCreationWizard';
@@ -104,5 +104,11 @@ describe('ModpackCreationWizard flow layout', () => {
     expect(actions.className).toContain('surface-card');
     expect(actions.className).not.toContain('sticky');
     expect(screen.getByRole('button', { name: 'Next' }).className).toContain('w-full');
+
+    fireEvent.change(screen.getByLabelText('Modpack name'), { target: { value: 'Layout Pack' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(flow.contains(screen.getByTestId('modpack-dependency-summary'))).toBe(true);
+    expect(screen.getByTestId('modpack-dependency-count').textContent).toBe('1');
   });
 });
