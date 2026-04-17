@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v0.4.0
-milestone_name: Launcher Truth And Product Polish
-status: awaiting next milestone
-stopped_at: Archived v0.4.0 milestone
-last_updated: "2026-04-17T16:41:42Z"
-last_activity: 2026-04-17 - Archived v0.4.0 milestone and prepared the next-milestone handoff
+milestone: v0.5.0
+milestone_name: Experience Reinvention And Brand Reset
+status: defining requirements
+stopped_at: Milestone v0.5.0 started
+last_updated: "2026-04-17T17:20:40Z"
+last_activity: 2026-04-17 - Started milestone v0.5.0 and moved planning into requirements definition
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 16
-  completed_plans: 16
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,11 +25,12 @@ See: .planning/PROJECT.md (updated 2026-04-17)
 
 ## Current Position
 
-Latest shipped milestone: `v0.4.0 Launcher Truth And Product Polish`
-Status: Awaiting next milestone definition
-Last activity: 2026-04-17 - Archived v0.4.0 milestone and prepared the next-milestone handoff
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-17 - Milestone v0.5.0 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -161,7 +162,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- `v0.4.0` is archived and shipped; there is no active milestone until `$gsd-new-milestone` defines fresh requirements.
+- `v0.5.0` has started, but requirements and roadmap do not exist yet; no phase execution should begin before new milestone planning finishes.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
@@ -169,5 +170,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-17T16:41:42Z
-Stopped at: Archived v0.4.0 milestone
+Stopped at: Started milestone v0.5.0
 Resume file: None
