@@ -21,7 +21,7 @@
 ### Dense Surface IA & CTA Hierarchy
 
 - [x] **DENSE-01**: User can scan and operate modpack browser filters, cards, and actions without wrapped or ambiguous controls.
-- [ ] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
+- [x] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
 - [ ] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
 - [x] **DENSE-04**: User can understand counts, summaries, and metadata on dense surfaces without unlabeled or contradictory values.
 
@@ -76,7 +76,7 @@
 | BRAND-02 | Phase 20 | Complete |
 | BRAND-03 | Phase 20 | Complete |
 | DENSE-01 | Phase 21 | Complete |
-| DENSE-02 | Phase 21 | Pending |
+| DENSE-02 | Phase 21 | Complete |
 | DENSE-03 | Phase 21 | Pending |
 | DENSE-04 | Phase 21 | Complete |
 | THEME-01 | Phase 22 | Pending |

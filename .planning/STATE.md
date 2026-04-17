@@ -4,17 +4,17 @@ milestone: v0.5
 milestone_name: milestone
 current_phase: 21
 current_phase_name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-current_plan: 1
+current_plan: 2
 status: in_progress
-stopped_at: Completed 21-01-PLAN.md
-last_updated: "2026-04-17T22:48:40.435Z"
-last_activity: 2026-04-18 - Completed Phase 21 plan 01 catalog density and CTA hierarchy
+stopped_at: Completed 21-02-PLAN.md
+last_updated: "2026-04-17T23:07:54.228Z"
+last_activity: 2026-04-18 - Completed Phase 21 plan 02 details IA, tab hierarchy, and action grouping
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 12
-  completed_plans: 9
-  percent: 75
+  completed_plans: 10
+  percent: 83
 ---
 
 # Project State
@@ -24,21 +24,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 21 is in progress after landing 21-01 catalog density and CTA hierarchy; the next step is executing 21-02 detail IA, tab hierarchy, and action grouping.
+**Current focus:** Phase 21 is in progress after landing 21-02 detail IA, tab hierarchy, and action grouping; the next step is executing 21-03 runtime-summary truth across create and edit configuration flows.
 
 ## Current Position
 
 Current Phase: 21
 Current Phase Name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-Current Plan: 1
+Current Plan: 2
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 21
-Plan: 01
+Plan: 02
 Status: In Progress
-Last activity: 2026-04-18 - Completed Phase 21 plan 01 catalog density and CTA hierarchy
+Last activity: 2026-04-18 - Completed Phase 21 plan 02 details IA, tab hierarchy, and action grouping
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -62,8 +62,8 @@ Progress: [████████░░] 75%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 20-01, 20-02, 20-03, 20-04, 21-01
-- Trend: Phase 21 started by stabilizing dense catalog rails, metadata hierarchy, and crowded-width regression coverage while later detail and runtime-summary plans remain open.
+- Last 5 plans: 20-02, 20-03, 20-04, 21-01, 21-02
+- Trend: Phase 21 now covers both dense catalog and details-route hierarchy, leaving runtime-summary truth and closeout proof as the remaining open work.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -89,6 +89,7 @@ Progress: [████████░░] 75%
 | Phase 20 P03 | 6 min | 2 tasks | 14 files |
 | Phase 20 P04 | 10 min | 2 tasks | 3 files |
 | Phase 21 P01 | 7 min | 2 tasks | 7 files |
+| Phase 21 P02 | 5 min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -194,6 +195,7 @@ Recent decisions affecting current work:
 - [Phase 21]: Replaced wrap-prone filter rows with grouped filter grids so dense desktop widths keep one readable control structure instead of orphaned selects.
 - [Phase 21]: Kept Phase 19 card ownership intact by preserving card activation while adding one explicit primary CTA and labeled metadata blocks per catalog card.
 - [Phase 21]: Used crowded long-title fixtures in browser and installed tests rather than broad visual rewrites, keeping the phase scoped to density truth.
+- [Phase 21]: Let the shared Modal body own world-datapack scrolling and replace raw dense ratios with labeled summary cards on representative secondary tabs.
 
 ### Pending Todos
 
@@ -210,6 +212,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T22:48:40.433Z
-Stopped at: Completed 21-01-PLAN.md
+Last session: 2026-04-17T23:07:54.226Z
+Stopped at: Completed 21-02-PLAN.md
 Resume file: None
