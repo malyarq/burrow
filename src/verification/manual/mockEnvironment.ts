@@ -6,6 +6,7 @@ import type { Screenshot } from '../../../electron/services/screenshots/screensh
 
 const ICON_PATH = '/icon.png';
 const DESKTOP_PATH = '/Users/manual/Desktop';
+const PHASE_17_POLISH_VIEW = 'phase-17-polish';
 
 const baseConfigs: Record<string, ModpackConfig> = {
   alpha: {
@@ -61,6 +62,19 @@ const baseMetadata: Record<string, ModpackMetadata> = {
     createdAt: '2026-04-01T10:00:00.000Z',
     updatedAt: '2026-04-13T08:30:00.000Z',
   },
+  classic: {
+    id: 'classic',
+    name: 'Classic',
+    version: '1.20.1',
+    source: 'local',
+    minecraftVersion: '1.20.1',
+    modLoader: { type: 'fabric', version: '0.16.9' },
+    iconUrl: ICON_PATH,
+    description: 'Classic route fixture for manual launcher proof.',
+    author: 'FMCL',
+    createdAt: '2026-04-01T10:00:00.000Z',
+    updatedAt: '2026-04-13T08:30:00.000Z',
+  },
 };
 
 const baseAccounts: Account[] = [
@@ -106,6 +120,42 @@ const browserResults: ModpackSearchResultItem[] = [
     dateModified: '2026-04-10T08:30:00.000Z',
   },
 ];
+
+function getManualVerificationView() {
+  return new URLSearchParams(window.location.search).get('view') ?? 'overview';
+}
+
+function getMetadataForView(view: string): Record<string, ModpackMetadata> {
+  const metadata = structuredClone(baseMetadata);
+
+  if (view !== PHASE_17_POLISH_VIEW) {
+    return metadata;
+  }
+
+  metadata.alpha = {
+    ...metadata.alpha,
+    iconUrl: undefined,
+    description: 'No-art fallback card for constrained catalog proof.',
+  };
+
+  return metadata;
+}
+
+function getBrowserResultsForView(view: string): ModpackSearchResultItem[] {
+  const results = structuredClone(browserResults);
+
+  if (view !== PHASE_17_POLISH_VIEW) {
+    return results;
+  }
+
+  results[0] = {
+    ...results[0],
+    iconUrl: undefined,
+    description: 'No-art launcher mark fallback fixture for the constrained browser state.',
+  };
+
+  return results;
+}
 
 const modpackVersions: ModpackVersionDescriptor[] = [
   {
@@ -300,12 +350,12 @@ type ManualState = {
   accounts: Account[];
 };
 
-function createState(): ManualState {
+function createState(view: string): ManualState {
   return {
     selectedModpackId: 'alpha',
     selectedAccountId: 'account-1',
     modpacks: [structuredClone(baseConfigs.alpha), structuredClone(baseConfigs.classic)],
-    metadata: structuredClone(baseMetadata),
+    metadata: getMetadataForView(view),
     accounts: structuredClone(baseAccounts),
   };
 }
@@ -327,11 +377,12 @@ function updateConfig(state: ManualState, nextConfig: ModpackConfig) {
   state.modpacks = state.modpacks.map((cfg) => (cfg.id === nextConfig.id ? structuredClone(nextConfig) : cfg));
 }
 
-function createSearchResponse(query: string, offset = 0, limit = 12) {
+function createSearchResponse(query: string, offset = 0, limit = 12, view = 'overview') {
+  const availableResults = getBrowserResultsForView(view);
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = normalizedQuery
-    ? browserResults.filter((item) => item.title.toLowerCase().includes(normalizedQuery))
-    : browserResults;
+    ? availableResults.filter((item) => item.title.toLowerCase().includes(normalizedQuery))
+    : availableResults;
   const items = filtered.slice(offset, offset + limit);
   return {
     items,
@@ -343,8 +394,16 @@ function createSearchResponse(query: string, offset = 0, limit = 12) {
 
 export function seedManualVerificationStorage(view: string) {
   const simpleViews = new Set(['welcome', 'tour', 'dashboard']);
-  localStorage.setItem('settings_language', 'en');
+  const isPhase17Polish = view === PHASE_17_POLISH_VIEW;
+  const seededBrowserResults = getBrowserResultsForView(view);
+
+  localStorage.setItem('settings_language', isPhase17Polish ? 'ru' : 'en');
   localStorage.setItem('settings_theme', 'dark');
+  if (isPhase17Polish) {
+    localStorage.setItem('settings_themePresetId', 'forest');
+  } else {
+    localStorage.removeItem('settings_themePresetId');
+  }
   localStorage.setItem('settings_accentColor', 'emerald');
   localStorage.setItem('settings_minecraftPath', '/mock/.minecraft');
   localStorage.setItem('settings_uiMode', simpleViews.has(view) ? 'simple' : 'modpacks');
@@ -360,7 +419,18 @@ export function seedManualVerificationStorage(view: string) {
         description: 'Legacy import route preserved in history.',
         iconUrl: ICON_PATH,
       },
-      browserResults[0],
+      seededBrowserResults[0],
+    ]));
+  } else if (isPhase17Polish) {
+    localStorage.setItem('modpack-history', JSON.stringify([
+      {
+        platform: 'curseforge',
+        projectId: '42',
+        title: 'CurseForge Pack',
+        description: 'Legacy import route preserved in history.',
+        iconUrl: ICON_PATH,
+      },
+      seededBrowserResults[0],
     ]));
   } else {
     localStorage.removeItem('modpack-history');
@@ -369,7 +439,8 @@ export function seedManualVerificationStorage(view: string) {
 }
 
 export function installManualVerificationEnvironment() {
-  const state = createState();
+  const view = getManualVerificationView();
+  const state = createState(view);
 
   const modpacksApi = {
     listModpacks: async () => listItemsFromState(state),
@@ -455,9 +526,9 @@ export function installManualVerificationEnvironment() {
       return structuredClone(next);
     },
     searchCurseForgeModpacks: async (query: string, _mcVersion?: string, _loader?: string, _sort?: string, offset?: number, limit?: number) =>
-      createSearchResponse(query, offset, limit),
+      createSearchResponse(query, offset, limit, view),
     searchModrinthModpacks: async (query: string, _mcVersion?: string, _loader?: string, _sort?: string, offset?: number, limit?: number) =>
-      createSearchResponse(query, offset, limit),
+      createSearchResponse(query, offset, limit, view),
     getCurseForgeModpackVersions: async () => structuredClone(modpackVersions),
     getModrinthModpackVersions: async () => structuredClone(modpackVersions),
     installCurseForgeModpack: async () => ({
