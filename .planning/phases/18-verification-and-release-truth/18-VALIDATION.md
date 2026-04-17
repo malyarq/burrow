@@ -50,6 +50,25 @@ created: 2026-04-17
 
 ---
 
+## Authoritative Closeout Matrix
+
+| Requirement | Owned Seam | Proof Focus |
+|-------------|------------|-------------|
+| `LAUNCH-01` | `src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx` | Classic dashboard hero falls back to the shared launcher mark when artwork is missing |
+| `LAUNCH-02` | `src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx` | Classic launch summary keeps the same resolved modloader label visible on the shipped surface |
+| `LAUNCH-03` | `src/components/sidebar/__tests__/LaunchControls.status.test.tsx` | Shared launch CTA, progress copy, and restart affordances stay stage-aware instead of contradicting active launch state |
+| `LAUNCH-04` | `src/components/sidebar/__tests__/LaunchControls.status.test.tsx` | Shared launch labels and progress detail are generated through the active translator instead of hard-coded English |
+| `DETAIL-01` | `src/components/modpacks/details/__tests__/SecondaryContentTabs.test.tsx` | Runtime-provided dependencies stay marked as satisfied on the repaired detail surface |
+| `DETAIL-02` | `src/components/modpacks/details/__tests__/SecondaryContentTabs.test.tsx` | Dependency requirements stay human-readable instead of leaking raw range syntax |
+| `DETAIL-03` | `src/components/modpacks/__tests__/ModpackDetailsHeader.i18n.test.tsx` | Dense detail navigation stays wrapped, keyboard-usable, and translated without horizontal-scroll defaulting |
+| `CATALOG-01` | `src/components/modpacks/__tests__/ModpackBrowser.ergonomics.test.tsx` and `src/components/modpacks/__tests__/ModpackList.ergonomics.test.tsx` | Remote and installed catalog controls stay readable at audited sidebar widths |
+| `CATALOG-02` | `src/components/modpacks/__tests__/ModpackBrowser.ergonomics.test.tsx` and `src/components/modpacks/__tests__/ModpackList.ergonomics.test.tsx` | No-art cards route through the launcher-mark fallback on both audited catalog surfaces |
+| `CATALOG-03` | `src/components/sidebar/__tests__/SidebarHeader.compact-mode.test.tsx` | Collapsed navigation shows intentional icon-led active-state affordances instead of stray placeholder letters |
+| `SET-01` | `src/components/__tests__/SettingsPage.navigation.test.tsx`, `src/components/settings/__tests__/SettingsTabsHeader.a11y.test.tsx`, and `src/components/settings/__tests__/AppearanceTab.i18n.test.tsx` | Settings shell, fallback labels, and touched appearance copy stay free of raw localization keys |
+| `SET-02` | `src/components/settings/__tests__/AppearanceTab.presets.test.tsx` | Preset identity stays stable while exported and visible labels follow the current language policy |
+
+---
+
 ## Wave 0 Requirements
 
 Existing infrastructure already covers the phase. Phase 18 reuses:
