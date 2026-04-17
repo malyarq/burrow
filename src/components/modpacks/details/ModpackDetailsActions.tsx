@@ -29,20 +29,38 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
   onDelete,
   t,
   getAccentStyles,
-}) => (
+}) => {
+  const primaryAction = hasUpdate ? 'update' : 'play';
+
+  return (
   <div className="surface-inline mx-6 mb-6 flex flex-shrink-0 flex-wrap gap-2 px-4 py-4">
-    <Button variant="primary" onClick={onLaunch} className="flex-1" style={getAccentStyles('bg').style}>
-      {t('general.play')}
-    </Button>
-    {hasUpdate && (
+    {primaryAction === 'play' ? (
       <Button
         variant="primary"
-        onClick={onShowUpdate}
-        className={cn(getAccentStyles('bg').className)}
+        onClick={onLaunch}
+        className="flex-1"
         style={getAccentStyles('bg').style}
+        data-primary-action="route"
+        data-route-action="play"
       >
-        {t('modpacks.update_available') || 'Обновление доступно'}
+        {t('general.play')}
       </Button>
+    ) : (
+      <>
+        <Button
+          variant="primary"
+          onClick={onShowUpdate}
+          className={cn('flex-1', getAccentStyles('bg').className)}
+          style={getAccentStyles('bg').style}
+          data-primary-action="route"
+          data-route-action="update"
+        >
+          {t('modpacks.update_available') || 'Обновление доступно'}
+        </Button>
+        <Button variant="secondary" onClick={onLaunch} data-route-action="play">
+          {t('general.play')}
+        </Button>
+      </>
     )}
     <Button variant="secondary" onClick={onRename}>
       {t('modpacks.rename')}
@@ -59,4 +77,5 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
       </Button>
     )}
   </div>
-);
+  );
+};
