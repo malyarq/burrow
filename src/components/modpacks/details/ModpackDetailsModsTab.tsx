@@ -120,6 +120,7 @@ function formatVersionRequirement(descriptor: VersionRequirementDescriptor, t: T
 export interface ModpackDetailsModsTabProps {
   mods: ModpackModEntry[];
   loadingMods: boolean;
+  initialExpandedModId?: string;
   modSearchQuery: string;
   onModSearchQueryChange: (value: string) => void;
   modFilterStatus: 'all' | 'enabled' | 'disabled';
@@ -139,6 +140,7 @@ export interface ModpackDetailsModsTabProps {
 export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
   mods,
   loadingMods,
+  initialExpandedModId,
   modSearchQuery,
   onModSearchQueryChange,
   modFilterStatus,
@@ -150,7 +152,7 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
   runtimeContext,
   t,
 }) => {
-  const [expandedModId, setExpandedModId] = React.useState<string | null>(null);
+  const [expandedModId, setExpandedModId] = React.useState<string | null>(initialExpandedModId ?? null);
 
   const toggleExpand = React.useCallback((modId: string) => {
     setExpandedModId((prev) => (prev === modId ? null : modId));

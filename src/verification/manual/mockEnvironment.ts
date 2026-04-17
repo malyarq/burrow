@@ -234,6 +234,14 @@ const modEntries: ModEntry[] = [
   },
 ];
 
+export function getManualVerificationModpackMetadata(view: string): ModpackMetadata {
+  return structuredClone(getMetadataForView(view).alpha);
+}
+
+export function getManualVerificationModEntries(): ModEntry[] {
+  return structuredClone(modEntries);
+}
+
 const statistics: StatisticsOverview = {
   global: {
     totalPlayTime: 7_200_000,
