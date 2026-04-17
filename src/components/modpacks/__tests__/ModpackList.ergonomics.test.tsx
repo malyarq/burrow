@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModpackList } from '../ModpackList';
 import { createTranslator } from '../../../contexts/settings/i18n';
@@ -78,6 +78,7 @@ describe('ModpackList ergonomics', () => {
         selected: false,
         metadata: {
           description: 'Route truth test pack',
+          version: '1.2.0',
           minecraftVersion: '1.20.1',
           modLoader: { type: 'fabric' },
         },
@@ -85,24 +86,28 @@ describe('ModpackList ergonomics', () => {
     ]);
   });
 
-  it('keeps installed catalog controls readable at sidebar widths and uses the neutral artwork fallback for no-art cards', async () => {
+  it('keeps installed catalog controls grouped and card metadata labeled at sidebar widths', async () => {
     render(<ModpackList />);
 
     await screen.findByText('Alpha Pack');
 
-    const searchRegion = screen.getByRole('search', { name: 'Enter modpack name...' });
-    const controlsRow = searchRegion.querySelector('.flex.flex-wrap.items-start.gap-2');
-    const sortShell = screen.getByRole('combobox', { name: 'By name' }).parentElement?.parentElement;
-    const versionShell = screen.getByRole('combobox', { name: 'All versions' }).parentElement?.parentElement;
-    const loaderShell = screen.getByRole('combobox', { name: 'All Modloaders' }).parentElement?.parentElement;
+    const searchRegion = screen.getByRole('search', { name: 'Search modpacks' });
+    const controlsGrid = within(searchRegion).getByTestId('installed-modpack-filter-controls');
+    const card = screen.getByRole('button', { name: 'Open details: Alpha Pack' }).closest('[role="listitem"]');
 
-    expect(controlsRow?.className).toContain('flex-wrap');
-    expect(sortShell?.className).toContain('min-w-[12rem]');
-    expect(sortShell?.className).toContain('flex-1');
-    expect(versionShell?.className).toContain('min-w-[11rem]');
-    expect(versionShell?.className).toContain('flex-1');
-    expect(loaderShell?.className).toContain('min-w-[11rem]');
-    expect(loaderShell?.className).toContain('flex-1');
+    expect(card).not.toBeNull();
+    expect(controlsGrid.className).toContain('grid');
+    expect(controlsGrid.className).toContain('xl:grid-cols-4');
+    expect(within(searchRegion).getByText('Search modpacks')).toBeTruthy();
+    expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
+    expect(within(searchRegion).getByText('Modloader')).toBeTruthy();
+    expect(screen.getByTestId('installed-modpack-actions-alpha').className).toContain('grid');
+    expect(screen.getByRole('button', { name: 'Make active: Alpha Pack' })).toBeTruthy();
+
+    const cardScope = within(card as HTMLElement);
+    expect(cardScope.getByText('Version')).toBeTruthy();
+    expect(cardScope.getByText('Minecraft Version')).toBeTruthy();
+    expect(cardScope.getByText('Modloader')).toBeTruthy();
 
     await waitFor(() => {
       expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);
