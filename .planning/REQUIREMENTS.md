@@ -22,9 +22,9 @@ Requirements committed for milestone `v0.4.0 Launcher Truth And Product Polish`.
 
 ### Catalog & Navigation
 
-- [ ] **CATALOG-01**: User can read catalog filters and primary controls at shipped desktop widths with the sidebar open.
-- [ ] **CATALOG-02**: User sees a branded fallback cover instead of an empty gray placeholder for modpacks without artwork.
-- [ ] **CATALOG-03**: User can understand the active destination in collapsed navigation without stray placeholder letters or ambiguous compact-state affordances.
+- [x] **CATALOG-01**: User can read catalog filters and primary controls at shipped desktop widths with the sidebar open.
+- [x] **CATALOG-02**: User sees a branded fallback cover instead of an empty gray placeholder for modpacks without artwork.
+- [x] **CATALOG-03**: User can understand the active destination in collapsed navigation without stray placeholder letters or ambiguous compact-state affordances.
 
 ### Settings & Locale
 
@@ -77,9 +77,9 @@ Which phases cover which requirements. Filled during roadmap creation.
 | DETAIL-01 | Phase 16 | Complete |
 | DETAIL-02 | Phase 16 | Complete |
 | DETAIL-03 | Phase 16 | Complete |
-| CATALOG-01 | Phase 17 | Pending |
-| CATALOG-02 | Phase 17 | Pending |
-| CATALOG-03 | Phase 17 | Pending |
+| CATALOG-01 | Phase 17 | Complete |
+| CATALOG-02 | Phase 17 | Complete |
+| CATALOG-03 | Phase 17 | Complete |
 | SET-01 | Phase 17 | Pending |
 | SET-02 | Phase 17 | Pending |
 
@@ -90,4 +90,4 @@ Which phases cover which requirements. Filled during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-14*  
-*Last updated: 2026-04-15 after Phase 16 execution*
+*Last updated: 2026-04-17 after Phase 17 plan 01 execution*

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-status: Phase 16 complete; ready for Phase 17 discussion
-stopped_at: Phase 16 complete
-last_updated: "2026-04-15T03:32:00.000Z"
-last_activity: 2026-04-15 - Phase 16 executed with truthful runtime dependency states, readable requirement copy, dense detail navigation, and green repo gates
+status: Phase 17 in progress
+stopped_at: Completed 17-01-PLAN.md
+last_updated: "2026-04-17T14:03:53.126Z"
+last_activity: 2026-04-17 - Phase 17 catalog work is in progress; plan 01 shipped responsive filters and shared launcher-mark fallback states
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 50
+  total_plans: 12
+  completed_plans: 10
+  percent: 83
 ---
 
 # Project State
@@ -21,22 +21,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 17 discussion for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 17 execution for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
 Phase: 17
-Plan: pending
-Status: Phase 16 complete; ready for Phase 17 discussion
-Last activity: 2026-04-15 - Phase 16 executed with truthful runtime dependency states, readable requirement copy, dense detail navigation, and green repo gates
+Plan: 03
+Status: Phase 17 in progress
+Last activity: 2026-04-17 - Phase 17 catalog work is in progress; plan 01 shipped responsive filters and shared launcher-mark fallback states
 
-Progress: [█████░░░░░] 50%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 67
-- Active phase plans completed: 21
+- Total plans completed: 69
+- Active phase plans completed: 23
 - Average duration: 16 min
 - Total execution time: 5.0 hours
 
@@ -54,11 +54,17 @@ Progress: [█████░░░░░] 50%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 15-04, 16-01, 16-02, 16-03, 16-04
-- Trend: v0.4.0 now has both launch-truth and modpack-details integrity phases implemented; the remaining work shifts to catalog, compact navigation, and localization polish
+- Last 5 plans: 16-02, 16-03, 16-04, 17-01, 17-02
+- Trend: v0.4.0 has moved from launch and detail truth into catalog polish, compact navigation, and settings-localization closeout work.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
+
+**Recent plan metrics**
+
+| Plan | Duration | Tasks | Files |
+| --- | --- | --- | --- |
+| Phase 17 P01 | 8 min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -128,6 +134,8 @@ Recent decisions affecting current work:
 - [Phase 15]: Reuse the bundled launcher mark through the shared `LazyImage` seam instead of letting the classic hero fail open on missing art.
 - [Phase 15]: Treat pending launch config as the visible source of truth for classic loader or version summary, and let structured runtime state stay authoritative over supporting logs.
 - [Phase 15]: Keep advanced settings visible during active launch work by rendering them read-only on the classic surface instead of hiding them behind a blocking state.
+- [Phase 17]: Reused LazyImage's launcher-mark default instead of passing '/icon.png' from catalog surfaces.
+- [Phase 17]: Guarded the sidebar-width catalog fix with focused ergonomics assertions on the installed and remote filter shells.
 
 ### Pending Todos
 
@@ -148,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-15T03:32:00.000Z
-Stopped at: Phase 16 complete
+Last session: 2026-04-17T14:03:53.124Z
+Stopped at: Completed 17-01-PLAN.md
 Resume file: None
