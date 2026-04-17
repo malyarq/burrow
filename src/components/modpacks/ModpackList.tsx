@@ -43,6 +43,41 @@ function translateWithFallback(
   return value === key ? fallback : value;
 }
 
+function formatDateLabel(value?: string): string | null {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
+}
+
+function formatLoaderLabel(
+  t: (key: string, params?: Record<string, string | number>) => string,
+  loader: string,
+): string {
+  const normalizedLoader = loader.toLowerCase();
+
+  switch (normalizedLoader) {
+    case 'forge':
+      return translateWithFallback(t, 'modpacks.loader_forge', 'Forge');
+    case 'fabric':
+      return translateWithFallback(t, 'modpacks.loader_fabric', 'Fabric');
+    case 'quilt':
+      return translateWithFallback(t, 'modpacks.loader_quilt', 'Quilt');
+    case 'neoforge':
+      return translateWithFallback(t, 'modpacks.loader_neoforge', 'NeoForge');
+    case 'vanilla':
+      return translateWithFallback(t, 'modpacks.loader_vanilla', 'Vanilla (no modloader)');
+    default:
+      return loader;
+  }
+}
+
 // Uses ModpackListContext — only updates when modpacks/selectedId change, not when config changes (downloads).
 function useModpackListValues() {
   const { modpacks, selectedId, select, remove, rename, duplicate, refresh } = useModpackListContext();
@@ -329,6 +364,44 @@ const ModpackListComponentInternal: React.FC<{
     });
   }, [filteredModpacks, sortOption]);
 
+  const hasActiveFilters =
+    searchQuery.trim().length > 0
+    || filterMCVersion !== 'all'
+    || filterLoader !== 'all'
+    || sortOption !== 'name';
+  const selectedModpack = useMemo(
+    () => modpacks.find((modpack) => modpack.id === selectedId) ?? null,
+    [modpacks, selectedId],
+  );
+  const activeFilterTokens = useMemo(() => {
+    const tokens: string[] = [];
+
+    if (searchQuery.trim().length > 0) {
+      tokens.push(`${translateWithFallback(t, 'modpacks.search', 'Search modpacks')}: "${searchQuery.trim()}"`);
+    }
+    if (filterMCVersion !== 'all') {
+      tokens.push(`${translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}: ${filterMCVersion}`);
+    }
+    if (filterLoader !== 'all') {
+      tokens.push(`${translateWithFallback(t, 'modpacks.loader', 'Modloader')}: ${formatLoaderLabel(t, filterLoader)}`);
+    }
+    if (sortOption !== 'name') {
+      tokens.push(
+        sortOption === 'created'
+          ? translateWithFallback(t, 'modpacks.sort_created', 'By creation date')
+          : translateWithFallback(t, 'modpacks.sort_updated', 'By update date'),
+      );
+    }
+
+    return tokens;
+  }, [filterLoader, filterMCVersion, searchQuery, sortOption, t]);
+  const handleResetFilters = useCallback(() => {
+    setSearchQuery('');
+    setFilterMCVersion('all');
+    setFilterLoader('all');
+    setSortOption('name');
+  }, []);
+
   // Derived lists for filter dropdowns
   const availableVersions = useMemo(() => {
     const versions = new Set(
@@ -511,6 +584,14 @@ const ModpackListComponentInternal: React.FC<{
     const { t, getAccentStyles, getAccentHex } = useSettings();
     const iconSrc = useMemo(() => getModpackIcon(modpack), [modpack]);
     const sourceBadge = useMemo(() => getModpackSourceBadge(modpack.metadata?.source), [modpack.metadata?.source]);
+    const updatedLabel = useMemo(
+      () => formatDateLabel(modpack.metadata?.updatedAt ?? modpack.metadata?.createdAt),
+      [modpack.metadata?.createdAt, modpack.metadata?.updatedAt],
+    );
+    const modLoaderLabel = useMemo(
+      () => (modpack.metadata?.modLoader?.type ? formatLoaderLabel(t, modpack.metadata.modLoader.type) : null),
+      [modpack.metadata?.modLoader?.type, t],
+    );
     const actionMenuId = `modpack-actions-menu-${modpack.id}`;
     const actionMenuLabel = `${translateWithFallback(t, 'modpacks.actions_title', 'More actions')}: ${modpack.name}`;
     const openDetailsText = translateWithFallback(t, 'modpacks.open_details', 'Open details');
@@ -566,94 +647,128 @@ const ModpackListComponentInternal: React.FC<{
           className="absolute inset-0 rounded-xl focus:outline-none"
         />
 
-        {/* Icon */}
-        <div className="relative z-10 flex items-start gap-4 mb-3">
-          <div className="w-20 h-20 flex-shrink-0">
-            <LazyImage
-              src={iconSrc}
-              alt={modpack.name}
-              className="h-full w-full rounded-2xl border border-border/70 object-cover"
-              placeholder={
-                <SkeletonLoader variant="rounded" width={80} height={80} />
-              }
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-foreground">
+        <div className="relative z-10 flex h-full flex-col gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-20 h-20 flex-shrink-0">
+              <LazyImage
+                src={iconSrc}
+                alt={modpack.name}
+                className="h-full w-full rounded-2xl border border-border/70 object-cover"
+                placeholder={
+                  <SkeletonLoader variant="rounded" width={80} height={80} />
+                }
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="mb-2 flex flex-wrap items-start gap-2">
+                {sourceBadge}
+                {isSelected && (
+                  <div
+                    className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white"
+                    style={{ backgroundColor: getAccentHex() }}
+                  >
+                    {t('modpacks.active')}
+                  </div>
+                )}
+              </div>
+              <h3 className="truncate text-base font-semibold text-foreground">
                 {modpack.name}
               </h3>
-              {sourceBadge}
-              {/* Selected Badge */}
-              {isSelected && (
-                <div
-                  className="px-2 py-1 rounded text-xs font-bold text-white flex-shrink-0"
-                  style={{ backgroundColor: getAccentHex() }}
-                >
-                  {t('modpacks.active')}
-                </div>
+              {modpack.metadata?.description && (
+                <p className="mt-2 line-clamp-2 flex-shrink-0 text-sm text-secondary">
+                  {modpack.metadata.description}
+                </p>
               )}
             </div>
+          </div>
+
+          <div className="grid gap-2 text-xs text-secondary sm:grid-cols-2">
             {modpack.metadata?.version && (
-              <p className="text-xs text-secondary">
-                {t('modpacks.version')}: {modpack.metadata.version}
-              </p>
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.version', 'Version')}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {modpack.metadata.version}
+                </div>
+              </div>
             )}
             {modpack.metadata?.minecraftVersion && (
-              <p className="text-xs text-secondary">
-                MC {modpack.metadata.minecraftVersion}
-              </p>
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {modpack.metadata.minecraftVersion}
+                </div>
+              </div>
+            )}
+            {modLoaderLabel && (
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.loader', 'Modloader')}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {modLoaderLabel}
+                </div>
+              </div>
+            )}
+            {updatedLabel && (
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.updated', 'Updated')}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {updatedLabel}
+                </div>
+              </div>
             )}
           </div>
-        </div>
 
-        {/* Description */}
-        {modpack.metadata?.description && (
-          <p className="mb-3 line-clamp-2 flex-shrink-0 text-sm text-secondary">
-            {modpack.metadata.description}
-          </p>
-        )}
-
-        {/* Actions - всегда снизу */}
-        <div className="relative z-10 flex flex-wrap gap-2 mt-auto pt-1" onClick={(e) => e.stopPropagation()}>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => onShowDetails(modpack.id)}
-            className="flex-1 min-w-0 transition-all duration-200"
-            style={getAccentStyles('bg').style}
-            aria-label={`${openDetailsText}: ${modpack.name}`}
+          <div
+            className="relative z-10 mt-auto grid grid-cols-[minmax(0,1fr)_auto] gap-2 pt-1"
+            onClick={(e) => e.stopPropagation()}
+            data-testid={`installed-modpack-actions-${modpack.id}`}
           >
-            <FolderOpen className="h-4 w-4" />
-            {openDetailsText}
-          </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => {
-              if (!isSelected) {
-                onSelect(modpack.id);
-              }
-            }}
-            disabled={isSelected}
-            className="shrink-0 transition-all duration-200"
-            aria-label={`${isSelected ? activeNowText : makeActiveText}: ${modpack.name}`}
-          >
-            {isSelected ? activeNowText : makeActiveText}
-          </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={(event) => onOpenActions(event, modpack.id)}
-            aria-haspopup="menu"
-            aria-expanded={isMenuOpen}
-            aria-controls={isMenuOpen ? actionMenuId : undefined}
-            aria-label={actionMenuLabel}
-            className="shrink-0 px-3 transition-all duration-200"
-            title={t('modpacks.actions_title') || 'More actions'}
-          >
-            <MoreHorizontal className="w-4 h-4" />
-          </Button>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => onShowDetails(modpack.id)}
+              className="col-span-2 min-w-0 justify-center transition-all duration-200"
+              style={getAccentStyles('bg').style}
+              aria-label={`${openDetailsText}: ${modpack.name}`}
+            >
+              <FolderOpen className="h-4 w-4" />
+              {openDetailsText}
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => {
+                if (!isSelected) {
+                  onSelect(modpack.id);
+                }
+              }}
+              disabled={isSelected}
+              className="min-w-[8.5rem] transition-all duration-200"
+              aria-label={`${isSelected ? activeNowText : makeActiveText}: ${modpack.name}`}
+            >
+              {isSelected ? activeNowText : makeActiveText}
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={(event) => onOpenActions(event, modpack.id)}
+              aria-haspopup="menu"
+              aria-expanded={isMenuOpen}
+              aria-controls={isMenuOpen ? actionMenuId : undefined}
+              aria-label={actionMenuLabel}
+              className="px-3 transition-all duration-200"
+              title={t('modpacks.actions_title') || 'More actions'}
+            >
+              <MoreHorizontal className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -667,6 +782,9 @@ const ModpackListComponentInternal: React.FC<{
       prevProps.modpack.name === nextProps.modpack.name &&
       prevProps.modpack.metadata?.version === nextProps.modpack.metadata?.version &&
       prevProps.modpack.metadata?.minecraftVersion === nextProps.modpack.metadata?.minecraftVersion &&
+      prevProps.modpack.metadata?.modLoader?.type === nextProps.modpack.metadata?.modLoader?.type &&
+      prevProps.modpack.metadata?.updatedAt === nextProps.modpack.metadata?.updatedAt &&
+      prevProps.modpack.metadata?.createdAt === nextProps.modpack.metadata?.createdAt &&
       prevProps.modpack.metadata?.description === nextProps.modpack.metadata?.description &&
       prevProps.modpack.metadata?.source === nextProps.modpack.metadata?.source
     );
@@ -726,62 +844,147 @@ const ModpackListComponentInternal: React.FC<{
           </div>
         </div>
 
+        <div className="surface-muted mb-4 space-y-4 p-4" data-testid="installed-modpack-summary">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="grid flex-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.title', 'Modpacks')}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {sortedModpacks.length} / {modpacks.length}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.active', 'Active')}
+                </div>
+                <div className="mt-1 truncate text-sm font-medium text-foreground">
+                  {selectedModpack?.name ?? '-'}
+                </div>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                  {translateWithFallback(t, 'modpacks.results', 'Results')}
+                </div>
+                <div className="mt-1 text-sm font-medium text-foreground">
+                  {translateWithFallback(
+                    t,
+                    'modpacks.results_summary',
+                    `Showing ${sortedModpacks.length}-${sortedModpacks.length} of ${modpacks.length}`,
+                    { start: sortedModpacks.length > 0 ? 1 : 0, end: sortedModpacks.length, total: modpacks.length },
+                  )}
+                </div>
+              </div>
+            </div>
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetFilters}
+                className="shrink-0"
+              >
+                {translateWithFallback(t, 'modpacks.clear_filters', 'Clear filters')}
+              </Button>
+            )}
+          </div>
+
+          {activeFilterTokens.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-xs font-medium text-foreground">
+                {translateWithFallback(t, 'modpacks.active_filters', 'Active filters')}
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-secondary">
+                {activeFilterTokens.map((token) => (
+                  <span key={token} className="rounded-full border border-border/70 bg-background/72 px-2.5 py-1">
+                    {token}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Search and Filters */}
         <div
           className="surface-muted mb-6 space-y-3 p-4"
           role="search"
-          aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
+          aria-label={t('modpacks.search') || 'Search modpacks'}
           data-testid="installed-modpack-filters"
         >
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('modpacks.search_placeholder') || 'Поиск модпаков...'}
-            aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
-            className="w-full"
-            data-testid="installed-modpack-search"
-          />
-          <div className="flex flex-wrap items-start gap-2" data-testid="installed-modpack-filter-controls">
-            <Select
-              value={sortOption}
-              onChange={(e) => {
-                const nextSortOption = e.target.value;
-                if (SORT_OPTIONS.includes(nextSortOption as SortOption)) {
-                  setSortOption(nextSortOption as SortOption);
-                }
-              }}
-              aria-label={t('modpacks.sort_name') || 'Sort modpacks'}
-              className="min-w-[12rem] flex-1"
-              data-testid="installed-modpack-sort"
-            >
-              <option value="name">{t('modpacks.sort_name') || 'По имени'}</option>
-              <option value="created">{t('modpacks.sort_created') || 'По дате создания'}</option>
-              <option value="updated">{t('modpacks.sort_updated') || 'По обновлению'}</option>
-            </Select>
-            <Select
-              value={filterMCVersion}
-              onChange={(e) => setFilterMCVersion(e.target.value)}
-              aria-label={t('modpacks.filter_all_versions') || 'Filter by Minecraft version'}
-              className="min-w-[11rem] flex-1"
-              data-testid="installed-modpack-version-filter"
-            >
-              <option value="all">{t('modpacks.filter_all_versions') || 'Все версии'}</option>
-              {availableVersions.map(v => (
-                <option key={v} value={v}>{v}</option>
-              ))}
-            </Select>
-            <Select
-              value={filterLoader}
-              onChange={(e) => setFilterLoader(e.target.value)}
-              aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
-              className="min-w-[11rem] flex-1"
-              data-testid="installed-modpack-loader-filter"
-            >
-              <option value="all">{t('modpacks.filter_all_loaders') || 'Все лоадеры'}</option>
-              {availableLoaders.map(l => (
-                <option key={l} value={l}>{l}</option>
-              ))}
-            </Select>
+          <div className="grid gap-3 xl:grid-cols-4" data-testid="installed-modpack-filter-controls">
+            <div className="space-y-1 xl:col-span-4">
+              <div className="text-xs font-medium text-secondary">
+                {t('modpacks.search') || 'Search modpacks'}
+              </div>
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t('modpacks.search_placeholder') || 'Поиск модпаков...'}
+                aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
+                className="w-full"
+                data-testid="installed-modpack-search"
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-secondary">
+                {sortOption === 'created'
+                  ? translateWithFallback(t, 'modpacks.sort_created', 'By creation date')
+                  : sortOption === 'updated'
+                    ? translateWithFallback(t, 'modpacks.sort_updated', 'By update date')
+                    : translateWithFallback(t, 'modpacks.sort_name', 'By name')}
+              </div>
+              <Select
+                value={sortOption}
+                onChange={(e) => {
+                  const nextSortOption = e.target.value;
+                  if (SORT_OPTIONS.includes(nextSortOption as SortOption)) {
+                    setSortOption(nextSortOption as SortOption);
+                  }
+                }}
+                aria-label={t('modpacks.sort_name') || 'Sort modpacks'}
+                className="w-full"
+                data-testid="installed-modpack-sort"
+              >
+                <option value="name">{t('modpacks.sort_name') || 'По имени'}</option>
+                <option value="created">{t('modpacks.sort_created') || 'По дате создания'}</option>
+                <option value="updated">{t('modpacks.sort_updated') || 'По обновлению'}</option>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-secondary">
+                {translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}
+              </div>
+              <Select
+                value={filterMCVersion}
+                onChange={(e) => setFilterMCVersion(e.target.value)}
+                aria-label={t('modpacks.filter_all_versions') || 'Filter by Minecraft version'}
+                className="w-full"
+                data-testid="installed-modpack-version-filter"
+              >
+                <option value="all">{t('modpacks.filter_all_versions') || 'Все версии'}</option>
+                {availableVersions.map(v => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <div className="text-xs font-medium text-secondary">
+                {translateWithFallback(t, 'modpacks.loader', 'Modloader')}
+              </div>
+              <Select
+                value={filterLoader}
+                onChange={(e) => setFilterLoader(e.target.value)}
+                aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
+                className="w-full"
+                data-testid="installed-modpack-loader-filter"
+              >
+                <option value="all">{t('modpacks.filter_all_loaders') || 'Все лоадеры'}</option>
+                {availableLoaders.map(l => (
+                  <option key={l} value={l}>{formatLoaderLabel(t, l)}</option>
+                ))}
+              </Select>
+            </div>
           </div>
         </div>
 

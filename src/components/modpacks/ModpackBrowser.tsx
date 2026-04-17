@@ -71,6 +71,28 @@ function formatDateLabel(value?: string): string | null {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
 }
 
+function formatLoaderLabel(
+  t: (key: string, params?: Record<string, string | number>) => string,
+  loader: string,
+): string {
+  const normalizedLoader = loader.toLowerCase();
+
+  switch (normalizedLoader) {
+    case 'forge':
+      return translateWithFallback(t, 'modpacks.loader_forge', 'Forge');
+    case 'fabric':
+      return translateWithFallback(t, 'modpacks.loader_fabric', 'Fabric');
+    case 'quilt':
+      return translateWithFallback(t, 'modpacks.loader_quilt', 'Quilt');
+    case 'neoforge':
+      return translateWithFallback(t, 'modpacks.loader_neoforge', 'NeoForge');
+    case 'vanilla':
+      return translateWithFallback(t, 'modpacks.loader_vanilla', 'Vanilla (no modloader)');
+    default:
+      return loader;
+  }
+}
+
 export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, onBack, onNavigate, onStateChange }) => {
   const { t, getAccentStyles } = useSettings();
   const normalizedInitialState = normalizeModpackBrowserState(initialState);
@@ -301,13 +323,13 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
     const tokens: string[] = [];
 
     if (query.trim().length > 0) {
-      tokens.push(`"${query.trim()}"`);
+      tokens.push(`${translateWithFallback(t, 'modpacks.search', 'Search modpacks')}: "${query.trim()}"`);
     }
     if (filterMCVersion !== DEFAULT_MODPACK_BROWSER_STATE.filterMCVersion) {
-      tokens.push(`MC ${filterMCVersion}`);
+      tokens.push(`${translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}: ${filterMCVersion}`);
     }
     if (filterLoader !== DEFAULT_MODPACK_BROWSER_STATE.filterLoader) {
-      tokens.push(filterLoader);
+      tokens.push(`${translateWithFallback(t, 'modpacks.loader', 'Modloader')}: ${formatLoaderLabel(t, filterLoader)}`);
     }
     if (sortBy !== DEFAULT_MODPACK_BROWSER_STATE.sortBy) {
       tokens.push(
@@ -366,7 +388,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         onClick={() => {
           void handleModpackClick(modpack);
         }}
-        className="surface-card relative cursor-pointer p-4 transition-colors hover:border-border-active hover:bg-card focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-zinc-900"
+        className="surface-card relative flex min-h-[20rem] cursor-pointer flex-col p-4 transition-colors hover:border-border-active hover:bg-card focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-zinc-900"
       >
         <div
           role="button"
@@ -394,51 +416,78 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         >
           <Star className={cn('h-5 w-5', isFavorite(modpack) ? 'fill-yellow-400 text-yellow-500' : 'text-muted')} />
         </button>
-        <div className="flex gap-4">
-          <LazyImage
-            src={modpack.iconUrl ?? undefined}
-            alt={modpack.title}
-            className="h-16 w-16 rounded-2xl border border-border/70 object-cover"
-          />
-          <div className="min-w-0 flex-1">
-            <div className="mb-2 flex flex-wrap items-center gap-2 pr-8">
-              <span className={cn(
-                'rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em]',
-                modpack.platform === 'curseforge'
-                  ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
-                  : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-              )}>
-                {providerLabel}
-              </span>
-              {updatedLabel && (
-                <span className="text-xs text-secondary">
-                  {translateWithFallback(t, 'modpacks.updated', 'Updated')}: {updatedLabel}
+        <div className="flex h-full flex-col gap-4">
+          <div className="flex gap-4">
+            <LazyImage
+              src={modpack.iconUrl ?? undefined}
+              alt={modpack.title}
+              className="h-16 w-16 rounded-2xl border border-border/70 object-cover"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex flex-wrap items-center gap-2 pr-8">
+                <span className={cn(
+                  'rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em]',
+                  modpack.platform === 'curseforge'
+                    ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+                    : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                )}>
+                  {providerLabel}
                 </span>
+              </div>
+              <h4 className="truncate font-semibold text-foreground">
+                {modpack.title}
+              </h4>
+              {modpack.description && (
+                <p className="mt-1 line-clamp-2 text-sm text-secondary">
+                  {modpack.description}
+                </p>
               )}
             </div>
-            <h4 className="truncate font-semibold text-foreground">
-              {modpack.title}
-            </h4>
-            {modpack.description && (
-              <p className="mt-1 line-clamp-2 text-sm text-secondary">
-                {modpack.description}
-              </p>
-            )}
-            <div className="mt-2 flex flex-wrap gap-3 text-xs text-secondary">
+          </div>
+
+          {(modpack.downloads !== undefined || updatedLabel) && (
+            <div className="grid gap-2 text-xs text-secondary sm:grid-cols-2">
               {modpack.downloads !== undefined && (
-                <span>
-                  {translateWithFallback(t, 'modpacks.downloads', 'Downloads')}: {formatCompactCount(modpack.downloads)}
-                </span>
+                <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                    {translateWithFallback(t, 'modpacks.downloads', 'Downloads')}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">
+                    {formatCompactCount(modpack.downloads)}
+                  </div>
+                </div>
               )}
-              <span>
-                {translateWithFallback(t, 'modpacks.open_details', 'Open details')}
-              </span>
+              {updatedLabel && (
+                <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                    {translateWithFallback(t, 'modpacks.updated', 'Updated')}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">
+                    {updatedLabel}
+                  </div>
+                </div>
+              )}
             </div>
+          )}
+
+          <div className="relative z-10 mt-auto pt-1" onClick={(event) => event.stopPropagation()}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                void handleModpackClick(modpack);
+              }}
+              className={cn('w-full justify-center', getAccentStyles('bg').className)}
+              style={getAccentStyles('bg').style}
+              aria-label={`${translateWithFallback(t, 'modpacks.open_details', 'Open details')}: ${modpack.title}`}
+            >
+              {translateWithFallback(t, 'modpacks.open_details', 'Open details')}
+            </Button>
           </div>
         </div>
       </div>
     );
-  }, [handleCardKeyDown, handleModpackClick, isFavorite, t, toggleFavorite]);
+  }, [getAccentStyles, handleCardKeyDown, handleModpackClick, isFavorite, t, toggleFavorite]);
 
 
   return (
@@ -518,14 +567,14 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
 
       <div className="flex-1 overflow-y-auto p-6 min-h-0 custom-scrollbar">
         {!showHistory && (
-          <div className="surface-muted mb-4 space-y-3 p-4">
+          <div className="surface-muted mb-4 space-y-4 p-4" data-testid="remote-modpack-summary">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-secondary">
-                  <span className="rounded-full border border-border/70 bg-background/72 px-3 py-1">
-                    {translateWithFallback(t, 'modpacks.platform_modrinth', 'Modrinth')}
-                  </span>
-                  <span className="rounded-full border border-border/70 bg-background/72 px-3 py-1">
+              <div className="grid flex-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                    {translateWithFallback(t, 'modpacks.results', 'Results')}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">
                     {totalResults > 0
                       ? translateWithFallback(
                         t,
@@ -534,28 +583,31 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                         { start: showingStart, end: showingEnd, total: totalResults }
                       )
                       : translateWithFallback(t, 'modpacks.results_summary_empty', 'No results yet')}
-                  </span>
-                  {totalPages > 1 && (
-                    <span className="rounded-full border border-border/70 bg-background/72 px-3 py-1">
-                      {translateWithFallback(
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                    {translateWithFallback(t, 'modpacks.page', 'Page')}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">
+                    {totalPages > 1
+                      ? translateWithFallback(
                         t,
                         'modpacks.results_page_summary',
                         `Page ${currentPage} of ${totalPages}`,
                         { current: currentPage, total: totalPages }
-                      )}
-                    </span>
-                  )}
+                      )
+                      : translateWithFallback(t, 'modpacks.results_page_summary', 'Page {{current}} of {{total}}', { current: 1, total: 1 })}
+                  </div>
                 </div>
-                {activeFilterTokens.length > 0 && (
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-secondary">
-                    <span className="font-medium text-foreground">
-                      {translateWithFallback(t, 'modpacks.active_filters', 'Active filters')}
-                    </span>
-                    {activeFilterTokens.map((token) => (
-                      <span key={token} className="rounded-full border border-border/70 bg-background/72 px-2.5 py-1">
-                        {token}
-                      </span>
-                    ))}
+                {recentHistory.length > 0 && (
+                  <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                      {translateWithFallback(t, 'modpacks.history', 'History')}
+                    </div>
+                    <div className="mt-1 text-sm font-medium text-foreground">
+                      {recentHistory.length} / {history.length}
+                    </div>
                   </div>
                 )}
               </div>
@@ -570,6 +622,21 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                 </Button>
               )}
             </div>
+
+            {activeFilterTokens.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-xs font-medium text-foreground">
+                  {translateWithFallback(t, 'modpacks.active_filters', 'Active filters')}
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-secondary">
+                  {activeFilterTokens.map((token) => (
+                    <span key={token} className="rounded-full border border-border/70 bg-background/72 px-2.5 py-1">
+                      {token}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {recentHistory.length > 0 && (
               <div className="space-y-2">
@@ -616,71 +683,100 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
           <div
             className="surface-muted mb-4 space-y-3 p-4"
             role="search"
-            aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
+            aria-label={t('modpacks.search') || 'Search modpacks'}
             data-testid="remote-modpack-filters"
           >
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('modpacks.search_placeholder')}
-              aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
-              className="w-full"
-              data-testid="remote-modpack-search"
-            />
+            <div className="grid gap-3 xl:grid-cols-4" data-testid="remote-modpack-filter-controls">
+              <div className="space-y-1 xl:col-span-4">
+                <div className="text-xs font-medium text-secondary">
+                  {t('modpacks.search') || 'Search modpacks'}
+                </div>
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t('modpacks.search_placeholder')}
+                  aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
+                  className="w-full"
+                  data-testid="remote-modpack-search"
+                />
+              </div>
 
-            <div className="flex flex-wrap items-start gap-2" data-testid="remote-modpack-filter-controls">
-              <Select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                aria-label={t('modpacks.sort_popularity') || 'Sort modpacks'}
-                className="min-w-[11rem] flex-1"
-                data-testid="remote-modpack-sort"
-              >
-                <option value="popularity">{t('modpacks.sort_popularity') || 'По популярности'}</option>
-                <option value="alphabetical">{t('modpacks.sort_alphabetical') || 'По алфавиту'}</option>
-                <option value="date">{t('modpacks.sort_date') || 'По дате'}</option>
-              </Select>
+              <div className="space-y-1">
+                <div className="text-xs font-medium text-secondary">
+                  {sortBy === 'alphabetical'
+                    ? translateWithFallback(t, 'modpacks.sort_alphabetical', 'Alphabetical')
+                    : sortBy === 'date'
+                      ? translateWithFallback(t, 'modpacks.sort_date', 'Date')
+                      : translateWithFallback(t, 'modpacks.sort_popularity', 'Popularity')}
+                </div>
+                <Select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortOption)}
+                  aria-label={t('modpacks.sort_popularity') || 'Sort modpacks'}
+                  className="w-full"
+                  data-testid="remote-modpack-sort"
+                >
+                  <option value="popularity">{t('modpacks.sort_popularity') || 'По популярности'}</option>
+                  <option value="alphabetical">{t('modpacks.sort_alphabetical') || 'По алфавиту'}</option>
+                  <option value="date">{t('modpacks.sort_date') || 'По дате'}</option>
+                </Select>
+              </div>
 
-              <Select
-                value={filterMCVersion}
-                onChange={(e) => setFilterMCVersion(e.target.value as FilterMCVersion)}
-                aria-label={t('modpacks.filter_all') || 'Filter by Minecraft version'}
-                className="min-w-[11rem] flex-1"
-                data-testid="remote-modpack-version-filter"
-              >
-                <option value="all">{t('modpacks.filter_all') || 'Все версии MC'}</option>
-                {MINECRAFT_VERSIONS.filter(v => v.type === 'release').map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.id}
-                  </option>
-                ))}
-              </Select>
+              <div className="space-y-1">
+                <div className="text-xs font-medium text-secondary">
+                  {translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}
+                </div>
+                <Select
+                  value={filterMCVersion}
+                  onChange={(e) => setFilterMCVersion(e.target.value as FilterMCVersion)}
+                  aria-label={t('modpacks.filter_all') || 'Filter by Minecraft version'}
+                  className="w-full"
+                  data-testid="remote-modpack-version-filter"
+                >
+                  <option value="all">{t('modpacks.filter_all') || 'Все версии MC'}</option>
+                  {MINECRAFT_VERSIONS.filter(v => v.type === 'release').map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.id}
+                    </option>
+                  ))}
+                </Select>
+              </div>
 
-              <Select
-                value={filterLoader}
-                onChange={(e) => setFilterLoader(e.target.value as FilterLoader)}
-                aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
-                className="min-w-[11rem] flex-1"
-                data-testid="remote-modpack-loader-filter"
-              >
-                <option value="all">{t('modpacks.filter_all_loaders') || 'Все модлоадеры'}</option>
-                <option value="forge">Forge</option>
-                <option value="fabric">Fabric</option>
-                <option value="neoforge">NeoForge</option>
-              </Select>
+              <div className="space-y-1">
+                <div className="text-xs font-medium text-secondary">
+                  {translateWithFallback(t, 'modpacks.loader', 'Modloader')}
+                </div>
+                <Select
+                  value={filterLoader}
+                  onChange={(e) => setFilterLoader(e.target.value as FilterLoader)}
+                  aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
+                  className="w-full"
+                  data-testid="remote-modpack-loader-filter"
+                >
+                  <option value="all">{t('modpacks.filter_all_loaders') || 'Все модлоадеры'}</option>
+                  <option value="forge">Forge</option>
+                  <option value="fabric">Fabric</option>
+                  <option value="neoforge">NeoForge</option>
+                </Select>
+              </div>
 
-              <Select
-                value={String(itemsPerPage)}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                aria-label={t('modpacks.items_per_page') || 'Items per page'}
-                className="min-w-[8.5rem] flex-none sm:basis-[8.5rem]"
-                title={t('modpacks.items_per_page') || 'Элементов на странице'}
-                data-testid="remote-modpack-items-per-page"
-              >
-                <option value="12">12</option>
-                <option value="24">24</option>
-                <option value="48">48</option>
-              </Select>
+              <div className="space-y-1">
+                <div className="text-xs font-medium text-secondary">
+                  {translateWithFallback(t, 'modpacks.items_per_page', 'Items per page')}
+                </div>
+                <Select
+                  value={String(itemsPerPage)}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  aria-label={t('modpacks.items_per_page') || 'Items per page'}
+                  className="w-full"
+                  title={t('modpacks.items_per_page') || 'Элементов на странице'}
+                  data-testid="remote-modpack-items-per-page"
+                >
+                  <option value="12">12</option>
+                  <option value="24">24</option>
+                  <option value="48">48</option>
+                </Select>
+              </div>
             </div>
           </div>
 
