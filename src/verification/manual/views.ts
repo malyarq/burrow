@@ -11,6 +11,11 @@ export type ManualVerificationView =
   | 'modpack-create'
   | 'modpack-browser'
   | 'modpack-details'
+  | 'phase-21-browser-density'
+  | 'phase-21-details-density'
+  | 'phase-21-runtime-create'
+  | 'phase-21-runtime-edit'
+  | 'phase-21-secondary-density'
   | 'modpack-export'
   | 'modpack-add'
   | 'modpack-install'
@@ -35,6 +40,31 @@ export const CORE_VIEWS: Array<{ id: ManualVerificationView; label: string; desc
   { id: 'modpack-create', label: 'Create Wizard', description: 'Shell-integrated create wizard proof with a route-owned primary action.' },
   { id: 'modpack-browser', label: 'Modpack Browser', description: 'Shell-integrated content-heavy proof with route-owned browsing controls and neutral fallback art for missing covers.' },
   { id: 'modpack-details', label: 'Modpack Details', description: 'Shell-integrated details proof for route-owned CTA hierarchy and bottom-edge visibility.' },
+  {
+    id: 'phase-21-browser-density',
+    label: 'Phase 21 Browser Density',
+    description: 'Crowded shell-integrated browser proof with long labels, stacked metadata, and enough cards to expose dense-route failures.',
+  },
+  {
+    id: 'phase-21-details-density',
+    label: 'Phase 21 Details Density',
+    description: 'Constrained-width details proof with long metadata, longer tab labels, and dense mod content inside the real shell.',
+  },
+  {
+    id: 'phase-21-runtime-create',
+    label: 'Phase 21 Create Summary',
+    description: 'Create-wizard runtime summary truth seeded to the same dense runtime fixture used by the edit proof.',
+  },
+  {
+    id: 'phase-21-runtime-edit',
+    label: 'Phase 21 Edit Summary',
+    description: 'Edit-settings runtime summary truth for the shared dense Phase 21 runtime fixture inside the real shell.',
+  },
+  {
+    id: 'phase-21-secondary-density',
+    label: 'Phase 21 Secondary Density',
+    description: 'Dense resource-pack management proof with long labels, fallback art, and enough secondary content to reveal hierarchy issues.',
+  },
   { id: 'modpack-export', label: 'Export', description: 'Shell-integrated export-route proof for flow-first actions and visible final content edges.' },
   { id: 'modpack-add', label: 'Add Content', description: 'Shell-integrated add-content route proof with demoted shell launch and visible result endings.' },
   { id: 'modpack-install', label: 'Install', description: 'Shell-integrated install-route proof for route-owned CTA hierarchy.' },

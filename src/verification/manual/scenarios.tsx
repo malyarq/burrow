@@ -37,7 +37,11 @@ import { ResourcePacksTab } from '../../components/modpacks/details/ResourcePack
 import { WorldDatapacksModal } from '../../components/modpacks/details/WorldDatapacksModal';
 import { cn } from '../../utils/cn';
 import { CORE_VIEWS, type ManualVerificationView } from './views';
-import { getManualVerificationModEntries, getManualVerificationModpackMetadata } from './mockEnvironment';
+import {
+  getManualVerificationModEntries,
+  getManualVerificationModpackMetadata,
+  PHASE_21_RUNTIME_FIXTURE,
+} from './mockEnvironment';
 
 interface ManualVerificationScenarioProps {
   onReady: (message: string) => void;
@@ -246,6 +250,100 @@ function useReadyByTextAndImageSource(
   }, [expectedSrc, message, minimumImages, needles, onReady, readyKey]);
 }
 
+function findControlByLabel<T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(labelNeedle: string): T | null {
+  const label = Array.from(document.querySelectorAll<HTMLLabelElement>('label')).find((candidate) =>
+    candidate.textContent?.includes(labelNeedle),
+  );
+
+  if (!label?.htmlFor) {
+    return null;
+  }
+
+  return document.getElementById(label.htmlFor) as T | null;
+}
+
+function setNativeControlValue(
+  element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  value: string,
+) {
+  const descriptor =
+    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(element), 'value')
+    ?? Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')
+    ?? Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')
+    ?? Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+
+  descriptor?.set?.call(element, value);
+  element.dispatchEvent(new Event('input', { bubbles: true }));
+  element.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function findButtonByText(needle: string): HTMLButtonElement | null {
+  return (
+    Array.from(document.querySelectorAll<HTMLButtonElement>('button')).find((button) =>
+      button.textContent?.trim().includes(needle),
+    ) ?? null
+  );
+}
+
+function usePhase21CreateSummaryReady(onReady: (message: string) => void) {
+  useEffect(() => {
+    let cancelled = false;
+    let selectedFabric = false;
+    const deadline = Date.now() + 6_000;
+
+    const tick = () => {
+      if (cancelled) {
+        return;
+      }
+
+      const summaryCard = document.querySelector<HTMLElement>('[data-testid="modpack-dependency-summary"]');
+      const summaryText = summaryCard?.textContent ?? '';
+
+      if (
+        summaryText.includes('Runtime dependencies')
+        && summaryText.includes(PHASE_21_RUNTIME_FIXTURE.minecraftVersion)
+        && summaryText.includes('Fabric')
+      ) {
+        onReady(
+          'Phase 21 create-summary proof rendered inside the real shell with the shared runtime fixture seeded onto the wizard dependency summary.',
+        );
+        return;
+      }
+
+      const nameInput = findControlByLabel<HTMLInputElement>('Name');
+      if (nameInput && nameInput.value !== PHASE_21_RUNTIME_FIXTURE.name) {
+        setNativeControlValue(nameInput, PHASE_21_RUNTIME_FIXTURE.name);
+      }
+
+      const descriptionInput = findControlByLabel<HTMLTextAreaElement>('Description');
+      if (descriptionInput && descriptionInput.value !== PHASE_21_RUNTIME_FIXTURE.description) {
+        setNativeControlValue(descriptionInput, PHASE_21_RUNTIME_FIXTURE.description);
+      }
+
+      const nextButton = findButtonByText('Next');
+      if (!summaryCard && nextButton && !nextButton.disabled) {
+        nextButton.click();
+      } else if (summaryCard && !selectedFabric) {
+        const fabricButton = findButtonByText('Fabric');
+        if (fabricButton) {
+          fabricButton.click();
+          selectedFabric = true;
+        }
+      }
+
+      if (Date.now() < deadline) {
+        window.setTimeout(tick, 75);
+      }
+    };
+
+    tick();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [onReady]);
+}
+
 function useManualPrimaryActionOwnership(ownership: ModpackPrimaryActionOwnership) {
   useEffect(() => {
     setModpackPrimaryActionOwnership(ownership);
@@ -260,6 +358,16 @@ function Phase20ProofCallout(props: { title: string; detail: string }) {
   return (
     <div className="surface-inline rounded-3xl p-4 sm:p-5">
       <div className="kicker-label mb-2">Phase 20 closeout proof</div>
+      <h2 className="text-lg font-semibold text-foreground">{props.title}</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-secondary">{props.detail}</p>
+    </div>
+  );
+}
+
+function Phase21ProofCallout(props: { title: string; detail: string }) {
+  return (
+    <div className="surface-inline rounded-3xl p-4 sm:p-5">
+      <div className="kicker-label mb-2">Phase 21 density proof</div>
       <h2 className="text-lg font-semibold text-foreground">{props.title}</h2>
       <p className="mt-2 max-w-3xl text-sm leading-6 text-secondary">{props.detail}</p>
     </div>
@@ -648,9 +756,38 @@ function ModpackBrowserScenario({ onReady }: ManualVerificationScenarioProps) {
   );
 }
 
+function Phase21BrowserDensityScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByTextAndImageSource(
+    onReady,
+    ['Modpack Browser', 'Atlas Control Room Longform Runtime Review Pack', 'Signal Overwatch Operations Board'],
+    MEDIA_FALLBACK_PATH,
+    1,
+    'Phase 21 crowded browser proof rendered inside the real shell with dense cards, long labels, and visible fallback artwork.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 justify-center overflow-y-auto p-4 sm:p-6">
+        <div className="flex w-full max-w-[1220px] min-w-0 flex-col gap-4">
+          <Phase21ProofCallout
+            title="Crowded browser density stays readable under real shell pressure"
+            detail="Use this proof to inspect grouped filters, stacked metadata, and multi-card browse rhythm when long titles and crowded catalog data are no longer hidden by happy-path fixtures."
+          />
+          <ModpackBrowser
+            initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: '' }}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onStateChange={() => undefined}
+          />
+        </div>
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
 function ModpackDetailsScenario({ onReady }: ManualVerificationScenarioProps) {
   const fixtureMetadata = useMemo(() => getManualVerificationModpackMetadata('modpack-details'), []);
-  const fixtureMods = useMemo(() => getManualVerificationModEntries(), []);
+  const fixtureMods = useMemo(() => getManualVerificationModEntries('modpack-details'), []);
 
   useReadyByText(
     onReady,
@@ -671,6 +808,89 @@ function ModpackDetailsScenario({ onReady }: ManualVerificationScenarioProps) {
         onNavigate={() => undefined}
         onLaunch={() => undefined}
       />
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase21DetailsDensityScenario({ onReady }: ManualVerificationScenarioProps) {
+  const fixtureMetadata = useMemo(() => getManualVerificationModpackMetadata('phase-21-details-density'), []);
+  const fixtureMods = useMemo(() => getManualVerificationModEntries('phase-21-details-density'), []);
+
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', PHASE_21_RUNTIME_FIXTURE.name, 'Crowded Routing Diagnostics Companion'],
+    'Phase 21 constrained-width details proof rendered with longer metadata and dense mod content inside the real shell.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route" language="ru">
+      <div className="flex min-h-0 flex-1 justify-center overflow-y-auto p-4 sm:p-6">
+        <div className="flex w-full max-w-[980px] min-w-0 flex-col gap-4">
+          <Phase21ProofCallout
+            title="Details hierarchy holds at constrained desktop width"
+            detail="This state keeps the real shell, long metadata, Russian tab labels, and a dense mods tab on screen together so wrapping or CTA drift is immediately visible."
+          />
+          <ModpackDetails
+            modpackId="alpha"
+            initialTab="mods"
+            initialExpandedModId="crowded-routing"
+            initialMetadata={fixtureMetadata}
+            initialMods={fixtureMods}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onLaunch={() => undefined}
+          />
+        </div>
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase21RuntimeCreateScenario({ onReady }: ManualVerificationScenarioProps) {
+  usePhase21CreateSummaryReady(onReady);
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+        <Phase21ProofCallout
+          title="Create flow is seeded to the same runtime truth as edit"
+          detail="The manual harness advances the wizard to its runtime-summary step and seeds the shared Phase 21 runtime fixture so reviewers can compare create and edit truth directly."
+        />
+        <ModpackCreationWizard onBack={() => undefined} />
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase21RuntimeEditScenario({ onReady }: ManualVerificationScenarioProps) {
+  const fixtureMetadata = useMemo(() => getManualVerificationModpackMetadata('phase-21-runtime-edit'), []);
+  const fixtureMods = useMemo(() => getManualVerificationModEntries('phase-21-runtime-edit'), []);
+
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', PHASE_21_RUNTIME_FIXTURE.name, 'Runtime dependencies'],
+    'Phase 21 edit-summary proof rendered inside the real shell with the shared runtime fixture loaded into settings.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 justify-center overflow-y-auto p-4 sm:p-6">
+        <div className="flex w-full max-w-[1040px] min-w-0 flex-col gap-4">
+          <Phase21ProofCallout
+            title="Edit settings stay truthful with the same runtime fixture"
+            detail="Use this view to compare the settings summary against the create proof and confirm Minecraft version, loader, dependency count, and warnings stay aligned."
+          />
+          <ModpackDetails
+            modpackId="alpha"
+            initialTab="settings"
+            initialMetadata={fixtureMetadata}
+            initialMods={fixtureMods}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onLaunch={() => undefined}
+          />
+        </div>
+      </div>
     </Phase19ShellFrame>
   );
 }
@@ -738,7 +958,7 @@ function ImportPreviewScenario({ onReady }: ManualVerificationScenarioProps) {
 
 function AddModModalScenario({ onReady }: ManualVerificationScenarioProps) {
   const fixtureMetadata = useMemo(() => getManualVerificationModpackMetadata('modpack-details'), []);
-  const fixtureMods = useMemo(() => getManualVerificationModEntries(), []);
+  const fixtureMods = useMemo(() => getManualVerificationModEntries('modpack-details'), []);
 
   useReadyByText(
     onReady,
@@ -795,6 +1015,36 @@ function ResourcePacksScenario({ onReady }: ManualVerificationScenarioProps) {
             onUpdate={() => undefined}
             onAddResourcePack={() => undefined}
           />
+        </div>
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase21SecondaryDensityScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByTextAndImageSource(
+    onReady,
+    ['FriendLauncher', 'Installed Resource Packs', 'Painterly Depth Annotated UI Pack'],
+    MEDIA_FALLBACK_PATH,
+    1,
+    'Phase 21 dense secondary-content proof rendered in the real shell with long labels, fallback art, and crowded resource-pack rows.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 justify-center overflow-y-auto p-4 sm:p-6">
+        <div className="flex w-full max-w-[1120px] min-w-0 flex-col gap-4">
+          <Phase21ProofCallout
+            title="Secondary content stays legible when rows get busy"
+            detail="This resource-pack route keeps long labels, mixed artwork states, and enough rows on screen to expose nested-scroll or unlabeled-value regressions."
+          />
+          <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+            <ResourcePacksTab
+              instancePath="/mock/.minecraft/instances/alpha"
+              onUpdate={() => undefined}
+              onAddResourcePack={() => undefined}
+            />
+          </div>
         </div>
       </div>
     </Phase19ShellFrame>
@@ -913,6 +1163,26 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 
   if (props.view === 'modpack-details') {
     return <ModpackDetailsScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-21-browser-density') {
+    return <Phase21BrowserDensityScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-21-details-density') {
+    return <Phase21DetailsDensityScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-21-runtime-create') {
+    return <Phase21RuntimeCreateScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-21-runtime-edit') {
+    return <Phase21RuntimeEditScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-21-secondary-density') {
+    return <Phase21SecondaryDensityScenario {...scenarioProps} />;
   }
 
   if (props.view === 'modpack-export') {

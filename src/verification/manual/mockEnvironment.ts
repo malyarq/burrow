@@ -8,6 +8,24 @@ import type { Screenshot } from '../../../electron/services/screenshots/screensh
 const ICON_PATH = '/icon.png';
 const DESKTOP_PATH = '/Users/manual/Desktop';
 const PHASE_17_POLISH_VIEW = 'phase-17-polish';
+const PHASE_21_BROWSER_DENSITY_VIEW = 'phase-21-browser-density';
+const PHASE_21_DETAILS_DENSITY_VIEW = 'phase-21-details-density';
+const PHASE_21_RUNTIME_EDIT_VIEW = 'phase-21-runtime-edit';
+const PHASE_21_SECONDARY_DENSITY_VIEW = 'phase-21-secondary-density';
+
+const PHASE_21_DETAIL_VIEWS = new Set([PHASE_21_DETAILS_DENSITY_VIEW, PHASE_21_RUNTIME_EDIT_VIEW]);
+
+export const PHASE_21_RUNTIME_FIXTURE = {
+  name: 'Atlas Control Room Longform Runtime Review Pack',
+  description:
+    'Shared Phase 21 runtime summary fixture with intentionally long metadata so create and edit truth can be compared under real shell density.',
+  version: '2.6.0-rc.12',
+  minecraftVersion: '1.20.1',
+  modLoader: {
+    type: 'fabric' as const,
+    version: '0.16.9',
+  },
+};
 
 const baseConfigs: Record<string, ModpackConfig> = {
   alpha: {
@@ -122,12 +140,95 @@ const browserResults: ModpackSearchResultItem[] = [
   },
 ];
 
+const phase21BrowserResults: ModpackSearchResultItem[] = [
+  {
+    platform: 'modrinth',
+    projectId: 'atlas-control-room',
+    slug: 'atlas-control-room',
+    title: 'Atlas Control Room Longform Runtime Review Pack',
+    description: 'Crowded card with layered compatibility, activity, and install metadata for dense browser proof.',
+    iconUrl: undefined,
+    downloads: 91_234,
+    dateCreated: '2026-03-29T10:00:00.000Z',
+    dateModified: '2026-04-16T08:30:00.000Z',
+  },
+  {
+    platform: 'modrinth',
+    projectId: 'signal-overwatch',
+    slug: 'signal-overwatch',
+    title: 'Signal Overwatch Operations Board',
+    description: 'Long-title follow-up card with enough copy to expose wrapped metadata and CTA drift.',
+    iconUrl: ICON_PATH,
+    downloads: 48_302,
+    dateCreated: '2026-03-25T09:15:00.000Z',
+    dateModified: '2026-04-15T12:00:00.000Z',
+  },
+  {
+    platform: 'modrinth',
+    projectId: 'archive-telemetry',
+    slug: 'archive-telemetry',
+    title: 'Archive Telemetry and Recovery Procedures',
+    description: 'Secondary dense browser result with stacked copy and a long project name.',
+    iconUrl: undefined,
+    downloads: 27_118,
+    dateCreated: '2026-03-19T07:10:00.000Z',
+    dateModified: '2026-04-14T16:45:00.000Z',
+  },
+  {
+    platform: 'modrinth',
+    projectId: 'night-transit',
+    slug: 'night-transit',
+    title: 'Night Transit Lighting Review',
+    description: 'Compact but still long enough to stress horizontal card rhythm in the same result set.',
+    iconUrl: ICON_PATH,
+    downloads: 14_280,
+    dateCreated: '2026-03-11T12:00:00.000Z',
+    dateModified: '2026-04-12T10:00:00.000Z',
+  },
+  {
+    platform: 'modrinth',
+    projectId: 'dense-ui-observer',
+    slug: 'dense-ui-observer',
+    title: 'Dense UI Observer Toolkit for Multiplayer Crews',
+    description: 'Supportive metadata block meant to produce visible card stacking instead of single-line happy paths.',
+    iconUrl: undefined,
+    downloads: 12_084,
+    dateCreated: '2026-02-28T10:00:00.000Z',
+    dateModified: '2026-04-10T08:30:00.000Z',
+  },
+  {
+    platform: 'modrinth',
+    projectId: 'relay-ops',
+    slug: 'relay-ops',
+    title: 'Relay Operations Map Pack',
+    description: 'Shorter trailing card to make the dense browser view feel like a real mixed catalog.',
+    iconUrl: ICON_PATH,
+    downloads: 9_816,
+    dateCreated: '2026-02-17T15:20:00.000Z',
+    dateModified: '2026-04-09T18:20:00.000Z',
+  },
+];
+
 function getManualVerificationView() {
   return new URLSearchParams(window.location.search).get('view') ?? 'overview';
 }
 
 function getMetadataForView(view: string): Record<string, ModpackMetadata> {
   const metadata = structuredClone(baseMetadata);
+
+  if (PHASE_21_DETAIL_VIEWS.has(view)) {
+    metadata.alpha = {
+      ...metadata.alpha,
+      name: PHASE_21_RUNTIME_FIXTURE.name,
+      version: PHASE_21_RUNTIME_FIXTURE.version,
+      minecraftVersion: PHASE_21_RUNTIME_FIXTURE.minecraftVersion,
+      modLoader: structuredClone(PHASE_21_RUNTIME_FIXTURE.modLoader),
+      description:
+        'Constrained-width details proof with intentionally long metadata, crowded supporting copy, and the shared runtime truth fixture.',
+      author: 'FMCL Dense Surface Validation Crew',
+      updatedAt: '2026-04-18T08:30:00.000Z',
+    };
+  }
 
   if (view !== PHASE_17_POLISH_VIEW) {
     return metadata;
@@ -143,6 +244,10 @@ function getMetadataForView(view: string): Record<string, ModpackMetadata> {
 }
 
 function getBrowserResultsForView(view: string): ModpackSearchResultItem[] {
+  if (view === PHASE_21_BROWSER_DENSITY_VIEW) {
+    return structuredClone(phase21BrowserResults);
+  }
+
   const results = structuredClone(browserResults);
 
   if (view === PHASE_17_POLISH_VIEW) {
@@ -155,7 +260,7 @@ function getBrowserResultsForView(view: string): ModpackSearchResultItem[] {
     return results;
   }
 
-  if (view === 'modpack-browser') {
+  if (view === 'modpack-browser' || view === PHASE_21_BROWSER_DENSITY_VIEW) {
     results[0] = {
       ...results[0],
       iconUrl: undefined,
@@ -243,12 +348,95 @@ const modEntries: ModEntry[] = [
   },
 ];
 
+const phase21DenseModEntries: ModEntry[] = [
+  {
+    id: 'atlas-bootstrap',
+    name: 'Atlas Bootstrap Sequencer',
+    version: '4.2.1',
+    loaders: ['fabric'],
+    deps: [],
+    file: {
+      path: '/mock/.minecraft/mods/atlas-bootstrap.jar',
+      name: 'atlas-bootstrap.jar',
+      size: 2_048,
+      mtimeMs: Date.now() - 12_000,
+    },
+    hash: {
+      sha1: 'atlas-bootstrap-sha1',
+    },
+    enabled: true,
+  },
+  {
+    id: 'signal-panels',
+    name: 'Signal Panels and Dense Status Labels',
+    version: '2.9.0',
+    loaders: ['fabric'],
+    deps: [],
+    file: {
+      path: '/mock/.minecraft/mods/signal-panels.jar',
+      name: 'signal-panels.jar',
+      size: 1_536,
+      mtimeMs: Date.now() - 10_500,
+    },
+    hash: {
+      sha1: 'signal-panels-sha1',
+    },
+    enabled: true,
+  },
+  {
+    id: 'crowded-routing',
+    name: 'Crowded Routing Diagnostics Companion',
+    version: '1.7.3',
+    loaders: ['fabric'],
+    deps: [
+      { id: 'minecraft', versionRange: '[1.20.1]', kind: 'depends' },
+      { id: 'fabricloader', versionRange: '[0.16.9]', kind: 'depends' },
+      { id: 'atlas-bootstrap', versionRange: '[4.2.1]', kind: 'depends' },
+    ],
+    file: {
+      path: '/mock/.minecraft/mods/crowded-routing.jar',
+      name: 'crowded-routing.jar',
+      size: 2_560,
+      mtimeMs: Date.now() - 9_000,
+    },
+    hash: {
+      sha1: 'crowded-routing-sha1',
+    },
+    enabled: true,
+  },
+  {
+    id: 'overworld-reports',
+    name: 'Overworld Reports and Warning Panels',
+    version: '6.0.4',
+    loaders: ['fabric'],
+    deps: [],
+    file: {
+      path: '/mock/.minecraft/mods/overworld-reports.jar.disabled',
+      name: 'overworld-reports.jar.disabled',
+      size: 1_280,
+      mtimeMs: Date.now() - 7_500,
+    },
+    hash: {
+      sha1: 'overworld-reports-sha1',
+    },
+    enabled: false,
+  },
+];
+
 export function getManualVerificationModpackMetadata(view: string): ModpackMetadata {
   return structuredClone(getMetadataForView(view).alpha);
 }
 
-export function getManualVerificationModEntries(): ModEntry[] {
+function getModEntriesForView(view: string): ModEntry[] {
+  if (PHASE_21_DETAIL_VIEWS.has(view)) {
+    return structuredClone(phase21DenseModEntries);
+  }
+
   return structuredClone(modEntries);
+}
+
+export function getManualVerificationModEntries(view = 'overview'): ModEntry[] {
+  return getModEntriesForView(view);
 }
 
 const statistics: StatisticsOverview = {
@@ -382,6 +570,57 @@ const resourcePacks: ResourcePack[] = [
   },
 ];
 
+const phase21DenseResourcePacks: ResourcePack[] = [
+  {
+    fileName: 'painterly-depth-annotated-ui-pack.zip',
+    name: 'Painterly Depth Annotated UI Pack',
+    description: 'Missing-art proof pack with a deliberately long label for dense secondary-content review.',
+    packFormat: 34,
+    path: '/mock/.minecraft/instances/alpha/resourcepacks/painterly-depth-annotated-ui-pack.zip',
+    iconUrl: undefined,
+    isEnabled: true,
+    size: 1_572_864,
+  },
+  {
+    fileName: 'status-ribbon-contrast-calibration-sheets.zip',
+    name: 'Status Ribbon Contrast Calibration Sheets',
+    description: 'Long secondary label used to expose multi-line list rhythm and CTA stacking.',
+    packFormat: 34,
+    path: '/mock/.minecraft/instances/alpha/resourcepacks/status-ribbon-contrast-calibration-sheets.zip',
+    iconUrl: ICON_PATH,
+    isEnabled: true,
+    size: 1_848_320,
+  },
+  {
+    fileName: 'dense-inventory-labels-companion.zip',
+    name: 'Dense Inventory Labels Companion',
+    description: 'Support pack with enough metadata to keep the secondary route visibly busy.',
+    packFormat: 34,
+    path: '/mock/.minecraft/instances/alpha/resourcepacks/dense-inventory-labels-companion.zip',
+    iconUrl: undefined,
+    isEnabled: false,
+    size: 1_228_800,
+  },
+  {
+    fileName: 'night-transit-lighting-proof.zip',
+    name: 'Night Transit Lighting Proof',
+    description: 'Trailing pack that keeps reorder and enable controls visible under density pressure.',
+    packFormat: 34,
+    path: '/mock/.minecraft/instances/alpha/resourcepacks/night-transit-lighting-proof.zip',
+    iconUrl: ICON_PATH,
+    isEnabled: false,
+    size: 1_009_664,
+  },
+];
+
+function getResourcePacksForView(view: string): ResourcePack[] {
+  if (view === PHASE_21_SECONDARY_DENSITY_VIEW) {
+    return structuredClone(phase21DenseResourcePacks);
+  }
+
+  return structuredClone(resourcePacks);
+}
+
 type ManualState = {
   selectedModpackId: string;
   selectedAccountId: string;
@@ -390,11 +629,32 @@ type ManualState = {
   accounts: Account[];
 };
 
+function getConfigsForView(view: string): Record<string, ModpackConfig> {
+  const configs = structuredClone(baseConfigs);
+
+  if (PHASE_21_DETAIL_VIEWS.has(view)) {
+    configs.alpha = {
+      ...configs.alpha,
+      name: PHASE_21_RUNTIME_FIXTURE.name,
+      runtime: {
+        minecraft: PHASE_21_RUNTIME_FIXTURE.minecraftVersion,
+        modLoader: structuredClone(PHASE_21_RUNTIME_FIXTURE.modLoader),
+      },
+      memory: { maxMb: 8192, minMb: 6144 },
+      updatedAt: '2026-04-18T08:30:00.000Z',
+    };
+  }
+
+  return configs;
+}
+
 function createState(view: string): ManualState {
+  const configs = getConfigsForView(view);
+
   return {
     selectedModpackId: 'alpha',
     selectedAccountId: 'account-1',
-    modpacks: [structuredClone(baseConfigs.alpha), structuredClone(baseConfigs.classic)],
+    modpacks: [structuredClone(configs.alpha), structuredClone(configs.classic)],
     metadata: getMetadataForView(view),
     accounts: structuredClone(baseAccounts),
   };
@@ -573,33 +833,33 @@ export function installManualVerificationEnvironment() {
     getModrinthModpackVersions: async () => structuredClone(modpackVersions),
     installCurseForgeModpack: async () => ({
       modpackId: 'alpha',
-      config: structuredClone(baseConfigs.alpha),
-      metadata: structuredClone(baseMetadata.alpha),
+      config: structuredClone(getConfigsForView(view).alpha),
+      metadata: structuredClone(getMetadataForView(view).alpha),
     }),
     installModrinthModpack: async () => ({
       modpackId: 'alpha',
-      config: structuredClone(baseConfigs.alpha),
-      metadata: structuredClone(baseMetadata.alpha),
+      config: structuredClone(getConfigsForView(view).alpha),
+      metadata: structuredClone(getMetadataForView(view).alpha),
     }),
-    exportModpackFromInstance: async () => structuredClone(baseMetadata.alpha),
+    exportModpackFromInstance: async () => structuredClone(getMetadataForView(view).alpha),
     createLocalModpack: async () => ({
       id: 'alpha',
-      config: structuredClone(baseConfigs.alpha),
-      metadata: structuredClone(baseMetadata.alpha),
+      config: structuredClone(getConfigsForView(view).alpha),
+      metadata: structuredClone(getMetadataForView(view).alpha),
     }),
     createFromManifest: async () => ({ id: 'alpha' }),
     exportModpack: async () => ({ ok: true }),
     getModpackInfoFromFile: async () => ({ format: 'modrinth' as const, manifest: structuredClone(sharedManifest) }),
     importModpack: async () => ({
       id: 'alpha',
-      config: structuredClone(baseConfigs.alpha),
-      metadata: structuredClone(baseMetadata.alpha),
+      config: structuredClone(getConfigsForView(view).alpha),
+      metadata: structuredClone(getMetadataForView(view).alpha),
     }),
     addModToModpack: async () => ({ ok: true }),
     removeModFromModpack: async () => ({ ok: true }),
     setModEnabled: async () => ({ ok: true }),
     updateModpackOverrides: async () => ({ ok: true }),
-    getModpackMods: async () => structuredClone(modEntries),
+    getModpackMods: async () => getModEntriesForView(view),
     backupModpack: async () => ({ backupPath: '/mock/.minecraft/backups/alpha.zip' }),
     resolvePath: async (modpackId: string) => `/mock/.minecraft/instances/${modpackId}`,
     scanJava: async () => [
@@ -790,7 +1050,7 @@ export function installManualVerificationEnvironment() {
         return { ok: true } as T;
       }
       if (channel === 'resourcePacks:list') {
-        return structuredClone(resourcePacks) as T;
+        return getResourcePacksForView(view) as T;
       }
       if (
         channel === 'resourcePacks:enable'
