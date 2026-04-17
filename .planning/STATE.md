@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
 status: Phase 17 in progress
-stopped_at: Completed Wave 1 (17-01, 17-02)
-last_updated: "2026-04-17T14:12:00.000Z"
-last_activity: 2026-04-17 - Phase 17 Wave 1 shipped responsive catalog filters, shared launcher-mark fallback states, and coherent compact sidebar navigation
+stopped_at: Completed 17-03-PLAN.md
+last_updated: "2026-04-17T14:18:00.000Z"
+last_activity: 2026-04-17 - Phase 17 settings shell now resists raw-key leakage and theme presets follow a localized naming contract with stable IDs
 progress:
   total_phases: 4
   completed_phases: 2
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 ## Current Position
 
 Phase: 17
-Plan: 03
+Plan: 04
 Status: Phase 17 in progress
-Last activity: 2026-04-17 - Phase 17 Wave 1 shipped responsive catalog filters, shared launcher-mark fallback states, and coherent compact sidebar navigation
+Last activity: 2026-04-17 - Phase 17 settings shell now resists raw-key leakage and theme presets follow a localized naming contract with stable IDs
 
-Progress: [████████░░] 83%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 69
-- Active phase plans completed: 23
+- Total plans completed: 70
+- Active phase plans completed: 24
 - Average duration: 16 min
 - Total execution time: 5.0 hours
 
@@ -54,8 +54,8 @@ Progress: [████████░░] 83%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 16-02, 16-03, 16-04, 17-01, 17-02
-- Trend: v0.4.0 has moved from launch and detail truth into catalog polish, compact navigation, and settings-localization closeout work.
+- Last 5 plans: 16-03, 16-04, 17-01, 17-02, 17-03
+- Trend: v0.4.0 has moved from catalog and compact-nav polish into the final manual-proof and closeout slice for Phase 17.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -66,6 +66,7 @@ Progress: [████████░░] 83%
 | --- | --- | --- | --- |
 | Phase 17 P01 | 8 min | 2 tasks | 4 files |
 | Phase 17 P02 | 7 min | 2 tasks | 2 files |
+| Phase 17 P03 | 8 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -138,6 +139,8 @@ Recent decisions affecting current work:
 - [Phase 17]: Reused LazyImage's launcher-mark default instead of passing '/icon.png' from catalog surfaces.
 - [Phase 17]: Guarded the sidebar-width catalog fix with focused ergonomics assertions on the installed and remote filter shells.
 - [Phase 17]: Replaced the collapsed modpacks placeholder letter with icon-led compact navigation so both launcher modes share one intentional shell language.
+- [Phase 17]: Hardened the settings shell with curated fallback copy for high-risk tab summaries and hints instead of trusting raw translator misses to stay hidden.
+- [Phase 17]: Localized preset display names through stable preset IDs so appearance labels and exported summaries can change per language without breaking persistence.
 
 ### Pending Todos
 
@@ -159,5 +162,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-17T14:03:53.124Z
-Stopped at: Completed Wave 1 (17-01, 17-02)
+Stopped at: Completed 17-03-PLAN.md
 Resume file: None
