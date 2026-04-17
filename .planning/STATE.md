@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-status: defining requirements
-stopped_at: Milestone v0.5.0 started
-last_updated: "2026-04-17T17:20:40Z"
-last_activity: 2026-04-17 - Started milestone v0.5.0 and moved planning into requirements definition
+status: roadmap ready
+stopped_at: Roadmap created for milestone v0.5.0
+last_updated: "2026-04-17T18:11:06Z"
+last_activity: 2026-04-17 - Created roadmap for milestone v0.5.0 and prepared Phase 19 discussion
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Define the next milestone and fresh requirements for FMCL
+**Current focus:** Phase 19 planning is ready for discussion after roadmap creation for v0.5.0
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-17 - Milestone v0.5.0 started
+Phase: 19
+Plan: Ready for discussion
+Status: Roadmap created; ready to discuss Phase 19
+Last activity: 2026-04-17 - Milestone v0.5.0 roadmap created
 
 Progress: [░░░░░░░░░░] 0%
 

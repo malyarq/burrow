@@ -68,35 +68,35 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | — | Pending |
-| SHELL-02 | — | Pending |
-| SHELL-03 | — | Pending |
-| SHELL-04 | — | Pending |
-| BRAND-01 | — | Pending |
-| BRAND-02 | — | Pending |
-| BRAND-03 | — | Pending |
-| DENSE-01 | — | Pending |
-| DENSE-02 | — | Pending |
-| DENSE-03 | — | Pending |
-| DENSE-04 | — | Pending |
-| THEME-01 | — | Pending |
-| THEME-02 | — | Pending |
-| THEME-03 | — | Pending |
-| THEME-04 | — | Pending |
-| FALL-01 | — | Pending |
-| FALL-02 | — | Pending |
-| FALL-03 | — | Pending |
-| FALL-04 | — | Pending |
-| VER-01 | — | Pending |
-| VER-02 | — | Pending |
-| VER-03 | — | Pending |
-| VER-04 | — | Pending |
+| SHELL-01 | Phase 19 | Pending |
+| SHELL-02 | Phase 19 | Pending |
+| SHELL-03 | Phase 19 | Pending |
+| SHELL-04 | Phase 21 | Pending |
+| BRAND-01 | Phase 20 | Pending |
+| BRAND-02 | Phase 20 | Pending |
+| BRAND-03 | Phase 20 | Pending |
+| DENSE-01 | Phase 21 | Pending |
+| DENSE-02 | Phase 21 | Pending |
+| DENSE-03 | Phase 21 | Pending |
+| DENSE-04 | Phase 21 | Pending |
+| THEME-01 | Phase 22 | Pending |
+| THEME-02 | Phase 22 | Pending |
+| THEME-03 | Phase 22 | Pending |
+| THEME-04 | Phase 22 | Pending |
+| FALL-01 | Phase 23 | Pending |
+| FALL-02 | Phase 23 | Pending |
+| FALL-03 | Phase 23 | Pending |
+| FALL-04 | Phase 23 | Pending |
+| VER-01 | Phase 24 | Pending |
+| VER-02 | Phase 24 | Pending |
+| VER-03 | Phase 24 | Pending |
+| VER-04 | Phase 24 | Pending |
 
 **Coverage:**
 - v1 requirements: 23 total
-- Mapped to phases: 0
-- Unmapped: 23 ⚠️
+- Mapped to phases: 23
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-17 after defining milestone v0.5.0 requirements*
+*Last updated: 2026-04-17 after creating milestone v0.5.0 roadmap*
