@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 
+import type { ComponentProps } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { SidebarHeader } from '../SidebarHeader';
 
-function renderCollapsedHeader(overrides?: Partial<React.ComponentProps<typeof SidebarHeader>>) {
+function renderCollapsedHeader(overrides?: Partial<ComponentProps<typeof SidebarHeader>>) {
   const onChangeMode = vi.fn();
 
   render(
