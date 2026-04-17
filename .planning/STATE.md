@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v0.5.0
-milestone_name: Experience Reinvention And Brand Reset
-status: Phase 19 complete; ready for phase 20 planning
-stopped_at: Completed 19-04-PLAN.md
-last_updated: "2026-04-17T19:57:59Z"
-last_activity: 2026-04-17 - Completed Phase 19 plan 04 shell-integrated proof and focused shell-invariant closeout matrix
+milestone: v0.5
+milestone_name: milestone
+status: Phase 20 plan 01 complete; ready for plan 02
+stopped_at: Completed 20-01-PLAN.md
+last_updated: "2026-04-17T20:50:29.793Z"
+last_activity: 2026-04-17 - Completed Phase 20 plan 01 canonical brand contract and shared token groundwork
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 8
+  completed_plans: 5
+  percent: 63
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 19 is complete with shell-integrated proof and a green closeout matrix; the next planning step is Phase 20 brand-system work.
+**Current focus:** Phase 20 plan 01 is complete with the canonical brand contract and shared token groundwork; the next execution step is plan 02 surface migration.
 
 ## Current Position
 
-Phase: 19
-Plan: 04
-Status: Phase 19 complete; ready for phase 20 planning
-Last activity: 2026-04-17 - Completed Phase 19 plan 04 shell-integrated proof and focused shell-invariant closeout matrix
+Phase: 20
+Plan: 01
+Status: Phase 20 plan 01 complete; ready for plan 02
+Last activity: 2026-04-17 - Completed Phase 20 plan 01 canonical brand contract and shared token groundwork
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 63%
 
 ## Performance Metrics
 
@@ -76,6 +76,7 @@ Progress: [██████████] 100%
 | Phase 19 P02 | 12 min | 2 tasks | 8 files |
 | Phase 19 P03 | 11 min | 2 tasks | 13 files |
 | Phase 19 P04 | 11 min | 2 tasks | 3 files |
+| Phase 20 P01 | 18 min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -166,6 +167,9 @@ Recent decisions affecting current work:
 - [Phase 19]: Phase 19 proof states should mount the real title bar and sidebar chrome instead of isolated route children so shell clearance and CTA hierarchy stay observable.
 - [Phase 19]: Import preview proof can reuse the shared manual manifest fixture instead of a view-local stub or empty fallback.
 - [Phase 19]: When the planned regression matrix is already green and scope-aligned, record it as a verification-only task commit instead of inventing churn in stable tests.
+- [Phase 20]: Keep the canonical brand seam in src/app/assets/branding.ts and src/components/branding/* instead of introducing a parallel branding store.
+- [Phase 20]: Extend CustomThemeConfig with brand tokens so product-owned shell and mark styling rides the existing theme-document pipeline.
+- [Phase 20]: Use TitleBar and the classic home/dashboard surfaces as proof consumers for Phase 20 without absorbing the broader shell migration planned later in the phase.
 
 ### Pending Todos
 
@@ -182,6 +186,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T19:59:44.146Z
-Stopped at: Completed 19-04-PLAN.md
+Last session: 2026-04-17T20:50:29.791Z
+Stopped at: Completed 20-01-PLAN.md
 Resume file: None
