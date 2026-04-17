@@ -177,7 +177,6 @@ export function ResourcePacksTab({ instancePath, onUpdate, onAddResourcePack }: 
                                     <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-background/70">
                                         <LazyImage
                                             src={pack.iconUrl}
-                                            fallback="/icon.png"
                                             className={cn('h-full w-full object-cover', !pack.isEnabled && 'grayscale')}
                                         />
                                     </div>

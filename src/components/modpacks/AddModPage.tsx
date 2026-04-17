@@ -388,14 +388,11 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
                       onClick={(e) => e.stopPropagation()}
                       className="mt-1 w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 focus:ring-2 focus:ring-zinc-500"
                     />
-                    {mod.iconUrl && (
-                      <LazyImage
-                        src={mod.iconUrl}
-                        alt={mod.title}
-                        className="w-12 h-12 rounded object-cover shrink-0"
-                        fallback="/icon.png"
-                      />
-                    )}
+                    <LazyImage
+                      src={mod.iconUrl}
+                      alt={mod.title}
+                      className="w-12 h-12 rounded object-cover shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-zinc-900 dark:text-white truncate">
                         {mod.title}

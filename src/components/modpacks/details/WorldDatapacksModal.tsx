@@ -318,7 +318,7 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                         >
                                             <div className="flex min-w-0 flex-1 items-center gap-4">
                                                 <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-background/70">
-                                                    <LazyImage src={project.icon_url ?? undefined} fallback="/icon.png" className="h-full w-full object-cover" />
+                                                    <LazyImage src={project.icon_url ?? undefined} className="h-full w-full object-cover" />
                                                 </div>
                                                 <div className="min-w-0 space-y-1">
                                                     <h4 className="truncate text-base font-semibold text-foreground">{project.title}</h4>

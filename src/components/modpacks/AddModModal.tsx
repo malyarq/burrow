@@ -380,14 +380,11 @@ export const AddModModal: React.FC<AddModModalProps> = ({
                     onClick={(e) => e.stopPropagation()}
                     className="mt-1 h-4 w-4 rounded border-zinc-300 text-zinc-600 focus:ring-2 focus:ring-zinc-500"
                   />
-                  {mod.iconUrl && (
-                    <LazyImage
-                      src={mod.iconUrl}
-                      alt={mod.title}
-                      className="h-12 w-12 shrink-0 rounded-xl border border-border/70 object-cover"
-                      fallback="/icon.png"
-                    />
-                  )}
+                  <LazyImage
+                    src={mod.iconUrl}
+                    alt={mod.title}
+                    className="h-12 w-12 shrink-0 rounded-xl border border-border/70 object-cover"
+                  />
                   <div className="flex-1 min-w-0">
                     <h4 className="truncate font-medium text-foreground">
                       {mod.title}

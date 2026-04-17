@@ -4,7 +4,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModpackList } from '../ModpackList';
 import { createTranslator } from '../../../contexts/settings/i18n';
-import { LAUNCHER_MARK_PATH } from '../../../app/assets/branding';
+import { MEDIA_FALLBACK_PATH } from '../../../app/assets/branding';
 
 const listWithMetadataMock = vi.fn();
 const selectMock = vi.fn();
@@ -85,7 +85,7 @@ describe('ModpackList ergonomics', () => {
     ]);
   });
 
-  it('keeps installed catalog controls readable at sidebar widths and uses the launcher mark for no-art cards', async () => {
+  it('keeps installed catalog controls readable at sidebar widths and uses the neutral artwork fallback for no-art cards', async () => {
     render(<ModpackList />);
 
     await screen.findByText('Alpha Pack');
@@ -105,7 +105,7 @@ describe('ModpackList ergonomics', () => {
     expect(loaderShell?.className).toContain('flex-1');
 
     await waitFor(() => {
-      expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(LAUNCHER_MARK_PATH);
+      expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);
     });
   });
 });

@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModpackBrowser } from '../ModpackBrowser';
 import { DEFAULT_MODPACK_BROWSER_STATE } from '../../../features/modpacks/hooks/useModpackNavigation';
 import { createTranslator } from '../../../contexts/settings/i18n';
-import { LAUNCHER_MARK_PATH } from '../../../app/assets/branding';
+import { MEDIA_FALLBACK_PATH } from '../../../app/assets/branding';
 
 const searchModrinthMock = vi.fn();
 const getCurseForgeVersionsMock = vi.fn();
@@ -153,7 +153,7 @@ describe('ModpackBrowser ergonomics', () => {
     });
   });
 
-  it('keeps browser filters wrap-friendly and routes no-art cards through the launcher mark fallback', async () => {
+  it('keeps browser filters wrap-friendly and routes no-art cards through the neutral artwork fallback', async () => {
     renderBrowser();
 
     await screen.findByText('Alpha Pack');
@@ -176,7 +176,7 @@ describe('ModpackBrowser ergonomics', () => {
     expect(pageSizeShell?.className).toContain('flex-none');
 
     await waitFor(() => {
-      expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(LAUNCHER_MARK_PATH);
+      expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);
     });
   });
 });

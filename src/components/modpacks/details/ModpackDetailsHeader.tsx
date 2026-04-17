@@ -111,14 +111,11 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
   return (
     <div className="space-y-6">
       <div className="surface-card flex items-start gap-4 p-5">
-        {metadata?.iconUrl && (
-          <LazyImage
-            src={metadata.iconUrl}
-            alt={modpackName}
-            className="h-20 w-20 rounded-2xl border border-border/70 object-cover"
-            fallback="/icon.png"
-          />
-        )}
+        <LazyImage
+          src={metadata?.iconUrl}
+          alt={modpackName}
+          className="h-20 w-20 rounded-2xl border border-border/70 object-cover"
+        />
         <div className="flex-1 min-w-0">
           <h3 className="mb-2 text-xl font-bold text-foreground">{modpackName}</h3>
           {metadata && (
