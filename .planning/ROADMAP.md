@@ -2,6 +2,7 @@
 
 ## Milestones
 
+<!-- gsd-active-milestone: 🚧 **v0.4 Launcher Truth And Product Polish** -->
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ◆ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, planned 2026-04-14. Active milestone.
@@ -10,7 +11,7 @@
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
 - Current phase: `18` — Verification And Release Truth
-- Next step: execute Phase 18 plan 02 browser-proof closeout
+- Next step: execute Phase 18 plan 04 final gate and verification artifact
 
 ## Active Milestone
 
@@ -22,6 +23,8 @@
 ### Overview
 
 `v0.4.0` is a release-truth and finish-quality milestone. It repairs the screenshot-backed defects captured in `docs/ru/ui-qa-audit-2026-04-14.md` and closes directly related shipped-surface inconsistencies without expanding FMCL into new feature scope.
+
+Browser-backed proof is now recorded on the shared `manual-verification.html` seam for `dashboard`, `modpack-details`, and `phase-17-polish`; the remaining milestone work is the final repo and packaging gate plus the closeout verification artifact.
 
 The milestone focuses on four workstreams:
 
@@ -91,4 +94,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 13/16 | In Progress | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 15/16 | In Progress | — |

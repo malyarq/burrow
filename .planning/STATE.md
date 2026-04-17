@@ -4,17 +4,17 @@ milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
 current_phase: 18
 current_phase_name: Verification And Release Truth
-current_plan: 2
+current_plan: 4
 status: Executing Phase 18
-stopped_at: Completed 18-01-PLAN.md
-last_updated: "2026-04-17T15:37:16.837Z"
-last_activity: 2026-04-17 - Phase 18 plan 01 locked the authoritative v0.4.0 closeout matrix and translated launch-state proof
+stopped_at: Completed 18-03-PLAN.md
+last_updated: "2026-04-17T16:26:55Z"
+last_activity: 2026-04-17 - Phase 18 plan 03 refreshed release truth, planning state, and milestone-op metadata
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 16
-  completed_plans: 13
-  percent: 81
+  completed_plans: 15
+  percent: 94
 ---
 
 # Project State
@@ -24,22 +24,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 18 execution for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Phase 18 final gate and verification artifact for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
 Phase: 18
-Plan: 2 of 4 in current phase
+Plan: 4 of 4 in current phase
 Status: In progress
-Last activity: 2026-04-17 - Phase 18 plan 01 locked the authoritative v0.4.0 closeout matrix and translated launch-state proof
+Last activity: 2026-04-17 - Phase 18 plan 03 refreshed release truth, planning state, and milestone-op metadata
 
-Progress: [████████░░] 81%
+Progress: [█████████░] 94%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 72
-- Active phase plans completed: 26
+- Total plans completed: 74
+- Active phase plans completed: 28
 - Average duration: 16 min
 - Total execution time: 5.1 hours
 
@@ -57,8 +57,8 @@ Progress: [████████░░] 81%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 17-01, 17-02, 17-03, 17-04, 18-01
-- Trend: Phase 18 is executing; the authoritative closeout regression matrix is locked and Wave 2 now moves into refreshed browser-backed proof.
+- Last 5 plans: 17-03, 17-04, 18-01, 18-02, 18-03
+- Trend: Phase 18 has recorded the three-view browser proof, refreshed release truth, and now only needs the final repo and packaging gate.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -72,6 +72,8 @@ Progress: [████████░░] 81%
 | Phase 17 P03 | 8 min | 2 tasks | 10 files |
 | Phase 17 P04 | 11 min | 2 tasks | 5 files |
 | Phase 18 P01 | 4 min | 2 tasks | 2 files |
+| Phase 18 P02 | 10 min | 2 tasks | 5 files |
+| Phase 18 P03 | 11 min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -150,6 +152,8 @@ Recent decisions affecting current work:
 - [Phase 17]: Treated repo-wide closeout fallout as a test-alignment fix for shipped fallback labels, not as a reason to reopen settings-shell behavior.
 - [Phase 18]: Make 18-VALIDATION.md the authoritative v0.4.0 requirement-to-seam map instead of relying on phase-memory summaries.
 - [Phase 18]: Use `LaunchControls.status.test.tsx` as the LAUNCH-03/04 owner seam by deriving visible launch copy through the active translator instead of hard-coded English fixtures.
+- [Phase 18]: Seed the `modpack-details` manual seam directly from deterministic metadata and expanded-mod fixtures instead of relying on post-mount click automation or live IPC.
+- [Phase 18]: Capture closeout browser proof through an isolated local CDP Chromium session so `dashboard`, `modpack-details`, and `phase-17-polish` all produce reusable screenshot and DOM artifacts.
 
 ### Pending Todos
 
@@ -159,18 +163,16 @@ None yet.
 
 ### Blockers/Concerns
 
-- Final gate for `v0.3.0` is green, including `npm run build -- --publish never`.
+- Final gate from the previous `v0.3.0` milestone is green, including `npm run build -- --publish never`.
 - `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
-- Phase 15 browser-backed proof now lives on `manual-verification.html?view=dashboard` and covers fallback art, loader truth, localized waiting/download/failure states, and read-only advanced settings.
-- Phase 16 shipped pack-runtime dependency truth, readable requirement copy, discoverable dense detail navigation, and a refreshed manual detail seam.
-- Headless Chromium capture of the refreshed `manual-verification.html?view=modpack-details` seam was sandbox-flaky during Phase 16 closeout, so Phase 18 should re-run manual evidence capture in a cleaner browser session.
+- Phase 18 browser-backed proof is now recorded at `/tmp/fmcl-phase18-dashboard-cdp.{png,html}`, `/tmp/fmcl-phase18-modpack-details-cdp.{png,html}`, and `/tmp/fmcl-phase18-phase17-polish-cdp.{png,html}`.
+- The shared `manual-verification.html` seam now proves launch truth, modpack dependency integrity, catalog or compact-nav polish, and settings-localization truth across three dedicated closeout views.
 - Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
-- Workflow metadata still has drift: `gsd-tools init milestone-op` reports stale `v0.2`, and phase 13 or 14 summary frontmatter uses `requirements:` instead of `requirements_completed:`.
-- Phase 17 browser-backed proof now lives on `manual-verification.html?view=phase-17-polish`; Chromium DOM capture still prefers an isolated user-data-dir, but screenshot and DOM artifacts were recorded successfully.
+- `gsd-tools init milestone-op` now resolves the active milestone from `.planning/ROADMAP.md`; any remaining summary-frontmatter drift in older archived phases is intentionally left alone because it does not block Phase 18 closure.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T15:37:16.835Z
-Stopped at: Completed 18-01-PLAN.md
+Last session: 2026-04-17T16:26:55Z
+Stopped at: Completed 18-03-PLAN.md
 Resume file: None

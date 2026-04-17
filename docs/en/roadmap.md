@@ -4,8 +4,8 @@
 
 - Milestone: `v0.4.0`
 - Theme: Launcher Truth And Product Polish
-- Status: active, with Phase 15 complete
-- Last updated: `2026-04-14`
+- Status: active, with Phases 15-17 complete and Phase 18 closeout underway
+- Last updated: `2026-04-17`
 
 ## Why This Milestone Exists
 
@@ -13,21 +13,23 @@ FMCL already ships broad launcher coverage, but the screenshot-backed audit from
 
 ## Verified Surface So Far
 
-The active browser-backed walkthrough for this milestone currently covers the classic launch dashboard through `manual-verification.html?view=dashboard` and verifies:
+The active browser-backed walkthrough for this milestone now covers `manual-verification.html?view=dashboard`, `manual-verification.html?view=modpack-details`, and `manual-verification.html?view=phase-17-polish`. Together those views verify:
 
 - branded fallback art on the classic hero when pack artwork is missing
 - truthful loader summary on the active launch configuration
 - localized waiting, downloading, and failure feedback on the launch surface
 - visible read-only advanced settings while launch work is in flight
+- pack-provided runtime dependencies, readable requirement copy, and dense detail navigation on modpack details
+- branded fallback covers on catalog surfaces, coherent compact-nav active state, and Russian preset naming without raw settings keys
 
 ## Phase Status
 
 | Phase | Status | Outcome |
 |-------|--------|---------|
 | 15. Launch Truth And Shared Surface Contracts | Complete | Branded fallback art, truthful loader summary, synchronized launch stages, localized runtime copy, and read-only busy-state settings |
-| 16. Modpack Detail Integrity And Discoverable Dense Navigation | Planned | Dependency truth, readable requirement copy, and dense-screen detail navigation |
-| 17. Catalog, Compact Nav, And Settings Localization Polish | Planned | Catalog legibility, fallback imagery, compact-nav truth, and remaining locale cleanup |
-| 18. Verification And Release Truth | Planned | Focused automation, full walkthrough evidence, release docs, and final milestone gates |
+| 16. Modpack Detail Integrity And Discoverable Dense Navigation | Complete | Dependency truth, readable requirement copy, and dense-screen detail navigation |
+| 17. Catalog, Compact Nav, And Settings Localization Polish | Complete | Catalog legibility, fallback imagery, compact-nav truth, and remaining locale cleanup |
+| 18. Verification And Release Truth | In progress | Focused automation, three-view browser proof, release-doc truth, and the final milestone gate |
 
 ## What `v0.4.0` Delivers So Far
 
@@ -36,12 +38,14 @@ The active browser-backed walkthrough for this milestone currently covers the cl
 - Missing hero art resolves to an intentional FMCL fallback instead of a broken image treatment
 - Advanced launch settings stay visible for reference while becoming read-only during active launch work
 - Runtime settings and launch-adjacent controls now respect the active launcher language on the audited classic surface
+- Modpack details now mark pack-provided runtime dependencies as satisfied and present readable requirement copy for mismatches
+- Dense detail navigation no longer depends on default horizontal-tab scrolling to reach core modpack sections
+- Catalog cards and compact navigation now keep fallback imagery and active-state truth coherent across the audited desktop shell
+- Audited settings surfaces now present localized preset names and no longer leak raw localization keys on the shipped UI
 
-## Next Candidates
+## Remaining Closeout Work
 
-These are the next likely milestone-owned follow-ups after Phase 15:
+Only the bounded Phase 18 closeout work remains before the milestone can be marked shipped:
 
-- truthful dependency satisfaction and clearer requirement copy on modpack details
-- denser detail navigation that stays discoverable without default horizontal-tab friction
-- catalog polish for fallback imagery, compact navigation truth, and settings-localization stragglers
-- final milestone-wide walkthrough evidence, docs refresh, and packaging-aware release gates
+- final repo-wide verification on `npm test`, `npm run lint`, `npx tsc --noEmit`, and `npm run build -- --publish never`
+- any strictly bounded packaging-truth cleanup required by that gate, without reopening product scope
