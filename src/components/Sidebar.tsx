@@ -15,7 +15,7 @@ import { Button } from './ui/Button';
 import { Select } from './ui/Select';
 import { Tooltip } from './ui/Tooltip';
 import type { LaunchStage } from '../features/launcher/services/launcherService';
-
+import { useModpackPrimaryActionOwnership } from './modpacks/primaryActionOwnership';
 
 import { cn } from '../utils/cn';
 
@@ -73,6 +73,7 @@ const Sidebar = ({
     const { getAccentStyles, getAccentHex, t, compactMode, sidebarPosition } = useSettings();
     const { uiMode, setMode } = useUIMode();
     const { modpacks, selectedId, effectiveModpackId } = useModpack();
+    const modpackPrimaryActionOwnership = useModpackPrimaryActionOwnership();
     const lastGame = useMemo(() => loadLastGame(effectiveModpackId), [effectiveModpackId]);
     const sidebarContentId = 'launcher-sidebar-content';
     const liveStatus = [runtime.statusText, runtime.statusDetail].filter(Boolean).join(' - ');
@@ -89,6 +90,7 @@ const Sidebar = ({
     // В режиме simple всегда разрешаем запуск (там используется дефолтный пак)
     const isModpackAvailable = uiMode === 'simple' || (selectedId && modpacks.some(m => m.id === selectedId));
     const canLaunch = isModpackAvailable && !runtime.isLaunching;
+    const launchPriority = uiMode === 'modpacks' && modpackPrimaryActionOwnership === 'route' ? 'secondary' : 'primary';
     const expandedWidthClass = compactMode
         ? 'w-[clamp(15rem,24vw,18rem)] p-3 sm:p-4'
         : 'w-[clamp(16.5rem,28vw,21rem)] p-3.5 sm:p-5';
@@ -248,6 +250,7 @@ const Sidebar = ({
                     isCollapsed={isCollapsed}
                     canLaunch={Boolean(canLaunch)}
                     lastLaunch={lastGame ? formatLastLaunch(lastGame.timestamp, t) : undefined}
+                    priority={launchPriority}
                 />
             </div>
         </aside>
