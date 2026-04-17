@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.5
 milestone_name: milestone
-status: Phase 20 plan 01 complete; ready for plan 02
-stopped_at: Completed 20-01-PLAN.md
-last_updated: "2026-04-17T20:50:29.793Z"
-last_activity: 2026-04-17 - Completed Phase 20 plan 01 canonical brand contract and shared token groundwork
+status: Phase 20 plan 02 complete; ready for plan 03
+stopped_at: Completed 20-02-PLAN.md
+last_updated: "2026-04-17T21:05:19Z"
+last_activity: 2026-04-17 - Completed Phase 20 plan 02 shell brand surface migration and appearance brand truth
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 8
-  completed_plans: 5
-  percent: 63
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 20 plan 01 is complete with the canonical brand contract and shared token groundwork; the next execution step is plan 02 surface migration.
+**Current focus:** Phase 20 plan 02 is complete with shell-owned brand surface adoption and focused appearance-brand tests; the next execution step is plan 03 fallback and deep-route migration.
 
 ## Current Position
 
 Phase: 20
-Plan: 01
-Status: Phase 20 plan 01 complete; ready for plan 02
-Last activity: 2026-04-17 - Completed Phase 20 plan 01 canonical brand contract and shared token groundwork
+Plan: 02
+Status: Phase 20 plan 02 complete; ready for plan 03
+Last activity: 2026-04-17 - Completed Phase 20 plan 02 shell brand surface migration and appearance brand truth
 
-Progress: [██████░░░░] 63%
+Progress: [███████░░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 78
-- Active phase plans completed: 32
+- Total plans completed: 79
+- Active phase plans completed: 33
 - Average duration: 16 min
-- Total execution time: 5.5 hours
+- Total execution time: 5.6 hours
 
 **By Phase:**
 
@@ -54,8 +54,8 @@ Progress: [██████░░░░] 63%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 18-04, 19-01, 19-02, 19-03, 19-04
-- Trend: Phase 19 now closes with shell-integrated proof, truthful CTA ownership, and a green focused shell-invariant matrix.
+- Last 5 plans: 19-02, 19-03, 19-04, 20-01, 20-02
+- Trend: Phase 20 is now advancing from canonical brand foundations into shipped shell-surface adoption with focused brand-regression coverage.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -77,6 +77,7 @@ Progress: [██████░░░░] 63%
 | Phase 19 P03 | 11 min | 2 tasks | 13 files |
 | Phase 19 P04 | 11 min | 2 tasks | 3 files |
 | Phase 20 P01 | 18 min | 2 tasks | 17 files |
+| Phase 20 P02 | 6 min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -170,6 +171,9 @@ Recent decisions affecting current work:
 - [Phase 20]: Keep the canonical brand seam in src/app/assets/branding.ts and src/components/branding/* instead of introducing a parallel branding store.
 - [Phase 20]: Extend CustomThemeConfig with brand tokens so product-owned shell and mark styling rides the existing theme-document pipeline.
 - [Phase 20]: Use TitleBar and the classic home/dashboard surfaces as proof consumers for Phase 20 without absorbing the broader shell migration planned later in the phase.
+- [Phase 20]: Shell-owned brand surfaces now consume BrandLockup or BrandMark plus BrandWordmark instead of raw FriendLauncher headings.
+- [Phase 20]: Classic launcher-home keeps pack metadata secondary while the canonical product mark and wordmark remain the primary shell identity.
+- [Phase 20]: Appearance settings explain accent as highlight personalization while FMCL mark, wordmark, and shell surfaces stay product-owned.
 
 ### Pending Todos
 
@@ -186,6 +190,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T20:50:29.791Z
-Stopped at: Completed 20-01-PLAN.md
+Last session: 2026-04-17T21:04:52.679Z
+Stopped at: Completed 20-02-PLAN.md
 Resume file: None
