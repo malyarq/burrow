@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v0.5
 milestone_name: milestone
-current_phase: 20
-current_phase_name: 20-brand-system-shared-tokens-and-surface-migration
-current_plan: 4
-status: complete
-stopped_at: Completed 20-04-PLAN.md
-last_updated: "2026-04-17T21:31:42.182Z"
-last_activity: 2026-04-18 - Completed Phase 20 plan 04 shell-integrated brand proof and closeout matrix
+current_phase: 21
+current_phase_name: 21-dense-surface-ia-navigation-and-cta-hierarchy
+current_plan: 1
+status: in_progress
+stopped_at: Completed 21-01-PLAN.md
+last_updated: "2026-04-17T22:48:40.435Z"
+last_activity: 2026-04-18 - Completed Phase 21 plan 01 catalog density and CTA hierarchy
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_plans: 12
+  completed_plans: 9
+  percent: 75
 ---
 
 # Project State
@@ -24,29 +24,29 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 20 is complete with shell-integrated brand proof and a green closeout matrix; the next step is planning Phase 21 dense-surface IA and CTA hierarchy.
+**Current focus:** Phase 21 is in progress after landing 21-01 catalog density and CTA hierarchy; the next step is executing 21-02 detail IA, tab hierarchy, and action grouping.
 
 ## Current Position
 
-Current Phase: 20
-Current Phase Name: 20-brand-system-shared-tokens-and-surface-migration
-Current Plan: 4
+Current Phase: 21
+Current Phase Name: 21-dense-surface-ia-navigation-and-cta-hierarchy
+Current Plan: 1
 Total Phases: 6
 Total Plans in Phase: 4
-Phase: 20
-Plan: 04
-Status: Complete
-Last activity: 2026-04-18 - Completed Phase 20 plan 04 shell-integrated brand proof and closeout matrix
+Phase: 21
+Plan: 01
+Status: In Progress
+Last activity: 2026-04-18 - Completed Phase 21 plan 01 catalog density and CTA hierarchy
 
-Progress: [██████████] 100%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 80
-- Active phase plans completed: 34
+- Total plans completed: 81
+- Active phase plans completed: 35
 - Average duration: 16 min
-- Total execution time: 5.8 hours
+- Total execution time: 5.9 hours
 
 **By Phase:**
 
@@ -62,8 +62,8 @@ Progress: [██████████] 100%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 19-04, 20-01, 20-02, 20-03, 20-04
-- Trend: Phase 20 closed on shell-integrated proof and a green brand/fallback matrix, leaving the next milestone step as Phase 21 planning rather than more Phase 20 cleanup.
+- Last 5 plans: 20-01, 20-02, 20-03, 20-04, 21-01
+- Trend: Phase 21 started by stabilizing dense catalog rails, metadata hierarchy, and crowded-width regression coverage while later detail and runtime-summary plans remain open.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -88,6 +88,7 @@ Progress: [██████████] 100%
 | Phase 20 P02 | 6 min | 2 tasks | 11 files |
 | Phase 20 P03 | 6 min | 2 tasks | 14 files |
 | Phase 20 P04 | 10 min | 2 tasks | 3 files |
+| Phase 21 P01 | 7 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -190,6 +191,9 @@ Recent decisions affecting current work:
 - [Phase 20]: Reused the existing manual verification shell and status JSON instead of adding a Phase 20-only harness.
 - [Phase 20]: Used ResourcePacksTab as the deep media proof representative because it exercises LazyImage fallback truth directly inside real shell chrome.
 - [Phase 20]: Recorded task 2 as a verification-only empty commit because the planned Phase 20 regression matrix was already green and scope-aligned.
+- [Phase 21]: Replaced wrap-prone filter rows with grouped filter grids so dense desktop widths keep one readable control structure instead of orphaned selects.
+- [Phase 21]: Kept Phase 19 card ownership intact by preserving card activation while adding one explicit primary CTA and labeled metadata blocks per catalog card.
+- [Phase 21]: Used crowded long-title fixtures in browser and installed tests rather than broad visual rewrites, keeping the phase scoped to density truth.
 
 ### Pending Todos
 
@@ -199,13 +203,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 19 is complete; phase 20 can start from the shell-integrated proof baseline without reopening shell-invariant work.
+- Phase 21 is underway; later plans should preserve the grouped catalog density contract and avoid reopening Phase 19/20 shell, CTA, or fallback seams.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T21:31:42.180Z
-Stopped at: Completed 20-04-PLAN.md
+Last session: 2026-04-17T22:48:40.433Z
+Stopped at: Completed 21-01-PLAN.md
 Resume file: None

@@ -31,52 +31,65 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
   getAccentStyles,
 }) => {
   const primaryAction = hasUpdate ? 'update' : 'play';
+  const primaryLabel =
+    primaryAction === 'update'
+      ? t('modpacks.update_available') || 'Update available'
+      : t('general.play');
 
   return (
-    <section className="surface-card flex flex-col gap-3 p-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-        {primaryAction === 'play' ? (
-          <Button
-            variant="primary"
-            onClick={onLaunch}
-            className="w-full sm:min-w-[14rem] sm:flex-1"
-            style={getAccentStyles('bg').style}
-            data-primary-action="route"
-            data-route-action="play"
-          >
-            {t('general.play')}
-          </Button>
-        ) : (
-          <>
+    <section className="surface-card flex h-full flex-col gap-4 p-4" data-testid="modpack-details-actions">
+      <div className="space-y-3">
+        <div className="kicker-label">{primaryLabel}</div>
+        <div className="grid gap-2">
+          {primaryAction === 'play' ? (
             <Button
               variant="primary"
-              onClick={onShowUpdate}
-              className={cn('w-full sm:min-w-[14rem] sm:flex-1', getAccentStyles('bg').className)}
+              onClick={onLaunch}
+              className="w-full"
               style={getAccentStyles('bg').style}
               data-primary-action="route"
-              data-route-action="update"
+              data-route-action="play"
             >
-              {t('modpacks.update_available') || 'Обновление доступно'}
-            </Button>
-            <Button variant="secondary" onClick={onLaunch} className="w-full sm:w-auto" data-route-action="play">
               {t('general.play')}
             </Button>
-          </>
-        )}
-        <Button variant="secondary" onClick={onRename} className="w-full sm:w-auto">
-          {t('modpacks.rename')}
-        </Button>
-        <Button variant="secondary" onClick={onDuplicate} className="w-full sm:w-auto">
-          {t('modpacks.duplicate')}
-        </Button>
-        <Button variant="secondary" onClick={onExport} className="w-full sm:w-auto">
-          {t('modpacks.export') || 'Экспорт'}
-        </Button>
-        {canDelete && (
-          <Button variant="danger" onClick={onDelete} className="w-full sm:w-auto">
-            {t('modpacks.delete')}
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                onClick={onShowUpdate}
+                className={cn('w-full', getAccentStyles('bg').className)}
+                style={getAccentStyles('bg').style}
+                data-primary-action="route"
+                data-route-action="update"
+              >
+                {t('modpacks.update_available') || 'Обновление доступно'}
+              </Button>
+              <Button variant="secondary" onClick={onLaunch} className="w-full" data-route-action="play">
+                {t('general.play')}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="border-t border-border/60 pt-4">
+        <div className="kicker-label">{t('modpacks.actions_title')}</div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
+          <Button variant="secondary" onClick={onRename} className="w-full">
+            {t('modpacks.rename')}
           </Button>
-        )}
+          <Button variant="secondary" onClick={onDuplicate} className="w-full">
+            {t('modpacks.duplicate')}
+          </Button>
+          <Button variant="secondary" onClick={onExport} className="w-full">
+            {t('modpacks.export') || 'Экспорт'}
+          </Button>
+          {canDelete && (
+            <Button variant="danger" onClick={onDelete} className="w-full">
+              {t('modpacks.delete')}
+            </Button>
+          )}
+        </div>
       </div>
     </section>
   );

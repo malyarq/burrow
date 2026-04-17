@@ -334,18 +334,43 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
               <div className="flex min-h-full flex-col gap-6 p-6 pb-8">
-                <ModpackDetailsHeader
-                  modpackName={modpack.name}
-                  metadata={metadata}
-                  effectiveConfig={effectiveConfig}
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  t={t}
-                  getAccentStyles={getAccentStyles}
-                  getAccentHex={getAccentHex}
-                />
+                <div
+                  className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]"
+                  data-testid="modpack-details-hero"
+                >
+                  <ModpackDetailsHeader
+                    modpackName={modpack.name}
+                    metadata={metadata}
+                    effectiveConfig={effectiveConfig}
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    t={t}
+                    getAccentStyles={getAccentStyles}
+                    getAccentHex={getAccentHex}
+                  />
 
-                <div className={cn('min-w-0', secondarySurfaceTab && 'surface-panel p-4')}>
+                  <div className="xl:self-start">
+                    <ModpackDetailsActions
+                      onLaunch={async () => {
+                        await select(modpackId);
+                        onBack();
+                        // Defer launch to next tick so ModpackContext has time to update config
+                        if (onLaunch) setTimeout(() => onLaunch(), 0);
+                      }}
+                      hasUpdate={hasUpdate && !!metadata?.source && !!metadata?.sourceId && metadata.source !== 'local'}
+                      onShowUpdate={() => setShowUpdateModal(true)}
+                      onRename={handleRename}
+                      onDuplicate={handleDuplicate}
+                      onExport={() => onNavigate({ type: 'export', modpackId })}
+                      canDelete={modpacks.length > 1}
+                      onDelete={handleDelete}
+                      t={t}
+                      getAccentStyles={getAccentStyles}
+                    />
+                  </div>
+                </div>
+
+                <div className={cn('min-w-0', secondarySurfaceTab ? 'space-y-4' : 'surface-panel p-4 sm:p-5')}>
                   {activeTab === 'info' && (
                     <ModpackDetailsInfoTab
                       descriptionDraft={descriptionDraft}
@@ -428,25 +453,6 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({
                   )}
                 </div>
 
-                <div className="mt-auto">
-                  <ModpackDetailsActions
-                    onLaunch={async () => {
-                      await select(modpackId);
-                      onBack();
-                      // Defer launch to next tick so ModpackContext has time to update config
-                      if (onLaunch) setTimeout(() => onLaunch(), 0);
-                    }}
-                    hasUpdate={hasUpdate && !!metadata?.source && !!metadata?.sourceId && metadata.source !== 'local'}
-                    onShowUpdate={() => setShowUpdateModal(true)}
-                    onRename={handleRename}
-                    onDuplicate={handleDuplicate}
-                    onExport={() => onNavigate({ type: 'export', modpackId })}
-                    canDelete={modpacks.length > 1}
-                    onDelete={handleDelete}
-                    t={t}
-                    getAccentStyles={getAccentStyles}
-                  />
-                </div>
               </div>
             </div>
           </div>

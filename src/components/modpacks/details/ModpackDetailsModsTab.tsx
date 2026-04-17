@@ -256,12 +256,22 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
           </div>
         </div>
 
-        <div className="surface-inline flex flex-wrap items-center gap-3 p-3 text-sm text-secondary">
-          <Filter className="h-4 w-4" />
-          <span>{t('modpacks.mods_manage_hint')}</span>
-          <span className="text-foreground">
-            {enabledCount} {t('modpacks.enabled').toLowerCase()} / {mods.length}
-          </span>
+        <div
+          className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,9rem))]"
+          data-testid="mods-summary"
+        >
+          <div className="surface-inline flex items-start gap-3 p-3 text-sm text-secondary">
+            <Filter className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <span>{t('modpacks.mods_manage_hint')}</span>
+          </div>
+          <div className="surface-inline rounded-2xl px-3 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.enabled')}</p>
+            <p className="mt-2 text-base font-semibold text-foreground">{enabledCount}</p>
+          </div>
+          <div className="surface-inline rounded-2xl px-3 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.installed')}</p>
+            <p className="mt-2 text-base font-semibold text-foreground">{mods.length}</p>
+          </div>
         </div>
       </div>
 
@@ -329,7 +339,7 @@ const ModItem = React.memo<{
           aria-expanded={isExpanded}
         >
           <div className="flex flex-wrap items-center gap-2">
-            <h5 className="truncate text-base font-semibold text-foreground">{mod.name}</h5>
+            <h5 className="break-words text-base font-semibold leading-5 text-foreground">{mod.name}</h5>
             <span className="rounded-full border border-border/70 bg-background/70 px-2 py-0.5 text-xs font-medium text-secondary">
               {t('modpacks.version')}: {mod.version}
             </span>
@@ -355,7 +365,7 @@ const ModItem = React.memo<{
             )}
           </div>
 
-          <p className="mt-2 truncate text-sm text-secondary">{mod.file.name}</p>
+          <p className="mt-2 break-words text-sm text-secondary">{mod.file.name}</p>
         </button>
 
         <div className="flex flex-wrap items-center gap-2 lg:justify-end">
