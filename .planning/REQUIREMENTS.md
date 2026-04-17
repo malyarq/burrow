@@ -9,7 +9,7 @@
 
 - [x] **SHELL-01**: User can use every major launcher surface without content rendering under the custom title bar.
 - [ ] **SHELL-02**: User can scroll dense screens without sticky headers or fixed footers hiding actionable content.
-- [ ] **SHELL-03**: User sees one unambiguous primary action per launcher context.
+- [x] **SHELL-03**: User sees one unambiguous primary action per launcher context.
 - [ ] **SHELL-04**: User can use modpack and wizard flows at shipped desktop widths without clipped controls, orphan filters, or broken spacing.
 
 ### Brand System & Surface Language
@@ -70,7 +70,7 @@
 |-------------|-------|--------|
 | SHELL-01 | Phase 19 | Complete |
 | SHELL-02 | Phase 19 | Pending |
-| SHELL-03 | Phase 19 | Pending |
+| SHELL-03 | Phase 19 | Complete |
 | SHELL-04 | Phase 21 | Pending |
 | BRAND-01 | Phase 20 | Pending |
 | BRAND-02 | Phase 20 | Pending |

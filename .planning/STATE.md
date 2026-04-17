@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-status: Phase 19 plan 01 complete; ready for plan 02
-stopped_at: Completed 19-01-PLAN.md
-last_updated: "2026-04-17T19:15:00.641Z"
-last_activity: 2026-04-17 - Completed Phase 19 plan 01 shared shell top-safe contract and regression seam
+status: Phase 19 plan 02 complete; ready for plan 03
+stopped_at: Completed 19-02-PLAN.md
+last_updated: "2026-04-17T19:27:51Z"
+last_activity: 2026-04-17 - Completed Phase 19 plan 02 shared CTA ownership seam and modpack-details primary-action truth
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 25
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -21,24 +21,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 19 execution is underway after landing the shared shell-safe baseline; the next work is CTA ownership and dense-route cleanup.
+**Current focus:** Phase 19 execution is underway after landing CTA ownership truth; the next work is dense-route flow cleanup and shell-integrated proof.
 
 ## Current Position
 
 Phase: 19
-Plan: 02
-Status: Phase 19 plan 01 complete; ready for plan 02
-Last activity: 2026-04-17 - Completed Phase 19 plan 01 shared shell top-safe contract and regression seam
+Plan: 03
+Status: Phase 19 plan 02 complete; ready for plan 03
+Last activity: 2026-04-17 - Completed Phase 19 plan 02 shared CTA ownership seam and modpack-details primary-action truth
 
-Progress: [██░░░░░░░░] 25%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 75
-- Active phase plans completed: 29
+- Total plans completed: 76
+- Active phase plans completed: 30
 - Average duration: 16 min
-- Total execution time: 5.1 hours
+- Total execution time: 5.3 hours
 
 **By Phase:**
 
@@ -54,8 +54,8 @@ Progress: [██░░░░░░░░] 25%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 17-04, 18-01, 18-02, 18-03, 18-04
-- Trend: Phase 18 finished on a green repo and packaging gate, with proof and docs truth recorded for milestone completion.
+- Last 5 plans: 18-02, 18-03, 18-04, 19-01, 19-02
+- Trend: Phase 19 is progressing on green focused UI seams, with shared shell geometry and CTA truth now established before dense-route cleanup.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -73,6 +73,7 @@ Progress: [██░░░░░░░░] 25%
 | Phase 18 P03 | 11 min | 2 tasks | 6 files |
 | Phase 18 P04 | 11 min | 1 task | 2 files |
 | Phase 19 P01 | 5 min | 2 tasks | 6 files |
+| Phase 19 P02 | 12 min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -156,6 +157,8 @@ Recent decisions affecting current work:
 - [Phase 18]: Fix only bounded release metadata in `package.json` during the final gate and carry the renderer chunk warning as an explicit residual instead of reopening performance scope.
 - [Phase 19]: AppLayout owns the post-title-bar safe area so overlays, routes, and the split inherit one shared shell contract.
 - [Phase 19]: Sidebar collapse moved into SidebarHeader so the sidebar no longer needs an absolute top strip with local pt-6 compensation.
+- [Phase 19]: ModpackRouter owns shell-versus-route CTA classification and publishes it through a shared seam so Sidebar can demote launch without route-aware button logic.
+- [Phase 19]: Modpack details expose update as the sole route-primary action when available and keep play as a secondary action instead of competing primaries.
 
 ### Pending Todos
 
@@ -172,6 +175,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T19:15:00.639Z
-Stopped at: Completed 19-01-PLAN.md
+Last session: 2026-04-17T19:27:51Z
+Stopped at: Completed 19-02-PLAN.md
 Resume file: None
