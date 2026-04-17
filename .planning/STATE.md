@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-status: Phase 19 context gathered; ready for planning
-stopped_at: Phase 19 context gathered
-last_updated: "2026-04-17T18:27:57.292Z"
-last_activity: 2026-04-17 - Captured Phase 19 context for shell invariants and CTA ownership
+status: Phase 19 plan 01 complete; ready for plan 02
+stopped_at: Completed 19-01-PLAN.md
+last_updated: "2026-04-17T19:15:00.641Z"
+last_activity: 2026-04-17 - Completed Phase 19 plan 01 shared shell top-safe contract and regression seam
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 4
+  completed_plans: 1
+  percent: 25
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 19 planning is ready after capturing context for shell safe areas, CTA ownership, and bottom action behavior
+**Current focus:** Phase 19 execution is underway after landing the shared shell-safe baseline; the next work is CTA ownership and dense-route cleanup.
 
 ## Current Position
 
 Phase: 19
-Plan: Ready for planning
-Status: Phase 19 context gathered; ready for planning
-Last activity: 2026-04-17 - Captured Phase 19 context for shell invariants and CTA ownership
+Plan: 02
+Status: Phase 19 plan 01 complete; ready for plan 02
+Last activity: 2026-04-17 - Completed Phase 19 plan 01 shared shell top-safe contract and regression seam
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 25%
 
 ## Performance Metrics
 
@@ -72,6 +72,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 18 P02 | 10 min | 2 tasks | 5 files |
 | Phase 18 P03 | 11 min | 2 tasks | 6 files |
 | Phase 18 P04 | 11 min | 1 task | 2 files |
+| Phase 19 P01 | 5 min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -153,6 +154,8 @@ Recent decisions affecting current work:
 - [Phase 18]: Seed the `modpack-details` manual seam directly from deterministic metadata and expanded-mod fixtures instead of relying on post-mount click automation or live IPC.
 - [Phase 18]: Capture closeout browser proof through an isolated local CDP Chromium session so `dashboard`, `modpack-details`, and `phase-17-polish` all produce reusable screenshot and DOM artifacts.
 - [Phase 18]: Fix only bounded release metadata in `package.json` during the final gate and carry the renderer chunk warning as an explicit residual instead of reopening performance scope.
+- [Phase 19]: AppLayout owns the post-title-bar safe area so overlays, routes, and the split inherit one shared shell contract.
+- [Phase 19]: Sidebar collapse moved into SidebarHeader so the sidebar no longer needs an absolute top strip with local pt-6 compensation.
 
 ### Pending Todos
 
@@ -162,13 +165,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- `v0.5.0` now has requirements, roadmap, and Phase 19 context; no execution should begin before `$gsd-plan-phase 19` turns this context into an explicit plan.
+- Phase 19 is now in progress; remaining execution covers CTA ownership, dense-route flow cleanup, and proof closure for the redesign baseline.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T18:27:57.290Z
-Stopped at: Phase 19 context gathered
-Resume file: .planning/phases/19-baseline-stability-scope-and-shell-invariants/19-CONTEXT.md
+Last session: 2026-04-17T19:15:00.639Z
+Stopped at: Completed 19-01-PLAN.md
+Resume file: None
