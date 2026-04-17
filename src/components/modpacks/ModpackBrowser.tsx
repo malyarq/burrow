@@ -396,10 +396,9 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         </button>
         <div className="flex gap-4">
           <LazyImage
-            src={modpack.iconUrl ?? '/icon.png'}
+            src={modpack.iconUrl ?? undefined}
             alt={modpack.title}
             className="h-16 w-16 rounded-2xl border border-border/70 object-cover"
-            fallback="/icon.png"
           />
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2 pr-8">

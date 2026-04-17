@@ -407,10 +407,7 @@ const ModpackListComponentInternal: React.FC<{
   }, [refresh, loadModpacks, toast, t]);
 
   const getModpackIcon = useCallback((modpack: ModpackListItemWithMetadata) => {
-    if (modpack.metadata?.iconUrl) {
-      return modpack.metadata.iconUrl;
-    }
-    return '/icon.png';
+    return modpack.metadata?.iconUrl;
   }, []);
 
   const getModpackSourceBadge = useCallback((source?: string) => {
@@ -576,7 +573,6 @@ const ModpackListComponentInternal: React.FC<{
               src={iconSrc}
               alt={modpack.name}
               className="h-full w-full rounded-2xl border border-border/70 object-cover"
-              fallback="/icon.png"
               placeholder={
                 <SkeletonLoader variant="rounded" width={80} height={80} />
               }
