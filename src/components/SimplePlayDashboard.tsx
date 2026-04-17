@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { LAUNCHER_MARK_PATH } from '../app/assets/branding';
+import { MEDIA_FALLBACK_PATH } from '../app/assets/branding';
 import { Boxes, Settings2, Sparkles } from 'lucide-react';
 import { useSettings, useUIMode } from '../contexts/SettingsContext';
 import { useModpack } from '../contexts/ModpackContext';
@@ -19,6 +19,8 @@ import { ProgressBar } from './ui/ProgressBar';
 import { getLaunchStageTitle, type LaunchStage } from '../features/launcher/services/launcherService';
 import { LazyImage } from './ui/LazyImage';
 import { buildRuntimeDependencyState, getModloaderDisplayLabel } from './sidebar/modpackRuntimeDependencies';
+import { BrandMark } from './branding/BrandMark';
+import { BrandWordmark } from './branding/BrandWordmark';
 
 interface Particle {
   id: string;
@@ -151,7 +153,6 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
   const lastClickTimeRef = useRef(0);
   const lastFireworksTimeRef = useRef(0);
 
-  const accent = getAccentStyles('text');
   const accentHex = getAccentHex();
   const runtimeDependencyState = buildRuntimeDependencyState(
     launch.version,
@@ -376,44 +377,49 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
               ? 'transition-none'
               : 'transition-all duration-300 ease-out hover:scale-110 active:scale-105'
           )}
-          style={{ filter: `drop-shadow(0 0 24px ${accentHex}50) drop-shadow(0 0 48px ${accentHex}30)` }}
+          style={{
+            filter: showEasterEgg
+              ? `drop-shadow(0 0 24px ${accentHex}55) drop-shadow(0 0 48px ${accentHex}35)`
+              : 'drop-shadow(0 0 24px rgb(var(--brand-mark-glow) / 0.2)) drop-shadow(0 0 48px rgb(var(--brand-mark-glow) / 0.14))'
+          }}
         >
           <div
             className="absolute -inset-6 rounded-full animate-pulse-slow pointer-events-none"
             style={{
-              background: `radial-gradient(circle, ${accentHex}20 0%, transparent 60%)`,
-              animation: !reducedMotion && showEasterEgg ? 'easter-egg-glow 0.5s ease-in-out infinite' : 'none',
+              background: !reducedMotion && showEasterEgg
+                ? `radial-gradient(circle, ${accentHex}20 0%, transparent 60%)`
+                : 'radial-gradient(circle, rgb(var(--brand-shell-glow) / 0.18) 0%, transparent 60%)',
+              animation: !reducedMotion && showEasterEgg ? 'easter-egg-glow 0.5s ease-in-out infinite' : undefined,
             }}
           />
-          <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl shadow-black/20 border border-zinc-200/60 dark:border-zinc-700/60 bg-zinc-900/80 flex items-center justify-center backdrop-blur-sm">
+          <div className="brand-media-frame relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl">
             <LazyImage
               src={metadata?.iconUrl ?? undefined}
-              fallback={LAUNCHER_MARK_PATH}
+              fallback={MEDIA_FALLBACK_PATH}
               alt={heroArtAlt}
               data-testid="dashboard-launcher-mark"
               className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-300"
               style={{
                 transform: !reducedMotion && showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
-                filter: !reducedMotion && showEasterEgg ? `drop-shadow(0 0 15px ${accentHex})` : 'none',
+                filter: !reducedMotion && showEasterEgg ? `drop-shadow(0 0 15px ${accentHex})` : undefined,
               }}
             />
           </div>
         </button>
-        <h1
+        <BrandWordmark
+          as="h1"
+          tone="hero"
           className={cn(
-            'text-2xl md:text-3xl font-black tracking-tight drop-shadow-sm transition-all duration-300 relative z-10',
-            accent.className,
+            'relative z-10 text-foreground transition-all duration-300',
             !reducedMotion && showEasterEgg && 'animate-pulse scale-110'
           )}
           style={{
-            ...(accent.style ?? {}),
             textShadow: !reducedMotion && showEasterEgg
               ? `0 0 20px ${accentHex}, 0 0 40px ${accentHex}, 0 4px 14px ${accentHex}80`
-              : `0 4px 14px ${accentHex}40`,
+              : '0 4px 18px rgb(var(--brand-mark-glow) / 0.24)',
           }}
         >
-          FriendLauncher
-        </h1>
+        </BrandWordmark>
         <div className="relative z-10 text-center">
           <p className="text-sm font-semibold text-foreground">{heroName}</p>
           <p className="text-xs text-secondary">{heroSubtitle}</p>
@@ -448,7 +454,12 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
                 }
               }
             >
-              <img src={LAUNCHER_MARK_PATH} alt="" aria-hidden="true" className="w-full h-full object-contain" style={{ filter: `drop-shadow(0 0 6px ${accentHex}) drop-shadow(0 0 12px ${accentHex}60)` }} />
+              <BrandMark
+                role="product-mark"
+                decorative
+                className="w-full h-full"
+                style={{ filter: `drop-shadow(0 0 6px ${accentHex}) drop-shadow(0 0 12px ${accentHex}60)` }}
+              />
             </div>
           );
         })}
@@ -468,7 +479,9 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           }
           .firework-particle { animation: firework-particle var(--particle-duration) ease-out var(--particle-delay) forwards; will-change: transform, opacity; }
           .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
-          .logo-container:hover { filter: ${reducedMotion ? `drop-shadow(0 0 24px ${accentHex}50) drop-shadow(0 0 48px ${accentHex}30)` : `drop-shadow(0 0 30px ${accentHex}80) drop-shadow(0 0 60px ${accentHex}60)`} !important; }
+          .logo-container:hover { filter: ${showEasterEgg
+            ? (reducedMotion ? `drop-shadow(0 0 24px ${accentHex}50) drop-shadow(0 0 48px ${accentHex}30)` : `drop-shadow(0 0 30px ${accentHex}80) drop-shadow(0 0 60px ${accentHex}60)`)
+            : 'drop-shadow(0 0 28px rgb(var(--brand-mark-glow) / 0.24)) drop-shadow(0 0 56px rgb(var(--brand-mark-glow) / 0.16))'} !important; }
         `}</style>
       </div>
 

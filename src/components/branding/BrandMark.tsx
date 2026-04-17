@@ -13,7 +13,7 @@ const SIZE_CLASS_MAP: Record<BrandMarkSize, string> = {
   xl: 'h-20 w-20',
 }
 
-type BrandMarkProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'alt' | 'src'> & {
+type BrandMarkProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'alt'> & {
   alt?: string
   decorative?: boolean
   frame?: BrandMarkFrame
@@ -29,6 +29,7 @@ export function BrandMark({
   frame = 'none',
   role = 'product-mark',
   size = 'md',
+  src,
   wrapperClassName,
   ...props
 }: BrandMarkProps) {
@@ -37,7 +38,7 @@ export function BrandMark({
     <img
       {...props}
       data-brand-role={role}
-      src={asset.path}
+      src={src ?? asset.path}
       alt={decorative ? '' : alt ?? asset.alt}
       aria-hidden={decorative || undefined}
       className={cn(SIZE_CLASS_MAP[size], 'object-contain', className)}

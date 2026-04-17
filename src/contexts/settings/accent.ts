@@ -2,6 +2,7 @@ import type { AccentStyleResult, AccentStyleType } from './types';
 
 // Preset styles are static to prevent Tailwind purging.
 const TEXT_ON_ACCENT = 'text-zinc-900 dark:text-white';
+export const DEFAULT_ACCENT_COLOR = 'emerald';
 
 const PRESET_STYLES: Record<string, Record<string, string>> = {
   emerald: {
@@ -73,7 +74,7 @@ function hexToRgba(hex: string, alpha: number) {
 }
 
 export function getAccentHexForColor(accentColor: string) {
-  const color = accentColor || 'emerald';
+  const color = accentColor || DEFAULT_ACCENT_COLOR;
   return isPreset(color) ? PRESET_HEX_MAP[color] : color;
 }
 
@@ -82,7 +83,7 @@ export function getAccentStylesForColor(
   type: AccentStyleType,
   theme?: 'light' | 'dark'
 ): AccentStyleResult {
-  const color = accentColor || 'emerald';
+  const color = accentColor || DEFAULT_ACCENT_COLOR;
 
   if (isPreset(color)) {
     if (type === 'soft-bg') return { className: `bg-${color}-500/10` };
@@ -109,7 +110,7 @@ export function getAccentClassForColor(accentColor: string, tailwindClasses: str
   if (isPreset(accentColor)) {
     return tailwindClasses.replace(/XXX/g, accentColor);
   }
-  return tailwindClasses.replace(/XXX/g, 'emerald');
+  return tailwindClasses.replace(/XXX/g, DEFAULT_ACCENT_COLOR);
 }
 
 /**
@@ -118,4 +119,3 @@ export function getAccentClassForColor(accentColor: string, tailwindClasses: str
 export function getPresetAccentSafelistClassName() {
   return Object.values(PRESET_STYLES).flatMap((s) => Object.values(s)).join(' ');
 }
-

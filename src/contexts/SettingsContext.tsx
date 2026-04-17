@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
-import type { AccentColor, AccentStyleType, DownloadProvider, Language, Theme, UIMode, CustomThemeConfig, ThemePresetId } from './settings/types';
+import type { AccentColor, AccentStyleType, BrandThemeConfig, DownloadProvider, Language, Theme, UIMode, CustomThemeConfig, ThemePresetId } from './settings/types';
 import {
     deserializeBoolean,
     deserializeInt,
@@ -47,6 +47,7 @@ interface SettingsState {
     getAccentHex: () => string;
     customTheme: CustomThemeConfig;
     activeThemeConfig: CustomThemeConfig;
+    brandTheme: BrandThemeConfig;
     setCustomTheme: (val: CustomThemeConfig) => void;
     uiScale: number;
     setUiScale: (val: number) => void;
@@ -122,6 +123,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         () => resolveThemeConfig(theme, themePresetId, customTheme),
         [customTheme, theme, themePresetId],
     );
+    const brandTheme = activeThemeConfig.brand ?? {};
 
     const [uiScale, setUiScale] = useLocalStorageState('settings_uiScale', deserializeInt(100), serializeInt);
     const [disableAnimations, setDisableAnimations] = useLocalStorageState('settings_disableAnimations', deserializeBoolean(false), serializeBoolean);
@@ -224,6 +226,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             getAccentHex,
             customTheme,
             activeThemeConfig,
+            brandTheme,
             setCustomTheme,
             uiScale, setUiScale,
             disableAnimations, setDisableAnimations,
