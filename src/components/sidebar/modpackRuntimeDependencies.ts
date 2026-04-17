@@ -1,11 +1,26 @@
 import type { ModLoaderType } from '../../contexts/instances/types';
 
+export type RuntimeDependencyWarning =
+  | 'optifine_requires_forge'
+  | 'optifine_requires_supported_version';
+
 export interface RuntimeDependencyState {
   minecraftVersion: string;
   modLoader?: {
     type: ModLoaderType;
     version?: string;
   };
+  useOptiFine: boolean;
+  dependencyCount: number;
+  warnings: RuntimeDependencyWarning[];
+}
+
+export interface BuildRuntimeDependencyStateInput {
+  minecraftVersion: string;
+  modLoaderType: ModLoaderType;
+  modLoaderVersion?: string;
+  useOptiFine?: boolean;
+  isOptiFineSupported?: boolean;
 }
 
 function translateWithFallback(t: (key: string) => string, key: string, fallback: string) {
@@ -13,20 +28,71 @@ function translateWithFallback(t: (key: string) => string, key: string, fallback
   return translated === key ? fallback : translated;
 }
 
+function resolveRuntimeDependencyInput(
+  inputOrMinecraftVersion: string | BuildRuntimeDependencyStateInput,
+  modLoaderType?: ModLoaderType,
+  modLoaderVersion?: string,
+): BuildRuntimeDependencyStateInput {
+  if (typeof inputOrMinecraftVersion === 'string') {
+    return {
+      minecraftVersion: inputOrMinecraftVersion,
+      modLoaderType: modLoaderType ?? 'vanilla',
+      modLoaderVersion,
+    };
+  }
+
+  return inputOrMinecraftVersion;
+}
+
+export function shouldKeepOptiFineEnabled(params: {
+  useOptiFine: boolean;
+  modLoaderType: ModLoaderType;
+  isOptiFineSupported: boolean;
+}): boolean {
+  const { useOptiFine, modLoaderType, isOptiFineSupported } = params;
+  return useOptiFine && modLoaderType === 'forge' && isOptiFineSupported;
+}
+
 export function buildRuntimeDependencyState(
-  minecraftVersion: string,
-  modLoaderType: ModLoaderType,
+  inputOrMinecraftVersion: string | BuildRuntimeDependencyStateInput,
+  modLoaderType?: ModLoaderType,
   modLoaderVersion?: string,
 ): RuntimeDependencyState {
+  const input = resolveRuntimeDependencyInput(
+    inputOrMinecraftVersion,
+    modLoaderType,
+    modLoaderVersion,
+  );
+  const requestedOptiFine = Boolean(input.useOptiFine);
+  const optiFineWarnings: RuntimeDependencyWarning[] = [];
+  const isOptiFineSupported = input.isOptiFineSupported ?? true;
+
+  if (requestedOptiFine && input.modLoaderType !== 'forge') {
+    optiFineWarnings.push('optifine_requires_forge');
+  }
+  if (requestedOptiFine && !isOptiFineSupported) {
+    optiFineWarnings.push('optifine_requires_supported_version');
+  }
+
+  const useOptiFine = shouldKeepOptiFineEnabled({
+    useOptiFine: requestedOptiFine,
+    modLoaderType: input.modLoaderType,
+    isOptiFineSupported,
+  });
+  const modLoader =
+    input.modLoaderType === 'vanilla'
+      ? undefined
+      : {
+          type: input.modLoaderType,
+          version: input.modLoaderVersion,
+        };
+
   return {
-    minecraftVersion,
-    modLoader:
-      modLoaderType === 'vanilla'
-        ? undefined
-        : {
-            type: modLoaderType,
-            version: modLoaderVersion,
-          },
+    minecraftVersion: input.minecraftVersion,
+    modLoader,
+    useOptiFine,
+    dependencyCount: 1 + (modLoader ? 1 : 0) + (useOptiFine ? 1 : 0),
+    warnings: optiFineWarnings,
   };
 }
 
