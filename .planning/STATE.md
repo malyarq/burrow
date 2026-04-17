@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
 status: Phase 17 in progress
-stopped_at: Completed 17-01-PLAN.md
-last_updated: "2026-04-17T14:03:53.126Z"
-last_activity: 2026-04-17 - Phase 17 catalog work is in progress; plan 01 shipped responsive filters and shared launcher-mark fallback states
+stopped_at: Completed Wave 1 (17-01, 17-02)
+last_updated: "2026-04-17T14:12:00.000Z"
+last_activity: 2026-04-17 - Phase 17 Wave 1 shipped responsive catalog filters, shared launcher-mark fallback states, and coherent compact sidebar navigation
 progress:
   total_phases: 4
   completed_phases: 2
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 Phase: 17
 Plan: 03
 Status: Phase 17 in progress
-Last activity: 2026-04-17 - Phase 17 catalog work is in progress; plan 01 shipped responsive filters and shared launcher-mark fallback states
+Last activity: 2026-04-17 - Phase 17 Wave 1 shipped responsive catalog filters, shared launcher-mark fallback states, and coherent compact sidebar navigation
 
 Progress: [████████░░] 83%
 
@@ -65,6 +65,7 @@ Progress: [████████░░] 83%
 | Plan | Duration | Tasks | Files |
 | --- | --- | --- | --- |
 | Phase 17 P01 | 8 min | 2 tasks | 4 files |
+| Phase 17 P02 | 7 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,7 @@ Recent decisions affecting current work:
 - [Phase 15]: Keep advanced settings visible during active launch work by rendering them read-only on the classic surface instead of hiding them behind a blocking state.
 - [Phase 17]: Reused LazyImage's launcher-mark default instead of passing '/icon.png' from catalog surfaces.
 - [Phase 17]: Guarded the sidebar-width catalog fix with focused ergonomics assertions on the installed and remote filter shells.
+- [Phase 17]: Replaced the collapsed modpacks placeholder letter with icon-led compact navigation so both launcher modes share one intentional shell language.
 
 ### Pending Todos
 
@@ -157,5 +159,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-17T14:03:53.124Z
-Stopped at: Completed 17-01-PLAN.md
+Stopped at: Completed Wave 1 (17-01, 17-02)
 Resume file: None
