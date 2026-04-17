@@ -38,6 +38,7 @@ describe('TitleBar brand contract', () => {
     expect(icon.getAttribute('data-brand-role')).toBe('app-icon')
     expect(icon.getAttribute('src')).toBe(APP_ICON_PATH)
     expect(screen.getByText('FriendLauncher').closest('[data-brand-wordmark]')).toBeTruthy()
+    expect(screen.getAllByText('FriendLauncher')).toHaveLength(1)
   })
 
   it('falls back from the bundled app icon to the product mark', () => {

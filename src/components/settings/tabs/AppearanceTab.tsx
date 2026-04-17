@@ -3,6 +3,7 @@ import { Download, Paintbrush2, Sparkles, Upload } from 'lucide-react';
 import { cn } from '../../../utils/cn';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { CollapsibleSection } from '../../ui/CollapsibleSection';
+import { BrandLockup } from '../../branding/BrandLockup';
 import { Input } from '../../ui/Input';
 import { Button } from '../../ui/Button';
 import { Select } from '../../ui/Select';
@@ -91,12 +92,22 @@ export const AppearanceTab: React.FC = () => {
   const themePresetsDescription = translateWithFallback(
     t,
     'settings.theme_presets_desc',
-    'Apply a ready-made visual profile, or import/export your own configuration.',
+    'Apply a ready-made shell and surface profile, or import/export your own configuration.',
   );
   const themeDescription = translateWithFallback(
     t,
     'settings.theme_desc',
-    'Choose the base mood of the launcher, then fine-tune the rest below.',
+    'Choose the base shell mood of the launcher, then fine-tune accent and background behavior below.',
+  );
+  const brandSystemTitle = translateWithFallback(
+    t,
+    'settings.brand_system_title',
+    'Shared launcher brand',
+  );
+  const brandSystemDescription = translateWithFallback(
+    t,
+    'settings.brand_system_desc',
+    'FMCL keeps the same mark, wordmark, and shell surfaces while accent colors personalize highlights and active controls.',
   );
   const themePresetsPlaceholder = translateWithFallback(
     t,
@@ -210,6 +221,23 @@ export const AppearanceTab: React.FC = () => {
             </p>
           </div>
 
+          <div
+            data-testid="appearance-brand-system-card"
+            className="surface-muted flex items-start gap-3 p-4"
+          >
+            <BrandLockup
+              markFrame="brand"
+              markRole="product-mark"
+              markSize="sm"
+              className="shrink-0 gap-2"
+              wordmarkClassName="text-base text-foreground"
+            />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">{brandSystemTitle}</p>
+              <p className="text-sm leading-6 text-secondary">{brandSystemDescription}</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="surface-muted space-y-4 p-4">
               <div className="flex items-center gap-2">
@@ -281,7 +309,7 @@ export const AppearanceTab: React.FC = () => {
                 </label>
               </div>
               <p className="text-sm text-secondary">
-                {t('settings.appearance_branding_desc') || 'Set the accent tone used across launch buttons, highlights, and active controls.'}
+                {t('settings.appearance_branding_desc') || 'Accent colors personalize launch highlights and active controls without changing the FMCL mark, wordmark, or shell surfaces.'}
               </p>
 
               <div className="space-y-2">
