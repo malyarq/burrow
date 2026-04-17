@@ -16,7 +16,7 @@
 
 - [x] **BRAND-01**: User sees one consistent FMCL visual language across shell, modpacks, settings, modals, empty states, and error states.
 - [x] **BRAND-02**: User sees deliberate logo and wordmark usage instead of arbitrary or repetitive branding.
-- [ ] **BRAND-03**: User sees product-owned artwork fallbacks that feel intentional when remote or local media is missing.
+- [x] **BRAND-03**: User sees product-owned artwork fallbacks that feel intentional when remote or local media is missing.
 
 ### Dense Surface IA & CTA Hierarchy
 
@@ -74,7 +74,7 @@
 | SHELL-04 | Phase 21 | Pending |
 | BRAND-01 | Phase 20 | Complete |
 | BRAND-02 | Phase 20 | Complete |
-| BRAND-03 | Phase 20 | Pending |
+| BRAND-03 | Phase 20 | Complete |
 | DENSE-01 | Phase 21 | Pending |
 | DENSE-02 | Phase 21 | Pending |
 | DENSE-03 | Phase 21 | Pending |
