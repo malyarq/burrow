@@ -22,7 +22,7 @@
 
 - [x] **DENSE-01**: User can scan and operate modpack browser filters, cards, and actions without wrapped or ambiguous controls.
 - [x] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
-- [ ] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
+- [x] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
 - [x] **DENSE-04**: User can understand counts, summaries, and metadata on dense surfaces without unlabeled or contradictory values.
 
 ### Theme, Locale & State Fidelity
@@ -77,7 +77,7 @@
 | BRAND-03 | Phase 20 | Complete |
 | DENSE-01 | Phase 21 | Complete |
 | DENSE-02 | Phase 21 | Complete |
-| DENSE-03 | Phase 21 | Pending |
+| DENSE-03 | Phase 21 | Complete |
 | DENSE-04 | Phase 21 | Complete |
 | THEME-01 | Phase 22 | Pending |
 | THEME-02 | Phase 22 | Pending |
@@ -99,4 +99,4 @@
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-17 after creating milestone v0.5.0 roadmap*
+*Last updated: 2026-04-18 after completing Phase 21 plan 03 runtime-summary truth*

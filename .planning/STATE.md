@@ -4,16 +4,16 @@ milestone: v0.5
 milestone_name: milestone
 current_phase: 21
 current_phase_name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-current_plan: 2
-status: in_progress
-stopped_at: Completed 21-02-PLAN.md
-last_updated: "2026-04-17T23:07:54.228Z"
-last_activity: 2026-04-18 - Completed Phase 21 plan 02 details IA, tab hierarchy, and action grouping
+current_plan: 3
+status: executing
+stopped_at: Completed 21-03-PLAN.md
+last_updated: "2026-04-17T23:24:42.571Z"
+last_activity: 2026-04-18 - Completed Phase 21 plan 03 runtime-summary truth across create and edit configuration flows
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 83
 ---
 
@@ -24,19 +24,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 21 is in progress after landing 21-02 detail IA, tab hierarchy, and action grouping; the next step is executing 21-03 runtime-summary truth across create and edit configuration flows.
+**Current focus:** Phase 21 is in progress after landing 21-03 runtime-summary truth across create and edit configuration flows; the next step is executing 21-04 crowded proof fixtures and closeout verification.
 
 ## Current Position
 
 Current Phase: 21
 Current Phase Name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-Current Plan: 2
+Current Plan: 3
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 21
-Plan: 02
+Plan: 03
 Status: In Progress
-Last activity: 2026-04-18 - Completed Phase 21 plan 02 details IA, tab hierarchy, and action grouping
+Last activity: 2026-04-18 - Completed Phase 21 plan 03 runtime-summary truth across create and edit configuration flows
 
 Progress: [████████░░] 83%
 
@@ -62,8 +62,8 @@ Progress: [████████░░] 83%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 20-02, 20-03, 20-04, 21-01, 21-02
-- Trend: Phase 21 now covers both dense catalog and details-route hierarchy, leaving runtime-summary truth and closeout proof as the remaining open work.
+- Last 5 plans: 20-03, 20-04, 21-01, 21-02, 21-03
+- Trend: Phase 21 now covers dense catalog, details-route hierarchy, and runtime-summary truth, leaving only crowded proof and closeout verification.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -90,6 +90,7 @@ Progress: [████████░░] 83%
 | Phase 20 P04 | 10 min | 2 tasks | 3 files |
 | Phase 21 P01 | 7 min | 2 tasks | 7 files |
 | Phase 21 P02 | 5 min | 2 tasks | 8 files |
+| Phase 21 P03 | 10 min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -196,6 +197,8 @@ Recent decisions affecting current work:
 - [Phase 21]: Kept Phase 19 card ownership intact by preserving card activation while adding one explicit primary CTA and labeled metadata blocks per catalog card.
 - [Phase 21]: Used crowded long-title fixtures in browser and installed tests rather than broad visual rewrites, keeping the phase scoped to density truth.
 - [Phase 21]: Let the shared Modal body own world-datapack scrolling and replace raw dense ratios with labeled summary cards on representative secondary tabs.
+- [Phase 21]: Extended modpackRuntimeDependencies.ts and ModpackDependencySummary.tsx into the single create/edit runtime-summary contract instead of adding a settings-only summary path.
+- [Phase 21]: Sanitized runtime loader edits in useModpackDetailsConfig so loader switches clear stale loader versions and incompatible OptiFine state before header or settings surfaces can drift.
 
 ### Pending Todos
 
@@ -212,6 +215,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:07:54.226Z
-Stopped at: Completed 21-02-PLAN.md
+Last session: 2026-04-17T23:24:42.569Z
+Stopped at: Completed 21-03-PLAN.md
 Resume file: None
