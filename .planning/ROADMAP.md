@@ -11,12 +11,12 @@
 
 - Active milestone: `v0.4.0 Launcher Truth And Product Polish`
 - Current phase: `18` — Verification And Release Truth
-- Next step: execute Phase 18 plan 04 final gate and verification artifact
+- Next step: complete milestone `v0.4.0`
 
 ## Active Milestone
 
 **Milestone:** `v0.4.0 Launcher Truth And Product Polish`  
-**Status:** EXECUTING PHASE 18  
+**Status:** PHASE 18 COMPLETE  
 **Phases:** 15-18  
 **Mapped requirements:** 12
 
@@ -24,7 +24,7 @@
 
 `v0.4.0` is a release-truth and finish-quality milestone. It repairs the screenshot-backed defects captured in `docs/ru/ui-qa-audit-2026-04-14.md` and closes directly related shipped-surface inconsistencies without expanding FMCL into new feature scope.
 
-Browser-backed proof is now recorded on the shared `manual-verification.html` seam for `dashboard`, `modpack-details`, and `phase-17-polish`; the remaining milestone work is the final repo and packaging gate plus the closeout verification artifact.
+Browser-backed proof is recorded on the shared `manual-verification.html` seam for `dashboard`, `modpack-details`, and `phase-17-polish`, and the final repo plus packaging gate passed. The next workflow step is milestone completion and archive handoff rather than more Phase 18 execution.
 
 The milestone focuses on four workstreams:
 
@@ -77,7 +77,7 @@ The milestone focuses on four workstreams:
 
 ### Phase 18: Verification And Release Truth
 
-**Status:** In Progress (`2026-04-17`)  
+**Status:** Complete (`2026-04-17`)  
 **Goal:** The milestone closes on proof, not assumption, by validating repaired surfaces through focused tests, manual walkthrough evidence, and truthful release-facing state.  
 **Depends on:** Phase 17  
 **Requirements:** Closeout phase
@@ -94,4 +94,4 @@ The milestone focuses on four workstreams:
 | --- | --- | --- | --- | --- |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
-| v0.4.0 Launcher Truth And Product Polish | 15-18 | 15/16 | In Progress | — |
+| v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Ready to Complete | — |

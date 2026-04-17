@@ -5,16 +5,16 @@ milestone_name: Launcher Truth And Product Polish
 current_phase: 18
 current_phase_name: Verification And Release Truth
 current_plan: 4
-status: Executing Phase 18
-stopped_at: Completed 18-03-PLAN.md
-last_updated: "2026-04-17T16:26:55Z"
-last_activity: 2026-04-17 - Phase 18 plan 03 refreshed release truth, planning state, and milestone-op metadata
+status: Phase 18 complete
+stopped_at: Completed 18-04-PLAN.md
+last_updated: "2026-04-17T16:35:31Z"
+last_activity: 2026-04-17 - Phase 18 plan 04 closed the final gate and published the verification artifact
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 16
-  completed_plans: 15
-  percent: 94
+  completed_plans: 16
+  percent: 100
 ---
 
 # Project State
@@ -24,22 +24,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 18 final gate and verification artifact for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Milestone completion handoff for v0.4.0 Launcher Truth And Product Polish
 
 ## Current Position
 
 Phase: 18
 Plan: 4 of 4 in current phase
-Status: In progress
-Last activity: 2026-04-17 - Phase 18 plan 03 refreshed release truth, planning state, and milestone-op metadata
+Status: Complete
+Last activity: 2026-04-17 - Phase 18 plan 04 closed the final gate and published the verification artifact
 
-Progress: [█████████░] 94%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 74
-- Active phase plans completed: 28
+- Total plans completed: 75
+- Active phase plans completed: 29
 - Average duration: 16 min
 - Total execution time: 5.1 hours
 
@@ -57,8 +57,8 @@ Progress: [█████████░] 94%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 17-03, 17-04, 18-01, 18-02, 18-03
-- Trend: Phase 18 has recorded the three-view browser proof, refreshed release truth, and now only needs the final repo and packaging gate.
+- Last 5 plans: 17-04, 18-01, 18-02, 18-03, 18-04
+- Trend: Phase 18 finished on a green repo and packaging gate, with proof and docs truth recorded for milestone completion.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -74,6 +74,7 @@ Progress: [█████████░] 94%
 | Phase 18 P01 | 4 min | 2 tasks | 2 files |
 | Phase 18 P02 | 10 min | 2 tasks | 5 files |
 | Phase 18 P03 | 11 min | 2 tasks | 6 files |
+| Phase 18 P04 | 11 min | 1 task | 2 files |
 
 ## Accumulated Context
 
@@ -154,6 +155,7 @@ Recent decisions affecting current work:
 - [Phase 18]: Use `LaunchControls.status.test.tsx` as the LAUNCH-03/04 owner seam by deriving visible launch copy through the active translator instead of hard-coded English fixtures.
 - [Phase 18]: Seed the `modpack-details` manual seam directly from deterministic metadata and expanded-mod fixtures instead of relying on post-mount click automation or live IPC.
 - [Phase 18]: Capture closeout browser proof through an isolated local CDP Chromium session so `dashboard`, `modpack-details`, and `phase-17-polish` all produce reusable screenshot and DOM artifacts.
+- [Phase 18]: Fix only bounded release metadata in `package.json` during the final gate and carry the renderer chunk warning as an explicit residual instead of reopening performance scope.
 
 ### Pending Todos
 
@@ -167,12 +169,13 @@ None yet.
 - `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
 - Phase 18 browser-backed proof is now recorded at `/tmp/fmcl-phase18-dashboard-cdp.{png,html}`, `/tmp/fmcl-phase18-modpack-details-cdp.{png,html}`, and `/tmp/fmcl-phase18-phase17-polish-cdp.{png,html}`.
 - The shared `manual-verification.html` seam now proves launch truth, modpack dependency integrity, catalog or compact-nav polish, and settings-localization truth across three dedicated closeout views.
-- Packaging still emits non-blocking warnings for large renderer chunks and missing `package.json` metadata (`description`, `author`).
+- `18-VERIFICATION.md` ties together the focused suite, three-view browser proof, refreshed docs truth, and the green final gate.
+- Packaging metadata warnings are resolved; the only intentionally carried build warning is the large renderer chunk notice from Vite.
 - `gsd-tools init milestone-op` now resolves the active milestone from `.planning/ROADMAP.md`; any remaining summary-frontmatter drift in older archived phases is intentionally left alone because it does not block Phase 18 closure.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T16:26:55Z
-Stopped at: Completed 18-03-PLAN.md
+Last session: 2026-04-17T16:35:31Z
+Stopped at: Completed 18-04-PLAN.md
 Resume file: None
