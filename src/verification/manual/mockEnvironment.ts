@@ -1,6 +1,7 @@
 import type { FriendLauncherApi, ModpackSearchResultItem, ModpackVersionDescriptor } from '@shared/contracts';
 import type { Account, Mirror, ModpackManifest, ModpackMetadata, StatisticsOverview } from '@shared/types';
 import type { ModEntry } from '@shared/types/mods';
+import type { ResourcePack } from '@shared/types/resourcePack';
 import type { ModpackConfig } from '../../contexts/instances/types';
 import type { Screenshot } from '../../../electron/services/screenshots/screenshotService';
 
@@ -144,15 +145,23 @@ function getMetadataForView(view: string): Record<string, ModpackMetadata> {
 function getBrowserResultsForView(view: string): ModpackSearchResultItem[] {
   const results = structuredClone(browserResults);
 
-  if (view !== PHASE_17_POLISH_VIEW) {
+  if (view === PHASE_17_POLISH_VIEW) {
+    results[0] = {
+      ...results[0],
+      iconUrl: undefined,
+      description: 'No-art launcher mark fallback fixture for the constrained browser state.',
+    };
+
     return results;
   }
 
-  results[0] = {
-    ...results[0],
-    iconUrl: undefined,
-    description: 'No-art launcher mark fallback fixture for the constrained browser state.',
-  };
+  if (view === 'modpack-browser') {
+    results[0] = {
+      ...results[0],
+      iconUrl: undefined,
+      description: 'Phase 20 neutral artwork fallback fixture for the shell-integrated browser proof.',
+    };
+  }
 
   return results;
 }
@@ -349,6 +358,29 @@ const datapackSearchResults = {
   ],
   total_hits: 1,
 };
+
+const resourcePacks: ResourcePack[] = [
+  {
+    fileName: 'painterly-depth.zip',
+    name: 'Painterly Depth',
+    description: 'Missing-art proof pack for the Phase 20 brand fallback route.',
+    packFormat: 34,
+    path: '/mock/.minecraft/instances/alpha/resourcepacks/painterly-depth.zip',
+    iconUrl: undefined,
+    isEnabled: true,
+    size: 1_572_864,
+  },
+  {
+    fileName: 'grid-notes.zip',
+    name: 'Grid Notes',
+    description: 'Secondary pack with bundled art for reorder and state contrast.',
+    packFormat: 34,
+    path: '/mock/.minecraft/instances/alpha/resourcepacks/grid-notes.zip',
+    iconUrl: ICON_PATH,
+    isEnabled: false,
+    size: 1_048_576,
+  },
+];
 
 type ManualState = {
   selectedModpackId: string;
@@ -755,6 +787,17 @@ export function installManualVerificationEnvironment() {
         return [{ id: 'immersive-world-events-1.0.0' }] as T;
       }
       if (channel === 'datapacks:install') {
+        return { ok: true } as T;
+      }
+      if (channel === 'resourcePacks:list') {
+        return structuredClone(resourcePacks) as T;
+      }
+      if (
+        channel === 'resourcePacks:enable'
+        || channel === 'resourcePacks:disable'
+        || channel === 'resourcePacks:reorder'
+        || channel === 'resourcePacks:delete'
+      ) {
         return { ok: true } as T;
       }
       throw new Error(`Unhandled manual verification ipc channel: ${channel}`);

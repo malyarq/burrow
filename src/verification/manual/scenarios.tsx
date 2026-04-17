@@ -6,7 +6,7 @@ import { ConfirmProvider } from '../../contexts/ConfirmContext';
 import { ModpackProvider } from '../../contexts/ModpackContext';
 import { createTranslator } from '../../contexts/settings/i18n';
 import type { UIMode } from '../../contexts/settings/types';
-import { LAUNCHER_MARK_PATH } from '../../app/assets/branding';
+import { LAUNCHER_MARK_PATH, MEDIA_FALLBACK_PATH } from '../../app/assets/branding';
 import TitleBar from '../../components/TitleBar';
 import Sidebar, { type SidebarLaunchModel, type SidebarRuntimeModel } from '../../components/Sidebar';
 import SettingsPage from '../../components/SettingsPage';
@@ -33,6 +33,7 @@ import { ShareModal } from '../../features/share/ShareModal';
 import { ScreenshotsTab } from '../../features/screenshots/components/ScreenshotsTab';
 import { MirrorsSettings } from '../../features/settings/mirrors/MirrorsSettings';
 import { StatisticsTab } from '../../features/settings/statistics/StatisticsTab';
+import { ResourcePacksTab } from '../../components/modpacks/details/ResourcePacksTab';
 import { WorldDatapacksModal } from '../../components/modpacks/details/WorldDatapacksModal';
 import { cn } from '../../utils/cn';
 import { CORE_VIEWS, type ManualVerificationView } from './views';
@@ -199,6 +200,52 @@ function useReadyByText(onReady: (message: string) => void, needles: string[], m
   }, [message, needles, onReady, readyKey]);
 }
 
+function matchesAssetSource(source: string | null, expected: string) {
+  return typeof source === 'string' && (source === expected || source.endsWith(expected));
+}
+
+function useReadyByTextAndImageSource(
+  onReady: (message: string) => void,
+  needles: string[],
+  expectedSrc: string,
+  minimumImages: number,
+  message: string,
+) {
+  const readyKey = `${needles.join('|')}::${expectedSrc}::${minimumImages}`;
+
+  useEffect(() => {
+    let cancelled = false;
+    const deadline = Date.now() + 4_000;
+
+    const tick = () => {
+      if (cancelled) {
+        return;
+      }
+
+      const text = document.body.textContent ?? '';
+      const hasAllNeedles = needles.every((needle) => text.includes(needle));
+      const matchingImages = Array.from(document.querySelectorAll<HTMLImageElement>('img')).filter((image) =>
+        matchesAssetSource(image.getAttribute('src') ?? image.currentSrc, expectedSrc),
+      );
+
+      if (hasAllNeedles && matchingImages.length >= minimumImages) {
+        onReady(message);
+        return;
+      }
+
+      if (Date.now() < deadline) {
+        window.setTimeout(tick, 50);
+      }
+    };
+
+    tick();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [expectedSrc, message, minimumImages, needles, onReady, readyKey]);
+}
+
 function useManualPrimaryActionOwnership(ownership: ModpackPrimaryActionOwnership) {
   useEffect(() => {
     setModpackPrimaryActionOwnership(ownership);
@@ -207,6 +254,16 @@ function useManualPrimaryActionOwnership(ownership: ModpackPrimaryActionOwnershi
       setModpackPrimaryActionOwnership('shell');
     };
   }, [ownership]);
+}
+
+function Phase20ProofCallout(props: { title: string; detail: string }) {
+  return (
+    <div className="surface-inline rounded-3xl p-4 sm:p-5">
+      <div className="kicker-label mb-2">Phase 20 closeout proof</div>
+      <h2 className="text-lg font-semibold text-foreground">{props.title}</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-secondary">{props.detail}</p>
+    </div>
+  );
 }
 
 function Phase19ShellChrome(props: {
@@ -354,7 +411,7 @@ function DashboardScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
     ['FriendLauncher', 'Vanilla', 'Play'],
-    'Phase 19 launcher-home proof rendered inside the real shell with title-bar clearance and one shell-owned primary Play action.',
+    'Phase 20 launcher-home proof rendered inside the real shell with one canonical mark, one shared wordmark, and one shell-owned primary Play action.',
   );
 
   return (
@@ -364,6 +421,20 @@ function DashboardScenario({ onReady }: ManualVerificationScenarioProps) {
         runtime={MANUAL_SHELL_RUNTIME}
         actions={MANUAL_SHELL_ACTIONS}
       />
+    </Phase19ShellFrame>
+  );
+}
+
+function SettingsAppearanceScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand'],
+    'Phase 20 appearance proof rendered above the real shell so reviewers can verify the shared mark, wordmark, and accent boundary without leaving live composition.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <SettingsPage onClose={() => undefined} initialTab="appearance" />
     </Phase19ShellFrame>
   );
 }
@@ -551,15 +622,21 @@ function ModpackCreateScenario({ onReady }: ManualVerificationScenarioProps) {
 }
 
 function ModpackBrowserScenario({ onReady }: ManualVerificationScenarioProps) {
-  useReadyByText(
+  useReadyByTextAndImageSource(
     onReady,
     ['Modpack Browser', 'History', 'Alpha Pack'],
-    'Modpack browser rendered with live results and preserved browser controls.',
+    MEDIA_FALLBACK_PATH,
+    1,
+    'Phase 20 browser proof rendered inside the real shell with route-owned browsing controls and neutral fallback art for missing remote covers.',
   );
 
   return (
-    <SettingsProviders>
-      <div className="mx-auto max-w-6xl p-6">
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+        <Phase20ProofCallout
+          title="Content-heavy route stays on-brand inside the shell"
+          detail="Use this route to verify that missing browser artwork falls back to the neutral media placeholder while the shell keeps one deliberate FMCL mark and wordmark system."
+        />
         <ModpackBrowser
           initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: 'alpha' }}
           onBack={() => undefined}
@@ -567,7 +644,7 @@ function ModpackBrowserScenario({ onReady }: ManualVerificationScenarioProps) {
           onStateChange={() => undefined}
         />
       </div>
-    </SettingsProviders>
+    </Phase19ShellFrame>
   );
 }
 
@@ -696,6 +773,34 @@ function AddModModalScenario({ onReady }: ManualVerificationScenarioProps) {
   );
 }
 
+function ResourcePacksScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByTextAndImageSource(
+    onReady,
+    ['FriendLauncher', 'Installed Resource Packs', 'Painterly Depth'],
+    MEDIA_FALLBACK_PATH,
+    1,
+    'Phase 20 deep-media proof rendered inside the real shell with no-art resource pack thumbnails using the shared neutral fallback policy.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+        <Phase20ProofCallout
+          title="Deep media routes honor the same fallback policy"
+          detail="This representative route keeps media management in the real shell while proving that missing pack thumbnails fall back to the neutral artwork treatment instead of launcher-logo placeholders."
+        />
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+          <ResourcePacksTab
+            instancePath="/mock/.minecraft/instances/alpha"
+            onUpdate={() => undefined}
+            onAddResourcePack={() => undefined}
+          />
+        </div>
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
 function ShareScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
@@ -778,6 +883,10 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
     return <DashboardScenario {...scenarioProps} />;
   }
 
+  if (props.view === 'settings-appearance') {
+    return <SettingsAppearanceScenario {...scenarioProps} />;
+  }
+
   if (props.view === 'settings-accounts') {
     return <SettingsAccountsScenario {...scenarioProps} />;
   }
@@ -824,6 +933,10 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 
   if (props.view === 'modpack-add-modal') {
     return <AddModModalScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'resource-packs') {
+    return <ResourcePacksScenario {...scenarioProps} />;
   }
 
   if (props.view === 'share') {
