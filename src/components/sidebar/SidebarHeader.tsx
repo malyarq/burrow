@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { Globe2, LayoutGrid, Menu, PanelLeftClose, PanelsTopLeft, Settings2 } from 'lucide-react';
+import { BrandLockup } from '../branding/BrandLockup';
 import { Button } from '../ui/Button';
 import { cn } from '../../utils/cn';
 import type { UIMode } from '../../contexts/settings/types';
@@ -21,8 +22,6 @@ export function SidebarHeader(props: {
     appVersion,
     onShowMultiplayer,
     onShowSettings,
-    getAccentStyles,
-    getAccentHex,
     isCollapsed,
     onToggleCollapse,
     contentId,
@@ -60,17 +59,16 @@ export function SidebarHeader(props: {
         isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
       )}>
         <div className="mb-2 flex items-start justify-between">
-          <div>
-            <h1
-              className={cn('text-2xl font-black tracking-tighter drop-shadow-sm', getAccentStyles('text').className)}
-              style={{
-                ...getAccentStyles('text').style,
-                textShadow: `0 2px 8px ${getAccentHex()}30`,
-              }}
-            >
-              FriendLauncher
-            </h1>
-            <p className="mt-1 font-mono text-[10px] text-muted opacity-70">BUILD v{appVersion}</p>
+          <div className="min-w-0">
+            <BrandLockup
+              align="start"
+              markFrame="brand"
+              markRole="product-mark"
+              markSize="sm"
+              className="max-w-full"
+              wordmarkClassName="truncate text-lg text-foreground sm:text-xl"
+            />
+            <p className="mt-2 kicker-label">Build v{appVersion}</p>
           </div>
           <div className={cn(
             "flex gap-1 transition-all duration-500 ease-out",

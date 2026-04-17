@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { MEDIA_FALLBACK_PATH } from '../app/assets/branding';
 import { Boxes, Settings2, Sparkles } from 'lucide-react';
 import { useSettings, useUIMode } from '../contexts/SettingsContext';
 import { useModpack } from '../contexts/ModpackContext';
@@ -17,7 +16,6 @@ import { WorldsTab } from './modpacks/details/WorldsTab';
 import { cn } from '../utils/cn';
 import { ProgressBar } from './ui/ProgressBar';
 import { getLaunchStageTitle, type LaunchStage } from '../features/launcher/services/launcherService';
-import { LazyImage } from './ui/LazyImage';
 import { buildRuntimeDependencyState, getModloaderDisplayLabel } from './sidebar/modpackRuntimeDependencies';
 import { BrandMark } from './branding/BrandMark';
 import { BrandWordmark } from './branding/BrandWordmark';
@@ -177,7 +175,6 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
         : 'border-border/70 bg-card/82';
   const heroName = metadata?.name || currentModpack?.name || modpackConfig?.name || 'FriendLauncher';
   const heroSubtitle = `${launch.version} • ${loaderLabel}`;
-  const heroArtAlt = `${heroName} artwork`;
   const advancedSettingsTitle = translateWithFallback(t, 'dashboard.advanced_settings', 'Advanced settings');
   const advancedSettingsContent = (
     <GameTab
@@ -392,19 +389,18 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
               animation: !reducedMotion && showEasterEgg ? 'easter-egg-glow 0.5s ease-in-out infinite' : undefined,
             }}
           />
-          <div className="brand-media-frame relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl">
-            <LazyImage
-              src={metadata?.iconUrl ?? undefined}
-              fallback={MEDIA_FALLBACK_PATH}
-              alt={heroArtAlt}
-              data-testid="dashboard-launcher-mark"
-              className="w-16 h-16 md:w-20 md:h-20 object-contain transition-transform duration-300"
-              style={{
-                transform: !reducedMotion && showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
-                filter: !reducedMotion && showEasterEgg ? `drop-shadow(0 0 15px ${accentHex})` : undefined,
-              }}
-            />
-          </div>
+          <BrandMark
+            role="product-mark"
+            alt="FriendLauncher mark"
+            data-testid="dashboard-launcher-mark"
+            frame="brand"
+            wrapperClassName="relative h-full w-full"
+            className="h-16 w-16 md:h-20 md:w-20 transition-transform duration-300"
+            style={{
+              transform: !reducedMotion && showEasterEgg ? 'rotate(360deg) scale(1.2)' : 'none',
+              filter: !reducedMotion && showEasterEgg ? `drop-shadow(0 0 15px ${accentHex})` : undefined,
+            }}
+          />
         </button>
         <BrandWordmark
           as="h1"
@@ -420,8 +416,9 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           }}
         >
         </BrandWordmark>
-        <div className="relative z-10 text-center">
+        <div className="surface-inline relative z-10 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 py-2 text-center">
           <p className="text-sm font-semibold text-foreground">{heroName}</p>
+          <span aria-hidden="true" className="text-secondary/60">•</span>
           <p className="text-xs text-secondary">{heroSubtitle}</p>
         </div>
         {!reducedMotion && particles.map((p) => {

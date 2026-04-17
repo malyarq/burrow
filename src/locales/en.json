@@ -491,6 +491,7 @@
     "sidebar.collapse": "Collapse sidebar",
     "sidebar.expand": "Expand sidebar",
     "onboarding.welcome.title": "Welcome!",
+    "onboarding.welcome.intro": "Start with one clear launcher shell, then move into modpacks, multiplayer, and personalization when you need them.",
     "onboarding.welcome.badge": "Launcher setup",
     "onboarding.welcome.feature_modpacks.title": "Modpack Management",
     "onboarding.welcome.feature_modpacks.desc": "Import and manage modpacks from CurseForge and Modrinth",

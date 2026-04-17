@@ -491,6 +491,7 @@
     "sidebar.collapse": "Свернуть боковую панель",
     "sidebar.expand": "Развернуть боковую панель",
     "onboarding.welcome.title": "Добро пожаловать!",
+    "onboarding.welcome.intro": "Начните с одной понятной оболочки лаунчера, а затем переходите к модпакам, мультиплееру и персонализации, когда это понадобится.",
     "onboarding.welcome.badge": "Первичная настройка",
     "onboarding.welcome.feature_modpacks.title": "Управление модпаками",
     "onboarding.welcome.feature_modpacks.desc": "Импортируйте и управляйте модпаками из CurseForge и Modrinth",
