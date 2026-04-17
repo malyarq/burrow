@@ -56,7 +56,7 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
   const [filterSort, setFilterSort] = useState<'popularity' | 'date' | 'alphabetical'>('popularity');
   const [total, setTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
-  const resultsScrollRef = useRef<HTMLDivElement>(null);
+  const pageScrollRef = useRef<HTMLDivElement>(null);
   const PAGE_SIZE = 20;
 
   const effectiveLoader = contentType === 'mod' ? (filterLoader || modpackMetadata?.modLoader?.type || '') : '';
@@ -120,12 +120,22 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
   }, [platform]);
 
   const handleScroll = useCallback(() => {
-    const el = resultsScrollRef.current;
+    const el = pageScrollRef.current;
     if (!el || loading || loadingMore) return;
     const { scrollTop, scrollHeight, clientHeight } = el;
     if (scrollTop + clientHeight >= scrollHeight - 100) {
       const currentLen = searchResults.length;
       if (currentLen < total) searchMods(currentLen, true);
+    }
+  }, [loading, loadingMore, searchResults.length, total, searchMods]);
+
+  useEffect(() => {
+    const el = pageScrollRef.current;
+    if (!el || loading || loadingMore) return;
+    if (searchResults.length === 0 || searchResults.length >= total) return;
+
+    if (el.scrollHeight <= el.clientHeight + 48) {
+      void searchMods(searchResults.length, true);
     }
   }, [loading, loadingMore, searchResults.length, total, searchMods]);
 
@@ -285,7 +295,12 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 min-h-0">
+      <div
+        ref={pageScrollRef}
+        className="flex-1 overflow-y-auto p-6 min-h-0"
+        onScroll={handleScroll}
+        data-testid="add-mod-page-scroll"
+      >
         <div className="space-y-4 max-w-4xl mx-auto">
           {/* Filters */}
           <div className="flex gap-2 flex-wrap">
@@ -346,9 +361,8 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
 
           {!loading && searchResults.length > 0 && (
             <div
-              ref={resultsScrollRef}
-              className="max-h-96 overflow-y-auto custom-scrollbar space-y-2"
-              onScroll={handleScroll}
+              className="space-y-2"
+              data-testid="add-mod-results"
             >
               {searchResults.map((mod) => {
                 const key = `${mod.platform}:${mod.projectId}`;
@@ -421,19 +435,22 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
             </div>
           )}
 
-          <div className="flex gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+          <div
+            className="surface-card flex flex-col gap-2 p-4 sm:flex-row"
+            data-testid="add-mod-page-actions"
+          >
             <Button
               onClick={onBack}
               variant="secondary"
               disabled={installing}
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               {t('general.cancel')}
             </Button>
             <Button
               onClick={handleAddBulk}
               disabled={readyToAdd.length === 0 || installing || hasLoading}
-              className={cn("flex-1 text-white", getAccentStyles('bg').className)}
+              className={cn("w-full text-white sm:flex-1", getAccentStyles('bg').className)}
               style={getAccentStyles('bg').style}
               isLoading={installing}
             >

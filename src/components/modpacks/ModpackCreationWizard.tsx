@@ -480,7 +480,10 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 min-h-0">
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div
+          className="mx-auto flex min-h-full max-w-2xl flex-col gap-6"
+          data-testid="modpack-creation-flow"
+        >
           {/* Progress indicator */}
           <div className="flex items-center justify-between">
             {[1, 2, 3].map((step) => (
@@ -536,18 +539,21 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
             <ErrorMessage message={error} />
           )}
 
-          {/* Navigation buttons */}
-          <div className="flex gap-2 pt-4">
+          <div
+            className="surface-card mt-auto flex flex-col gap-2 p-4 sm:flex-row sm:flex-wrap sm:items-center"
+            data-testid="modpack-creation-actions"
+          >
             {currentStep > 1 && (
-              <Button variant="secondary" onClick={handleBack}>
+              <Button variant="secondary" onClick={handleBack} className="w-full sm:w-auto">
                 {t('wizard.back') || 'Back'}
               </Button>
             )}
-            <div className="flex-1" />
+            <div className="hidden sm:block sm:flex-1" />
             {currentStep < 3 ? (
               <Button
                 variant="primary"
                 onClick={() => void handleNext()}
+                className="w-full sm:w-auto"
                 disabled={
                   creating ||
                   (currentStep === 1 && !canProceedFromStep1) ||
@@ -563,6 +569,7 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
               <Button
                 variant="primary"
                 onClick={handleCreate}
+                className="w-full sm:w-auto"
                 disabled={creating || !draft.name.trim() || !!nameError}
                 style={getAccentStyles('bg').style}
                 isLoading={creating}
@@ -570,7 +577,7 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
                 {creating ? t('modpacks.creating') || 'Создание...' : t('modpacks.create')}
               </Button>
             )}
-            <Button variant="secondary" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose} className="w-full sm:w-auto">
               {t('general.cancel')}
             </Button>
           </div>
