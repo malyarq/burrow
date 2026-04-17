@@ -142,11 +142,21 @@ export function ResourcePacksTab({ instancePath, onUpdate, onAddResourcePack }: 
                     </div>
                 </div>
 
-                <div className="surface-inline flex flex-wrap items-center gap-3 p-3 text-sm text-secondary">
-                    <span>{t('modpacks.resourcepacks_priority_hint')}</span>
-                    <span className="text-foreground">
-                        {enabledPacks.length} / {packs.length}
-                    </span>
+                <div
+                    className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,9rem))]"
+                    data-testid="resourcepacks-summary"
+                >
+                    <div className="surface-inline p-3 text-sm text-secondary">
+                        {t('modpacks.resourcepacks_priority_hint')}
+                    </div>
+                    <div className="surface-inline rounded-2xl px-3 py-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.enabled')}</p>
+                        <p className="mt-2 text-base font-semibold text-foreground">{enabledPacks.length}</p>
+                    </div>
+                    <div className="surface-inline rounded-2xl px-3 py-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.installed')}</p>
+                        <p className="mt-2 text-base font-semibold text-foreground">{packs.length}</p>
+                    </div>
                 </div>
             </div>
 
@@ -183,12 +193,12 @@ export function ResourcePacksTab({ instancePath, onUpdate, onAddResourcePack }: 
 
                                     <div className="min-w-0 space-y-1">
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <h4 className="truncate text-base font-semibold text-foreground">{pack.name}</h4>
+                                            <h4 className="break-words text-base font-semibold leading-5 text-foreground">{pack.name}</h4>
                                             <span className="rounded-full border border-border/70 bg-background/70 px-2 py-0.5 text-xs font-medium text-secondary">
                                                 {pack.isEnabled ? t('modpacks.filter_enabled') : t('modpacks.filter_disabled')}
                                             </span>
                                         </div>
-                                        <p className="truncate text-sm text-secondary">{pack.description || pack.fileName}</p>
+                                        <p className="line-clamp-2 break-words text-sm text-secondary">{pack.description || pack.fileName}</p>
                                     </div>
                                 </div>
 

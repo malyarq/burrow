@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Download, Package, Search, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../../contexts/ConfirmContext';
 import { useSettings } from '../../../contexts/SettingsContext';
@@ -45,6 +45,7 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
     const [searchResults, setSearchResults] = useState<DatapackSearchResultItem[]>([]);
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [installing, setInstalling] = useState<string | null>(null);
+    const enabledDatapacks = useMemo(() => datapacks.filter((pack) => pack.isEnabled), [datapacks]);
 
     const loadInstalled = useCallback(async () => {
         setLoadingInstalled(true);
@@ -155,8 +156,8 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={t('modpacks.datapacks_for_world', { name: worldName })} className="max-w-5xl">
-            <div className="flex h-[70vh] flex-col gap-4">
-                <div className="surface-inline flex items-center gap-2 p-2" role="tablist" aria-label={t('modpacks.datapacks')}>
+            <div className="space-y-4">
+                <div className="surface-inline grid gap-2 p-2 sm:grid-cols-2" role="tablist" aria-label={t('modpacks.datapacks')}>
                     {(['installed', 'search'] as const).map((entry) => {
                         const isActive = tab === entry;
                         const label = entry === 'installed' ? t('modpacks.installed') : t('modpacks.search_modrinth');
@@ -188,158 +189,182 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                         id="datapacks-panel-installed"
                         role="tabpanel"
                         aria-labelledby="datapacks-tab-installed"
-                        className="flex min-h-0 flex-1 flex-col gap-4"
+                        className="space-y-4"
                     >
                         <div className="surface-card space-y-2 p-4">
                             <div className="kicker-label">{t('modpacks.datapacks')}</div>
                             <h4 className="text-base font-semibold text-foreground">{t('modpacks.datapacks')}</h4>
                             <p className="text-sm text-secondary">{t('modpacks.datapacks_description')}</p>
+                            <div
+                                className="grid gap-3 pt-2 lg:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,9rem))]"
+                                data-testid="world-datapacks-installed-summary"
+                            >
+                                <div className="surface-inline p-3 text-sm text-secondary">
+                                    {t('modpacks.datapacks_description')}
+                                </div>
+                                <div className="surface-inline rounded-2xl px-3 py-3">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.enabled')}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{enabledDatapacks.length}</p>
+                                </div>
+                                <div className="surface-inline rounded-2xl px-3 py-3">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.installed')}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{datapacks.length}</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-                            {loadingInstalled ? (
-                                <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
-                                    <LoadingSpinner size="sm" variant="accent" />
-                                    {t('modpacks.loading')}
-                                </div>
-                            ) : datapacks.length === 0 ? (
-                                <div className="surface-muted flex flex-col items-center gap-2 p-8 text-center">
-                                    <p className="text-base font-semibold text-foreground">{t('modpacks.no_datapacks_installed')}</p>
-                                    <p className="max-w-xl text-sm text-secondary">{t('modpacks.datapacks_empty_hint')}</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-3" role="list" aria-label={t('modpacks.datapacks')}>
-                                    {datapacks.map((pack) => (
-                                        <div
-                                            key={pack.fileName}
-                                            role="listitem"
-                                            className={cn('surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
-                                        >
-                                            <div className="flex min-w-0 flex-1 items-center gap-4">
-                                                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-[rgb(var(--accent-main))]">
-                                                    <Package className="h-6 w-6" />
-                                                </div>
-                                                <div className="min-w-0 space-y-1">
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        <h4 className="truncate text-base font-semibold text-foreground">{pack.name}</h4>
-                                                        <span className="rounded-full border border-border/70 bg-background/70 px-2 py-0.5 text-xs font-medium text-secondary">
-                                                            {pack.isEnabled ? t('modpacks.filter_enabled') : t('modpacks.filter_disabled')}
-                                                        </span>
-                                                    </div>
-                                                    <p className="truncate text-sm text-secondary">{pack.description}</p>
-                                                </div>
+                        {loadingInstalled ? (
+                            <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
+                                <LoadingSpinner size="sm" variant="accent" />
+                                {t('modpacks.loading')}
+                            </div>
+                        ) : datapacks.length === 0 ? (
+                            <div className="surface-muted flex flex-col items-center gap-2 p-8 text-center">
+                                <p className="text-base font-semibold text-foreground">{t('modpacks.no_datapacks_installed')}</p>
+                                <p className="max-w-xl text-sm text-secondary">{t('modpacks.datapacks_empty_hint')}</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3" role="list" aria-label={t('modpacks.datapacks')}>
+                                {datapacks.map((pack) => (
+                                    <div
+                                        key={pack.fileName}
+                                        role="listitem"
+                                        className={cn('surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
+                                    >
+                                        <div className="flex min-w-0 flex-1 items-center gap-4">
+                                            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-[rgb(var(--accent-main))]">
+                                                <Package className="h-6 w-6" />
                                             </div>
-
-                                            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-                                                <Button
-                                                    size="sm"
-                                                    variant={pack.isEnabled ? 'secondary' : 'primary'}
-                                                    onClick={() => void handleToggle(pack)}
-                                                >
-                                                    {pack.isEnabled ? t('general.disable') : t('general.enable')}
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                                    onClick={() => void handleDelete(pack)}
-                                                    aria-label={t('modpacks.datapack_delete_confirm', { name: pack.name })}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                            <div className="min-w-0 space-y-1">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <h4 className="break-words text-base font-semibold leading-5 text-foreground">{pack.name}</h4>
+                                                    <span className="rounded-full border border-border/70 bg-background/70 px-2 py-0.5 text-xs font-medium text-secondary">
+                                                        {pack.isEnabled ? t('modpacks.filter_enabled') : t('modpacks.filter_disabled')}
+                                                    </span>
+                                                </div>
+                                                <p className="line-clamp-2 break-words text-sm text-secondary">{pack.description}</p>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+
+                                        <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                                            <Button
+                                                size="sm"
+                                                variant={pack.isEnabled ? 'secondary' : 'primary'}
+                                                onClick={() => void handleToggle(pack)}
+                                            >
+                                                {pack.isEnabled ? t('general.disable') : t('general.enable')}
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                onClick={() => void handleDelete(pack)}
+                                                aria-label={t('modpacks.datapack_delete_confirm', { name: pack.name })}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </section>
                 ) : (
                     <section
                         id="datapacks-panel-search"
                         role="tabpanel"
                         aria-labelledby="datapacks-tab-search"
-                        className="flex min-h-0 flex-1 flex-col gap-4"
+                        className="space-y-4"
                     >
-                        <div className="surface-card grid gap-4 p-4 lg:grid-cols-[1fr_15rem_auto]">
-                            <Input
-                                label={t('modpacks.search_modrinth')}
-                                placeholder={t('modpacks.search_datapacks_placeholder')}
-                                value={searchQuery}
-                                onChange={(event) => setSearchQuery(event.target.value)}
-                            />
-                            <Select
-                                label={t('modpacks.filter_all')}
-                                value={mcVersion}
-                                onChange={(event) => setMcVersion(event.target.value)}
-                            >
-                                <option value="">{t('modpacks.filter_all')}</option>
-                                <option value="1.21.4">1.21.4</option>
-                                <option value="1.21.3">1.21.3</option>
-                                <option value="1.21.1">1.21.1</option>
-                                <option value="1.21">1.21</option>
-                                <option value="1.20.6">1.20.6</option>
-                                <option value="1.20.4">1.20.4</option>
-                                <option value="1.20.2">1.20.2</option>
-                                <option value="1.20.1">1.20.1</option>
-                                <option value="1.20">1.20</option>
-                                <option value="1.19.4">1.19.4</option>
-                                <option value="1.19.2">1.19.2</option>
-                                <option value="1.18.2">1.18.2</option>
-                                <option value="1.17.1">1.17.1</option>
-                                <option value="1.16.5">1.16.5</option>
-                            </Select>
-                            <div className="flex items-end">
-                                <Button type="button" variant="primary" disabled={loadingSearch} onClick={() => void handleSearch()}>
-                                    <Search className="h-4 w-4" />
-                                    {t('modpacks.search_btn')}
-                                </Button>
+                        <div className="surface-card space-y-4 p-4">
+                            <div className="space-y-2">
+                                <div className="kicker-label">{t('modpacks.search_modrinth')}</div>
+                                <p className="text-sm text-secondary">{t('modpacks.datapacks_description')}</p>
+                            </div>
+                            <div className="grid gap-4 lg:grid-cols-[1fr_15rem_auto]">
+                                <Input
+                                    label={t('modpacks.search_modrinth')}
+                                    placeholder={t('modpacks.search_datapacks_placeholder')}
+                                    value={searchQuery}
+                                    onChange={(event) => setSearchQuery(event.target.value)}
+                                />
+                                <Select
+                                    label={t('modpacks.filter_all')}
+                                    value={mcVersion}
+                                    onChange={(event) => setMcVersion(event.target.value)}
+                                >
+                                    <option value="">{t('modpacks.filter_all')}</option>
+                                    <option value="1.21.4">1.21.4</option>
+                                    <option value="1.21.3">1.21.3</option>
+                                    <option value="1.21.1">1.21.1</option>
+                                    <option value="1.21">1.21</option>
+                                    <option value="1.20.6">1.20.6</option>
+                                    <option value="1.20.4">1.20.4</option>
+                                    <option value="1.20.2">1.20.2</option>
+                                    <option value="1.20.1">1.20.1</option>
+                                    <option value="1.20">1.20</option>
+                                    <option value="1.19.4">1.19.4</option>
+                                    <option value="1.19.2">1.19.2</option>
+                                    <option value="1.18.2">1.18.2</option>
+                                    <option value="1.17.1">1.17.1</option>
+                                    <option value="1.16.5">1.16.5</option>
+                                </Select>
+                                <div className="flex items-end">
+                                    <Button type="button" variant="primary" disabled={loadingSearch} onClick={() => void handleSearch()}>
+                                        <Search className="h-4 w-4" />
+                                        {t('modpacks.search_btn')}
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="flex justify-end" data-testid="world-datapacks-search-summary">
+                                <div className="surface-inline rounded-2xl px-3 py-3">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.results')}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{searchResults.length}</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-                            {loadingSearch ? (
-                                <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
-                                    <LoadingSpinner size="sm" variant="accent" />
-                                    {t('modpacks.loading')}
-                                </div>
-                            ) : searchResults.length === 0 ? (
-                                <div className="surface-muted flex flex-col items-center gap-2 p-8 text-center">
-                                    <p className="text-base font-semibold text-foreground">{t('modpacks.no_datapack_results')}</p>
-                                    <p className="max-w-xl text-sm text-secondary">{t('modpacks.datapacks_search_hint')}</p>
-                                </div>
-                            ) : (
-                                <div className="space-y-3" role="list" aria-label={t('modpacks.search_modrinth')}>
-                                    {searchResults.map((project) => (
-                                        <div
-                                            key={project.project_id}
-                                            role="listitem"
-                                            className="surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between"
-                                        >
-                                            <div className="flex min-w-0 flex-1 items-center gap-4">
-                                                <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-background/70">
-                                                    <LazyImage src={project.icon_url ?? undefined} className="h-full w-full object-cover" />
-                                                </div>
-                                                <div className="min-w-0 space-y-1">
-                                                    <h4 className="truncate text-base font-semibold text-foreground">{project.title}</h4>
-                                                    <p className="line-clamp-2 text-sm text-secondary">{project.description}</p>
-                                                </div>
+                        {loadingSearch ? (
+                            <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
+                                <LoadingSpinner size="sm" variant="accent" />
+                                {t('modpacks.loading')}
+                            </div>
+                        ) : searchResults.length === 0 ? (
+                            <div className="surface-muted flex flex-col items-center gap-2 p-8 text-center">
+                                <p className="text-base font-semibold text-foreground">{t('modpacks.no_datapack_results')}</p>
+                                <p className="max-w-xl text-sm text-secondary">{t('modpacks.datapacks_search_hint')}</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3" role="list" aria-label={t('modpacks.search_modrinth')}>
+                                {searchResults.map((project) => (
+                                    <div
+                                        key={project.project_id}
+                                        role="listitem"
+                                        className="surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between"
+                                    >
+                                        <div className="flex min-w-0 flex-1 items-center gap-4">
+                                            <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-background/70">
+                                                <LazyImage src={project.icon_url ?? undefined} className="h-full w-full object-cover" />
                                             </div>
-                                            <Button
-                                                size="sm"
-                                                variant="primary"
-                                                onClick={() => void handleInstall(project)}
-                                                isLoading={installing === project.project_id}
-                                                disabled={Boolean(installing)}
-                                            >
-                                                <Download className="h-4 w-4" />
-                                                {t('modpacks.install_datapack')}
-                                            </Button>
+                                            <div className="min-w-0 space-y-1">
+                                                <h4 className="break-words text-base font-semibold leading-5 text-foreground">{project.title}</h4>
+                                                <p className="line-clamp-2 break-words text-sm text-secondary">{project.description}</p>
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="primary"
+                                            onClick={() => void handleInstall(project)}
+                                            isLoading={installing === project.project_id}
+                                            disabled={Boolean(installing)}
+                                        >
+                                            <Download className="h-4 w-4" />
+                                            {t('modpacks.install_datapack')}
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </section>
                 )}
             </div>

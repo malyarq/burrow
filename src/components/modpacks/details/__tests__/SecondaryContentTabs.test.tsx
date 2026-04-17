@@ -5,6 +5,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTranslator } from '../../../../contexts/settings/i18n';
 import { ModpackDetailsModsTab } from '../ModpackDetailsModsTab';
+import { ResourcePacksTab } from '../ResourcePacksTab';
 import { WorldDatapacksModal } from '../WorldDatapacksModal';
 
 const t = createTranslator('en');
@@ -18,6 +19,11 @@ const installMock = vi.fn();
 const deleteMock = vi.fn();
 const enableMock = vi.fn();
 const disableMock = vi.fn();
+const resourcePackListMock = vi.fn();
+const resourcePackEnableMock = vi.fn();
+const resourcePackDisableMock = vi.fn();
+const resourcePackDeleteMock = vi.fn();
+const resourcePackReorderMock = vi.fn();
 
 vi.mock('react-virtuoso', () => ({
   Virtuoso: ({
@@ -66,6 +72,16 @@ vi.mock('../../../../services/ipc/datapacksIPC', () => ({
     delete: (...args: unknown[]) => deleteMock(...args),
     enable: (...args: unknown[]) => enableMock(...args),
     disable: (...args: unknown[]) => disableMock(...args),
+  },
+}));
+
+vi.mock('../../../../services/ipc/resourcePacksIPC', () => ({
+  resourcePacksIPC: {
+    list: (...args: unknown[]) => resourcePackListMock(...args),
+    enable: (...args: unknown[]) => resourcePackEnableMock(...args),
+    disable: (...args: unknown[]) => resourcePackDisableMock(...args),
+    delete: (...args: unknown[]) => resourcePackDeleteMock(...args),
+    reorder: (...args: unknown[]) => resourcePackReorderMock(...args),
   },
 }));
 
@@ -185,6 +201,11 @@ describe('secondary content tabs', () => {
     deleteMock.mockReset();
     enableMock.mockReset();
     disableMock.mockReset();
+    resourcePackListMock.mockReset();
+    resourcePackEnableMock.mockReset();
+    resourcePackDisableMock.mockReset();
+    resourcePackDeleteMock.mockReset();
+    resourcePackReorderMock.mockReset();
 
     confirmMock.mockResolvedValue(true);
     listMock.mockResolvedValue([
@@ -212,6 +233,26 @@ describe('secondary content tabs', () => {
     deleteMock.mockResolvedValue({ ok: true });
     enableMock.mockResolvedValue({ ok: true });
     disableMock.mockResolvedValue({ ok: true });
+    resourcePackListMock.mockResolvedValue([
+      {
+        fileName: 'faithful-64x.zip',
+        name: 'Faithful 64x',
+        description: 'Sharper textures and clearer UI contrast for dense detail layouts.',
+        iconUrl: null,
+        isEnabled: true,
+      },
+      {
+        fileName: 'cozy-ui-refresh.zip',
+        name: 'Cozy UI Refresh',
+        description: 'Warm menus and softer widgets for long session play.',
+        iconUrl: null,
+        isEnabled: false,
+      },
+    ]);
+    resourcePackEnableMock.mockResolvedValue({ ok: true });
+    resourcePackDisableMock.mockResolvedValue({ ok: true });
+    resourcePackDeleteMock.mockResolvedValue({ ok: true });
+    resourcePackReorderMock.mockResolvedValue({ ok: true });
   });
 
   it('keeps the details mods tab filterable without breaking the refreshed surface copy', async () => {
@@ -252,6 +293,38 @@ describe('secondary content tabs', () => {
     expect(screen.getByText(/requires 0\.17\.0/i)).toBeTruthy();
     expect(screen.getByText(/requires 2\.0\.0/i)).toBeTruthy();
     expect(screen.getAllByText('Missing')).toHaveLength(1);
+  });
+
+  it('keeps resource pack summaries explicitly labeled instead of collapsing into raw ratios', async () => {
+    render(<ResourcePacksTab instancePath="/instances/alpha" />);
+
+    expect(await screen.findByText('Faithful 64x')).toBeTruthy();
+
+    const summary = screen.getByTestId('resourcepacks-summary');
+    expect(summary.textContent).toContain('Enabled');
+    expect(summary.textContent).toContain('Installed');
+    expect(summary.textContent?.includes('1 / 2')).toBe(false);
+  });
+
+  it('keeps the datapacks modal on the shared modal scroll region with labeled installed counts', async () => {
+    render(
+      <WorldDatapacksModal
+        isOpen={true}
+        onClose={vi.fn()}
+        instancePath="/instances/alpha"
+        worldFolder="world-1"
+        worldName="Alpha World"
+      />
+    );
+
+    expect(await screen.findByText('Better Mobs')).toBeTruthy();
+
+    const summary = screen.getByTestId('world-datapacks-installed-summary');
+    expect(summary.textContent).toContain('Enabled');
+    expect(summary.textContent).toContain('Installed');
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog.querySelectorAll('.overflow-y-auto')).toHaveLength(1);
   });
 
   it('routes datapack deletion through the shared confirm flow instead of browser confirm', async () => {
