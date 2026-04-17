@@ -623,12 +623,12 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
               className="w-full"
             />
 
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-wrap items-start gap-2">
               <Select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
                 aria-label={t('modpacks.sort_popularity') || 'Sort modpacks'}
-                className="flex-1 min-w-[150px]"
+                className="min-w-[11rem] flex-1"
               >
                 <option value="popularity">{t('modpacks.sort_popularity') || 'По популярности'}</option>
                 <option value="alphabetical">{t('modpacks.sort_alphabetical') || 'По алфавиту'}</option>
@@ -639,7 +639,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                 value={filterMCVersion}
                 onChange={(e) => setFilterMCVersion(e.target.value as FilterMCVersion)}
                 aria-label={t('modpacks.filter_all') || 'Filter by Minecraft version'}
-                className="flex-1 min-w-[150px]"
+                className="min-w-[11rem] flex-1"
               >
                 <option value="all">{t('modpacks.filter_all') || 'Все версии MC'}</option>
                 {MINECRAFT_VERSIONS.filter(v => v.type === 'release').map((v) => (
@@ -653,7 +653,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                 value={filterLoader}
                 onChange={(e) => setFilterLoader(e.target.value as FilterLoader)}
                 aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
-                className="flex-1 min-w-[150px]"
+                className="min-w-[11rem] flex-1"
               >
                 <option value="all">{t('modpacks.filter_all_loaders') || 'Все модлоадеры'}</option>
                 <option value="forge">Forge</option>
@@ -665,7 +665,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                 value={String(itemsPerPage)}
                 onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
                 aria-label={t('modpacks.items_per_page') || 'Items per page'}
-                className="w-[100px]"
+                className="min-w-[7rem] flex-1 sm:w-[100px] sm:flex-none"
                 title={t('modpacks.items_per_page') || 'Элементов на странице'}
               >
                 <option value="12">12</option>

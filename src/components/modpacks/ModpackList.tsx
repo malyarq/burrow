@@ -731,15 +731,19 @@ const ModpackListComponentInternal: React.FC<{
         </div>
 
         {/* Search and Filters */}
-        <div className="surface-muted mb-6 flex flex-col gap-4 p-4 sm:flex-row">
+        <div
+          className="surface-muted mb-6 space-y-3 p-4"
+          role="search"
+          aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
+        >
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('modpacks.search_placeholder') || 'Поиск модпаков...'}
             aria-label={t('modpacks.search_placeholder') || 'Search modpacks'}
-            className="flex-1"
+            className="w-full"
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-start gap-2">
             <Select
               value={sortOption}
               onChange={(e) => {
@@ -749,18 +753,17 @@ const ModpackListComponentInternal: React.FC<{
                 }
               }}
               aria-label={t('modpacks.sort_name') || 'Sort modpacks'}
-              className="w-[140px]"
+              className="min-w-[12rem] flex-1"
             >
               <option value="name">{t('modpacks.sort_name') || 'По имени'}</option>
               <option value="created">{t('modpacks.sort_created') || 'По дате создания'}</option>
               <option value="updated">{t('modpacks.sort_updated') || 'По обновлению'}</option>
             </Select>
-            <div className="mx-1 hidden w-px bg-border/70 sm:block" />
             <Select
               value={filterMCVersion}
               onChange={(e) => setFilterMCVersion(e.target.value)}
               aria-label={t('modpacks.filter_all_versions') || 'Filter by Minecraft version'}
-              className="w-[140px]"
+              className="min-w-[11rem] flex-1"
             >
               <option value="all">{t('modpacks.filter_all_versions') || 'Все версии'}</option>
               {availableVersions.map(v => (
@@ -771,7 +774,7 @@ const ModpackListComponentInternal: React.FC<{
               value={filterLoader}
               onChange={(e) => setFilterLoader(e.target.value)}
               aria-label={t('modpacks.filter_all_loaders') || 'Filter by modloader'}
-              className="w-[140px]"
+              className="min-w-[11rem] flex-1"
             >
               <option value="all">{t('modpacks.filter_all_loaders') || 'Все лоадеры'}</option>
               {availableLoaders.map(l => (
