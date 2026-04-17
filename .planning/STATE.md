@@ -2,16 +2,13 @@
 gsd_state_version: 1.0
 milestone: v0.4.0
 milestone_name: Launcher Truth And Product Polish
-current_phase: 18
-current_phase_name: Verification And Release Truth
-current_plan: 4
-status: Phase 18 complete
-stopped_at: Completed 18-04-PLAN.md
-last_updated: "2026-04-17T16:35:31Z"
-last_activity: 2026-04-17 - Phase 18 plan 04 closed the final gate and published the verification artifact
+status: awaiting next milestone
+stopped_at: Archived v0.4.0 milestone
+last_updated: "2026-04-17T16:41:42Z"
+last_activity: 2026-04-17 - Archived v0.4.0 milestone and prepared the next-milestone handoff
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 16
   completed_plans: 16
   percent: 100
@@ -21,17 +18,16 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-14)
+See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Milestone completion handoff for v0.4.0 Launcher Truth And Product Polish
+**Current focus:** Define the next milestone and fresh requirements for FMCL
 
 ## Current Position
 
-Phase: 18
-Plan: 4 of 4 in current phase
-Status: Complete
-Last activity: 2026-04-17 - Phase 18 plan 04 closed the final gate and published the verification artifact
+Latest shipped milestone: `v0.4.0 Launcher Truth And Product Polish`
+Status: Awaiting next milestone definition
+Last activity: 2026-04-17 - Archived v0.4.0 milestone and prepared the next-milestone handoff
 
 Progress: [██████████] 100%
 
@@ -165,17 +161,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- Final gate from the previous `v0.3.0` milestone is green, including `npm run build -- --publish never`.
-- `docs/ru/ui-qa-audit-2026-04-14.md` records 12 screenshot-backed UI or truth defects that now define the starting bug pool for `v0.4.0`.
-- Phase 18 browser-backed proof is now recorded at `/tmp/fmcl-phase18-dashboard-cdp.{png,html}`, `/tmp/fmcl-phase18-modpack-details-cdp.{png,html}`, and `/tmp/fmcl-phase18-phase17-polish-cdp.{png,html}`.
-- The shared `manual-verification.html` seam now proves launch truth, modpack dependency integrity, catalog or compact-nav polish, and settings-localization truth across three dedicated closeout views.
-- `18-VERIFICATION.md` ties together the focused suite, three-view browser proof, refreshed docs truth, and the green final gate.
-- Packaging metadata warnings are resolved; the only intentionally carried build warning is the large renderer chunk notice from Vite.
-- `gsd-tools init milestone-op` now resolves the active milestone from `.planning/ROADMAP.md`; any remaining summary-frontmatter drift in older archived phases is intentionally left alone because it does not block Phase 18 closure.
-- `.planning/config.json` remains an unrelated local modification and is intentionally excluded from phase commits.
+- `v0.4.0` is archived and shipped; there is no active milestone until `$gsd-new-milestone` defines fresh requirements.
+- The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
+- The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
+- `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T16:35:31Z
-Stopped at: Completed 18-04-PLAN.md
+Last session: 2026-04-17T16:41:42Z
+Stopped at: Archived v0.4.0 milestone
 Resume file: None

@@ -2,18 +2,17 @@
 
 ## Current State
 
-**Latest shipped milestone:** `v0.3.0` — Adaptive UX Hardening And Launcher Ergonomics (`2026-04-14`)
+**Latest shipped milestone:** `v0.4.0` — Launcher Truth And Product Polish (`2026-04-17`)
 
-FMCL is now a shipped desktop Minecraft launcher with an adaptive shell, truthful preset themes, flatter settings navigation, explicit launch-state feedback, steadier modpack ergonomics, a reusable browser-backed verification seam, and a green packaging-aware repository gate.
+FMCL is now a shipped desktop Minecraft launcher with truthful launch-state surfaces, corrected modpack dependency semantics, coherent catalog and compact-navigation polish, localized appearance preset naming, a reusable browser-backed verification seam, and a green packaging-aware repository gate.
 
-## Current Milestone: v0.4.0 Launcher Truth And Product Polish
+## Next Milestone Goals
 
-**Goal:** Make the shipped launcher surfaces trustworthy and cohesive by fixing screenshot-backed defects, closing adjacent state mismatches we can prove in code, and polishing existing flows without adding new feature scope.
+The next milestone is not defined yet. Likely planning candidates are:
 
-**Target features:**
-- truthful launch and runtime status surfaces, including resilient launch artwork, synchronized progress or CTA state, and localized live status copy
-- correct modpack detail integrity for dependency resolution, version-range presentation, and tab navigation across dense content areas
-- polished catalog, settings, and navigation surfaces with complete localization, adaptive controls, and branded fallback states for missing imagery or compact layouts
+- Promote the deferred future requirements (`LAUNCH-F01`, `DETAIL-F01`, `CATALOG-F01`, `SET-F01`) into a fresh scoped milestone only if they still fit the product direction.
+- Decide whether the remaining large-renderer-chunk warning should become explicit build/performance work.
+- Start the next planning cycle with `$gsd-new-milestone` so requirements and roadmap state are recreated from scratch instead of extended from archived `v0.4.0` documents.
 
 ## What This Is
 
@@ -33,12 +32,14 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
   - `.planning/milestones/v0.3.0-ROADMAP.md`
   - `.planning/milestones/v0.3.0-REQUIREMENTS.md`
   - `.planning/milestones/v0.3.0-MILESTONE-AUDIT.md`
+  - `.planning/milestones/v0.4.0-ROADMAP.md`
+  - `.planning/milestones/v0.4.0-REQUIREMENTS.md`
+  - `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md`
 - The launcher now has a reusable browser-backed manual verification seam for milestone walkthroughs.
 - Screenshot-backed defects for this milestone are captured in `docs/ru/ui-qa-audit-2026-04-14.md` and the linked `screens/` attachments.
-- Remaining non-blocking debt after `v0.3.0`:
+- Remaining non-blocking debt after `v0.4.0`:
   - large renderer chunk warning in production build
-  - missing `description` and `author` in `package.json`
-  - workflow metadata drift outside the shipped product surface
+  - no standalone `v0.4.0-MILESTONE-AUDIT.md`; archive relies on the shipped Phase 18 verification artifact instead
 
 ## Constraints
 
@@ -64,10 +65,25 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Express adaptive layout through shared shell and overlay seams | The launcher needed resilient resizing and overlay behavior without per-screen hacks | Validated in `v0.3.0` |
 | Make launch truth and modpack ergonomics clearer inside existing flows first | The main UX gap was comprehension and reliability, not route explosion | Validated in `v0.3.0` |
 | Capture future parity ideas as bounded follow-up, not silent scope creep | Evidence from live walkthroughs should inform later milestones without bloating current execution | Validated in `v0.3.0` |
-| Make `v0.4.0` a screenshot-audited bug-fix and polish milestone | The next product gap is trust in the already-shipped launcher surface, not another round of new capability | Pending in `v0.4.0` |
-| Bound `v0.4.0` to documented defects and directly related proven cleanup | The user asked for a deep polish pass, but the milestone still needs tight edges to stay buildable and reviewable | Pending in `v0.4.0` |
+| Make `v0.4.0` a screenshot-audited bug-fix and polish milestone | The next product gap is trust in the already-shipped launcher surface, not another round of new capability | Validated in `v0.4.0` |
+| Bound `v0.4.0` to documented defects and directly related proven cleanup | The user asked for a deep polish pass, but the milestone still needed tight edges to stay buildable and reviewable | Validated in `v0.4.0` |
+| Reuse `manual-verification.html` as the milestone proof seam | Shared browser-backed proof reduces closeout churn and keeps launch, detail, catalog, and settings evidence on one deterministic entry | Validated in `v0.4.0` |
+| Keep final gate fallout limited to release-truth blockers | The milestone needed an explicit ship gate without reopening feature scope late in execution | Validated in `v0.4.0` |
 
-## Archived Milestone Definition
+## Archived Milestone Definitions
+
+<details>
+<summary>v0.4.0 milestone definition before archive</summary>
+
+The shipped milestone focused on making FMCL's existing launcher surfaces trustworthy and cohesive through screenshot-audited bug fixing rather than new product expansion.
+
+Primary target areas before archive:
+
+- truthful launch and runtime status surfaces, including resilient launch artwork, synchronized progress or CTA state, and localized live status copy
+- correct modpack detail integrity for dependency resolution, version-range presentation, and tab navigation across dense content areas
+- polished catalog, settings, and navigation surfaces with complete localization, adaptive controls, and branded fallback states for missing imagery or compact layouts
+
+</details>
 
 <details>
 <summary>v0.3.0 milestone definition before archive</summary>
@@ -86,4 +102,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-14 after starting v0.4.0*
+*Last updated: 2026-04-17 after v0.4.0 milestone*

@@ -1,5 +1,31 @@
 # Milestones
 
+## v0.4.0 Launcher Truth And Product Polish
+
+**Shipped:** 2026-04-17  
+**Phases completed:** 4 phases, 16 plans, 29 tasks  
+**Git range:** `057a33b` -> `55c5a19`
+
+**Key accomplishments:**
+
+- Unified launch-state truth around authoritative stages, truthful loader summaries, branded fallback art, localized launch copy, and visible read-only busy settings.
+- Corrected modpack detail dependency semantics, readable requirement copy, and dense section navigation on the shipped detail surface.
+- Polished catalog fallback imagery, compact-navigation active state, and settings localization, including deliberate RU/EN preset naming.
+- Reused `manual-verification.html` to capture browser-backed proof for `dashboard`, `modpack-details`, and `phase-17-polish`.
+- Closed the milestone on refreshed release truth, bounded package metadata cleanup, and a green packaging-aware release gate.
+
+**Archives:**
+
+- `.planning/milestones/v0.4.0-ROADMAP.md`
+- `.planning/milestones/v0.4.0-REQUIREMENTS.md`
+- `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md`
+
+**Notes:**
+
+- No standalone `v0.4.0-MILESTONE-AUDIT.md` was recorded before archive; closeout relied on the Phase 18 verification artifact plus green repo/build gates.
+
+---
+
 ## v0.3.0 Adaptive UX Hardening And Launcher Ergonomics
 
 **Shipped:** 2026-04-14  
