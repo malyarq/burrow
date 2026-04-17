@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-status: roadmap ready
-stopped_at: Roadmap created for milestone v0.5.0
-last_updated: "2026-04-17T18:11:06Z"
-last_activity: 2026-04-17 - Created roadmap for milestone v0.5.0 and prepared Phase 19 discussion
+status: Phase 19 context gathered; ready for planning
+stopped_at: Phase 19 context gathered
+last_updated: "2026-04-17T18:27:57.292Z"
+last_activity: 2026-04-17 - Captured Phase 19 context for shell invariants and CTA ownership
 progress:
   total_phases: 6
   completed_phases: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 19 planning is ready for discussion after roadmap creation for v0.5.0
+**Current focus:** Phase 19 planning is ready after capturing context for shell safe areas, CTA ownership, and bottom action behavior
 
 ## Current Position
 
 Phase: 19
-Plan: Ready for discussion
-Status: Roadmap created; ready to discuss Phase 19
-Last activity: 2026-04-17 - Milestone v0.5.0 roadmap created
+Plan: Ready for planning
+Status: Phase 19 context gathered; ready for planning
+Last activity: 2026-04-17 - Captured Phase 19 context for shell invariants and CTA ownership
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -162,13 +162,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- `v0.5.0` has started, but requirements and roadmap do not exist yet; no phase execution should begin before new milestone planning finishes.
+- `v0.5.0` now has requirements, roadmap, and Phase 19 context; no execution should begin before `$gsd-plan-phase 19` turns this context into an explicit plan.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T16:41:42Z
-Stopped at: Started milestone v0.5.0
-Resume file: None
+Last session: 2026-04-17T18:27:57.290Z
+Stopped at: Phase 19 context gathered
+Resume file: .planning/phases/19-baseline-stability-scope-and-shell-invariants/19-CONTEXT.md
