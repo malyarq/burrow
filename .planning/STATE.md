@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
 milestone: v0.5.0
-milestone_name: milestone
-current_phase: 22
-current_phase_name: 22-theme-truth-and-interaction-state-fidelity
-current_plan: 4
-status: complete
-stopped_at: Completed 22-04-PLAN.md
-last_updated: "2026-04-18T12:42:52+03:00"
-last_activity: 2026-04-18 - Completed Phase 22 plan 04 shell proof and closeout matrix; Phase 22 is complete and ready for Phase 23 planning
+milestone_name: Experience Reinvention And Brand Reset
+current_phase: 23
+current_phase_name: 23-fallback-error-and-placeholder-productization
+current_plan: 0
+status: Phase 23 context gathered; ready for planning
+stopped_at: Phase 23 context gathered
+last_updated: "2026-04-19T00:10:15+03:00"
+last_activity: 2026-04-19 - Captured Phase 23 context for degraded states, recovery-first crash handling, and conservative placeholder truth
 progress:
   total_phases: 6
   completed_phases: 4
@@ -24,19 +24,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 22 is complete after landing shell-integrated dark/light and EN/RU proof plus a green closeout matrix; the next step is planning Phase 23 degraded-state, placeholder, and crash-surface productization without regressing the newly locked theme and locale seams.
+**Current focus:** Phase 23 planning is ready after capturing context for degraded states, crash recovery posture, empty-state behavior, and conservative placeholder truth without reopening Phase 22 theme and locale seams.
 
 ## Current Position
 
-Current Phase: 22
-Current Phase Name: 22-theme-truth-and-interaction-state-fidelity
-Current Plan: 4
+Current Phase: 23
+Current Phase Name: 23-fallback-error-and-placeholder-productization
+Current Plan: 0
 Total Phases: 6
 Total Plans in Phase: 4
-Phase: 22
-Plan: 04
-Status: Complete
-Last activity: 2026-04-18 - Completed Phase 22 plan 04 shell proof and closeout matrix; Phase 22 is complete and ready for Phase 23 planning
+Phase: 23
+Plan: Ready for planning
+Status: Phase 23 context gathered; ready for planning
+Last activity: 2026-04-19 - Captured Phase 23 context for degraded states, recovery-first crash handling, and conservative placeholder truth
 
 Progress: [███████░░░] 66%
 
@@ -63,7 +63,7 @@ Progress: [███████░░░] 66%
 
 **Recent Trend:**
 - Last 5 plans: 21-04, 22-01, 22-02, 22-03, 22-04
-- Trend: Phase 22 closed with shell-integrated proof for theme, accent, preset identity, and EN/RU metadata; the next milestone risk is degraded-state productization in Phase 23 without drifting from the now-locked state and locale contract.
+- Trend: Phase 22 is closed and Phase 23 context is now explicit about calm unavailable states, one-step empties, recovery-first crashes, and conservative degraded-data truth; the next task is turning that into a bounded execution plan.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -217,13 +217,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- No active blockers remain in Phase 22; Phase 23 should preserve the shared theme-state, locale-formatting, and manual proof seams while tackling placeholders, degraded states, and error productization.
+- No active blockers remain before Phase 23 planning; execution should wait for `$gsd-plan-phase 23` so the new degraded-state context becomes explicit plan waves instead of ad hoc cleanup.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-17T23:42:48.633Z
-Stopped at: Completed 21-04-PLAN.md
-Resume file: None
+Last session: 2026-04-18T21:09:55.774Z
+Stopped at: Phase 23 context gathered
+Resume file: .planning/phases/23-fallback-error-and-placeholder-productization/23-CONTEXT.md
