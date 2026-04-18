@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { act, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SettingsProvider, useSettings } from '../../SettingsContext';
@@ -10,8 +10,13 @@ type SettingsSnapshot = ReturnType<typeof useSettings>;
 
 let latestSettings: SettingsSnapshot | null = null;
 
-function SettingsProbe() {
-  latestSettings = useSettings();
+function SettingsProbe({ onChange }: { onChange: (settings: SettingsSnapshot) => void }) {
+  const settings = useSettings();
+
+  useEffect(() => {
+    onChange(settings);
+  }, [onChange, settings]);
+
   return null;
 }
 
@@ -34,7 +39,11 @@ describe('theme runtime contract', () => {
       React.createElement(
         SettingsProvider,
         null,
-        React.createElement(SettingsProbe),
+        React.createElement(SettingsProbe, {
+          onChange: (settings: SettingsSnapshot) => {
+            latestSettings = settings;
+          },
+        }),
       ),
     );
 
@@ -51,7 +60,11 @@ describe('theme runtime contract', () => {
       React.createElement(
         SettingsProvider,
         null,
-        React.createElement(SettingsProbe),
+        React.createElement(SettingsProbe, {
+          onChange: (settings: SettingsSnapshot) => {
+            latestSettings = settings;
+          },
+        }),
       ),
     );
 
