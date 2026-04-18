@@ -38,6 +38,21 @@ function translateWithFallback(t: (key: string) => string, key: string, fallback
   return translated === key ? fallback : translated;
 }
 
+const SEGMENTED_ROW_CLASSNAME =
+  'grid grid-cols-2 gap-1 rounded-[20px] border border-border/60 bg-background/84 p-1 shadow-inner';
+
+function getSegmentedOptionClassName(isActive: boolean) {
+  return cn(
+    'flex min-w-0 items-center justify-center rounded-2xl border px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    isActive
+      ? 'border-[rgb(var(--accent-main)/0.22)] bg-[rgb(var(--accent-main)/0.14)] text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.16)]'
+      : 'border-transparent text-secondary hover:border-[rgb(var(--accent-main)/0.16)] hover:bg-card/92 hover:text-foreground',
+  );
+}
+
+const RANGE_INPUT_CLASSNAME =
+  'h-2 flex-1 cursor-pointer appearance-none rounded-full border border-border/60 bg-card/80 accent-[rgb(var(--accent-main))] transition-all hover:border-[rgb(var(--accent-main)/0.16)] hover:bg-card/92 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:border-border/50 disabled:bg-background/72';
+
 function ToggleRow(props: {
   label: string;
   checked: boolean;
@@ -52,15 +67,19 @@ function ToggleRow(props: {
         type="button"
         role="switch"
         aria-checked={checked}
+        aria-label={label}
         onClick={onToggle}
         className={cn(
-          'relative h-6 w-11 rounded-full border border-border/60 transition-colors',
-          checked ? 'bg-[rgb(var(--accent-main))]' : 'bg-background/90'
+          'relative h-6 w-11 shrink-0 rounded-full border transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+          checked
+            ? 'border-[rgb(var(--accent-main)/0.36)] bg-[rgb(var(--accent-main))] shadow-[0_8px_18px_rgba(0,0,0,0.18)]'
+            : 'border-border/70 bg-background/90 hover:border-[rgb(var(--accent-main)/0.16)] hover:bg-card/96'
         )}
+        data-state={checked ? 'checked' : 'unchecked'}
       >
         <span
           className={cn(
-            'absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-sm transition-transform',
+            'absolute top-0.5 h-[18px] w-[18px] rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform dark:bg-zinc-950',
             checked ? 'translate-x-5' : 'translate-x-0.5'
           )}
         />
@@ -122,6 +141,8 @@ export const AppearanceTab: React.FC = () => {
     'Custom Theme',
   );
   const selectedPresetSummary = getThemePresetSummary(t, selectedPreset, theme);
+  const accentRangeStyles = getAccentStyles('accent');
+  const accentLabel = t('settings.accent');
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);
@@ -246,18 +267,15 @@ export const AppearanceTab: React.FC = () => {
                   {t('settings.theme')}
                 </label>
               </div>
-              <div className="flex rounded-[20px] border border-border/60 bg-background/84 p-1 shadow-inner">
+              <div className={SEGMENTED_ROW_CLASSNAME}>
                 {(['light', 'dark'] as const).map((m) => (
                   <button
                     type="button"
                     key={m}
                     onClick={() => setTheme(m)}
-                    className={cn(
-                      'flex-1 rounded-2xl py-2 text-xs font-bold uppercase transition-all',
-                      theme === m
-                        ? 'bg-card text-foreground shadow-md'
-                        : 'text-muted hover:text-foreground',
-                    )}
+                    aria-pressed={theme === m}
+                    data-state={theme === m ? 'active' : 'inactive'}
+                    className={getSegmentedOptionClassName(theme === m)}
                   >
                     {m === 'light' ? t('settings.theme_light') : t('settings.theme_dark')}
                   </button>
@@ -319,12 +337,18 @@ export const AppearanceTab: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-3">
                   {COLORS.map((c) => (
                     <button
+                      type="button"
                       key={c.id}
                       onClick={() => setAccentColor(c.id)}
+                      aria-pressed={accentColor === c.id}
+                      aria-label={`${accentLabel}: ${c.id}`}
+                      data-state={accentColor === c.id ? 'active' : 'inactive'}
                       className={cn(
-                        'h-8 w-8 rounded-full transition-all ring-offset-2 ring-offset-background focus:outline-none',
+                        'h-8 w-8 rounded-full border border-white/30 shadow-[0_8px_18px_rgba(0,0,0,0.16)] transition-all ring-offset-2 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2',
                         c.class,
-                        accentColor === c.id ? `ring-2 ${c.ring} scale-110` : 'opacity-60 hover:opacity-100',
+                        accentColor === c.id
+                          ? `ring-2 ${c.ring} scale-110 opacity-100`
+                          : 'opacity-80 hover:scale-105 hover:opacity-100',
                       )}
                       title={c.id}
                     />
@@ -333,8 +357,10 @@ export const AppearanceTab: React.FC = () => {
                   <div className="relative group h-8 w-8">
                     <div
                       className={cn(
-                        'flex h-full w-full items-center justify-center overflow-hidden rounded-full transition-all ring-offset-2 ring-offset-background cursor-pointer',
-                        isCustom ? 'ring-2 ring-zinc-500 scale-110' : 'bg-zinc-200 dark:bg-zinc-800 opacity-60 group-hover:opacity-100',
+                        'flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/30 shadow-[0_8px_18px_rgba(0,0,0,0.16)] transition-all ring-offset-2 ring-offset-background',
+                        isCustom
+                          ? 'ring-2 ring-[rgb(var(--accent-main))] scale-110 opacity-100'
+                          : 'bg-zinc-200 opacity-80 group-hover:scale-105 group-hover:opacity-100 dark:bg-zinc-800',
                       )}
                     >
                       {isCustom ? (
@@ -348,6 +374,7 @@ export const AppearanceTab: React.FC = () => {
                       value={isCustom ? accentColor : '#10b981'}
                       onChange={(e) => setAccentColor(e.target.value)}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      aria-label={t('settings.custom_color') || 'Custom Color'}
                       title={t('settings.custom_color') || 'Custom Color'}
                     />
                   </div>
@@ -358,18 +385,15 @@ export const AppearanceTab: React.FC = () => {
                 <label className="text-sm font-medium text-foreground">
                   {t('settings.language')}
                 </label>
-                <div className="flex rounded-[20px] border border-border/60 bg-background/84 p-1 shadow-inner">
+                <div className={SEGMENTED_ROW_CLASSNAME}>
                   {(['en', 'ru'] as const).map((lang) => (
                     <button
                       type="button"
                       key={lang}
                       onClick={() => setLanguage(lang)}
-                      className={cn(
-                        'flex-1 rounded-2xl py-2 text-xs font-bold uppercase transition-all',
-                        language === lang
-                          ? 'bg-card text-foreground shadow-md'
-                          : 'text-muted hover:text-foreground',
-                      )}
+                      aria-pressed={language === lang}
+                      data-state={language === lang ? 'active' : 'inactive'}
+                      className={getSegmentedOptionClassName(language === lang)}
                     >
                       {lang === 'en' ? 'English' : 'Русский'}
                     </button>
@@ -404,7 +428,8 @@ export const AppearanceTab: React.FC = () => {
                 step="5"
                 value={uiScale}
                 onChange={(e) => setUiScale(parseInt(e.target.value))}
-                className="h-2 flex-1 cursor-pointer appearance-none rounded-lg bg-zinc-200 dark:bg-zinc-700"
+                className={cn(RANGE_INPUT_CLASSNAME, accentRangeStyles.className)}
+                style={accentRangeStyles.style}
               />
               <Button size="sm" variant="secondary" onClick={() => setUiScale(100)} disabled={uiScale === 100}>
                 {t('settings.reset') || 'Reset'}
@@ -430,24 +455,22 @@ export const AppearanceTab: React.FC = () => {
             <label className="text-sm font-medium text-foreground">
               {t('settings.sidebar_position') || 'Sidebar Position'}
             </label>
-            <div className="flex rounded-[20px] border border-border/60 bg-background/84 p-1 shadow-inner">
+            <div className={SEGMENTED_ROW_CLASSNAME}>
               <button
                 type="button"
                 onClick={() => setSidebarPosition('left')}
-                className={cn(
-                  'flex-1 rounded-2xl py-2 text-xs font-medium transition-all',
-                  sidebarPosition === 'left' ? 'bg-card text-foreground shadow' : 'text-secondary'
-                )}
+                aria-pressed={sidebarPosition === 'left'}
+                data-state={sidebarPosition === 'left' ? 'active' : 'inactive'}
+                className={getSegmentedOptionClassName(sidebarPosition === 'left')}
               >
                 {t('settings.sidebar_position_left') || 'Left'}
               </button>
               <button
                 type="button"
                 onClick={() => setSidebarPosition('right')}
-                className={cn(
-                  'flex-1 rounded-2xl py-2 text-xs font-medium transition-all',
-                  sidebarPosition === 'right' ? 'bg-card text-foreground shadow' : 'text-secondary'
-                )}
+                aria-pressed={sidebarPosition === 'right'}
+                data-state={sidebarPosition === 'right' ? 'active' : 'inactive'}
+                className={getSegmentedOptionClassName(sidebarPosition === 'right')}
               >
                 {t('settings.sidebar_position_right') || 'Right'}
               </button>
@@ -598,7 +621,8 @@ export const AppearanceTab: React.FC = () => {
                         background: { ...customTheme.background, video: { ...customTheme.background?.video, volume: parseFloat(e.target.value) } }
                       });
                     }}
-                    className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-700"
+                    className={cn(RANGE_INPUT_CLASSNAME, accentRangeStyles.className)}
+                    style={accentRangeStyles.style}
                   />
                 </div>
 
@@ -663,7 +687,8 @@ export const AppearanceTab: React.FC = () => {
                         background: { ...customTheme.background, particles: { ...customTheme.background?.particles, intensity: parseInt(e.target.value) } }
                       });
                     }}
-                    className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-700"
+                    className={cn(RANGE_INPUT_CLASSNAME, accentRangeStyles.className)}
+                    style={accentRangeStyles.style}
                   />
                 </div>
                 <div className="space-y-2">
@@ -683,7 +708,8 @@ export const AppearanceTab: React.FC = () => {
                         background: { ...customTheme.background, particles: { ...customTheme.background?.particles, speed: parseFloat(e.target.value) } }
                       });
                     }}
-                    className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-700"
+                    className={cn(RANGE_INPUT_CLASSNAME, accentRangeStyles.className)}
+                    style={accentRangeStyles.style}
                   />
                 </div>
               </div>
@@ -702,7 +728,8 @@ export const AppearanceTab: React.FC = () => {
                 max="20"
                 value={customTheme.background?.blur || 0}
                 onChange={(e) => updateBackground('blur', parseInt(e.target.value))}
-                className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-700"
+                className={cn(RANGE_INPUT_CLASSNAME, accentRangeStyles.className)}
+                style={accentRangeStyles.style}
               />
             </div>
             <div className="space-y-2">
@@ -717,7 +744,8 @@ export const AppearanceTab: React.FC = () => {
                 step="0.1"
                 value={customTheme.background?.opacity ?? 1}
                 onChange={(e) => updateBackground('opacity', parseFloat(e.target.value))}
-                className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer dark:bg-zinc-700"
+                className={cn(RANGE_INPUT_CLASSNAME, accentRangeStyles.className)}
+                style={accentRangeStyles.style}
               />
             </div>
             {(!customTheme.background?.type || customTheme.background?.type === 'image') && (
