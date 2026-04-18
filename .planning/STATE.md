@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 22
 current_phase_name: 22-theme-truth-and-interaction-state-fidelity
 current_plan: 4
-status: in_progress
-stopped_at: Completed 22-03-PLAN.md
-last_updated: "2026-04-18T12:33:42+03:00"
-last_activity: 2026-04-18 - Completed Phase 22 plan 03 route state and locale adoption and preparing 22-04 closeout proof
+status: complete
+stopped_at: Completed 22-04-PLAN.md
+last_updated: "2026-04-18T12:42:52+03:00"
+last_activity: 2026-04-18 - Completed Phase 22 plan 04 shell proof and closeout matrix; Phase 22 is complete and ready for Phase 23 planning
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 24
-  completed_plans: 15
-  percent: 62
+  completed_plans: 16
+  percent: 66
 ---
 
 # Project State
@@ -24,7 +24,7 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 22 is in progress after landing 22-03 route state and locale adoption; the next step is executing 22-04 shell proof and closeout without reopening Phase 21 geometry or Phase 23 degraded-state scope.
+**Current focus:** Phase 22 is complete after landing shell-integrated dark/light and EN/RU proof plus a green closeout matrix; the next step is planning Phase 23 degraded-state, placeholder, and crash-surface productization without regressing the newly locked theme and locale seams.
 
 ## Current Position
 
@@ -35,10 +35,10 @@ Total Phases: 6
 Total Plans in Phase: 4
 Phase: 22
 Plan: 04
-Status: In Progress
-Last activity: 2026-04-18 - Completed Phase 22 plan 03 route state and locale adoption and preparing 22-04 closeout proof
+Status: Complete
+Last activity: 2026-04-18 - Completed Phase 22 plan 04 shell proof and closeout matrix; Phase 22 is complete and ready for Phase 23 planning
 
-Progress: [██████░░░░] 62%
+Progress: [███████░░░] 66%
 
 ## Performance Metrics
 
@@ -62,8 +62,8 @@ Progress: [██████░░░░] 62%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 21-03, 21-04, 22-01, 22-02, 22-03
-- Trend: Phase 22 has now carried state and locale truth onto live content routes; the remaining risk is proving those seams inside the real shell without reopening close-to-complete route code.
+- Last 5 plans: 21-04, 22-01, 22-02, 22-03, 22-04
+- Trend: Phase 22 closed with shell-integrated proof for theme, accent, preset identity, and EN/RU metadata; the next milestone risk is degraded-state productization in Phase 23 without drifting from the now-locked state and locale contract.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -217,7 +217,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 21 is underway; later plans should preserve the grouped catalog density contract and avoid reopening Phase 19/20 shell, CTA, or fallback seams.
+- No active blockers remain in Phase 22; Phase 23 should preserve the shared theme-state, locale-formatting, and manual proof seams while tackling placeholders, degraded states, and error productization.
 - The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
