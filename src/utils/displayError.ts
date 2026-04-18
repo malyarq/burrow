@@ -2,6 +2,8 @@ import { sanitizeUiText } from './safeUiText';
 
 const ERROR_PREFIX_PATTERN = /^Error:\s*/i;
 const IPC_WRAPPER_PATTERN = /^\[[^[\]]+\]\s+[\w.-]+\s+failed:\s*/i;
+const RECOVERY_UNSAFE_PATTERN =
+  /(?:\b(?:localhost|node_modules|react-dom|webpack|vite)\b|https?:\/\/|file:\/\/|\/Users\/|[A-Z]:\\|(?:^|\s)at\s.+:\d+:\d+|Cannot read properties|Cannot destructure|Minified React error|Loading chunk \d+ failed|Failed to fetch dynamically imported module|Hooks can only be called|Objects are not valid as a React child)/i;
 
 function readErrorMessage(error: unknown) {
   if (error instanceof Error) {
@@ -40,6 +42,20 @@ export function toDisplayErrorMessage(error: unknown, fallback: string) {
   }
 
   return sanitizeUiText(unwrapTechnicalErrorMessage(rawMessage), fallback);
+}
+
+export function toRecoveryErrorMessage(error: unknown, fallback: string) {
+  const displayMessage = toDisplayErrorMessage(error, fallback);
+
+  if (!displayMessage || displayMessage === fallback) {
+    return fallback;
+  }
+
+  if (displayMessage.includes('\n') || RECOVERY_UNSAFE_PATTERN.test(displayMessage)) {
+    return fallback;
+  }
+
+  return displayMessage;
 }
 
 export function formatTechnicalErrorDetails(error: Error | null | undefined) {

@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRuntimeTranslator } from '../../contexts/settings/i18n';
-import { formatTechnicalErrorDetails, toDisplayErrorMessage } from '../../utils/displayError';
+import { formatTechnicalErrorDetails, toRecoveryErrorMessage } from '../../utils/displayError';
 import { DegradedStateView } from '../layout/DegradedStateView';
 import { Button } from '../ui/Button';
 
 export interface FatalErrorViewProps {
   error: Error | null;
   t?: (key: string) => string;
+  technicalDetails?: string | null;
   onRestart?: () => void;
   onCopyDetails?: (details: string) => Promise<void> | void;
 }
 
-export function FatalErrorView({ error, t, onRestart, onCopyDetails }: FatalErrorViewProps) {
+export function FatalErrorView({ error, t, technicalDetails, onRestart, onCopyDetails }: FatalErrorViewProps) {
   const [copied, setCopied] = useState(false);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -25,9 +26,12 @@ export function FatalErrorView({ error, t, onRestart, onCopyDetails }: FatalErro
     };
   }, []);
 
-  const details = useMemo(() => formatTechnicalErrorDetails(error), [error]);
+  const details = useMemo(
+    () => technicalDetails?.trim() || formatTechnicalErrorDetails(error),
+    [error, technicalDetails],
+  );
   const summary = useMemo(
-    () => toDisplayErrorMessage(error, translator('error.recovery_summary')),
+    () => toRecoveryErrorMessage(error, translator('error.recovery_summary')),
     [error, translator],
   );
 
@@ -73,7 +77,11 @@ export function FatalErrorView({ error, t, onRestart, onCopyDetails }: FatalErro
             <Button variant="secondary" onClick={handleCopyDetails}>
               {copied ? translator('error.details_copied') : translator('error.copy_details')}
             </Button>
-            <Button variant="ghost" onClick={() => setDetailsVisible((visible) => !visible)}>
+            <Button
+              variant="ghost"
+              aria-expanded={detailsVisible}
+              onClick={() => setDetailsVisible((visible) => !visible)}
+            >
               {detailsVisible ? translator('error.hide_details') : translator('error.technical_details')}
             </Button>
           </>
