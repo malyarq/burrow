@@ -1,20 +1,20 @@
 ---
 gsd_state_version: 1.0
-milestone: v0.5
+milestone: v0.5.0
 milestone_name: milestone
-current_phase: 21
-current_phase_name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-current_plan: 4
-status: complete
-stopped_at: Completed 21-04-PLAN.md
-last_updated: "2026-04-17T23:42:48.636Z"
-last_activity: 2026-04-18 - Completed Phase 21 plan 04 crowded proof fixtures and focused density closeout
+current_phase: 22
+current_phase_name: 22-theme-truth-and-interaction-state-fidelity
+current_plan: 2
+status: in_progress
+stopped_at: Completed 22-01-PLAN.md
+last_updated: "2026-04-18T12:20:00+03:00"
+last_activity: 2026-04-18 - Completed Phase 22 plan 01 theme runtime truth and preparing 22-02 shared control and settings-state fidelity
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 12
-  completed_plans: 12
-  percent: 100
+  total_plans: 24
+  completed_plans: 13
+  percent: 54
 ---
 
 # Project State
@@ -24,21 +24,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 21 is complete after landing 21-04 crowded proof fixtures and focused density closeout; the next step is planning Phase 22 theme truth and interaction-state fidelity work.
+**Current focus:** Phase 22 is in progress after landing 22-01 theme runtime truth; the next step is executing 22-02 shared control and settings-state fidelity without reopening Phase 12/20/21 structure work.
 
 ## Current Position
 
-Current Phase: 21
-Current Phase Name: 21-dense-surface-ia-navigation-and-cta-hierarchy
-Current Plan: 4
+Current Phase: 22
+Current Phase Name: 22-theme-truth-and-interaction-state-fidelity
+Current Plan: 2
 Total Phases: 6
 Total Plans in Phase: 4
-Phase: 21
-Plan: 04
-Status: Complete
-Last activity: 2026-04-18 - Completed Phase 21 plan 04 crowded proof fixtures and focused density closeout
+Phase: 22
+Plan: 02
+Status: In Progress
+Last activity: 2026-04-18 - Completed Phase 22 plan 01 theme runtime truth and preparing 22-02 shared control and settings-state fidelity
 
-Progress: [██████████] 100%
+Progress: [█████░░░░░] 54%
 
 ## Performance Metrics
 
@@ -62,8 +62,8 @@ Progress: [██████████] 100%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 20-04, 21-01, 21-02, 21-03, 21-04
-- Trend: Phase 21 closed on crowded shell proof and focused density regression coverage, clearing the way for Phase 22 theme and interaction-state work.
+- Last 5 plans: 21-01, 21-02, 21-03, 21-04, 22-01
+- Trend: Phase 22 has started by repairing runtime theme and locale truth; the next risk is control and settings-state fidelity before route adoption.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -92,6 +92,7 @@ Progress: [██████████] 100%
 | Phase 21 P02 | 5 min | 2 tasks | 8 files |
 | Phase 21 P03 | 10 min | 2 tasks | 9 files |
 | Phase 21 P04 | 10min | 2 tasks | 3 files |
+| Phase 22 P01 | 9 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -202,6 +203,7 @@ Recent decisions affecting current work:
 - [Phase 21]: Sanitized runtime loader edits in useModpackDetailsConfig so loader switches clear stale loader versions and incompatible OptiFine state before header or settings surfaces can drift.
 - [Phase 21]: Added dedicated Phase 21 proof views instead of overloading legacy manual routes so crowded-shell closeout states are directly reviewable.
 - [Phase 21]: Seeded create and edit proof from one shared runtime fixture and used a harness-only wizard priming helper instead of widening product props beyond the plan-owned manual seam.
+- [Phase 22]: Stopped serializing a cleared preset id as an empty string so preset-shaped imports and legacy storage can re-infer a stable themePresetId. — Keeps preset round-trip recovery in the shared settings runtime instead of in AppearanceTab-local import logic.
 
 ### Pending Todos
 

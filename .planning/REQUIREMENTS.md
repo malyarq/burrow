@@ -28,9 +28,9 @@
 ### Theme, Locale & State Fidelity
 
 - [ ] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
-- [ ] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
-- [ ] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
-- [ ] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
+- [x] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
+- [x] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
+- [x] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
 
 ### Fallback, Error & Placeholder Productization
 
@@ -80,9 +80,9 @@
 | DENSE-03 | Phase 21 | Complete |
 | DENSE-04 | Phase 21 | Complete |
 | THEME-01 | Phase 22 | Pending |
-| THEME-02 | Phase 22 | Pending |
-| THEME-03 | Phase 22 | Pending |
-| THEME-04 | Phase 22 | Pending |
+| THEME-02 | Phase 22 | Complete |
+| THEME-03 | Phase 22 | Complete |
+| THEME-04 | Phase 22 | Complete |
 | FALL-01 | Phase 23 | Pending |
 | FALL-02 | Phase 23 | Pending |
 | FALL-03 | Phase 23 | Pending |
@@ -99,4 +99,4 @@
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-18 after completing Phase 21 plan 03 runtime-summary truth*
+*Last updated: 2026-04-18 after completing Phase 22 plan 01 theme runtime truth*
