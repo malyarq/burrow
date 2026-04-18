@@ -51,14 +51,20 @@ function translateWithFallback(
   return value === key ? fallback : value;
 }
 
-function formatCompactCount(value: number): string {
-  return new Intl.NumberFormat(undefined, {
+function formatCompactCount(
+  value: number,
+  formatNumber: (input: number, options?: Intl.NumberFormatOptions) => string,
+): string {
+  return formatNumber(value, {
     notation: 'compact',
     maximumFractionDigits: 1,
-  }).format(value);
+  });
 }
 
-function formatDateLabel(value?: string): string | null {
+function formatDateLabel(
+  value: string | undefined,
+  formatDate: (timestamp: number | undefined, unknownText?: string, options?: Intl.DateTimeFormatOptions) => string,
+): string | null {
   if (!value) {
     return null;
   }
@@ -68,7 +74,7 @@ function formatDateLabel(value?: string): string | null {
     return null;
   }
 
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
+  return formatDate(date.getTime(), '', { dateStyle: 'medium' }) || null;
 }
 
 function formatLoaderLabel(
@@ -94,7 +100,7 @@ function formatLoaderLabel(
 }
 
 export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, onBack, onNavigate, onStateChange }) => {
-  const { t, getAccentStyles } = useSettings();
+  const { t, getAccentStyles, formatDate, formatNumber } = useSettings();
   const normalizedInitialState = normalizeModpackBrowserState(initialState);
   const [platform] = useState<Platform>(normalizedInitialState.platform);
   const [query, setQuery] = useState(normalizedInitialState.query);
@@ -318,6 +324,11 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
     || sortBy !== DEFAULT_MODPACK_BROWSER_STATE.sortBy;
   const showingStart = totalResults > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0;
   const showingEnd = totalResults > 0 ? showingStart + paginatedResults.length - 1 : 0;
+  const formattedShowingStart = formatNumber(showingStart);
+  const formattedShowingEnd = formatNumber(showingEnd);
+  const formattedTotalResults = formatNumber(totalResults);
+  const formattedCurrentPage = formatNumber(currentPage);
+  const formattedTotalPages = formatNumber(Math.max(totalPages, 1));
   const recentHistory = useMemo(() => history.slice(0, 3), [history]);
   const activeFilterTokens = useMemo(() => {
     const tokens: string[] = [];
@@ -373,13 +384,17 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
   }, [handleModpackClick]);
 
   const renderModpackCard = useCallback((modpack: ModpackSearchResultItem) => {
+    const isFavorited = isFavorite(modpack);
     const providerLabel = modpack.platform === 'curseforge'
       ? translateWithFallback(t, 'modpacks.platform_curseforge', 'CurseForge')
       : translateWithFallback(t, 'modpacks.platform_modrinth', 'Modrinth');
-    const updatedLabel = formatDateLabel(modpack.dateModified ?? modpack.dateCreated);
-    const favoritesActionLabel = isFavorite(modpack)
+    const updatedLabel = formatDateLabel(modpack.dateModified ?? modpack.dateCreated, formatDate);
+    const favoritesActionLabel = isFavorited
       ? translateWithFallback(t, 'modpacks.remove_favorite', 'Remove favorite')
       : translateWithFallback(t, 'modpacks.add_favorite', 'Add favorite');
+    const activeFavoriteBackground = getAccentStyles('soft-bg');
+    const activeFavoriteBorder = getAccentStyles('soft-border');
+    const activeFavoriteLabel = getAccentStyles('title');
 
     return (
       <div
@@ -388,7 +403,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         onClick={() => {
           void handleModpackClick(modpack);
         }}
-        className="surface-card relative flex min-h-[20rem] cursor-pointer flex-col p-4 transition-colors hover:border-border-active hover:bg-card focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-zinc-900"
+        className="surface-card relative flex min-h-[20rem] cursor-pointer flex-col p-4 transition-colors hover:border-border-active hover:bg-card focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background"
       >
         <div
           role="button"
@@ -401,7 +416,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
           onKeyDown={(event) => {
             void handleCardKeyDown(event, modpack);
           }}
-          className="absolute inset-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+          className="absolute inset-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent-main))] focus:ring-offset-2 focus:ring-offset-background"
         />
         <button
           type="button"
@@ -409,12 +424,34 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
             event.stopPropagation();
             toggleFavorite(modpack);
           }}
-          aria-pressed={isFavorite(modpack)}
+          aria-pressed={isFavorited}
           aria-label={`${favoritesActionLabel}: ${modpack.title}`}
-          className="absolute top-2 right-2 rounded-full p-1.5 transition-colors hover:bg-background/70"
+          data-state={isFavorited ? 'active' : 'inactive'}
+          className={cn(
+            'absolute top-2 right-2 rounded-full border p-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+            isFavorited
+              ? cn(
+                'border-border/60 bg-card/90',
+                activeFavoriteBackground.className,
+                activeFavoriteBorder.className,
+              )
+              : 'border-transparent hover:bg-background/70'
+          )}
+          style={isFavorited ? {
+            ...activeFavoriteBackground.style,
+            ...activeFavoriteBorder.style,
+          } : undefined}
           title={favoritesActionLabel}
         >
-          <Star className={cn('h-5 w-5', isFavorite(modpack) ? 'fill-yellow-400 text-yellow-500' : 'text-muted')} />
+          <Star
+            className={cn(
+              'h-5 w-5',
+              isFavorited
+                ? cn('fill-current', activeFavoriteLabel.className)
+                : 'text-muted'
+            )}
+            style={isFavorited ? activeFavoriteLabel.style : undefined}
+          />
         </button>
         <div className="flex h-full flex-col gap-4">
           <div className="flex gap-4">
@@ -453,7 +490,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                     {translateWithFallback(t, 'modpacks.downloads', 'Downloads')}
                   </div>
                   <div className="mt-1 text-sm font-medium text-foreground">
-                    {formatCompactCount(modpack.downloads)}
+                    {formatCompactCount(modpack.downloads, formatNumber)}
                   </div>
                 </div>
               )}
@@ -487,7 +524,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         </div>
       </div>
     );
-  }, [getAccentStyles, handleCardKeyDown, handleModpackClick, isFavorite, t, toggleFavorite]);
+  }, [formatDate, formatNumber, getAccentStyles, handleCardKeyDown, handleModpackClick, isFavorite, t, toggleFavorite]);
 
 
   return (
@@ -551,11 +588,27 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
             {t('modpacks.import') || 'Импорт'}
           </Button>
           <Button
-            variant={showHistory ? 'primary' : 'secondary'}
+            variant="secondary"
             size="sm"
             onClick={() => setShowHistory(!showHistory)}
             aria-pressed={showHistory}
-            className="shrink-0 ml-2"
+            data-state={showHistory ? 'active' : 'inactive'}
+            className={cn(
+              'shrink-0 ml-2',
+              showHistory
+                ? cn(
+                  'border-border bg-card/90 text-foreground',
+                  getAccentStyles('soft-bg').className,
+                  getAccentStyles('soft-border').className,
+                  getAccentStyles('title').className,
+                )
+                : undefined
+            )}
+            style={showHistory ? {
+              ...getAccentStyles('soft-bg').style,
+              ...getAccentStyles('soft-border').style,
+              ...getAccentStyles('title').style,
+            } : undefined}
             title={t('modpacks.history_tooltip') || 'История просмотров'}
           >
             <History className="h-4 w-4" />
@@ -579,8 +632,8 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                       ? translateWithFallback(
                         t,
                         'modpacks.results_summary',
-                        `Showing ${showingStart}-${showingEnd} of ${totalResults}`,
-                        { start: showingStart, end: showingEnd, total: totalResults }
+                        `Showing ${formattedShowingStart}-${formattedShowingEnd} of ${formattedTotalResults}`,
+                        { start: formattedShowingStart, end: formattedShowingEnd, total: formattedTotalResults }
                       )
                       : translateWithFallback(t, 'modpacks.results_summary_empty', 'No results yet')}
                   </div>
@@ -594,10 +647,15 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                       ? translateWithFallback(
                         t,
                         'modpacks.results_page_summary',
-                        `Page ${currentPage} of ${totalPages}`,
-                        { current: currentPage, total: totalPages }
+                        `Page ${formattedCurrentPage} of ${formattedTotalPages}`,
+                        { current: formattedCurrentPage, total: formattedTotalPages }
                       )
-                      : translateWithFallback(t, 'modpacks.results_page_summary', 'Page {{current}} of {{total}}', { current: 1, total: 1 })}
+                      : translateWithFallback(
+                        t,
+                        'modpacks.results_page_summary',
+                        'Page {{current}} of {{total}}',
+                        { current: formatNumber(1), total: formatNumber(1) }
+                      )}
                   </div>
                 </div>
                 {recentHistory.length > 0 && (
@@ -606,7 +664,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                       {translateWithFallback(t, 'modpacks.history', 'History')}
                     </div>
                     <div className="mt-1 text-sm font-medium text-foreground">
-                      {recentHistory.length} / {history.length}
+                      {formatNumber(recentHistory.length)} / {formatNumber(history.length)}
                     </div>
                   </div>
                 )}
@@ -788,7 +846,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
           <div className="space-y-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-foreground">
-                {t('modpacks.history') || 'История'} ({history.length})
+                {t('modpacks.history') || 'История'} ({formatNumber(history.length)})
               </h3>
               {history.length > 0 && (
                 <Button
@@ -849,7 +907,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                   {t('modpacks.prev') || 'Назад'}
                 </Button>
                 <span className="text-sm text-secondary">
-                  {t('modpacks.page') || 'Страница'} {currentPage} {t('modpacks.of') || 'из'} {totalPages} ({totalResults} {t('modpacks.total') || 'всего'})
+                  {t('modpacks.page') || 'Страница'} {formattedCurrentPage} {t('modpacks.of') || 'из'} {formattedTotalPages} ({formattedTotalResults} {t('modpacks.total') || 'всего'})
                 </span>
                 <Button
                   variant="secondary"

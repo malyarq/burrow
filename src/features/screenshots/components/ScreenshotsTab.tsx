@@ -15,7 +15,7 @@ interface ScreenshotsTabProps {
 }
 
 export function ScreenshotsTab({ instancePath }: ScreenshotsTabProps) {
-    const { t } = useSettings();
+    const { t, formatDate, formatNumber } = useSettings();
     const toast = useToast();
     const confirm = useConfirm();
     const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
@@ -108,7 +108,7 @@ export function ScreenshotsTab({ instancePath }: ScreenshotsTabProps) {
             <div className="surface-muted flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
                     <div className="kicker-label">{t('modpacks.tab_screenshots')}</div>
-                    <p className="text-sm text-secondary">{t('screenshots.count', { count: screenshots.length })}</p>
+                    <p className="text-sm text-secondary">{t('screenshots.count', { count: formatNumber(screenshots.length) })}</p>
                 </div>
                 <Button variant="secondary" size="sm" onClick={() => void handleOpenFolder()}>
                     <FolderOpen className="h-4 w-4" />
@@ -143,7 +143,7 @@ export function ScreenshotsTab({ instancePath }: ScreenshotsTabProps) {
                                         {screenshot.name}
                                     </span>
                                     <span className="text-xs text-muted">
-                                        {new Date(screenshot.createdAt).toLocaleDateString()}
+                                        {formatDate(screenshot.createdAt, '', { dateStyle: 'medium' })}
                                     </span>
                                 </div>
                             </button>

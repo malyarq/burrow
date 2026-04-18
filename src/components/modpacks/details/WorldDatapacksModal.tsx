@@ -34,7 +34,7 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
     worldFolder,
     worldName,
 }) => {
-    const { t } = useSettings();
+    const { t, getAccentStyles, formatNumber } = useSettings();
     const toast = useToast();
     const confirm = useConfirm();
     const [tab, setTab] = useState<Tab>('installed');
@@ -46,6 +46,9 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [installing, setInstalling] = useState<string | null>(null);
     const enabledDatapacks = useMemo(() => datapacks.filter((pack) => pack.isEnabled), [datapacks]);
+    const activeTabBackground = getAccentStyles('soft-bg');
+    const activeTabBorder = getAccentStyles('soft-border');
+    const activeTabLabel = getAccentStyles('title');
 
     const loadInstalled = useCallback(async () => {
         setLoadingInstalled(true);
@@ -170,12 +173,23 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                 id={`datapacks-tab-${entry}`}
                                 aria-selected={isActive}
                                 aria-controls={`datapacks-panel-${entry}`}
+                                data-state={isActive ? 'active' : 'inactive'}
                                 className={cn(
-                                    'rounded-xl px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                                    'rounded-xl border px-4 py-2 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                                     isActive
-                                        ? 'bg-[rgb(var(--accent-main))] text-[rgb(var(--accent-content))]'
-                                        : 'text-secondary hover:bg-card/72 hover:text-foreground'
+                                        ? cn(
+                                            'border-border bg-card/90 text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.16)]',
+                                            activeTabBackground.className,
+                                            activeTabBorder.className,
+                                            activeTabLabel.className,
+                                        )
+                                        : 'border-transparent text-secondary hover:bg-card/72 hover:text-foreground'
                                 )}
+                                style={isActive ? {
+                                    ...activeTabBackground.style,
+                                    ...activeTabBorder.style,
+                                    ...activeTabLabel.style,
+                                } : undefined}
                                 onClick={() => setTab(entry)}
                             >
                                 {label}
@@ -204,11 +218,11 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                 </div>
                                 <div className="surface-inline rounded-2xl px-3 py-3">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.enabled')}</p>
-                                    <p className="mt-2 text-base font-semibold text-foreground">{enabledDatapacks.length}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{formatNumber(enabledDatapacks.length)}</p>
                                 </div>
                                 <div className="surface-inline rounded-2xl px-3 py-3">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.installed')}</p>
-                                    <p className="mt-2 text-base font-semibold text-foreground">{datapacks.length}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{formatNumber(datapacks.length)}</p>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +243,13 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                     <div
                                         key={pack.fileName}
                                         role="listitem"
-                                        className={cn('surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
+                                        data-state={pack.isEnabled ? 'active' : 'inactive'}
+                                        className={cn(
+                                            'surface-card flex flex-col gap-4 p-4 transition-colors lg:flex-row lg:items-center lg:justify-between',
+                                            pack.isEnabled
+                                                ? 'border-border/70 bg-card/86'
+                                                : 'border-border/55 bg-background/78 text-secondary'
+                                        )}
                                     >
                                         <div className="flex min-w-0 flex-1 items-center gap-4">
                                             <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-[rgb(var(--accent-main))]">
@@ -319,7 +339,7 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                             <div className="flex justify-end" data-testid="world-datapacks-search-summary">
                                 <div className="surface-inline rounded-2xl px-3 py-3">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.results')}</p>
-                                    <p className="mt-2 text-base font-semibold text-foreground">{searchResults.length}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{formatNumber(searchResults.length)}</p>
                                 </div>
                             </div>
                         </div>

@@ -184,8 +184,9 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
                 role="tab"
                 aria-selected={isActive}
                 tabIndex={isActive ? 0 : -1}
+                data-state={isActive ? 'active' : 'inactive'}
                 className={cn(
-                  'w-full rounded-xl border px-3 py-3 text-left text-sm font-medium leading-5 transition-colors',
+                  'w-full rounded-xl border px-3 py-3 text-left text-sm font-medium leading-5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                   isActive
                     ? cn(
                         'text-foreground shadow-sm',
@@ -193,7 +194,7 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
                         activeTabBorder.className,
                         activeTabText.className
                       )
-                    : 'border-border/60 bg-background/68 text-secondary hover:border-border hover:bg-card/72 hover:text-foreground'
+                    : 'border-border/60 bg-background/68 text-secondary hover:border-[rgb(var(--accent-main)/0.18)] hover:bg-card/78 hover:text-foreground'
                 )}
                 style={isActive ? {
                   ...activeTabBackground.style,

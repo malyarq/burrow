@@ -43,7 +43,10 @@ function translateWithFallback(
   return value === key ? fallback : value;
 }
 
-function formatDateLabel(value?: string): string | null {
+function formatDateLabel(
+  value: string | undefined,
+  formatDate: (timestamp: number | undefined, unknownText?: string, options?: Intl.DateTimeFormatOptions) => string,
+): string | null {
   if (!value) {
     return null;
   }
@@ -53,7 +56,7 @@ function formatDateLabel(value?: string): string | null {
     return null;
   }
 
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
+  return formatDate(date.getTime(), '', { dateStyle: 'medium' }) || null;
 }
 
 function formatLoaderLabel(
@@ -107,7 +110,7 @@ const ModpackListComponentInternal: React.FC<{
   onNavigate?: (view: { type: 'browser' } | { type: 'details'; modpackId: string } | { type: 'export'; modpackId: string }) => void;
   onCreateWizard?: () => void;
 }> = ({ contextModpacks: _contextModpacks, selectedId, select, remove, rename, duplicate, refresh, modpacksKey, onNavigate, onCreateWizard }) => {
-  const { t, getAccentStyles, minecraftPath } = useSettings();
+  const { t, getAccentStyles, formatNumber, minecraftPath } = useSettings();
   const toast = useToast();
   const confirm = useConfirm();
   const [modpacks, setModpacks] = useState<ModpackListItemWithMetadata[]>([]);
@@ -581,17 +584,20 @@ const ModpackListComponentInternal: React.FC<{
     onOpenActionsFromKeyboard,
     onContextMenu,
   }) => {
-    const { t, getAccentStyles, getAccentHex } = useSettings();
+    const { t, getAccentStyles, formatDate } = useSettings();
     const iconSrc = useMemo(() => getModpackIcon(modpack), [modpack]);
     const sourceBadge = useMemo(() => getModpackSourceBadge(modpack.metadata?.source), [modpack.metadata?.source]);
     const updatedLabel = useMemo(
-      () => formatDateLabel(modpack.metadata?.updatedAt ?? modpack.metadata?.createdAt),
-      [modpack.metadata?.createdAt, modpack.metadata?.updatedAt],
+      () => formatDateLabel(modpack.metadata?.updatedAt ?? modpack.metadata?.createdAt, formatDate),
+      [formatDate, modpack.metadata?.createdAt, modpack.metadata?.updatedAt],
     );
     const modLoaderLabel = useMemo(
       () => (modpack.metadata?.modLoader?.type ? formatLoaderLabel(t, modpack.metadata.modLoader.type) : null),
       [modpack.metadata?.modLoader?.type, t],
     );
+    const activeBackground = useMemo(() => getAccentStyles('soft-bg'), [getAccentStyles]);
+    const activeBorder = useMemo(() => getAccentStyles('soft-border'), [getAccentStyles]);
+    const activeLabel = useMemo(() => getAccentStyles('title'), [getAccentStyles]);
     const actionMenuId = `modpack-actions-menu-${modpack.id}`;
     const actionMenuLabel = `${translateWithFallback(t, 'modpacks.actions_title', 'More actions')}: ${modpack.name}`;
     const openDetailsText = translateWithFallback(t, 'modpacks.open_details', 'Open details');
@@ -605,17 +611,22 @@ const ModpackListComponentInternal: React.FC<{
           'transform hover:scale-[1.02] hover:shadow-lg',
           'hover:-translate-y-1',
           'animate-fade-in-up',
-          'focus-within:ring-2 focus-within:ring-zinc-500 focus-within:ring-offset-2 dark:focus-within:ring-offset-zinc-900',
+          'focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background',
           isSelected
-            ? cn('border-opacity-100 shadow-lg scale-[1.02]', getAccentStyles('border').className)
+            ? cn(
+              'scale-[1.02] border-border bg-card/90 shadow-[0_18px_36px_rgba(0,0,0,0.18)]',
+              activeBackground.className,
+              activeBorder.className,
+            )
             : 'hover:border-border-active hover:bg-card'
         )}
+        data-state={isSelected ? 'active' : 'inactive'}
         style={{
           animationDelay: `${index * 50}ms`,
           ...(isSelected
             ? {
-              borderColor: getAccentHex(),
-              boxShadow: `0 4px 12px ${getAccentHex()}30`,
+              ...activeBackground.style,
+              ...activeBorder.style,
             }
             : undefined),
         }}
@@ -664,8 +675,17 @@ const ModpackListComponentInternal: React.FC<{
                 {sourceBadge}
                 {isSelected && (
                   <div
-                    className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white"
-                    style={{ backgroundColor: getAccentHex() }}
+                    className={cn(
+                      'rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em]',
+                      activeBackground.className,
+                      activeBorder.className,
+                      activeLabel.className,
+                    )}
+                    style={{
+                      ...activeBackground.style,
+                      ...activeBorder.style,
+                      ...activeLabel.style,
+                    }}
                   >
                     {t('modpacks.active')}
                   </div>
@@ -791,6 +811,11 @@ const ModpackListComponentInternal: React.FC<{
   });
   ModpackCard.displayName = 'ModpackCard';
 
+  const formattedFilteredCount = formatNumber(sortedModpacks.length);
+  const formattedTotalCount = formatNumber(modpacks.length);
+  const formattedResultsStart = formatNumber(sortedModpacks.length > 0 ? 1 : 0);
+  const formattedResultsEnd = formatNumber(sortedModpacks.length);
+
 
   return (
     <>
@@ -852,7 +877,7 @@ const ModpackListComponentInternal: React.FC<{
                   {translateWithFallback(t, 'modpacks.title', 'Modpacks')}
                 </div>
                 <div className="mt-1 text-sm font-medium text-foreground">
-                  {sortedModpacks.length} / {modpacks.length}
+                  {formattedFilteredCount} / {formattedTotalCount}
                 </div>
               </div>
               <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
@@ -871,8 +896,8 @@ const ModpackListComponentInternal: React.FC<{
                   {translateWithFallback(
                     t,
                     'modpacks.results_summary',
-                    `Showing ${sortedModpacks.length}-${sortedModpacks.length} of ${modpacks.length}`,
-                    { start: sortedModpacks.length > 0 ? 1 : 0, end: sortedModpacks.length, total: modpacks.length },
+                    `Showing ${formattedResultsStart}-${formattedResultsEnd} of ${formattedTotalCount}`,
+                    { start: formattedResultsStart, end: formattedResultsEnd, total: formattedTotalCount },
                   )}
                 </div>
               </div>

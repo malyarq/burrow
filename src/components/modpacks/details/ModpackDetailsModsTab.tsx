@@ -330,7 +330,15 @@ const ModItem = React.memo<{
   t: TranslateFn;
 }>(({ mod, isExpanded, toggleExpand, onModToggle, onRemoveMod, onOpenExternalLink, resolveDependency, t }) => {
   return (
-    <div className={cn('mb-2 rounded-2xl border border-border/70 bg-card/86 p-4 shadow-[0_12px_32px_rgba(0,0,0,0.12)]', !mod.enabled && 'opacity-75')}>
+    <div
+      className={cn(
+        'mb-2 rounded-2xl border p-4 shadow-[0_12px_32px_rgba(0,0,0,0.12)] transition-colors',
+        mod.enabled
+          ? 'border-border/70 bg-card/86'
+          : 'border-border/55 bg-background/78 text-secondary',
+      )}
+      data-state={mod.enabled ? 'active' : 'inactive'}
+    >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <button
           type="button"

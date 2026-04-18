@@ -5,7 +5,7 @@ import { useConfirm } from '../../../contexts/ConfirmContext';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { openWorldFolder, worldsIPC } from '../../../services/ipc/worldsIPC';
-import { formatDate, formatSize } from '../../../utils/format';
+import { formatSize } from '../../../utils/format';
 import { Button } from '../../ui/Button';
 import { LoadingSpinner } from '../../ui/LoadingSpinner';
 import { WorldDatapacksModal } from './WorldDatapacksModal';
@@ -30,7 +30,7 @@ function supportsDatapacks(version?: string): boolean {
 }
 
 export function WorldsTab({ instancePath, mcVersion, onUpdate }: WorldsTabProps) {
-    const { t } = useSettings();
+    const { t, formatDate, formatNumber } = useSettings();
     const confirm = useConfirm();
     const [worlds, setWorlds] = useState<WorldInfo[]>([]);
     const [loading, setLoading] = useState(true);
@@ -126,7 +126,7 @@ export function WorldsTab({ instancePath, mcVersion, onUpdate }: WorldsTabProps)
 
                 <div className="surface-inline flex flex-wrap items-center gap-3 p-3 text-sm text-secondary">
                     <span>{t('modpacks.worlds_manage_hint')}</span>
-                    <span className="text-foreground">{worlds.length}</span>
+                    <span className="text-foreground">{formatNumber(worlds.length)}</span>
                 </div>
             </div>
 
@@ -156,7 +156,7 @@ export function WorldsTab({ instancePath, mcVersion, onUpdate }: WorldsTabProps)
                                     <h4 className="truncate text-base font-semibold text-foreground">{world.name}</h4>
                                     <div className="flex flex-wrap gap-3 text-sm text-secondary">
                                         <span>{formatSize(world.sizeBytes)}</span>
-                                        <span>{t('modpacks.last_played', { date: formatDate(world.lastPlayed, t('general.unknown')) })}</span>
+                                        <span>{t('modpacks.last_played', { date: formatDate(world.lastPlayed, t('general.unknown'), { dateStyle: 'medium' }) })}</span>
                                     </div>
                                 </div>
                             </div>

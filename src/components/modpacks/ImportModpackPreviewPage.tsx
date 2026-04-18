@@ -24,7 +24,7 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
   filePath,
   onBack,
 }) => {
-  const { t, getAccentStyles } = useSettings();
+  const { t, getAccentStyles, formatNumber } = useSettings();
   const toast = useToast();
   const { refresh } = useModpackListContext();
   const [loading, setLoading] = useState(true);
@@ -159,7 +159,7 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
                         {t('modpacks.mods_count')}
                       </p>
                       <p className="text-sm font-medium text-foreground">
-                        {info.manifest.files.length} {t('modpacks.mods') || 'модов'}
+                        {formatNumber(info.manifest.files.length)} {t('modpacks.mods') || 'модов'}
                       </p>
                     </div>
                   )}
