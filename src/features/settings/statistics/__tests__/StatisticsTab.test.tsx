@@ -133,4 +133,52 @@ describe('StatisticsTab', () => {
       expect(toastSuccessMock).toHaveBeenCalledWith('stats.exportSuccess');
     });
   });
+
+  it('shows a degraded error state instead of staying on the loading spinner when stats fail', async () => {
+    getStatsMock
+      .mockRejectedValueOnce(new Error('[IPC] getStats failed: Statistics store unavailable'))
+      .mockResolvedValueOnce({
+        global: {
+          totalPlayTime: 60 * 60 * 1000,
+          totalLaunches: 4,
+          lastPlayed: 1_775_000_000_000,
+        },
+        instances: {
+          alpha: {
+            name: 'Alpha Pack',
+            playTime: 45 * 60 * 1000,
+            launches: 3,
+            lastPlayed: 1_775_000_000_000,
+          },
+        },
+        history: {
+          '2026-04-10': { launches: 1, playTime: 15 * 60 * 1000 },
+          '2026-04-11': { launches: 3, playTime: 45 * 60 * 1000 },
+        },
+        popularModpacks: [
+          {
+            instanceId: 'alpha',
+            name: 'Alpha Pack',
+            playTime: 45 * 60 * 1000,
+            launches: 3,
+            lastPlayed: 1_775_000_000_000,
+          },
+        ],
+        usageTrend: [
+          { date: '2026-04-10', launches: 1, playTime: 15 * 60 * 1000 },
+          { date: '2026-04-11', launches: 3, playTime: 45 * 60 * 1000 },
+        ],
+      });
+
+    render(<StatisticsTab />);
+
+    const errorState = await screen.findByRole('alert');
+    expect(screen.getByRole('heading', { name: 'error.inline_fallback' })).toBeTruthy();
+    expect(errorState.textContent).toContain('degraded.error_label');
+    expect(errorState.textContent).not.toContain('stats.loading');
+
+    fireEvent.click(screen.getByRole('button', { name: 'modpacks.world_refresh' }));
+
+    await screen.findByRole('heading', { name: 'stats.popular_modpacks' });
+  });
 });

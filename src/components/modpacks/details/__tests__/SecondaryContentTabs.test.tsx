@@ -315,6 +315,17 @@ describe('secondary content tabs', () => {
     expect(summary.textContent?.includes('1 / 2')).toBe(false);
   });
 
+  it('shows a truthful unavailable resource-pack state instead of reusing the empty card', async () => {
+    resourcePackListMock.mockRejectedValue(new Error('[IPC] resource packs failed: Packs directory unavailable'));
+
+    render(<ResourcePacksTab instancePath="/instances/alpha" />);
+
+    const errorState = await screen.findByRole('status');
+    expect(screen.getByRole('heading', { name: 'Failed to load resource packs' })).toBeTruthy();
+    expect(errorState.textContent).toContain('Unavailable');
+    expect(errorState.textContent).not.toContain('No resource packs installed');
+  });
+
   it('keeps the datapacks modal on the shared modal scroll region with labeled installed counts', async () => {
     render(
       <WorldDatapacksModal
@@ -394,5 +405,26 @@ describe('secondary content tabs', () => {
     await waitFor(() => {
       expect(toastSuccessMock).toHaveBeenCalledWith('Installed datapack "Dungeon Boost"');
     });
+  });
+
+  it('shows a dedicated unavailable state when datapack search fails', async () => {
+    searchMock.mockRejectedValue(new Error('[IPC] datapack search failed: Modrinth unavailable'));
+
+    render(
+      <WorldDatapacksModal
+        isOpen={true}
+        onClose={vi.fn()}
+        instancePath="/instances/alpha"
+        worldFolder="world-1"
+        worldName="Alpha World"
+      />
+    );
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Search Modrinth' }));
+
+    const errorState = await screen.findByRole('status');
+    expect(screen.getByRole('heading', { name: 'Failed to search datapacks' })).toBeTruthy();
+    expect(errorState.textContent).toContain('Unavailable');
+    expect(errorState.textContent).not.toContain('No datapacks matched your filters');
   });
 });
