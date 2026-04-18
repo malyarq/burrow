@@ -34,9 +34,9 @@
 
 ### Fallback, Error & Placeholder Productization
 
-- [ ] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
-- [ ] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
-- [ ] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
+- [x] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
+- [x] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
+- [x] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
 - [ ] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
 
 ### Verification, Regression & Release Truth
@@ -83,9 +83,9 @@
 | THEME-02 | Phase 22 | Complete |
 | THEME-03 | Phase 22 | Complete |
 | THEME-04 | Phase 22 | Complete |
-| FALL-01 | Phase 23 | Pending |
-| FALL-02 | Phase 23 | Pending |
-| FALL-03 | Phase 23 | Pending |
+| FALL-01 | Phase 23 | Complete |
+| FALL-02 | Phase 23 | Complete |
+| FALL-03 | Phase 23 | Complete |
 | FALL-04 | Phase 23 | Pending |
 | VER-01 | Phase 24 | Pending |
 | VER-02 | Phase 24 | Pending |

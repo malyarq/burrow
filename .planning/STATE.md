@@ -4,17 +4,17 @@ milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
 current_phase: 23
 current_phase_name: 23-fallback-error-and-placeholder-productization
-current_plan: 2
+current_plan: 4
 status: in_progress
-stopped_at: Completed 23-01-PLAN.md
-last_updated: "2026-04-19T01:27:12+03:00"
-last_activity: 2026-04-19 - Completed Phase 23 plan 01 degraded-state contract and regression seam
+stopped_at: Completed 23-02-PLAN.md and 23-03-PLAN.md
+last_updated: "2026-04-19T01:49:45+03:00"
+last_activity: 2026-04-19 - Completed Phase 23 wave 2 route degraded-state adoption and fatal crash recovery
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 24
-  completed_plans: 17
-  percent: 70
+  completed_plans: 19
+  percent: 79
 ---
 
 # Project State
@@ -24,27 +24,27 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 23 is in progress after landing the shared degraded-state seam; next is executing 23-02 and 23-03 in parallel for route adoption and recovery-first crash handling.
+**Current focus:** Phase 23 is in progress after landing wave 2 route degraded-state adoption and recovery-first crash handling; next is executing 23-04 for high-risk placeholder, dependency, and closeout truth.
 
 ## Current Position
 
 Current Phase: 23
 Current Phase Name: 23-fallback-error-and-placeholder-productization
-Current Plan: 2
+Current Plan: 4
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 23
-Plan: 02-03
+Plan: 04
 Status: In Progress
-Last activity: 2026-04-19 - Completed Phase 23 plan 01 degraded-state contract and regression seam
+Last activity: 2026-04-19 - Completed Phase 23 wave 2 route degraded-state adoption and fatal crash recovery
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 79%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 81
-- Active phase plans completed: 36
+- Total plans completed: 83
+- Active phase plans completed: 38
 - Average duration: 16 min
 - Total execution time: 6.0 hours
 
@@ -62,8 +62,8 @@ Progress: [███████░░░] 70%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 22-01, 22-02, 22-03, 22-04, 23-01
-- Trend: Phase 23 has shipped the shared degraded-state and sanitization seam, so the remaining plans can focus on route adoption and conservative degraded-data truth instead of inventing new fallback primitives.
+- Last 5 plans: 22-03, 22-04, 23-01, 23-03, 23-02
+- Trend: Phase 23 has now closed wave 2, so the final plan can stay focused on high-risk dependency, update, and closeout truth instead of reopening route-level fallback seams.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -96,6 +96,8 @@ Progress: [███████░░░] 70%
 | Phase 22 P02 | 8 min | 2 tasks | 10 files |
 | Phase 22 P03 | 24 min | 2 tasks | 29 files |
 | Phase 23 P01 | 8 min | 2 tasks | 10 files |
+| Phase 23 P03 | 6 min | 2 tasks | 5 files |
+| Phase 23 P02 | 20 min | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -212,6 +214,12 @@ Recent decisions affecting current work:
 - [Phase 23]: Keep EmptyStateView brand-owned and introduce a separate calm degraded-state primitive instead of softening the hero seam.
 - [Phase 23]: Sanitize user-facing fallback text through shared helpers that unwrap IPC prefixes and collapse suspicious placeholders to localized copy.
 - [Phase 23]: Read the active language from persisted settings so the future outer crash boundary can translate before SettingsProvider mounts.
+- [Phase 23]: Reuse the shared FatalErrorView for both outer and inner boundary mounts instead of separate crash surfaces.
+- [Phase 23]: Keep copied crash diagnostics rich by appending the React component stack, but show only recovery-safe summary text on the default surface.
+- [Phase 23]: Preserve stored-language translation for the outer boundary path so crash copy still localizes before SettingsProvider mounts.
+- [Phase 23]: Route-level load failures must render the shared degraded-state seam instead of reusing the successful empty cards for the same surface.
+- [Phase 23]: Summary metrics and shell-adjacent metadata switch to explicit unavailable or error labels during failed loads so surrounding chrome does not contradict the main state.
+- [Phase 23]: Secondary content tabs keep one contextual recovery action per degraded state rather than decorative fallback heroes.
 
 ### Pending Todos
 
@@ -229,6 +237,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T22:25:50.933Z
-Stopped at: Completed 23-01-PLAN.md
+Last session: 2026-04-19T01:49:45+03:00
+Stopped at: Completed 23-02-PLAN.md and 23-03-PLAN.md
 Resume file: None
