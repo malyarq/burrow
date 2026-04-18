@@ -1,4 +1,4 @@
-import { getAccentHexForColor } from './accent';
+import { getAccentHexForColor, getAccentHoverHexForColor } from './accent';
 import { getThemePresetConfig } from './theme-presets';
 import type { AccentColor, BrandThemeConfig, CustomThemeConfig, Theme, ThemePresetId } from './types';
 
@@ -160,6 +160,7 @@ export function applyThemeToDocument(theme: Theme, accentColor: AccentColor, cus
 
   const root = document.documentElement;
   const accentHex = getAccentHexForColor(accentColor || 'emerald');
+  const accentHoverHex = getAccentHoverHexForColor(accentColor || 'emerald');
   const palette = buildThemeDocumentColors(theme, customTheme);
   const brandTokens = buildBrandDocumentTokens(theme, customTheme);
 
@@ -173,7 +174,7 @@ export function applyThemeToDocument(theme: Theme, accentColor: AccentColor, cus
   root.style.setProperty('--border-default', hexToRgb(palette.border));
   root.style.setProperty('--border-active', hexToRgb(palette.borderActive));
   root.style.setProperty('--accent-main', hexToRgb(accentHex));
-  root.style.setProperty('--accent-hover', hexToRgb(accentHex));
+  root.style.setProperty('--accent-hover', hexToRgb(accentHoverHex));
   root.style.setProperty('--accent-content', getAccentContent(theme));
   root.style.setProperty('--color-error', hexToRgb(palette.error));
   root.style.setProperty('--brand-shell-glow', hexToRgb(brandTokens.shellGlow));

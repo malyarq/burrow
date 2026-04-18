@@ -8,6 +8,15 @@ interface Translations {
 
 const translations: Record<Language, Translations> = { en, ru };
 
+export const LANGUAGE_LOCALES: Record<Language, string> = {
+  en: 'en-US',
+  ru: 'ru-RU',
+};
+
+export function getLocaleForLanguage(language: Language) {
+  return LANGUAGE_LOCALES[language] ?? LANGUAGE_LOCALES.en;
+}
+
 export function createTranslator(language: Language) {
   return (key: string, params?: Record<string, string | number>): string => {
     let text = translations[language]?.[key] || key;
@@ -19,4 +28,3 @@ export function createTranslator(language: Language) {
     return text;
   };
 }
-
