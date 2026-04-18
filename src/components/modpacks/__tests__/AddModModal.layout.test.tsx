@@ -29,6 +29,7 @@ vi.mock('../../../contexts/SettingsContext', () => ({
   useSettings: () => ({
     t: createTranslator('en'),
     getAccentStyles: () => ({ className: '', style: undefined }),
+    formatNumber: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('en-US', options).format(value),
     minecraftPath: '/minecraft',
   }),
 }));

@@ -22,6 +22,9 @@ const t = createTranslator('en');
 vi.mock('../../../../contexts/SettingsContext', () => ({
   useSettings: () => ({
     t,
+    formatDate: (timestamp: number | undefined, unknownText = 'Unknown', options?: Intl.DateTimeFormatOptions) =>
+      timestamp ? new Date(timestamp).toLocaleDateString('en-US', options) : unknownText,
+    formatNumber: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('en-US', options).format(value),
   }),
 }));
 

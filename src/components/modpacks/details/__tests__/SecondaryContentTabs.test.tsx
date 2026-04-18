@@ -38,6 +38,8 @@ vi.mock('react-virtuoso', () => ({
 vi.mock('../../../../contexts/SettingsContext', () => ({
   useSettings: () => ({
     t,
+    getAccentStyles: () => ({ className: '', style: undefined }),
+    formatNumber: (value: number, options?: Intl.NumberFormatOptions) => new Intl.NumberFormat('en-US', options).format(value),
   }),
 }));
 
@@ -216,6 +218,13 @@ describe('secondary content tabs', () => {
         isEnabled: true,
         path: '/world/datapacks/better-mobs.zip',
       },
+      {
+        fileName: 'dormant-utilities.zip',
+        name: 'Dormant Utilities',
+        description: 'Disabled world helpers kept around for compatibility.',
+        isEnabled: false,
+        path: '/world/datapacks/dormant-utilities.zip',
+      },
     ]);
     searchMock.mockResolvedValue({
       hits: [
@@ -322,6 +331,10 @@ describe('secondary content tabs', () => {
     const summary = screen.getByTestId('world-datapacks-installed-summary');
     expect(summary.textContent).toContain('Enabled');
     expect(summary.textContent).toContain('Installed');
+    expect(screen.getByRole('tab', { name: 'Installed' }).getAttribute('data-state')).toBe('active');
+    const disabledRow = screen.getByText('Dormant Utilities').closest('[data-state="inactive"]');
+    expect(disabledRow).toBeTruthy();
+    expect(disabledRow?.className).not.toContain('opacity-75');
 
     const dialog = screen.getByRole('dialog');
     expect(dialog.querySelectorAll('.overflow-y-auto')).toHaveLength(1);

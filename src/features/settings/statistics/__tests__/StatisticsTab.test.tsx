@@ -9,10 +9,19 @@ const exportStatsMock = vi.fn();
 const showSaveDialogMock = vi.fn();
 const toastSuccessMock = vi.fn();
 const toastErrorMock = vi.fn();
+const formatDateMock = vi.fn((
+  timestamp: number | undefined,
+  unknownText = 'Unknown',
+  _options?: Intl.DateTimeFormatOptions,
+) => (timestamp ? `date:${timestamp}` : unknownText));
+const formatNumberMock = vi.fn((value: number, _options?: Intl.NumberFormatOptions) => `n:${value}`);
 
 vi.mock('../../../../contexts/SettingsContext', () => ({
   useSettings: () => ({
     t: (key: string) => key,
+    formatDate: (...args: Parameters<typeof formatDateMock>) => formatDateMock(...args),
+    formatNumber: (...args: Parameters<typeof formatNumberMock>) => formatNumberMock(...args),
+    getAccentHex: () => '#10b981',
   }),
 }));
 
@@ -43,6 +52,8 @@ describe('StatisticsTab', () => {
     showSaveDialogMock.mockReset();
     toastSuccessMock.mockReset();
     toastErrorMock.mockReset();
+    formatDateMock.mockClear();
+    formatNumberMock.mockClear();
 
     getStatsMock.mockResolvedValue({
       global: {
@@ -96,8 +107,12 @@ describe('StatisticsTab', () => {
     expect(screen.getByRole('list', { name: 'stats.popular_modpacks' })).toBeTruthy();
     expect(screen.getByRole('list', { name: 'stats.usage_trend' })).toBeTruthy();
     expect(screen.getByRole('list', { name: 'stats.instance_stats' })).toBeTruthy();
+    expect(screen.getByText('n:1h n:0m n:0s')).toBeTruthy();
+    expect(screen.getByText('stats.last_played: date:1775000000000')).toBeTruthy();
+    expect(screen.getAllByText('stats.launches: n:3').length).toBeGreaterThan(0);
 
     expect(getStatsMock).toHaveBeenCalledOnce();
+    expect(formatDateMock).toHaveBeenCalledWith(1_775_000_000_000, '—', { dateStyle: 'medium' });
   });
 
   it('exports statistics through the save dialog and typed IPC wrapper', async () => {
