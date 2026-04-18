@@ -4,17 +4,17 @@ milestone: v0.5.0
 milestone_name: milestone
 current_phase: 22
 current_phase_name: 22-theme-truth-and-interaction-state-fidelity
-current_plan: 2
+current_plan: 3
 status: in_progress
-stopped_at: Completed 22-01-PLAN.md
-last_updated: "2026-04-18T12:20:00+03:00"
-last_activity: 2026-04-18 - Completed Phase 22 plan 01 theme runtime truth and preparing 22-02 shared control and settings-state fidelity
+stopped_at: Completed 22-02-PLAN.md
+last_updated: "2026-04-18T12:10:00+03:00"
+last_activity: 2026-04-18 - Completed Phase 22 plan 02 shared control and settings-state fidelity and preparing 22-03 route adoption
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 24
-  completed_plans: 13
-  percent: 54
+  completed_plans: 14
+  percent: 58
 ---
 
 # Project State
@@ -24,21 +24,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 22 is in progress after landing 22-01 theme runtime truth; the next step is executing 22-02 shared control and settings-state fidelity without reopening Phase 12/20/21 structure work.
+**Current focus:** Phase 22 is in progress after landing 22-02 shared control and settings-state fidelity; the next step is executing 22-03 route adoption on milestone-owned content surfaces without reopening Phase 21 layout or Phase 23 degraded-state scope.
 
 ## Current Position
 
 Current Phase: 22
 Current Phase Name: 22-theme-truth-and-interaction-state-fidelity
-Current Plan: 2
+Current Plan: 3
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 22
-Plan: 02
+Plan: 03
 Status: In Progress
-Last activity: 2026-04-18 - Completed Phase 22 plan 01 theme runtime truth and preparing 22-02 shared control and settings-state fidelity
+Last activity: 2026-04-18 - Completed Phase 22 plan 02 shared control and settings-state fidelity and preparing 22-03 route adoption
 
-Progress: [█████░░░░░] 54%
+Progress: [██████░░░░] 58%
 
 ## Performance Metrics
 
@@ -62,8 +62,8 @@ Progress: [█████░░░░░] 54%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 21-01, 21-02, 21-03, 21-04, 22-01
-- Trend: Phase 22 has started by repairing runtime theme and locale truth; the next risk is control and settings-state fidelity before route adoption.
+- Last 5 plans: 21-02, 21-03, 21-04, 22-01, 22-02
+- Trend: Phase 22 has locked runtime truth plus shared control fidelity; the next risk is carrying that contract onto live content routes without reopening Phase 21 geometry.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -93,6 +93,7 @@ Progress: [█████░░░░░] 54%
 | Phase 21 P03 | 10 min | 2 tasks | 9 files |
 | Phase 21 P04 | 10min | 2 tasks | 3 files |
 | Phase 22 P01 | 9 min | 2 tasks | 10 files |
+| Phase 22 P02 | 8 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -204,6 +205,8 @@ Recent decisions affecting current work:
 - [Phase 21]: Added dedicated Phase 21 proof views instead of overloading legacy manual routes so crowded-shell closeout states are directly reviewable.
 - [Phase 21]: Seeded create and edit proof from one shared runtime fixture and used a harness-only wizard priming helper instead of widening product props beyond the plan-owned manual seam.
 - [Phase 22]: Stopped serializing a cleared preset id as an empty string so preset-shaped imports and legacy storage can re-infer a stable themePresetId. — Keeps preset round-trip recovery in the shared settings runtime instead of in AppearanceTab-local import logic.
+- [Phase 22]: Replaced opacity-only disabled styling with explicit disabled border, background, and text tokens so control readability survives in both themes.
+- [Phase 22]: Standardized settings segmented controls and tabs on one accent-backed active or inactive contract before moving the same rules onto modpack and secondary-content routes.
 
 ### Pending Todos
 
