@@ -12,6 +12,9 @@ const PHASE_21_BROWSER_DENSITY_VIEW = 'phase-21-browser-density';
 const PHASE_21_DETAILS_DENSITY_VIEW = 'phase-21-details-density';
 const PHASE_21_RUNTIME_EDIT_VIEW = 'phase-21-runtime-edit';
 const PHASE_21_SECONDARY_DENSITY_VIEW = 'phase-21-secondary-density';
+const PHASE_22_THEME_DARK_VIEW = 'phase-22-theme-dark';
+const PHASE_22_THEME_LIGHT_VIEW = 'phase-22-theme-light';
+const PHASE_22_LOCALE_RU_VIEW = 'phase-22-locale-ru';
 
 const PHASE_21_DETAIL_VIEWS = new Set([PHASE_21_DETAILS_DENSITY_VIEW, PHASE_21_RUNTIME_EDIT_VIEW]);
 
@@ -695,16 +698,19 @@ function createSearchResponse(query: string, offset = 0, limit = 12, view = 'ove
 export function seedManualVerificationStorage(view: string) {
   const simpleViews = new Set(['welcome', 'tour', 'dashboard']);
   const isPhase17Polish = view === PHASE_17_POLISH_VIEW;
+  const isPhase22ThemeDark = view === PHASE_22_THEME_DARK_VIEW;
+  const isPhase22ThemeLight = view === PHASE_22_THEME_LIGHT_VIEW;
+  const isPhase22LocaleRu = view === PHASE_22_LOCALE_RU_VIEW;
   const seededBrowserResults = getBrowserResultsForView(view);
 
-  localStorage.setItem('settings_language', isPhase17Polish ? 'ru' : 'en');
-  localStorage.setItem('settings_theme', 'dark');
-  if (isPhase17Polish) {
+  localStorage.setItem('settings_language', isPhase17Polish || isPhase22LocaleRu ? 'ru' : 'en');
+  localStorage.setItem('settings_theme', isPhase22ThemeLight ? 'light' : 'dark');
+  if (isPhase17Polish || isPhase22ThemeDark) {
     localStorage.setItem('settings_themePresetId', 'forest');
   } else {
     localStorage.removeItem('settings_themePresetId');
   }
-  localStorage.setItem('settings_accentColor', 'emerald');
+  localStorage.setItem('settings_accentColor', isPhase22ThemeLight ? 'rose' : 'emerald');
   localStorage.setItem('settings_minecraftPath', '/mock/.minecraft');
   localStorage.setItem('settings_uiMode', simpleViews.has(view) ? 'simple' : 'modpacks');
   localStorage.setItem('simple_play_welcome_dismissed', 'false');

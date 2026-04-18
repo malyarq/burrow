@@ -374,6 +374,16 @@ function Phase21ProofCallout(props: { title: string; detail: string }) {
   );
 }
 
+function Phase22ProofCallout(props: { title: string; detail: string }) {
+  return (
+    <div className="surface-inline rounded-3xl p-4 sm:p-5">
+      <div className="kicker-label mb-2">Phase 22 theme truth proof</div>
+      <h2 className="text-lg font-semibold text-foreground">{props.title}</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-secondary">{props.detail}</p>
+    </div>
+  );
+}
+
 function Phase19ShellChrome(props: {
   ownership: ModpackPrimaryActionOwnership;
   launch?: SidebarLaunchModel;
@@ -543,6 +553,46 @@ function SettingsAppearanceScenario({ onReady }: ManualVerificationScenarioProps
   return (
     <Phase19ShellFrame mode="simple" ownership="shell">
       <SettingsPage onClose={() => undefined} initialTab="appearance" />
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase22ThemeDarkScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand'],
+    'Phase 22 dark-theme proof rendered inside the real shell with a shipped preset so shared appearance controls can be inspected under the final state contract.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
+        <Phase22ProofCallout
+          title="Dark preset state stays readable in the live shell"
+          detail="This proof keeps the appearance tab under the shipped forest preset so reviewers can inspect dark surfaces, accent propagation, and the brand boundary in the real launcher shell."
+        />
+        <SettingsPage onClose={() => undefined} initialTab="appearance" />
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase22ThemeLightScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand'],
+    'Phase 22 light-theme proof rendered inside the real shell with a custom accent so shared appearance controls can be compared against the preset state.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
+        <Phase22ProofCallout
+          title="Light custom-accent state stays coherent across the same controls"
+          detail="Use this view against the dark preset proof to compare light surfaces, custom accent emphasis, and whether the same appearance controls still read as one system."
+        />
+        <SettingsPage onClose={() => undefined} initialTab="appearance" />
+      </div>
     </Phase19ShellFrame>
   );
 }
@@ -1051,6 +1101,74 @@ function Phase21SecondaryDensityScenario({ onReady }: ManualVerificationScenario
   );
 }
 
+function Phase22LocaleEnScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Modpack Browser', 'Alpha Pack', 'Datapacks for Alpha World', 'Downloads', 'Updated'],
+    'Phase 22 English locale proof rendered inside the real shell with route metadata and a secondary-content overlay using the shared formatting contract.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route" language="en">
+      <>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+          <Phase22ProofCallout
+            title="English route metadata stays truthful across primary and secondary surfaces"
+            detail="The browser route remains the primary shell-owned screen while the datapacks modal overlays it, making counts and dates directly comparable under one locale contract."
+          />
+          <ModpackBrowser
+            initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: 'alpha' }}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onStateChange={() => undefined}
+          />
+        </div>
+        <WorldDatapacksModal
+          isOpen={true}
+          onClose={() => undefined}
+          instancePath="/mock/.minecraft/instances/alpha"
+          worldFolder="AlphaWorld"
+          worldName="Alpha World"
+        />
+      </>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase22LocaleRuScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Браузер модпаков', 'Alpha Pack', 'Датапаки для мира Alpha World', 'Загрузок', 'Обновлено'],
+    'Phase 22 Russian locale proof rendered inside the real shell with route metadata and a secondary-content overlay using the same shared formatting contract.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route" language="ru">
+      <>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+          <Phase22ProofCallout
+            title="Russian locale keeps the same route-state contract"
+            detail="Use this alongside the English proof to compare the same browser counts, updated dates, and datapack summary labels after locale switches without leaving the live shell."
+          />
+          <ModpackBrowser
+            initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: 'alpha' }}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onStateChange={() => undefined}
+          />
+        </div>
+        <WorldDatapacksModal
+          isOpen={true}
+          onClose={() => undefined}
+          instancePath="/mock/.minecraft/instances/alpha"
+          worldFolder="AlphaWorld"
+          worldName="Alpha World"
+        />
+      </>
+    </Phase19ShellFrame>
+  );
+}
+
 function ShareScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
@@ -1139,6 +1257,22 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 
   if (props.view === 'settings-accounts') {
     return <SettingsAccountsScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-22-theme-dark') {
+    return <Phase22ThemeDarkScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-22-theme-light') {
+    return <Phase22ThemeLightScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-22-locale-en') {
+    return <Phase22LocaleEnScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-22-locale-ru') {
+    return <Phase22LocaleRuScenario {...scenarioProps} />;
   }
 
   if (props.view === 'phase-17-polish') {

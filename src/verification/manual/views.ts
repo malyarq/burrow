@@ -5,6 +5,10 @@ export type ManualVerificationView =
   | 'dashboard'
   | 'settings-appearance'
   | 'settings-accounts'
+  | 'phase-22-theme-dark'
+  | 'phase-22-theme-light'
+  | 'phase-22-locale-en'
+  | 'phase-22-locale-ru'
   | 'phase-17-polish'
   | 'accounts'
   | 'modpack-list'
@@ -34,6 +38,26 @@ export const CORE_VIEWS: Array<{ id: ManualVerificationView; label: string; desc
   { id: 'dashboard', label: 'Launcher Home', description: 'Phase 20 launcher-home proof inside the real shell for one canonical mark, one wordmark, and one shell-owned Play CTA.' },
   { id: 'settings-appearance', label: 'Settings -> Appearance', description: 'Shell-integrated appearance proof for shared launcher branding and the accent-vs-brand boundary.' },
   { id: 'settings-accounts', label: 'Settings -> Accounts', description: 'Settings shell with accounts continuity.' },
+  {
+    id: 'phase-22-theme-dark',
+    label: 'Phase 22 Theme Dark',
+    description: 'Shell-integrated dark-theme proof for appearance controls under a shipped preset with the Phase 22 state contract.',
+  },
+  {
+    id: 'phase-22-theme-light',
+    label: 'Phase 22 Theme Light',
+    description: 'Shell-integrated light-theme proof for appearance controls under a custom accent variant with the same shared state contract.',
+  },
+  {
+    id: 'phase-22-locale-en',
+    label: 'Phase 22 Locale EN',
+    description: 'English route proof combining a modpack primary route and a secondary-content overlay with visible dates and counts.',
+  },
+  {
+    id: 'phase-22-locale-ru',
+    label: 'Phase 22 Locale RU',
+    description: 'Russian route proof combining a modpack primary route and a secondary-content overlay with visible dates and counts.',
+  },
   { id: 'phase-17-polish', label: 'Phase 17 Polish', description: 'Composite proof for constrained catalog, compact nav, and Russian settings localization.' },
   { id: 'accounts', label: 'Accounts', description: 'Standalone account management and skin panel.' },
   { id: 'modpack-list', label: 'Modpack List', description: 'Installed modpack cards and actions.' },
