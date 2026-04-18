@@ -14,8 +14,10 @@ import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { LazyImage } from '../../ui/LazyImage';
 import { LoadingSpinner } from '../../ui/LoadingSpinner';
+import { DegradedStateView } from '../../layout/DegradedStateView';
 import { Modal } from '../../ui/Modal';
 import { Select } from '../../ui/Select';
+import { toDisplayErrorMessage } from '../../../utils/displayError';
 
 interface WorldDatapacksModalProps {
     isOpen: boolean;
@@ -40,23 +42,28 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
     const [tab, setTab] = useState<Tab>('installed');
     const [datapacks, setDatapacks] = useState<Datapack[]>([]);
     const [loadingInstalled, setLoadingInstalled] = useState(false);
+    const [installedError, setInstalledError] = useState<unknown | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [mcVersion, setMcVersion] = useState('');
     const [searchResults, setSearchResults] = useState<DatapackSearchResultItem[]>([]);
     const [loadingSearch, setLoadingSearch] = useState(false);
+    const [searchError, setSearchError] = useState<unknown | null>(null);
     const [installing, setInstalling] = useState<string | null>(null);
     const enabledDatapacks = useMemo(() => datapacks.filter((pack) => pack.isEnabled), [datapacks]);
+    const hasSearchFilters = searchQuery.trim().length > 0 || mcVersion.length > 0;
     const activeTabBackground = getAccentStyles('soft-bg');
     const activeTabBorder = getAccentStyles('soft-border');
     const activeTabLabel = getAccentStyles('title');
 
     const loadInstalled = useCallback(async () => {
         setLoadingInstalled(true);
+        setInstalledError(null);
         try {
             const list = await datapacksIPC.list(instancePath, worldFolder);
             setDatapacks(list);
         } catch (err) {
             console.error(err);
+            setInstalledError(err);
             toast.error(t('modpacks.datapacks_load_error'));
         } finally {
             setLoadingInstalled(false);
@@ -65,16 +72,24 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
 
     const handleSearch = useCallback(async () => {
         setLoadingSearch(true);
+        setSearchError(null);
         try {
             const res = await datapacksIPC.search(searchQuery, mcVersion || undefined);
             setSearchResults(res.hits || []);
         } catch (err) {
             console.error(err);
+            setSearchError(err);
             toast.error(t('modpacks.datapacks_search_error'));
         } finally {
             setLoadingSearch(false);
         }
     }, [mcVersion, searchQuery, t, toast]);
+    const installedErrorDescription = installedError
+        ? toDisplayErrorMessage(installedError, t('error.inline_fallback'))
+        : t('error.inline_fallback');
+    const searchErrorDescription = searchError
+        ? toDisplayErrorMessage(searchError, t('error.inline_fallback'))
+        : t('error.inline_fallback');
 
     useEffect(() => {
         if (!isOpen) {
@@ -218,11 +233,11 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                 </div>
                                 <div className="surface-inline rounded-2xl px-3 py-3">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.enabled')}</p>
-                                    <p className="mt-2 text-base font-semibold text-foreground">{formatNumber(enabledDatapacks.length)}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{installedError ? t('degraded.unavailable_label') : formatNumber(enabledDatapacks.length)}</p>
                                 </div>
                                 <div className="surface-inline rounded-2xl px-3 py-3">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.installed')}</p>
-                                    <p className="mt-2 text-base font-semibold text-foreground">{formatNumber(datapacks.length)}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{installedError ? t('degraded.unavailable_label') : formatNumber(datapacks.length)}</p>
                                 </div>
                             </div>
                         </div>
@@ -232,11 +247,37 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                 <LoadingSpinner size="sm" variant="accent" />
                                 {t('modpacks.loading')}
                             </div>
+                        ) : installedError ? (
+                            <DegradedStateView
+                                variant="unavailable"
+                                label={t('degraded.unavailable_label')}
+                                title={t('modpacks.datapacks_load_error')}
+                                description={installedErrorDescription}
+                                footer={(
+                                    <>
+                                        <Button size="sm" variant="secondary" onClick={() => void loadInstalled()}>
+                                            {t('modpacks.world_refresh')}
+                                        </Button>
+                                        <Button size="sm" variant="secondary" onClick={() => setTab('search')}>
+                                            <Search className="h-4 w-4" />
+                                            {t('modpacks.search_modrinth')}
+                                        </Button>
+                                    </>
+                                )}
+                            />
                         ) : datapacks.length === 0 ? (
-                            <div className="surface-muted flex flex-col items-center gap-2 p-8 text-center">
-                                <p className="text-base font-semibold text-foreground">{t('modpacks.no_datapacks_installed')}</p>
-                                <p className="max-w-xl text-sm text-secondary">{t('modpacks.datapacks_empty_hint')}</p>
-                            </div>
+                            <DegradedStateView
+                                variant="empty"
+                                label={t('degraded.empty_label')}
+                                title={t('modpacks.no_datapacks_installed')}
+                                description={t('modpacks.datapacks_empty_hint')}
+                                footer={(
+                                    <Button size="sm" variant="secondary" onClick={() => setTab('search')}>
+                                        <Search className="h-4 w-4" />
+                                        {t('modpacks.search_modrinth')}
+                                    </Button>
+                                )}
+                            />
                         ) : (
                             <div className="space-y-3" role="list" aria-label={t('modpacks.datapacks')}>
                                 {datapacks.map((pack) => (
@@ -339,7 +380,7 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                             <div className="flex justify-end" data-testid="world-datapacks-search-summary">
                                 <div className="surface-inline rounded-2xl px-3 py-3">
                                     <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.results')}</p>
-                                    <p className="mt-2 text-base font-semibold text-foreground">{formatNumber(searchResults.length)}</p>
+                                    <p className="mt-2 text-base font-semibold text-foreground">{searchError ? t('degraded.unavailable_label') : formatNumber(searchResults.length)}</p>
                                 </div>
                             </div>
                         </div>
@@ -349,11 +390,47 @@ export const WorldDatapacksModal: React.FC<WorldDatapacksModalProps> = ({
                                 <LoadingSpinner size="sm" variant="accent" />
                                 {t('modpacks.loading')}
                             </div>
+                        ) : searchError ? (
+                            <DegradedStateView
+                                variant="unavailable"
+                                label={t('degraded.unavailable_label')}
+                                title={t('modpacks.datapacks_search_error')}
+                                description={searchErrorDescription}
+                                footer={(
+                                    <Button size="sm" variant="secondary" onClick={() => void handleSearch()}>
+                                        <Search className="h-4 w-4" />
+                                        {t('modpacks.search_btn')}
+                                    </Button>
+                                )}
+                            />
                         ) : searchResults.length === 0 ? (
-                            <div className="surface-muted flex flex-col items-center gap-2 p-8 text-center">
-                                <p className="text-base font-semibold text-foreground">{t('modpacks.no_datapack_results')}</p>
-                                <p className="max-w-xl text-sm text-secondary">{t('modpacks.datapacks_search_hint')}</p>
-                            </div>
+                            hasSearchFilters ? (
+                                <DegradedStateView
+                                    variant="zero-results"
+                                    label={t('degraded.zero_results_label')}
+                                    title={t('modpacks.no_datapack_results')}
+                                    description={t('modpacks.datapacks_search_hint')}
+                                    footer={(
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setMcVersion('');
+                                            }}
+                                        >
+                                            {t('modpacks.clear_filters')}
+                                        </Button>
+                                    )}
+                                />
+                            ) : (
+                                <DegradedStateView
+                                    variant="empty"
+                                    label={t('degraded.empty_label')}
+                                    title={t('modpacks.search_modrinth')}
+                                    description={t('modpacks.datapacks_search_hint')}
+                                />
+                            )
                         ) : (
                             <div className="space-y-3" role="list" aria-label={t('modpacks.search_modrinth')}>
                                 {searchResults.map((project) => (

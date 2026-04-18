@@ -13,6 +13,8 @@ import { dialogIPC } from '../../services/ipc/dialogIPC';
 import { MINECRAFT_VERSIONS } from '../../utils/minecraftVersionsList';
 import { DEFAULT_MODPACK_BROWSER_STATE, normalizeModpackBrowserState, type ModpackBrowserState } from '../../features/modpacks/hooks/useModpackNavigation';
 import { ArrowLeft, History, Import, Star } from 'lucide-react';
+import { DegradedStateView } from '../layout/DegradedStateView';
+import { toDisplayErrorMessage } from '../../utils/displayError';
 
 type Platform = ModpackBrowserState['platform'];
 type SortOption = ModpackBrowserState['sortBy'];
@@ -129,6 +131,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
   });
   const [showHistory, setShowHistory] = useState(normalizedInitialState.showHistory);
   const [history, setHistory] = useState<ModpackSearchResultItem[]>([]);
+  const [searchError, setSearchError] = useState<unknown | null>(null);
   const didHydratePageResetRef = useRef(false);
 
   const browserState = useMemo<ModpackBrowserState>(() => ({
@@ -231,6 +234,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
 
   const searchModpacks = useCallback(async () => {
     setLoading(true);
+    setSearchError(null);
     try {
       // Используем пустую строку для получения популярных модпаков, если запрос пустой
       const searchQuery = debouncedQuery.trim() || '';
@@ -268,6 +272,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
       setTotalResults(results.total || items.length);
     } catch (error) {
       console.error('Error searching modpacks:', error);
+      setSearchError(error);
       setSearchResults([]);
       setTotalResults(0);
     } finally {
@@ -317,10 +322,12 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
   // Pagination is handled by the API as well
   const totalPages = Math.ceil(totalResults / itemsPerPage);
   const paginatedResults = searchResults;
-  const hasActiveFilters =
+  const hasSearchFilters =
     query.trim().length > 0
     || filterMCVersion !== DEFAULT_MODPACK_BROWSER_STATE.filterMCVersion
-    || filterLoader !== DEFAULT_MODPACK_BROWSER_STATE.filterLoader
+    || filterLoader !== DEFAULT_MODPACK_BROWSER_STATE.filterLoader;
+  const hasActiveFilters =
+    hasSearchFilters
     || sortBy !== DEFAULT_MODPACK_BROWSER_STATE.sortBy;
   const showingStart = totalResults > 0 ? ((currentPage - 1) * itemsPerPage) + 1 : 0;
   const showingEnd = totalResults > 0 ? showingStart + paginatedResults.length - 1 : 0;
@@ -330,6 +337,13 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
   const formattedCurrentPage = formatNumber(currentPage);
   const formattedTotalPages = formatNumber(Math.max(totalPages, 1));
   const recentHistory = useMemo(() => history.slice(0, 3), [history]);
+  const browserErrorTitle = t('error.inline_fallback');
+  const browserErrorDescription = searchError
+    ? (() => {
+      const detail = toDisplayErrorMessage(searchError, browserErrorTitle);
+      return detail !== browserErrorTitle ? detail : t('modpacks.browser_desc');
+    })()
+    : '';
   const activeFilterTokens = useMemo(() => {
     const tokens: string[] = [];
 
@@ -628,13 +642,15 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                     {translateWithFallback(t, 'modpacks.results', 'Results')}
                   </div>
                   <div className="mt-1 text-sm font-medium text-foreground">
-                    {totalResults > 0
-                      ? translateWithFallback(
-                        t,
-                        'modpacks.results_summary',
-                        `Showing ${formattedShowingStart}-${formattedShowingEnd} of ${formattedTotalResults}`,
-                        { start: formattedShowingStart, end: formattedShowingEnd, total: formattedTotalResults }
-                      )
+                    {searchError
+                      ? t('degraded.error_label')
+                      : totalResults > 0
+                        ? translateWithFallback(
+                          t,
+                          'modpacks.results_summary',
+                          `Showing ${formattedShowingStart}-${formattedShowingEnd} of ${formattedTotalResults}`,
+                          { start: formattedShowingStart, end: formattedShowingEnd, total: formattedTotalResults }
+                        )
                       : translateWithFallback(t, 'modpacks.results_summary_empty', 'No results yet')}
                   </div>
                 </div>
@@ -643,19 +659,21 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
                     {translateWithFallback(t, 'modpacks.page', 'Page')}
                   </div>
                   <div className="mt-1 text-sm font-medium text-foreground">
-                    {totalPages > 1
-                      ? translateWithFallback(
-                        t,
-                        'modpacks.results_page_summary',
-                        `Page ${formattedCurrentPage} of ${formattedTotalPages}`,
-                        { current: formattedCurrentPage, total: formattedTotalPages }
-                      )
-                      : translateWithFallback(
-                        t,
-                        'modpacks.results_page_summary',
-                        'Page {{current}} of {{total}}',
-                        { current: formatNumber(1), total: formatNumber(1) }
-                      )}
+                    {searchError
+                      ? t('degraded.error_label')
+                      : totalPages > 1
+                        ? translateWithFallback(
+                          t,
+                          'modpacks.results_page_summary',
+                          `Page ${formattedCurrentPage} of ${formattedTotalPages}`,
+                          { current: formattedCurrentPage, total: formattedTotalPages }
+                        )
+                        : translateWithFallback(
+                          t,
+                          'modpacks.results_page_summary',
+                          'Page {{current}} of {{total}}',
+                          { current: formatNumber(1), total: formatNumber(1) }
+                        )}
                   </div>
                 </div>
                 {recentHistory.length > 0 && (
@@ -882,11 +900,44 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         )}
 
         {!showHistory && !loading && paginatedResults.length === 0 && (
-          <div className="surface-muted py-8 text-center text-secondary">
-            {query.trim()
-              ? t('modpacks.no_results')
-              : t('modpacks.loading_popular') || 'Загрузка популярных модпаков...'}
-          </div>
+          searchError ? (
+            <DegradedStateView
+              variant="error"
+              label={t('degraded.error_label')}
+              title={browserErrorTitle}
+              description={browserErrorDescription}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={() => void searchModpacks()}>
+                  {t('modpacks.search_btn')}
+                </Button>
+              )}
+            />
+          ) : hasSearchFilters ? (
+            <DegradedStateView
+              variant="zero-results"
+              label={t('degraded.zero_results_label')}
+              title={t('modpacks.no_results')}
+              description={t('modpacks.try_changing_filters')}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={handleResetFilters}>
+                  {t('modpacks.clear_filters')}
+                </Button>
+              )}
+            />
+          ) : (
+            <DegradedStateView
+              variant="empty"
+              label={t('degraded.empty_label')}
+              title={t('modpacks.results_summary_empty')}
+              description={t('modpacks.browser_desc')}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={() => void handleImport()}>
+                  <Import className="h-4 w-4" />
+                  {t('modpacks.import')}
+                </Button>
+              )}
+            />
+          )
         )}
 
         {!showHistory && !loading && paginatedResults.length > 0 && (

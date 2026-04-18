@@ -7,6 +7,8 @@ import { Button } from '../../../components/ui/Button';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { dialogIPC } from '../../../services/ipc/dialogIPC';
 import { statisticsIPC } from '../../../services/ipc/statisticsIPC';
+import { DegradedStateView } from '../../../components/layout/DegradedStateView';
+import { toDisplayErrorMessage } from '../../../utils/displayError';
 
 function formatTime(
     ms: number,
@@ -40,6 +42,8 @@ export const StatisticsTab: React.FC = () => {
     const { t, formatDate, formatNumber, getAccentHex } = useSettings();
     const toast = useToast();
     const [stats, setStats] = useState<StatisticsOverview | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState<unknown | null>(null);
     const [isExporting, setIsExporting] = useState(false);
     const accentHex = getAccentHex();
     const durationLabels = {
@@ -49,13 +53,26 @@ export const StatisticsTab: React.FC = () => {
     };
 
     const loadStats = useCallback(async () => {
+        setLoading(true);
+        setLoadError(null);
         try {
             const data = await statisticsIPC.getStats();
             setStats(data);
         } catch (error) {
             console.error('Failed to load statistics:', error);
+            setStats(null);
+            setLoadError(error);
+        } finally {
+            setLoading(false);
         }
     }, []);
+    const statisticsErrorTitle = t('error.inline_fallback');
+    const statisticsErrorDescription = loadError
+        ? (() => {
+            const detail = toDisplayErrorMessage(loadError, statisticsErrorTitle);
+            return detail !== statisticsErrorTitle ? detail : t('stats.description');
+        })()
+        : '';
 
     useEffect(() => {
         void loadStats();
@@ -85,13 +102,33 @@ export const StatisticsTab: React.FC = () => {
         }
     };
 
-    if (!stats) {
+    if (loading) {
         return (
             <div role="status" className="surface-inline flex items-center justify-center gap-3 p-4 text-center text-secondary">
                 <LoadingSpinner size="sm" variant="accent" />
                 {t('stats.loading')}
             </div>
         );
+    }
+
+    if (loadError) {
+        return (
+            <DegradedStateView
+                variant="error"
+                label={t('degraded.error_label')}
+                title={statisticsErrorTitle}
+                description={statisticsErrorDescription}
+                footer={(
+                    <Button variant="secondary" size="sm" onClick={() => void loadStats()}>
+                        {t('modpacks.world_refresh')}
+                    </Button>
+                )}
+            />
+        );
+    }
+
+    if (!stats) {
+        return null;
     }
 
     const averageSessionTime = stats.global.totalLaunches > 0

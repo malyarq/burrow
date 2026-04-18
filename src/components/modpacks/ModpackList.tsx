@@ -17,6 +17,8 @@ import { ShareModal } from '../../features/share/ShareModal';
 import { ImportShareModal } from '../../features/share/ImportShareModal';
 import { Compass, Download, FolderOpen, MoreHorizontal, PackagePlus, Share2 } from 'lucide-react';
 import type { ModLoaderType } from '../../contexts/instances/types';
+import { DegradedStateView } from '../layout/DegradedStateView';
+import { toDisplayErrorMessage } from '../../utils/displayError';
 
 interface ModpackListItemWithMetadata {
   id: string;
@@ -115,6 +117,7 @@ const ModpackListComponentInternal: React.FC<{
   const confirm = useConfirm();
   const [modpacks, setModpacks] = useState<ModpackListItemWithMetadata[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<unknown | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     anchorRect: AnchoredRect;
@@ -137,11 +140,13 @@ const ModpackListComponentInternal: React.FC<{
 
   const loadModpacks = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const list = await modpacksIPC.listWithMetadata(minecraftPath);
       setModpacks(list);
     } catch (error) {
       console.error('Error loading modpacks:', error);
+      setLoadError(error);
       setModpacks([]);
     } finally {
       setLoading(false);
@@ -372,10 +377,21 @@ const ModpackListComponentInternal: React.FC<{
     || filterMCVersion !== 'all'
     || filterLoader !== 'all'
     || sortOption !== 'name';
+  const hasSearchFilters =
+    searchQuery.trim().length > 0
+    || filterMCVersion !== 'all'
+    || filterLoader !== 'all';
   const selectedModpack = useMemo(
     () => modpacks.find((modpack) => modpack.id === selectedId) ?? null,
     [modpacks, selectedId],
   );
+  const listErrorTitle = t('error.inline_fallback');
+  const listErrorDescription = loadError
+    ? (() => {
+      const detail = toDisplayErrorMessage(loadError, listErrorTitle);
+      return detail !== listErrorTitle ? detail : t('modpacks.desc');
+    })()
+    : '';
   const activeFilterTokens = useMemo(() => {
     const tokens: string[] = [];
 
@@ -877,7 +893,7 @@ const ModpackListComponentInternal: React.FC<{
                   {translateWithFallback(t, 'modpacks.title', 'Modpacks')}
                 </div>
                 <div className="mt-1 text-sm font-medium text-foreground">
-                  {formattedFilteredCount} / {formattedTotalCount}
+                  {loadError ? t('degraded.error_label') : `${formattedFilteredCount} / ${formattedTotalCount}`}
                 </div>
               </div>
               <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
@@ -885,7 +901,7 @@ const ModpackListComponentInternal: React.FC<{
                   {translateWithFallback(t, 'modpacks.active', 'Active')}
                 </div>
                 <div className="mt-1 truncate text-sm font-medium text-foreground">
-                  {selectedModpack?.name ?? '-'}
+                  {loadError ? t('degraded.unavailable_label') : selectedModpack?.name ?? '-'}
                 </div>
               </div>
               <div className="rounded-2xl border border-border/70 bg-background/72 px-4 py-3">
@@ -893,12 +909,14 @@ const ModpackListComponentInternal: React.FC<{
                   {translateWithFallback(t, 'modpacks.results', 'Results')}
                 </div>
                 <div className="mt-1 text-sm font-medium text-foreground">
-                  {translateWithFallback(
-                    t,
-                    'modpacks.results_summary',
-                    `Showing ${formattedResultsStart}-${formattedResultsEnd} of ${formattedTotalCount}`,
-                    { start: formattedResultsStart, end: formattedResultsEnd, total: formattedTotalCount },
-                  )}
+                  {loadError
+                    ? t('degraded.error_label')
+                    : translateWithFallback(
+                      t,
+                      'modpacks.results_summary',
+                      `Showing ${formattedResultsStart}-${formattedResultsEnd} of ${formattedTotalCount}`,
+                      { start: formattedResultsStart, end: formattedResultsEnd, total: formattedTotalCount },
+                    )}
                 </div>
               </div>
             </div>
@@ -1034,27 +1052,47 @@ const ModpackListComponentInternal: React.FC<{
               <ModpackCardSkeleton key={index} />
             ))}
           </div>
-        ) : filteredModpacks.length === 0 ? (
-          <div className="surface-muted flex flex-1 flex-col items-center justify-center py-12 px-4 text-secondary">
-            <div className="mb-4 rounded-full border border-border/60 bg-background/72 p-4">
-              <Compass className="h-8 w-8" />
-            </div>
-            <h3 className="mb-2 text-xl font-bold text-foreground">
-              {searchQuery || filterMCVersion !== 'all' || filterLoader !== 'all'
-                ? (t('modpacks.no_results') || 'Ничего не найдено')
-                : (t('modpacks.no_modpacks_title') || 'Нет модпаков')}
-            </h3>
-            <p className="mb-2 max-w-md text-center text-sm">
-              {searchQuery || filterMCVersion !== 'all' || filterLoader !== 'all'
-                ? (t('modpacks.try_changing_filters') || 'Попробуйте изменить параметры поиска')
-                : (t('modpacks.no_modpacks_desc') || 'Начните с выбора модпака из браузера или создайте свой собственный')}
-            </p>
-            {!searchQuery && filterMCVersion === 'all' && filterLoader === 'all' && (
-              <p className="text-center text-xs text-muted">
-                {t('modpacks.drag_drop_hint') || 'Или перетащите файл модпака (.mrpack, .zip, .curseforge) в это окно'}
-              </p>
+        ) : loadError ? (
+          <DegradedStateView
+            variant="error"
+            label={t('degraded.error_label')}
+            title={listErrorTitle}
+            description={listErrorDescription}
+            footer={(
+              <Button variant="secondary" size="sm" onClick={() => void loadModpacks()}>
+                {t('modpacks.world_refresh')}
+              </Button>
             )}
-          </div>
+          />
+        ) : filteredModpacks.length === 0 ? (
+          hasSearchFilters ? (
+            <DegradedStateView
+              variant="zero-results"
+              label={t('degraded.zero_results_label')}
+              title={t('modpacks.no_results')}
+              description={t('modpacks.try_changing_filters')}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={handleResetFilters}>
+                  {t('modpacks.clear_filters')}
+                </Button>
+              )}
+            />
+          ) : (
+            <DegradedStateView
+              variant="empty"
+              label={t('degraded.empty_label')}
+              title={t('modpacks.no_modpacks_title')}
+              description={t('modpacks.no_modpacks_desc')}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={() => onNavigate?.({ type: 'browser' })}>
+                  <Compass className="h-4 w-4" />
+                  {t('modpacks.browser')}
+                </Button>
+              )}
+            >
+              <p className="text-center text-xs text-muted">{t('modpacks.drag_drop_hint')}</p>
+            </DegradedStateView>
+          )
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-5" role="list" aria-label={t('modpacks.title') || 'Modpacks'}>
             {sortedModpacks.map((modpack, index) => (
