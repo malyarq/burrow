@@ -4,17 +4,17 @@ milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
 current_phase: 23
 current_phase_name: 23-fallback-error-and-placeholder-productization
-current_plan: 0
-status: Phase 23 context gathered; ready for planning
-stopped_at: Phase 23 context gathered
-last_updated: "2026-04-19T00:10:15+03:00"
-last_activity: 2026-04-19 - Captured Phase 23 context for degraded states, recovery-first crash handling, and conservative placeholder truth
+current_plan: 2
+status: in_progress
+stopped_at: Completed 23-01-PLAN.md
+last_updated: "2026-04-19T01:27:12+03:00"
+last_activity: 2026-04-19 - Completed Phase 23 plan 01 degraded-state contract and regression seam
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 24
-  completed_plans: 16
-  percent: 66
+  completed_plans: 17
+  percent: 70
 ---
 
 # Project State
@@ -24,21 +24,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 23 planning is ready after capturing context for degraded states, crash recovery posture, empty-state behavior, and conservative placeholder truth without reopening Phase 22 theme and locale seams.
+**Current focus:** Phase 23 is in progress after landing the shared degraded-state seam; next is executing 23-02 and 23-03 in parallel for route adoption and recovery-first crash handling.
 
 ## Current Position
 
 Current Phase: 23
 Current Phase Name: 23-fallback-error-and-placeholder-productization
-Current Plan: 0
+Current Plan: 2
 Total Phases: 6
 Total Plans in Phase: 4
 Phase: 23
-Plan: Ready for planning
-Status: Phase 23 context gathered; ready for planning
-Last activity: 2026-04-19 - Captured Phase 23 context for degraded states, recovery-first crash handling, and conservative placeholder truth
+Plan: 02-03
+Status: In Progress
+Last activity: 2026-04-19 - Completed Phase 23 plan 01 degraded-state contract and regression seam
 
-Progress: [███████░░░] 66%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -62,8 +62,8 @@ Progress: [███████░░░] 66%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 21-04, 22-01, 22-02, 22-03, 22-04
-- Trend: Phase 22 is closed and Phase 23 context is now explicit about calm unavailable states, one-step empties, recovery-first crashes, and conservative degraded-data truth; the next task is turning that into a bounded execution plan.
+- Last 5 plans: 22-01, 22-02, 22-03, 22-04, 23-01
+- Trend: Phase 23 has shipped the shared degraded-state and sanitization seam, so the remaining plans can focus on route adoption and conservative degraded-data truth instead of inventing new fallback primitives.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -95,6 +95,7 @@ Progress: [███████░░░] 66%
 | Phase 22 P01 | 9 min | 2 tasks | 10 files |
 | Phase 22 P02 | 8 min | 2 tasks | 10 files |
 | Phase 22 P03 | 24 min | 2 tasks | 29 files |
+| Phase 23 P01 | 8 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -208,6 +209,9 @@ Recent decisions affecting current work:
 - [Phase 22]: Stopped serializing a cleared preset id as an empty string so preset-shaped imports and legacy storage can re-infer a stable themePresetId. — Keeps preset round-trip recovery in the shared settings runtime instead of in AppearanceTab-local import logic.
 - [Phase 22]: Replaced opacity-only disabled styling with explicit disabled border, background, and text tokens so control readability survives in both themes.
 - [Phase 22]: Standardized settings segmented controls and tabs on one accent-backed active or inactive contract before moving the same rules onto modpack and secondary-content routes.
+- [Phase 23]: Keep EmptyStateView brand-owned and introduce a separate calm degraded-state primitive instead of softening the hero seam.
+- [Phase 23]: Sanitize user-facing fallback text through shared helpers that unwrap IPC prefixes and collapse suspicious placeholders to localized copy.
+- [Phase 23]: Read the active language from persisted settings so the future outer crash boundary can translate before SettingsProvider mounts.
 
 ### Pending Todos
 
@@ -217,13 +221,14 @@ None yet.
 
 ### Blockers/Concerns
 
-- No active blockers remain before Phase 23 planning; execution should wait for `$gsd-plan-phase 23` so the new degraded-state context becomes explicit plan waves instead of ad hoc cleanup.
-- The milestone archive relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
+- No blockers remain inside plan 23-01. The next plans should adopt `DegradedStateView`, `displayError`, and `safeUiText` on route-owned surfaces instead of duplicating fallback copy.
+- `FatalErrorView` is ready for future `ErrorBoundary` adoption, but the raw boundary itself was intentionally left untouched in this plan's write set.
+- The milestone archive still relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-18T21:09:55.774Z
-Stopped at: Phase 23 context gathered
-Resume file: .planning/phases/23-fallback-error-and-placeholder-productization/23-CONTEXT.md
+Last session: 2026-04-18T22:25:50.933Z
+Stopped at: Completed 23-01-PLAN.md
+Resume file: None
