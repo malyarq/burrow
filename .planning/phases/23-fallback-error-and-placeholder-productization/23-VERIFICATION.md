@@ -37,11 +37,11 @@ requirements:
 ## Bounded Residuals
 
 - This artifact is retrospective and recovered from shipped evidence, validation records, and downstream closeout gates; Phase 26 does not claim that Phase 23 was rerun from scratch.
-- The original Phase 23 closeout matrix ran file-by-file because larger local Vitest batches hit a Node heap limit. Coverage still matched the planned file set, so the remaining debt is historical proof narration rather than current launcher risk.
+- The original Phase 23 closeout matrix ran in file-level chunks as a workspace-specific execution detail. Coverage still matched the planned file set, so that detail is archival history rather than current milestone debt.
 - Phase 24 owns the named manual closeout route and screenshot lane. This recovered artifact cites that downstream proof only as confirmation that the shipped Phase 23 degraded surfaces stayed valid at milestone closeout.
 
 ## Audit Outcome
 
 - Phase 23 now has the missing milestone-scoped `23-VERIFICATION.md` artifact required by the milestone audit.
 - `FALL-01`, `FALL-02`, `FALL-03`, and `FALL-04` are explicitly discoverable in recovered requirement evidence grounded in shipped summaries, preserved validation seams, and later closeout proof.
-- The remaining work after this recovery is Phase 26 milestone-wide proof closure, not reopened Phase 23 product implementation.
+- The remaining work after this recovery is milestone-level audit and archive cleanup, not reopened Phase 23 product implementation or proof execution.
