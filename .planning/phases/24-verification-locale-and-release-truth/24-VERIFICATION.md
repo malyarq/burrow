@@ -37,11 +37,11 @@ requirements:
 ## Bounded Residuals
 
 - This artifact is a retrospective normalization of shipped Phase 24 proof, not a claim that Phase 24 was rerun from scratch during Phase 26.
-- `24-04-SUMMARY.md` explicitly carries the pre-existing large renderer chunk warning as non-blocking build fallout. That remains part of the shipped Phase 24 closeout story and is not a Phase 26 blocker.
-- Milestone re-audit and archive remain separate workflow steps after Phase 26. This normalization only makes Phase 24 requirement evidence discoverable to that workflow.
+- `24-04-SUMMARY.md` records one pre-existing non-blocking bundle-size observation in the packaged-build story. It remains historical closeout context and does not carry active milestone debt.
+- Milestone re-audit and archive remain separate workflow steps after this normalization. This artifact only makes Phase 24 requirement evidence discoverable to that workflow.
 
 ## Audit Outcome
 
 - Phase 24 now has explicit requirement-level verification evidence for `VER-01`, `VER-02`, `VER-03`, and `VER-04`.
 - The milestone-audit blocker that treated Phase 24 as narrative-only proof is closed at the verification-artifact level.
-- Remaining work is limited to Phase 26 closeout and milestone re-audit readiness, not to reopening Phase 24 proof seams or release implementation.
+- Remaining work is limited to milestone-level final audit and archive readiness, not to reopening Phase 24 proof seams or release implementation.
