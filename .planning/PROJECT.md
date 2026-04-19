@@ -2,19 +2,18 @@
 
 ## Current State
 
-**Latest shipped milestone:** `v0.4.0` — Launcher Truth And Product Polish (`2026-04-17`)
-**Current milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (planning)
+**Latest shipped milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (`2026-04-20`)
+**Active milestone:** none
+**Audit status:** `v0.5.0` passed milestone audit with `23/23` requirements satisfied, Phases `19-27` verified, and Nyquist fully compliant.
 
-FMCL is now a shipped desktop Minecraft launcher with truthful launch-state surfaces, corrected modpack dependency semantics, coherent catalog and compact-navigation polish, localized appearance preset naming, a reusable browser-backed verification seam, and a green packaging-aware repository gate.
+FMCL is now a shipped desktop Minecraft launcher with stable shell geometry, explicit CTA ownership, a product-owned brand system, neutral artwork fallbacks, denser but clearer modpack flows, truthful theme and locale behavior, recovery-first degraded states, and deterministic closeout proof with screenshot regression coverage.
 
-## Current Milestone: v0.5.0 Experience Reinvention And Brand Reset
+## Next Milestone Goals
 
-**Goal:** Deeply redesign FMCL so the shipped launcher feels intentional, distinctive, and high-quality while eliminating screenshot-backed bugs, product drift, and weak brand or fallback behavior.
-
-**Target features:**
-- Replace the current inconsistent visual language with a stronger, deliberate redesign across core launcher surfaces rather than one-off polish fixes.
-- Fix the screenshot-backed product bugs, overlapping layouts, broken state truth, and technical placeholder leakage that make the app feel unstable.
-- Reset branding, logo usage, image fallbacks, and error or empty states so FMCL no longer degrades into irritating or low-trust default visuals.
+- Evaluate `PERF-01`: renderer and bundle-size optimization work intentionally kept out of `v0.5.0`.
+- Evaluate `CUSTOM-01`: deeper launcher personalization beyond the shipped preset and accent system.
+- Evaluate `EXPAND-01`: new launcher capability only after redesign and trust debt stop being the dominant product problem.
+- Start the next milestone from shipped truth with `$gsd-new-milestone`.
 
 ## What This Is
 
@@ -26,11 +25,8 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 
 ## Context
 
-- Current codebase remains centered on `electron/`, `src/`, and `shared/`.
-- New milestone inputs already captured:
-  - `docs/KNOWN_ISSUES.md`
-  - `new_screens/BUG_REPORT_2026-04-17.md`
-- Current shipped launcher truth is documented in:
+- The codebase remains centered on `electron/`, `src/`, and `shared/`.
+- Shipped milestone truth now lives in:
   - `.planning/milestones/v0.2.0-ROADMAP.md`
   - `.planning/milestones/v0.2.0-REQUIREMENTS.md`
   - `.planning/milestones/v0.2.0-MILESTONE-AUDIT.md`
@@ -39,13 +35,12 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
   - `.planning/milestones/v0.3.0-MILESTONE-AUDIT.md`
   - `.planning/milestones/v0.4.0-ROADMAP.md`
   - `.planning/milestones/v0.4.0-REQUIREMENTS.md`
-  - `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md`
-- The launcher now has a reusable browser-backed manual verification seam for milestone walkthroughs.
-- Screenshot-backed defects for this milestone are captured in `docs/ru/ui-qa-audit-2026-04-14.md` and the linked `screens/` attachments.
-- Remaining non-blocking debt after `v0.4.0`:
-  - large renderer chunk warning in production build
-  - no standalone `v0.4.0-MILESTONE-AUDIT.md`; archive relies on the shipped Phase 18 verification artifact instead
-- Product-direction input for `v0.5.0`: the user wants FMCL to stop drifting into arbitrary visual decisions and instead become a deliberately redesigned, more distinctive launcher with stronger brand judgment, cleaner fallbacks, and fewer "annoying default" states.
+  - `.planning/milestones/v0.5.0-ROADMAP.md`
+  - `.planning/milestones/v0.5.0-REQUIREMENTS.md`
+  - `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md`
+- The launcher now has one reusable closeout proof seam on `manual-verification.html` plus a milestone-owned screenshot regression lane.
+- `v0.5.0` closed the redesign scope and its audit-trail recovery; there is no active milestone in progress.
+- Future scope should start from the shipped redesign baseline rather than reopening archived proof recovery or archive cleanup work.
 
 ## Constraints
 
@@ -53,9 +48,8 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - Keep shared IPC contracts, preload bridges, and renderer IPC wrappers as the preferred integration pattern.
 - Maintain green quality gates for `npm test`, `npm run lint`, and `npx tsc --noEmit`.
 - Keep EN/RU user-facing strings synchronized when launcher behavior changes.
-- Treat `v0.5.0` as a redesign-quality milestone for existing launcher surfaces, not a broad new feature expansion milestone.
-- Allow bold UI and brand changes in `v0.5.0`, but only when they resolve product drift or produce a more intentional result than the current surface.
-- Treat public docs as part of shipped truth, not afterthought cleanup.
+- Treat public docs and closeout proof as part of shipped product truth, not post-release cleanup.
+- Start the next milestone with fresh requirements instead of extending archived `v0.5.0` scope by inertia.
 
 ## Key Decisions
 
@@ -76,11 +70,28 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Bound `v0.4.0` to documented defects and directly related proven cleanup | The user asked for a deep polish pass, but the milestone still needed tight edges to stay buildable and reviewable | Validated in `v0.4.0` |
 | Reuse `manual-verification.html` as the milestone proof seam | Shared browser-backed proof reduces closeout churn and keeps launch, detail, catalog, and settings evidence on one deterministic entry | Validated in `v0.4.0` |
 | Keep final gate fallout limited to release-truth blockers | The milestone needed an explicit ship gate without reopening feature scope late in execution | Validated in `v0.4.0` |
-| Make `v0.5.0` a redesign and brand-reset milestone on top of bug fixing | The current problem is not only correctness but that product judgment and visual identity keep degrading into inconsistent, annoying results | — Pending |
-| Allow a stronger new visual language instead of only restoring previous launcher patterns | The user explicitly wants a deeper reinvention rather than another constrained polish pass | — Pending |
-| Treat logo, fallback art, and empty or error states as milestone-owned product surfaces | These surfaces are repeatedly visible and currently amplify product drift rather than hiding it | — Pending |
+| Make `v0.5.0` a redesign and brand-reset milestone on top of bug fixing | Product quality was degrading because visual judgment, brand usage, and fallback behavior were drifting, not just because of isolated bugs | Validated in `v0.5.0` |
+| Start redesign work from shell and state invariants before broad surface migration | Prevent another route-by-route repaint cycle with local geometry hacks and conflicting CTA rules | Validated in `v0.5.0` |
+| Treat logo usage, artwork fallback, empty states, and error states as milestone-owned product surfaces | These repeatedly visible seams were amplifying product drift and low-trust behavior | Validated in `v0.5.0` |
+| Keep closeout proof on the existing manual seam and add explicit screenshot coverage | The milestone needed deterministic evidence, not another verification harness | Validated in `v0.5.0` |
+| Recover missing audit evidence through explicit phases instead of hand-waving archive readiness | The archive needed honest proof recovery without reopening already-shipped implementation | Validated in `v0.5.0` |
 
 ## Archived Milestone Definitions
+
+<details>
+<summary>v0.5.0 milestone definition before archive</summary>
+
+The shipped milestone focused on redesigning FMCL so the launcher feels intentional, distinctive, and high-quality while eliminating screenshot-backed bugs, product drift, and weak brand or fallback behavior.
+
+Primary target areas before archive:
+
+- harden the shared shell, CTA ownership, and dense-route geometry before visual migration
+- reset branding, logo usage, and artwork fallbacks into one deliberate launcher language
+- simplify dense modpack browse, detail, create, and edit flows into clearer information architecture
+- make theme, accent, locale, degraded-state, and fatal-error behavior truthful and reviewable
+- close on deterministic proof, screenshot regression coverage, release-truth sync, and audit-grade archive evidence
+
+</details>
 
 <details>
 <summary>v0.4.0 milestone definition before archive</summary>
@@ -112,4 +123,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-17 after starting milestone v0.5.0*
+*Last updated: 2026-04-20 after shipping milestone `v0.5.0`*

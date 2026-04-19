@@ -1,131 +1,26 @@
 # Roadmap: FriendLauncher (FMCL)
 
-## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
+## Milestone Status
 
-**Status:** Phase 27 complete `2026-04-20`
-**Phases:** 19-27
-**Requirements:** 23  
-**Next step:** Rerun audit milestone to confirm `v0.5.0` passes cleanly before archive
+**Active milestone:** None
+**Latest shipped milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (`2026-04-20`)
+**Next step:** `$gsd-new-milestone`
 
-## Overview
+## Latest Archive
 
-`v0.5.0` is a redesign-quality milestone for the existing FMCL launcher, not a feature-expansion milestone. The plan starts by hardening the shipped desktop baseline, then moves through brand and token reset, dense-surface IA and CTA hierarchy, theme and locale truth, degraded-state productization, and finally verification plus release-facing truth.
+`v0.5.0` shipped FMCL's redesign-quality reset across shell invariants, brand and fallback language, dense modpack IA, theme and locale fidelity, degraded-state productization, deterministic closeout proof, and final audit-trail cleanup.
 
-The roadmap is intentionally ordered to prevent another "screen-by-screen repaint" cycle: shared shell and state invariants land before broad surface migration, and fallback/error quality is treated as milestone-owned product scope rather than cleanup.
-
-After the milestone audit, the remaining work is no longer product-scope recovery. Phases 25-26 backfilled missing verification artifacts and restored requirement-level evidence; Phase 27 exists to clear the last audit-trail rough edges and residual non-blocking technical debt before archive.
-
-## Phases
-
-### Phase 19: Baseline Stability, Scope, And Shell Invariants
-
-**Goal:** FMCL's redesign starts from a trustworthy desktop baseline by removing shared shell breakage, locking primary-action ownership, and stabilizing the highest-risk route geometry before visual reinvention spreads.
-**Depends on:** Phase 18
-**Requirements:** `SHELL-01`, `SHELL-02`, `SHELL-03`
-**Success criteria:**
-1. Major launcher surfaces no longer render under the custom title bar.
-2. Dense pages no longer hide actionable content behind sticky headers or fixed footers.
-3. Each affected route exposes one clear primary action with no competing duplicate CTA.
-4. Shared shell and action-bar invariants are defined in reusable seams rather than route-local spacing hacks.
-
-### Phase 20: Brand System, Shared Tokens, And Surface Migration
-
-**Goal:** FMCL gains a deliberate new visual language by formalizing brand tokens, logo/wordmark usage, and product-owned fallback art before more screens migrate onto the redesign.
-**Depends on:** Phase 19
-**Requirements:** `BRAND-01`, `BRAND-02`, `BRAND-03`
-**Success criteria:**
-1. Shared design tokens define FMCL's typography, spacing, surface hierarchy, and brand accents across the shell.
-2. Logo and wordmark usage follow one intentional rule set instead of ad hoc repetition.
-3. Missing media and launcher fallback art use one product-owned visual policy across shipped surfaces.
-4. Updated brand primitives are reused by multiple routes rather than living on a single hero surface.
-
-### Phase 21: Dense Surface IA, Navigation, And CTA Hierarchy
-
-**Goal:** FMCL's densest modpack flows become readable and trustworthy by reworking tabs, filters, summaries, and action hierarchy around real desktop content pressure.
-**Depends on:** Phase 20
-**Requirements:** `SHELL-04`, `DENSE-01`, `DENSE-02`, `DENSE-03`, `DENSE-04`
-**Success criteria:**
-1. Modpack browser filters, cards, and actions stay readable without wrapped or orphaned controls at shipped desktop widths.
-2. Modpack details present tabs and actions without broken wrapping or duplicated primary CTAs.
-3. Modpack creation and editing surfaces show truthful version, loader, and dependency summaries.
-4. Counts, summaries, and metadata on dense screens are labeled and non-contradictory.
-5. Dense-surface redesign decisions are validated against realistic long labels, narrow desktop widths, and seeded edge-case data.
-
-### Phase 22: Theme Truth And Interaction-State Fidelity
-
-**Goal:** FMCL's redesigned themes stop being cosmetic labels and become truthful interaction systems with readable states, real accent propagation, and consistent locale-sensitive presentation.
-**Depends on:** Phase 21
-**Requirements:** `THEME-01`, `THEME-02`, `THEME-03`, `THEME-04`
-**Success criteria:**
-1. Selected, active, hover, focus, and disabled states are clearly legible in dark and light themes.
-2. Accent color applies consistently to the controls and states that claim to use it.
-3. Presets are visually distinct and read as intentional launcher appearances rather than near-duplicates.
-4. Dates, numbers, and translated copy follow the active locale on redesigned milestone surfaces.
-
-### Phase 23: Fallback, Error, And Placeholder Productization
-
-**Goal:** FMCL's degraded states become product-grade by replacing raw placeholders, ambiguous empties, misleading dependency states, and raw crash output with one consistent fallback language.
-**Depends on:** Phase 22
-**Requirements:** `FALL-01`, `FALL-02`, `FALL-03`, `FALL-04`
-**Success criteria:**
-1. Shipped UI no longer exposes unresolved placeholders, raw bindings, or developer-facing debug strings.
-2. Empty, missing-data, and zero-result states are intentional, readable, and branded rather than ambiguous blanks.
-3. Fatal errors render through a user-safe recovery surface instead of raw React internals and stack traces.
-4. Dependency and degraded-data states are expressed through truthful product copy instead of misleading missing-state logic.
-
-### Phase 24: Verification, Locale, And Release Truth
-
-**Goal:** `v0.5.0` closes on proof by extending the manual verification seam, adding screenshot regression coverage, and synchronizing release-facing truth with the shipped redesign.
-**Depends on:** Phase 23
-**Requirements:** `VER-01`, `VER-02`, `VER-03`, `VER-04`
-**Success criteria:**
-1. Manual verification routes cover redesigned core surfaces and degraded states.
-2. Visual regression checks catch milestone-owned screenshot drift before release.
-3. Verification evidence covers dark/light themes and EN/RU locales on milestone-owned surfaces.
-4. Release-facing docs and planning truth match the shipped redesign behavior at closeout.
-
-### Phase 25: Verification Artifact Recovery For Shell, Brand, And Dense Surfaces
-
-**Goal:** Restore milestone auditability for the shipped shell, brand, and dense-surface work by reconstructing requirement-backed verification artifacts for Phases 19-21 without reopening product scope.
-**Depends on:** Phase 24
-**Requirements:** `SHELL-01`, `SHELL-02`, `SHELL-03`, `SHELL-04`, `BRAND-01`, `BRAND-02`, `BRAND-03`, `DENSE-01`, `DENSE-02`, `DENSE-03`, `DENSE-04`
-**Gap Closure:** Closes audit orphan gaps for Phases 19-21.
-**Success criteria:**
-1. `19-VERIFICATION.md`, `20-VERIFICATION.md`, and `21-VERIFICATION.md` exist and map every assigned REQ-ID to shipped evidence and closeout gates.
-2. The verification artifacts distinguish real bounded residuals from proof reconstruction work instead of pretending the phases had no closeout risk.
-3. Requirements traceability points shell, brand, and dense-surface requirements at the owning gap-closure phase while the audit recovery is in progress.
-4. The recovered proof stays grounded in existing summaries, validation records, and manual verification seams rather than inventing net-new product work.
-
-### Phase 26: Verification Artifact Recovery For Theme, Fallback, And Release Truth
-
-**Goal:** Close the remaining audit blockers by backfilling theme and degraded-state verification artifacts, expanding Phase 24 requirement evidence, and finishing Nyquist closure for the shipped milestone.
-**Depends on:** Phase 25
-**Requirements:** `THEME-01`, `THEME-02`, `THEME-03`, `THEME-04`, `FALL-01`, `FALL-02`, `FALL-03`, `FALL-04`, `VER-01`, `VER-02`, `VER-03`, `VER-04`
-**Gap Closure:** Closes audit orphan gaps for Phases 22-24 and the remaining Nyquist partial state.
-**Success criteria:**
-1. `22-VERIFICATION.md` and `23-VERIFICATION.md` exist and map every assigned REQ-ID to shipped evidence and final gates.
-2. `24-VERIFICATION.md` includes explicit requirement-level evidence for `VER-01` through `VER-04`.
-3. Validation artifacts for Phases 19-23 no longer present as draft/partial in milestone audit discovery.
-4. The milestone can be re-audited without reopening redesign implementation scope.
-
-### Phase 27: Final Audit Trail And Residual Debt Closure
-
-**Goal:** Remove the last archive-friction from `v0.5.0` by closing remaining validation-status debt, cleaning stale recovered-proof narration, and explicitly resolving the lingering non-blocking residuals carried by the re-audit.
-**Depends on:** Phase 26
-**Requirements:** none — tech-debt and audit-trail cleanup only
-**Gap Closure:** Closes the remaining `tech_debt` items from the re-audit and prepares the milestone for clean archive without caveats.
-**Success criteria:**
-1. `25-VALIDATION.md` and `26-VALIDATION.md` no longer present as `draft` / `Approval: pending`.
-2. Recovered proof artifacts for Phases 19-21 and Phase 25 no longer contain stale residual prose that contradicts the now-complete validation state.
-3. The Phase 23 test-execution residual and Phase 24 renderer-chunk residual are either resolved or explicitly retired from milestone debt with evidence strong enough for a clean final audit.
-4. The rerun milestone audit can return `passed` instead of `tech_debt`.
+Archive:
+- Roadmap: `.planning/milestones/v0.5.0-ROADMAP.md`
+- Requirements: `.planning/milestones/v0.5.0-REQUIREMENTS.md`
+- Audit: `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md`
 
 ## Milestones
 
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
-- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-27 are complete; the milestone is ready for a final audit rerun before archive.
+- ✅ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-27, shipped 2026-04-20. Archive: `.planning/milestones/v0.5.0-ROADMAP.md`
 
 ## Progress
 
@@ -134,4 +29,4 @@ After the milestone audit, the remaining work is no longer product-scope recover
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 36/36 | Re-audit ready | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 36/36 | Shipped | 2026-04-20 |
