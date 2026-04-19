@@ -140,8 +140,10 @@ describe('Create-modpack dependency truth', () => {
     expect(summaryQueries.getByText('Minecraft Version')).toBeTruthy();
     expect(summaryQueries.getByText('1.20.1')).toBeTruthy();
     expect(summaryQueries.getByText('Forge')).toBeTruthy();
+    expect(summaryQueries.getByText('Modloader Version')).toBeTruthy();
+    expect(summaryQueries.getByText('Unverified')).toBeTruthy();
     expect(summaryQueries.getByText('OptiFine')).toBeTruthy();
-    expect(summaryQueries.queryByText('Modloader Version')).toBeNull();
+    expect(screen.queryByTestId('modpack-dependency-warnings')).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
@@ -181,6 +183,7 @@ describe('Create-modpack dependency truth', () => {
     expect(summaryQueries.getByText('Minecraft Version')).toBeTruthy();
     expect(summaryQueries.getByText('1.20.1')).toBeTruthy();
     expect(summaryQueries.getByText('NeoForge')).toBeTruthy();
-    expect(summaryQueries.queryByText('Modloader Version')).toBeNull();
+    expect(summaryQueries.getByText('Modloader Version')).toBeTruthy();
+    expect(summaryQueries.getByText('Unverified')).toBeTruthy();
   });
 });

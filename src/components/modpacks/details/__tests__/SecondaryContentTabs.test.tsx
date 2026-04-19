@@ -189,6 +189,51 @@ function ModsHarness() {
   );
 }
 
+function ModsUnverifiedRuntimeHarness() {
+  return (
+    <ModpackDetailsModsTab
+      mods={[
+        {
+          id: 'gamma',
+          name: 'Gamma Runtime',
+          version: '3.1.0',
+          loaders: ['fabric'],
+          deps: [
+            { id: 'fabricloader', versionRange: '[0.17.0]', kind: 'depends' },
+          ],
+          file: {
+            path: '/mods/gamma.jar',
+            name: 'gamma.jar',
+            size: 36,
+            mtimeMs: 3,
+          },
+          hash: {
+            sha1: 'gamma',
+          },
+          enabled: true,
+        },
+      ]}
+      loadingMods={false}
+      modSearchQuery=""
+      onModSearchQueryChange={vi.fn()}
+      modFilterStatus="all"
+      onModFilterStatusChange={vi.fn()}
+      onAddMod={vi.fn()}
+      onRemoveMod={vi.fn().mockResolvedValue(undefined)}
+      onModToggle={vi.fn()}
+      onRefresh={vi.fn()}
+      runtimeContext={{
+        minecraft: '1.20.1',
+        modLoader: {
+          type: 'fabric',
+        },
+      }}
+      t={t}
+      getAccentStyles={() => ({ className: '', style: undefined })}
+    />
+  );
+}
+
 describe('secondary content tabs', () => {
   beforeEach(() => {
     cleanup();
@@ -302,6 +347,15 @@ describe('secondary content tabs', () => {
     expect(screen.getByText(/requires 0\.17\.0/i)).toBeTruthy();
     expect(screen.getByText(/requires 2\.0\.0/i)).toBeTruthy();
     expect(screen.getAllByText('Missing')).toHaveLength(1);
+  });
+
+  it('marks runtime dependencies as unverified when the runtime exists but its version is unknown', async () => {
+    render(<ModsUnverifiedRuntimeHarness />);
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Gamma Runtime/i })[0]);
+
+    expect(await screen.findByText('Pack runtime version unverified')).toBeTruthy();
+    expect(screen.queryByText(/Pack runtime 0\.17\.0/i)).toBeNull();
   });
 
   it('keeps resource pack summaries explicitly labeled instead of collapsing into raw ratios', async () => {

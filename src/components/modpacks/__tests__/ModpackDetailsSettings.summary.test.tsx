@@ -150,6 +150,8 @@ describe('Modpack details settings runtime summary', () => {
     expect(within(headerMetadata).getByText('forge 47.2.0')).toBeTruthy();
 
     expect(screen.getByTestId('modpack-dependency-count').textContent).toBe('3');
+    expect(screen.getByText('Modloader Version')).toBeTruthy();
+    expect(screen.getByText('47.2.0')).toBeTruthy();
     expect(screen.getByText('OptiFine')).toBeTruthy();
     expect(screen.queryByTestId('modpack-dependency-warnings')).toBeNull();
 
@@ -168,7 +170,8 @@ describe('Modpack details settings runtime summary', () => {
         within(screen.getByTestId('modpack-dependency-summary')).getByText('Fabric'),
       ).toBeTruthy();
     });
-    expect(screen.queryByText('Modloader Version')).toBeNull();
+    expect(within(screen.getByTestId('modpack-dependency-summary')).getByText('Modloader Version')).toBeTruthy();
+    expect(within(screen.getByTestId('modpack-dependency-summary')).getByText('Unverified')).toBeTruthy();
     expect(within(screen.getByTestId('modpack-details-metadata')).getByText('fabric')).toBeTruthy();
     expect(screen.queryByTestId('modpack-dependency-warnings')).toBeNull();
   });
