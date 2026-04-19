@@ -10,7 +10,7 @@
 - [x] **SHELL-01**: User can use every major launcher surface without content rendering under the custom title bar.
 - [x] **SHELL-02**: User can scroll dense screens without sticky headers or fixed footers hiding actionable content.
 - [x] **SHELL-03**: User sees one unambiguous primary action per launcher context.
-- [ ] **SHELL-04**: User can use modpack and wizard flows at shipped desktop widths without clipped controls, orphan filters, or broken spacing.
+- [x] **SHELL-04**: User can use modpack and wizard flows at shipped desktop widths without clipped controls, orphan filters, or broken spacing.
 
 ### Brand System & Surface Language
 
@@ -20,10 +20,10 @@
 
 ### Dense Surface IA & CTA Hierarchy
 
-- [ ] **DENSE-01**: User can scan and operate modpack browser filters, cards, and actions without wrapped or ambiguous controls.
-- [ ] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
-- [ ] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
-- [ ] **DENSE-04**: User can understand counts, summaries, and metadata on dense surfaces without unlabeled or contradictory values.
+- [x] **DENSE-01**: User can scan and operate modpack browser filters, cards, and actions without wrapped or ambiguous controls.
+- [x] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
+- [x] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
+- [x] **DENSE-04**: User can understand counts, summaries, and metadata on dense surfaces without unlabeled or contradictory values.
 
 ### Theme, Locale & State Fidelity
 
@@ -71,14 +71,14 @@
 | SHELL-01 | Phase 25 | Complete |
 | SHELL-02 | Phase 25 | Complete |
 | SHELL-03 | Phase 25 | Complete |
-| SHELL-04 | Phase 25 | Pending |
+| SHELL-04 | Phase 25 | Complete |
 | BRAND-01 | Phase 25 | Complete |
 | BRAND-02 | Phase 25 | Complete |
 | BRAND-03 | Phase 25 | Complete |
-| DENSE-01 | Phase 25 | Pending |
-| DENSE-02 | Phase 25 | Pending |
-| DENSE-03 | Phase 25 | Pending |
-| DENSE-04 | Phase 25 | Pending |
+| DENSE-01 | Phase 25 | Complete |
+| DENSE-02 | Phase 25 | Complete |
+| DENSE-03 | Phase 25 | Complete |
+| DENSE-04 | Phase 25 | Complete |
 | THEME-01 | Phase 26 | Pending |
 | THEME-02 | Phase 26 | Pending |
 | THEME-03 | Phase 26 | Pending |
