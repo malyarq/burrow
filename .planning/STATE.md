@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-current_phase: 23
-current_phase_name: 23-fallback-error-and-placeholder-productization
-current_plan: 4
-status: complete
-stopped_at: Phase 23 complete
-last_updated: "2026-04-19T13:25:45+03:00"
-last_activity: 2026-04-19 - Completed Phase 23 high-risk degraded flow truth and closeout matrix
+current_phase: 24
+current_phase_name: 24-verification-locale-and-release-truth
+current_plan: 0
+status: Phase 24 context gathered; ready for planning
+stopped_at: Phase 24 context gathered
+last_updated: "2026-04-19T14:05:00+03:00"
+last_activity: 2026-04-19 - Captured Phase 24 context for representative proof, strict milestone-owned screenshot regression, explicit theme/locale closeout views, and release-truth sync
 progress:
   total_phases: 6
   completed_phases: 5
@@ -24,19 +24,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Phase 23 is complete after closing high-risk degraded-state truth, runtime copy, and placeholder seams; next is Phase 24 planning for verification, locale proof, and release truth.
+**Current focus:** Phase 24 planning is ready after capturing context for representative closeout proof, strict milestone-owned screenshot regression, explicit dark/light and EN/RU evidence, and release-facing truth sync.
 
 ## Current Position
 
-Current Phase: 23
-Current Phase Name: 23-fallback-error-and-placeholder-productization
-Current Plan: 4
+Current Phase: 24
+Current Phase Name: 24-verification-locale-and-release-truth
+Current Plan: 0
 Total Phases: 6
 Total Plans in Phase: 4
-Phase: 23
-Plan: 04
-Status: In Progress
-Last activity: 2026-04-19 - Completed Phase 23 high-risk degraded flow truth and closeout matrix
+Phase: 24
+Plan: Ready for planning
+Status: Phase 24 context gathered; ready for planning
+Last activity: 2026-04-19 - Captured Phase 24 context for representative proof, strict milestone-owned screenshot regression, explicit theme/locale closeout views, and release-truth sync
 
 Progress: [████████░░] 83%
 
@@ -63,7 +63,7 @@ Progress: [████████░░] 83%
 
 **Recent Trend:**
 - Last 5 plans: 22-04, 23-01, 23-03, 23-02, 23-04
-- Trend: Phase 23 is fully closed; the next phase can stay on proof, locale verification, and release truth instead of reopening degraded-state implementation seams.
+- Trend: Phase 23 is fully closed and Phase 24 context now locks a curated final proof matrix, strict milestone-owned screenshot gating, explicit dark/light and EN/RU review, and release truth driven from final evidence instead of assumptions.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context
@@ -230,14 +230,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- No blockers remain inside plan 23-01. The next plans should adopt `DegradedStateView`, `displayError`, and `safeUiText` on route-owned surfaces instead of duplicating fallback copy.
-- `FatalErrorView` is ready for future `ErrorBoundary` adoption, but the raw boundary itself was intentionally left untouched in this plan's write set.
+- No active blockers remain before Phase 24 planning; execution should wait for `$gsd-plan-phase 24` so the closeout proof, screenshot gate, and release-truth sync land as explicit plan waves instead of ad hoc closure work.
 - The milestone archive still relies on `.planning/phases/18-verification-and-release-truth/18-VERIFICATION.md` because no standalone `v0.4.0-MILESTONE-AUDIT.md` was created before completion.
 - The only intentionally carried product-adjacent debt is the non-blocking large renderer chunk warning from the build.
 - `.planning/config.json` remains an unrelated local modification and is intentionally excluded from milestone commits.
 
 ## Session Continuity
 
-Last session: 2026-04-19T01:49:45+03:00
-Stopped at: Completed 23-02-PLAN.md and 23-03-PLAN.md
-Resume file: None
+Last session: 2026-04-19T14:05:00+03:00
+Stopped at: Phase 24 context gathered
+Resume file: .planning/phases/24-verification-locale-and-release-truth/24-CONTEXT.md
