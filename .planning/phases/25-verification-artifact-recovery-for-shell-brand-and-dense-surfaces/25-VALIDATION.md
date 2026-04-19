@@ -1,7 +1,7 @@
 ---
 phase: 25
 slug: verification-artifact-recovery-for-shell-brand-and-dense-surfaces
-status: draft
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-19
@@ -10,6 +10,8 @@ created: 2026-04-19
 # Phase 25 — Validation Strategy
 
 > Per-phase validation contract for feedback sampling during execution.
+
+Retrospective closure note: this validation artifact is complete as a retrospective, backfilled record recovered from shipped evidence and final docs-only gates captured in the Phase 25 summaries. The task map below remains the historical execution contract; Phase 27 does not claim a fresh rerun of Phase 25 recovery work.
 
 ---
 
@@ -67,5 +69,6 @@ All phase behaviors have automated verification.
 - [x] No watch-mode flags
 - [x] Feedback latency < 15s
 - [x] `nyquist_compliant: true` set in frontmatter
+- [x] Retrospective sign-off is backfilled and recovered from shipped evidence plus the recorded Phase 25 docs-only closeout gate
 
-**Approval:** pending
+**Approval:** complete
