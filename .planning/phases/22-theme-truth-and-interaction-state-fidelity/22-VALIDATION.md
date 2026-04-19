@@ -1,7 +1,7 @@
 ---
 phase: 22
 slug: theme-truth-and-interaction-state-fidelity
-status: draft
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-18
@@ -10,6 +10,8 @@ created: 2026-04-18
 # Phase 22 - Validation Strategy
 
 > Per-phase validation contract for feedback sampling during execution.
+
+Retrospective closure note: this validation artifact is complete as a retrospective, backfilled record recovered from shipped evidence and final gates captured in the Phase 22 summaries. The task map below remains the historical execution contract; Phase 26 does not claim a fresh rerun of Phase 22 implementation or manual proof.
 
 ---
 
@@ -94,5 +96,6 @@ These files are not required for wave 1 feedback; they become part of the execut
 - [x] No watch-mode flags
 - [x] Final full matrix becomes mandatory only after wave 4 test seams land
 - [x] `nyquist_compliant: true` set in frontmatter
+- [x] Retrospective sign-off is backfilled and recovered from shipped evidence plus the recorded Phase 22 final gates
 
-**Approval:** pending
+**Approval:** complete
