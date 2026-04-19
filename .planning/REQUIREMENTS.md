@@ -27,24 +27,24 @@
 
 ### Theme, Locale & State Fidelity
 
-- [ ] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
-- [ ] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
-- [ ] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
-- [ ] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
+- [x] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
+- [x] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
+- [x] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
+- [x] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
 
 ### Fallback, Error & Placeholder Productization
 
-- [ ] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
-- [ ] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
-- [ ] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
-- [ ] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
+- [x] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
+- [x] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
+- [x] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
+- [x] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
 
 ### Verification, Regression & Release Truth
 
-- [ ] **VER-01**: Team can review deterministic manual verification routes for redesigned core surfaces and degraded states.
-- [ ] **VER-02**: Team can catch screenshot regressions on milestone-owned views before release.
-- [ ] **VER-03**: Team can verify redesigned surfaces across dark/light themes and EN/RU locales before release.
-- [ ] **VER-04**: Release-facing docs and milestone truth stay aligned with shipped redesign behavior.
+- [x] **VER-01**: Team can review deterministic manual verification routes for redesigned core surfaces and degraded states.
+- [x] **VER-02**: Team can catch screenshot regressions on milestone-owned views before release.
+- [x] **VER-03**: Team can verify redesigned surfaces across dark/light themes and EN/RU locales before release.
+- [x] **VER-04**: Release-facing docs and milestone truth stay aligned with shipped redesign behavior.
 
 ## v2 Requirements
 
@@ -79,18 +79,18 @@
 | DENSE-02 | Phase 25 | Complete |
 | DENSE-03 | Phase 25 | Complete |
 | DENSE-04 | Phase 25 | Complete |
-| THEME-01 | Phase 26 | Pending |
-| THEME-02 | Phase 26 | Pending |
-| THEME-03 | Phase 26 | Pending |
-| THEME-04 | Phase 26 | Pending |
-| FALL-01 | Phase 26 | Pending |
-| FALL-02 | Phase 26 | Pending |
-| FALL-03 | Phase 26 | Pending |
-| FALL-04 | Phase 26 | Pending |
-| VER-01 | Phase 26 | Pending |
-| VER-02 | Phase 26 | Pending |
-| VER-03 | Phase 26 | Pending |
-| VER-04 | Phase 26 | Pending |
+| THEME-01 | Phase 26 | Complete |
+| THEME-02 | Phase 26 | Complete |
+| THEME-03 | Phase 26 | Complete |
+| THEME-04 | Phase 26 | Complete |
+| FALL-01 | Phase 26 | Complete |
+| FALL-02 | Phase 26 | Complete |
+| FALL-03 | Phase 26 | Complete |
+| FALL-04 | Phase 26 | Complete |
+| VER-01 | Phase 26 | Complete |
+| VER-02 | Phase 26 | Complete |
+| VER-03 | Phase 26 | Complete |
+| VER-04 | Phase 26 | Complete |
 
 **Coverage:**
 - v1 requirements: 23 total
@@ -99,4 +99,4 @@
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-19 after the milestone audit created gap-closure Phases 25-26 and reset unsatisfied proof-layer requirements to pending*
+*Last updated: 2026-04-20 after Phase 26 closed the remaining proof-layer requirements and marked the milestone re-audit ready*
