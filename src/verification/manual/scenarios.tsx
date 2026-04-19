@@ -57,7 +57,7 @@ interface ManualVerificationScenarioProps {
 function SettingsProviders(props: { children: React.ReactNode }) {
   return (
     <SettingsProvider>
-      <ToastProvider>
+      <ToastProvider suppressToasts>
         <ConfirmProvider>{props.children}</ConfirmProvider>
       </ToastProvider>
     </SettingsProvider>
@@ -68,7 +68,7 @@ function ModpackProviders(props: { children: React.ReactNode }) {
   return (
     <SettingsProvider>
       <ModpackProvider>
-        <ToastProvider>
+        <ToastProvider suppressToasts>
           <ConfirmProvider>{props.children}</ConfirmProvider>
         </ToastProvider>
       </ModpackProvider>
@@ -634,7 +634,7 @@ function SettingsAppearanceScenario({ onReady }: ManualVerificationScenarioProps
 function Phase24ThemeDarkScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand', 'dark closeout pair'],
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand', 'Dark closeout pair'],
     'Phase 24 dark-theme closeout rendered inside the real shell with deterministic appearance state for release review.',
   );
 
@@ -654,7 +654,7 @@ function Phase24ThemeDarkScenario({ onReady }: ManualVerificationScenarioProps) 
 function Phase24ThemeLightScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand', 'light closeout pair'],
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand', 'Light closeout pair'],
     'Phase 24 light-theme closeout rendered inside the real shell with deterministic appearance state for release review.',
   );
 

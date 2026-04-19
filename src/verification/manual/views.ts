@@ -50,6 +50,7 @@ export type ManualVerificationViewMeta = {
   viewport?: 'desktop' | 'wide';
   theme?: 'dark' | 'light';
   language?: 'en' | 'ru';
+  forbidText?: string[];
 };
 
 const OVERVIEW_VIEW: ManualVerificationViewMeta = {
@@ -69,6 +70,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     milestone: 'v0.5.0',
     screenshot: true,
     viewport: 'wide',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
   {
     id: 'phase-24-modpacks-closeout',
@@ -78,6 +80,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     milestone: 'v0.5.0',
     screenshot: true,
     viewport: 'wide',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
   {
     id: 'phase-24-degraded-closeout',
@@ -87,6 +90,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     milestone: 'v0.5.0',
     screenshot: true,
     viewport: 'wide',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
   {
     id: 'phase-24-theme-dark',
@@ -97,6 +101,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     screenshot: true,
     viewport: 'wide',
     theme: 'dark',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
   {
     id: 'phase-24-theme-light',
@@ -107,6 +112,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     screenshot: true,
     viewport: 'wide',
     theme: 'light',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
   {
     id: 'phase-24-locale-en',
@@ -117,6 +123,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     screenshot: true,
     viewport: 'wide',
     language: 'en',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
   {
     id: 'phase-24-locale-ru',
@@ -127,6 +134,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
     screenshot: true,
     viewport: 'wide',
     language: 'ru',
+    forbidText: ['${file.jarVersion}', 'node_modules', 'renderWithHooks'],
   },
 ];
 
@@ -217,6 +225,8 @@ export const CORE_VIEWS: ManualVerificationViewMeta[] = [
   ...GENERAL_VIEWS,
   ...LEGACY_VIEWS,
 ];
+
+export const PLAYWRIGHT_CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = CLOSEOUT_VIEWS.filter((view) => view.screenshot);
 
 export function isManualVerificationView(value: string | null): value is ManualVerificationView {
   return CORE_VIEWS.some((view) => view.id === value);
