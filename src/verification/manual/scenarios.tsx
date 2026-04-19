@@ -36,7 +36,14 @@ import { StatisticsTab } from '../../features/settings/statistics/StatisticsTab'
 import { ResourcePacksTab } from '../../components/modpacks/details/ResourcePacksTab';
 import { WorldDatapacksModal } from '../../components/modpacks/details/WorldDatapacksModal';
 import { cn } from '../../utils/cn';
-import { CORE_VIEWS, type ManualVerificationView } from './views';
+import {
+  CLOSEOUT_VIEWS,
+  CORE_VIEWS,
+  GENERAL_VIEWS,
+  LEGACY_VIEWS,
+  type ManualVerificationView,
+  type ManualVerificationViewMeta,
+} from './views';
 import {
   getManualVerificationModEntries,
   getManualVerificationModpackMetadata,
@@ -384,6 +391,16 @@ function Phase22ProofCallout(props: { title: string; detail: string }) {
   );
 }
 
+function Phase24ProofCallout(props: { title: string; detail: string }) {
+  return (
+    <div className="surface-inline rounded-3xl p-4 sm:p-5">
+      <div className="kicker-label mb-2">Phase 24 closeout proof</div>
+      <h2 className="text-lg font-semibold text-foreground">{props.title}</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-6 text-secondary">{props.detail}</p>
+    </div>
+  );
+}
+
 function Phase19ShellChrome(props: {
   ownership: ModpackPrimaryActionOwnership;
   launch?: SidebarLaunchModel;
@@ -443,20 +460,53 @@ function Phase19ShellFrame(props: {
   );
 }
 
-function OverviewScenario() {
+function ManualVerificationCardGrid(props: { views: ManualVerificationViewMeta[]; kicker: string }) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {CORE_VIEWS.filter((view) => view.id !== 'overview').map((view) => (
+      {props.views.map((view) => (
         <a
           key={view.id}
           href={`?view=${view.id}`}
           className="surface-card rounded-3xl p-5 transition-transform hover:-translate-y-0.5"
         >
-          <div className="kicker-label mb-3">Core route</div>
+          <div className="kicker-label mb-3">{props.kicker}</div>
           <h2 className="text-xl font-semibold text-foreground">{view.label}</h2>
           <p className="mt-2 text-sm leading-6 text-secondary">{view.description}</p>
         </a>
       ))}
+    </div>
+  );
+}
+
+function OverviewScenario() {
+  return (
+    <div className="space-y-6">
+      <section className="space-y-3">
+        <div>
+          <div className="kicker-label mb-2">v0.5.0 closeout matrix</div>
+          <h2 className="text-xl font-semibold text-foreground">Named release-proof views for final review and screenshot capture</h2>
+          <p className="max-w-3xl text-sm leading-6 text-secondary">
+            These are the milestone-owned review targets for Phase 24. They stay on deterministic fixtures so final screenshots, locale review, and release truth all point at the same evidence.
+          </p>
+        </div>
+        <ManualVerificationCardGrid views={CLOSEOUT_VIEWS} kicker="Closeout route" />
+      </section>
+
+      <section className="space-y-3">
+        <div>
+          <div className="kicker-label mb-2">Shared manual routes</div>
+          <h2 className="text-xl font-semibold text-foreground">Reusable shell and feature routes kept for direct inspection</h2>
+        </div>
+        <ManualVerificationCardGrid views={GENERAL_VIEWS} kicker="Shared route" />
+      </section>
+
+      <section className="space-y-3">
+        <div>
+          <div className="kicker-label mb-2">Historical phase proof</div>
+          <h2 className="text-xl font-semibold text-foreground">Legacy evidence retained for regression context</h2>
+        </div>
+        <ManualVerificationCardGrid views={LEGACY_VIEWS} kicker="Legacy proof" />
+      </section>
     </div>
   );
 }
@@ -543,6 +593,30 @@ function DashboardScenario({ onReady }: ManualVerificationScenarioProps) {
   );
 }
 
+function Phase24HomeCloseoutScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Vanilla', 'Play', 'v0.5.0 home closeout'],
+    'Phase 24 home closeout rendered inside the real shell with deterministic launcher-home proof for final release review.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
+        <Phase24ProofCallout
+          title="v0.5.0 home closeout"
+          detail="This is the canonical launcher-home proof for milestone closeout: one shell-owned primary Play action, the final shared brand treatment, and deterministic motion-disabled fixture data for screenshot review."
+        />
+        <SimplePlayDashboard
+          launch={MANUAL_DASHBOARD_LAUNCH}
+          runtime={MANUAL_SHELL_RUNTIME}
+          actions={MANUAL_SHELL_ACTIONS}
+        />
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
 function SettingsAppearanceScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
@@ -553,6 +627,46 @@ function SettingsAppearanceScenario({ onReady }: ManualVerificationScenarioProps
   return (
     <Phase19ShellFrame mode="simple" ownership="shell">
       <SettingsPage onClose={() => undefined} initialTab="appearance" />
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase24ThemeDarkScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand', 'dark closeout pair'],
+    'Phase 24 dark-theme closeout rendered inside the real shell with deterministic appearance state for release review.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
+        <Phase24ProofCallout
+          title="Dark closeout pair"
+          detail="Use this as the final dark baseline for the shipped appearance surface. The fixture is intentionally stable so comparison against the light closeout pair isolates theme differences instead of data churn."
+        />
+        <SettingsPage onClose={() => undefined} initialTab="appearance" />
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase24ThemeLightScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Launcher Settings', 'Shared launcher brand', 'light closeout pair'],
+    'Phase 24 light-theme closeout rendered inside the real shell with deterministic appearance state for release review.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="simple" ownership="shell">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
+        <Phase24ProofCallout
+          title="Light closeout pair"
+          detail="This mirrors the dark closeout pair on the same shell-owned settings surface so reviewers can compare the shipped light variant without unrelated fixture drift."
+        />
+        <SettingsPage onClose={() => undefined} initialTab="appearance" />
+      </div>
     </Phase19ShellFrame>
   );
 }
@@ -830,6 +944,31 @@ function Phase21BrowserDensityScenario({ onReady }: ManualVerificationScenarioPr
             onStateChange={() => undefined}
           />
         </div>
+      </div>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase24ModpacksCloseoutScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Modpack Browser', 'Alpha Pack', 'v0.5.0 modpacks closeout'],
+    'Phase 24 modpacks closeout rendered inside the real shell with deterministic browse-state proof for final release review.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+        <Phase24ProofCallout
+          title="v0.5.0 modpacks closeout"
+          detail="This route anchors the final modpacks proof on a real shell-integrated browse flow so dense metadata, route-owned actions, and neutral fallback art all remain reviewable under one deterministic fixture."
+        />
+        <ModpackBrowser
+          initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: 'alpha' }}
+          onBack={() => undefined}
+          onNavigate={() => undefined}
+          onStateChange={() => undefined}
+        />
       </div>
     </Phase19ShellFrame>
   );
@@ -1135,6 +1274,74 @@ function Phase22LocaleEnScenario({ onReady }: ManualVerificationScenarioProps) {
   );
 }
 
+function Phase24LocaleEnScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Modpack Browser', 'Alpha Pack', 'Datapacks for Alpha World', 'English closeout pair'],
+    'Phase 24 English locale closeout rendered inside the real shell with deterministic route and secondary-content proof.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route" language="en">
+      <>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+          <Phase24ProofCallout
+            title="English closeout pair"
+            detail="This is the final English review target for shell-integrated route metadata, counts, dates, and the overlaid datapacks surface. The paired Russian view stays on the same underlying fixture."
+          />
+          <ModpackBrowser
+            initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: 'alpha' }}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onStateChange={() => undefined}
+          />
+        </div>
+        <WorldDatapacksModal
+          isOpen={true}
+          onClose={() => undefined}
+          instancePath="/mock/.minecraft/instances/alpha"
+          worldFolder="AlphaWorld"
+          worldName="Alpha World"
+        />
+      </>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase24LocaleRuScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'Браузер модпаков', 'Alpha Pack', 'Датапаки для мира Alpha World', 'Russian closeout pair'],
+    'Phase 24 Russian locale closeout rendered inside the real shell with deterministic route and secondary-content proof.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route" language="ru">
+      <>
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 sm:p-6">
+          <Phase24ProofCallout
+            title="Russian closeout pair"
+            detail="This mirrors the English closeout pair on the same shell-owned route so reviewers can compare translated labels, counts, and dates without fixture drift."
+          />
+          <ModpackBrowser
+            initialState={{ ...DEFAULT_MODPACK_BROWSER_STATE, platform: 'modrinth', query: 'alpha' }}
+            onBack={() => undefined}
+            onNavigate={() => undefined}
+            onStateChange={() => undefined}
+          />
+        </div>
+        <WorldDatapacksModal
+          isOpen={true}
+          onClose={() => undefined}
+          instancePath="/mock/.minecraft/instances/alpha"
+          worldFolder="AlphaWorld"
+          worldName="Alpha World"
+        />
+      </>
+    </Phase19ShellFrame>
+  );
+}
+
 function Phase22LocaleRuScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
@@ -1165,6 +1372,32 @@ function Phase22LocaleRuScenario({ onReady }: ManualVerificationScenarioProps) {
           worldName="Alpha World"
         />
       </>
+    </Phase19ShellFrame>
+  );
+}
+
+function Phase24DegradedCloseoutScenario({ onReady }: ManualVerificationScenarioProps) {
+  useReadyByText(
+    onReady,
+    ['FriendLauncher', 'v0.5.0 degraded-state closeout slot', 'Wave 2 lands representative failed-load and unavailable-state proof.'],
+    'Phase 24 degraded closeout slot rendered inside the real shell and reserved for representative degraded-state proof in the next wave.',
+  );
+
+  return (
+    <Phase19ShellFrame mode="modpacks" ownership="route">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
+        <Phase24ProofCallout
+          title="Degraded-state closeout slot"
+          detail="Wave 1 only establishes the named shell-integrated slot and deterministic fixture contract. Wave 2 replaces this placeholder with representative failed-load, unavailable, and recovery-first proof surfaces."
+        />
+        <div className="surface-card rounded-3xl p-6">
+          <div className="kicker-label mb-2">Phase 24 placeholder</div>
+          <h2 className="text-xl font-semibold text-foreground">v0.5.0 degraded-state closeout slot</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-secondary">
+            Wave 2 lands representative failed-load and unavailable-state proof.
+          </p>
+        </div>
+      </div>
     </Phase19ShellFrame>
   );
 }
@@ -1241,6 +1474,34 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 
   if (props.view === 'welcome') {
     return <WelcomeScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-home-closeout') {
+    return <Phase24HomeCloseoutScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-modpacks-closeout') {
+    return <Phase24ModpacksCloseoutScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-degraded-closeout') {
+    return <Phase24DegradedCloseoutScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-theme-dark') {
+    return <Phase24ThemeDarkScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-theme-light') {
+    return <Phase24ThemeLightScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-locale-en') {
+    return <Phase24LocaleEnScenario {...scenarioProps} />;
+  }
+
+  if (props.view === 'phase-24-locale-ru') {
+    return <Phase24LocaleRuScenario {...scenarioProps} />;
   }
 
   if (props.view === 'tour') {
@@ -1363,25 +1624,58 @@ export function ManualVerificationScenarios(props: { view: ManualVerificationVie
 }
 
 export function ManualVerificationNavigation(props: { activeView: ManualVerificationView }) {
+  const sections: Array<{ title: string; views: ManualVerificationViewMeta[] }> = [
+    { title: 'Closeout', views: CLOSEOUT_VIEWS },
+    { title: 'Shared', views: GENERAL_VIEWS },
+    { title: 'Legacy', views: LEGACY_VIEWS },
+  ];
+
   return (
-    <nav className="flex flex-wrap gap-2">
-      {CORE_VIEWS.map((view) => {
-        const isActive = props.activeView === view.id;
-        return (
-          <a
-            key={view.id}
-            href={`?view=${view.id}`}
-            className={[
-              'rounded-full border px-3 py-1.5 text-sm transition-colors',
-              isActive
-                ? 'border-border-active bg-card text-foreground'
-                : 'border-border/70 text-secondary hover:border-border-active hover:text-foreground',
-            ].join(' ')}
-          >
-            {view.label}
-          </a>
-        );
-      })}
+    <nav className="flex flex-col gap-3">
+      <div className="flex flex-wrap gap-2">
+        {CORE_VIEWS.filter((view) => view.group === 'hub').map((view) => {
+          const isActive = props.activeView === view.id;
+          return (
+            <a
+              key={view.id}
+              href={`?view=${view.id}`}
+              className={[
+                'rounded-full border px-3 py-1.5 text-sm transition-colors',
+                isActive
+                  ? 'border-border-active bg-card text-foreground'
+                  : 'border-border/70 text-secondary hover:border-border-active hover:text-foreground',
+              ].join(' ')}
+            >
+              {view.label}
+            </a>
+          );
+        })}
+      </div>
+
+      {sections.map((section) => (
+        <div key={section.title} className="space-y-2">
+          <div className="kicker-label">{section.title}</div>
+          <div className="flex flex-wrap gap-2">
+            {section.views.map((view) => {
+              const isActive = props.activeView === view.id;
+              return (
+                <a
+                  key={view.id}
+                  href={`?view=${view.id}`}
+                  className={[
+                    'rounded-full border px-3 py-1.5 text-sm transition-colors',
+                    isActive
+                      ? 'border-border-active bg-card text-foreground'
+                      : 'border-border/70 text-secondary hover:border-border-active hover:text-foreground',
+                  ].join(' ')}
+                >
+                  {view.label}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </nav>
   );
 }

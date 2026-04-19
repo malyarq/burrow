@@ -15,8 +15,39 @@ const PHASE_21_SECONDARY_DENSITY_VIEW = 'phase-21-secondary-density';
 const PHASE_22_THEME_DARK_VIEW = 'phase-22-theme-dark';
 const PHASE_22_THEME_LIGHT_VIEW = 'phase-22-theme-light';
 const PHASE_22_LOCALE_RU_VIEW = 'phase-22-locale-ru';
+const PHASE_24_HOME_CLOSEOUT_VIEW = 'phase-24-home-closeout';
+const PHASE_24_MODPACKS_CLOSEOUT_VIEW = 'phase-24-modpacks-closeout';
+const PHASE_24_DEGRADED_CLOSEOUT_VIEW = 'phase-24-degraded-closeout';
+const PHASE_24_THEME_DARK_VIEW = 'phase-24-theme-dark';
+const PHASE_24_THEME_LIGHT_VIEW = 'phase-24-theme-light';
+const PHASE_24_LOCALE_EN_VIEW = 'phase-24-locale-en';
+const PHASE_24_LOCALE_RU_VIEW = 'phase-24-locale-ru';
 
 const PHASE_21_DETAIL_VIEWS = new Set([PHASE_21_DETAILS_DENSITY_VIEW, PHASE_21_RUNTIME_EDIT_VIEW]);
+const PHASE_24_CLOSEOUT_VIEWS = new Set([
+  PHASE_24_HOME_CLOSEOUT_VIEW,
+  PHASE_24_MODPACKS_CLOSEOUT_VIEW,
+  PHASE_24_DEGRADED_CLOSEOUT_VIEW,
+  PHASE_24_THEME_DARK_VIEW,
+  PHASE_24_THEME_LIGHT_VIEW,
+  PHASE_24_LOCALE_EN_VIEW,
+  PHASE_24_LOCALE_RU_VIEW,
+]);
+const PHASE_24_SIMPLE_VIEWS = new Set([
+  PHASE_24_HOME_CLOSEOUT_VIEW,
+  PHASE_24_THEME_DARK_VIEW,
+  PHASE_24_THEME_LIGHT_VIEW,
+]);
+const PHASE_24_BROWSER_PROOF_VIEWS = new Set([
+  PHASE_24_MODPACKS_CLOSEOUT_VIEW,
+  PHASE_24_LOCALE_EN_VIEW,
+  PHASE_24_LOCALE_RU_VIEW,
+]);
+
+const FIXTURE_NOW_MS = Date.parse('2026-04-19T12:00:00.000Z');
+const secondsAgo = (seconds: number) => FIXTURE_NOW_MS - seconds * 1_000;
+const minutesAgo = (minutes: number) => FIXTURE_NOW_MS - minutes * 60_000;
+const hoursAgo = (hours: number) => FIXTURE_NOW_MS - hours * 3_600_000;
 
 export const PHASE_21_RUNTIME_FIXTURE = {
   name: 'Atlas Control Room Longform Runtime Review Pack',
@@ -263,11 +294,13 @@ function getBrowserResultsForView(view: string): ModpackSearchResultItem[] {
     return results;
   }
 
-  if (view === 'modpack-browser' || view === PHASE_21_BROWSER_DENSITY_VIEW) {
+  if (view === 'modpack-browser' || view === PHASE_21_BROWSER_DENSITY_VIEW || PHASE_24_BROWSER_PROOF_VIEWS.has(view)) {
     results[0] = {
       ...results[0],
       iconUrl: undefined,
-      description: 'Phase 20 neutral artwork fallback fixture for the shell-integrated browser proof.',
+      description: PHASE_24_BROWSER_PROOF_VIEWS.has(view)
+        ? 'Phase 24 closeout browser fixture with deterministic neutral artwork fallback for final review.'
+        : 'Phase 20 neutral artwork fallback fixture for the shell-integrated browser proof.',
     };
   }
 
@@ -303,7 +336,7 @@ const modEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/alpha.jar',
       name: 'alpha.jar',
       size: 1024,
-      mtimeMs: Date.now() - 10_000,
+      mtimeMs: secondsAgo(10),
     },
     hash: {
       sha1: 'alpha-sha1',
@@ -320,7 +353,7 @@ const modEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/beta.jar.disabled',
       name: 'beta.jar.disabled',
       size: 768,
-      mtimeMs: Date.now() - 7_500,
+      mtimeMs: secondsAgo(7.5),
     },
     hash: {
       sha1: 'beta-sha1',
@@ -342,7 +375,7 @@ const modEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/gamma.jar',
       name: 'gamma.jar',
       size: 1536,
-      mtimeMs: Date.now() - 5_000,
+      mtimeMs: secondsAgo(5),
     },
     hash: {
       sha1: 'gamma-sha1',
@@ -362,7 +395,7 @@ const phase21DenseModEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/atlas-bootstrap.jar',
       name: 'atlas-bootstrap.jar',
       size: 2_048,
-      mtimeMs: Date.now() - 12_000,
+      mtimeMs: secondsAgo(12),
     },
     hash: {
       sha1: 'atlas-bootstrap-sha1',
@@ -379,7 +412,7 @@ const phase21DenseModEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/signal-panels.jar',
       name: 'signal-panels.jar',
       size: 1_536,
-      mtimeMs: Date.now() - 10_500,
+      mtimeMs: secondsAgo(10.5),
     },
     hash: {
       sha1: 'signal-panels-sha1',
@@ -400,7 +433,7 @@ const phase21DenseModEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/crowded-routing.jar',
       name: 'crowded-routing.jar',
       size: 2_560,
-      mtimeMs: Date.now() - 9_000,
+      mtimeMs: secondsAgo(9),
     },
     hash: {
       sha1: 'crowded-routing-sha1',
@@ -417,7 +450,7 @@ const phase21DenseModEntries: ModEntry[] = [
       path: '/mock/.minecraft/mods/overworld-reports.jar.disabled',
       name: 'overworld-reports.jar.disabled',
       size: 1_280,
-      mtimeMs: Date.now() - 7_500,
+      mtimeMs: secondsAgo(7.5),
     },
     hash: {
       sha1: 'overworld-reports-sha1',
@@ -446,14 +479,14 @@ const statistics: StatisticsOverview = {
   global: {
     totalPlayTime: 7_200_000,
     totalLaunches: 18,
-    lastPlayed: Date.now() - 3_600_000,
+    lastPlayed: hoursAgo(1),
   },
   instances: {
     alpha: {
       name: 'Alpha Pack',
       playTime: 4_200_000,
       launches: 11,
-      lastPlayed: Date.now() - 3_600_000,
+      lastPlayed: hoursAgo(1),
     },
   },
   history: {
@@ -467,7 +500,7 @@ const statistics: StatisticsOverview = {
       name: 'Alpha Pack',
       playTime: 4_200_000,
       launches: 11,
-      lastPlayed: Date.now() - 3_600_000,
+      lastPlayed: hoursAgo(1),
     },
   ],
   usageTrend: [
@@ -509,14 +542,14 @@ const screenshots: Screenshot[] = [
     name: 'mountain-sunrise.png',
     path: '/mock/.minecraft/instances/alpha/screenshots/mountain-sunrise.png',
     url: ICON_PATH,
-    createdAt: Date.now() - 720_000,
+    createdAt: minutesAgo(12),
     size: 256_000,
   },
   {
     name: 'village-evening.png',
     path: '/mock/.minecraft/instances/alpha/screenshots/village-evening.png',
     url: ICON_PATH,
-    createdAt: Date.now() - 360_000,
+    createdAt: minutesAgo(6),
     size: 248_000,
   },
 ];
@@ -696,21 +729,25 @@ function createSearchResponse(query: string, offset = 0, limit = 12, view = 'ove
 }
 
 export function seedManualVerificationStorage(view: string) {
-  const simpleViews = new Set(['welcome', 'tour', 'dashboard']);
+  const simpleViews = new Set(['welcome', 'tour', 'dashboard', ...PHASE_24_SIMPLE_VIEWS]);
   const isPhase17Polish = view === PHASE_17_POLISH_VIEW;
   const isPhase22ThemeDark = view === PHASE_22_THEME_DARK_VIEW;
   const isPhase22ThemeLight = view === PHASE_22_THEME_LIGHT_VIEW;
   const isPhase22LocaleRu = view === PHASE_22_LOCALE_RU_VIEW;
+  const isPhase24ThemeDark = view === PHASE_24_THEME_DARK_VIEW;
+  const isPhase24ThemeLight = view === PHASE_24_THEME_LIGHT_VIEW;
+  const isPhase24LocaleRu = view === PHASE_24_LOCALE_RU_VIEW;
   const seededBrowserResults = getBrowserResultsForView(view);
 
-  localStorage.setItem('settings_language', isPhase17Polish || isPhase22LocaleRu ? 'ru' : 'en');
-  localStorage.setItem('settings_theme', isPhase22ThemeLight ? 'light' : 'dark');
-  if (isPhase17Polish || isPhase22ThemeDark) {
+  localStorage.setItem('settings_language', isPhase17Polish || isPhase22LocaleRu || isPhase24LocaleRu ? 'ru' : 'en');
+  localStorage.setItem('settings_theme', isPhase22ThemeLight || isPhase24ThemeLight ? 'light' : 'dark');
+  if (isPhase17Polish || isPhase22ThemeDark || isPhase24ThemeDark) {
     localStorage.setItem('settings_themePresetId', 'forest');
   } else {
     localStorage.removeItem('settings_themePresetId');
   }
-  localStorage.setItem('settings_accentColor', isPhase22ThemeLight ? 'rose' : 'emerald');
+  localStorage.setItem('settings_accentColor', isPhase22ThemeLight || isPhase24ThemeLight ? 'rose' : 'emerald');
+  localStorage.setItem('settings_disableAnimations', PHASE_24_CLOSEOUT_VIEWS.has(view) ? 'true' : 'false');
   localStorage.setItem('settings_minecraftPath', '/mock/.minecraft');
   localStorage.setItem('settings_uiMode', simpleViews.has(view) ? 'simple' : 'modpacks');
   localStorage.setItem('simple_play_welcome_dismissed', 'false');
