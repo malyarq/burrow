@@ -1,7 +1,7 @@
 ---
 phase: 20
 slug: brand-system-shared-tokens-and-surface-migration
-status: draft
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-17
@@ -83,6 +83,13 @@ These files are not required for wave 1 feedback; they become part of the execut
 
 ---
 
+## Retrospective Recovery Note
+
+- Phase 26 normalized this validation record retrospectively and backfilled the final sign-off from shipped Phase 20 summaries, the original task-level verification contract above, and the shell-integrated closeout evidence captured in `20-04-SUMMARY.md`.
+- The per-task map remains the historical execution record from Phase 20. This document now records recovered closure truth; it does not claim that Phase 26 reran brand-system or fallback implementation from scratch.
+
+---
+
 ## Validation Sign-Off
 
 - [x] All tasks have `<automated>` verify or existing infrastructure dependencies
@@ -90,6 +97,7 @@ These files are not required for wave 1 feedback; they become part of the execut
 - [x] New Phase 20 structural tests are scheduled into later waves instead of blocking early feedback loops
 - [x] No watch-mode flags
 - [x] Final full matrix becomes mandatory only after wave 4 test seams land
+- [x] Retrospective sign-off is recovered from shipped evidence and final gates while preserving the original task map as history
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** complete
