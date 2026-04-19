@@ -1379,23 +1379,24 @@ function Phase22LocaleRuScenario({ onReady }: ManualVerificationScenarioProps) {
 function Phase24DegradedCloseoutScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['FriendLauncher', 'v0.5.0 degraded-state closeout slot', 'Wave 2 lands representative failed-load and unavailable-state proof.'],
-    'Phase 24 degraded closeout slot rendered inside the real shell and reserved for representative degraded-state proof in the next wave.',
+    ['FriendLauncher', 'Unable to search right now', 'Failed to load screenshots.', 'Needs attention'],
+    'Phase 24 degraded closeout rendered inside the real shell with representative route and secondary-content failed-load proof.',
   );
 
   return (
     <Phase19ShellFrame mode="modpacks" ownership="route">
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
         <Phase24ProofCallout
-          title="Degraded-state closeout slot"
-          detail="Wave 1 only establishes the named shell-integrated slot and deterministic fixture contract. Wave 2 replaces this placeholder with representative failed-load, unavailable, and recovery-first proof surfaces."
+          title="Representative degraded-state closeout"
+          detail="This closeout view pairs a route-level catalog failure with a secondary-content load failure inside the real shell. It is meant to prove the shipped degraded-state language on the same launcher chrome used by success-path closeout views."
         />
-        <div className="surface-card rounded-3xl p-6">
-          <div className="kicker-label mb-2">Phase 24 placeholder</div>
-          <h2 className="text-xl font-semibold text-foreground">v0.5.0 degraded-state closeout slot</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-secondary">
-            Wave 2 lands representative failed-load and unavailable-state proof.
-          </p>
+        <div className="grid min-h-0 gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(22rem,0.9fr)]">
+          <div className="min-h-0 overflow-hidden rounded-3xl border border-border/70 bg-card/60">
+            <AddModPage modpackId="alpha" onBack={() => undefined} />
+          </div>
+          <div className="min-h-0 overflow-hidden rounded-3xl border border-border/70 bg-card/60">
+            <ScreenshotsTab instancePath="/mock/.minecraft/instances/alpha" />
+          </div>
         </div>
       </div>
     </Phase19ShellFrame>

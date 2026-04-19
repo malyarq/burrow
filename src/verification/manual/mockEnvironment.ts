@@ -983,24 +983,35 @@ export function installManualVerificationEnvironment() {
   };
 
   const shareApi = {
-    generateCode: async (modpackId: string) => `fmcl://share/${modpackId}?v=1.4.2`,
+    generateCode: async (modpackId: string) => {
+      if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
+        throw new Error('[shareIPC] generateCode failed: ${file.jarVersion}');
+      }
+      return `fmcl://share/${modpackId}?v=1.4.2`;
+    },
     importCode: async () => structuredClone(sharedManifest),
   };
 
   const modsApi = {
-    searchMods: async () => ({
-      items: [
-        {
-          platform: 'modrinth' as const,
-          projectId: 'sodium',
-          title: 'Sodium',
-          description: 'Client performance improvements',
-          iconUrl: ICON_PATH,
-          downloads: 10_000,
-        },
-      ],
-      total: 1,
-    }),
+    searchMods: async () => {
+      if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
+        throw new Error('[modsIPC] searchMods failed: ${file.jarVersion}');
+      }
+
+      return {
+        items: [
+          {
+            platform: 'modrinth' as const,
+            projectId: 'sodium',
+            title: 'Sodium',
+            description: 'Client performance improvements',
+            iconUrl: ICON_PATH,
+            downloads: 10_000,
+          },
+        ],
+        total: 1,
+      };
+    },
     getModVersions: async () => [
       {
         platform: 'modrinth' as const,
@@ -1015,7 +1026,12 @@ export function installManualVerificationEnvironment() {
   };
 
   const statisticsApi = {
-    getStats: async () => structuredClone(statistics),
+    getStats: async () => {
+      if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
+        throw new Error('[IPC] getStats failed: Statistics store unavailable');
+      }
+      return structuredClone(statistics);
+    },
     exportStats: async (filePath: string) => ({
       filePath,
       exportedAt: new Date().toISOString(),
@@ -1134,7 +1150,12 @@ export function installManualVerificationEnvironment() {
   window.mirrors = mirrorsApi as unknown as Window['mirrors'];
   window.share = shareApi as unknown as Window['share'];
   window.screenshots = {
-    list: async () => structuredClone(screenshots),
+    list: async () => {
+      if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
+        throw new Error('[IPC] screenshots failed: Screenshots folder unavailable');
+      }
+      return structuredClone(screenshots);
+    },
     delete: async () => ({ ok: true }),
     rename: async () => ({ ok: true }),
     openFolder: async () => ({ ok: true }),

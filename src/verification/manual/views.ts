@@ -82,7 +82,7 @@ export const CLOSEOUT_VIEWS: ManualVerificationViewMeta[] = [
   {
     id: 'phase-24-degraded-closeout',
     label: 'Phase 24 Degraded Closeout',
-    description: 'Reserved shell-integrated degraded-state proof slot for the final closeout matrix.',
+    description: 'Representative shell-integrated degraded-state proof for route search failure and secondary-content availability loss.',
     group: 'closeout',
     milestone: 'v0.5.0',
     screenshot: true,
