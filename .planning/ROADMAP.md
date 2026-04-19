@@ -2,10 +2,10 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Phase 26 complete `2026-04-20`
-**Phases:** 19-26  
+**Status:** Phase 27 planned `2026-04-20`
+**Phases:** 19-27
 **Requirements:** 23  
-**Next step:** Rerun the v0.5.0 milestone audit to confirm archive readiness from the recovered proof set
+**Next step:** Plan Phase 27 to clear final audit-trail and residual technical debt before archive
 
 ## Overview
 
@@ -13,7 +13,7 @@
 
 The roadmap is intentionally ordered to prevent another "screen-by-screen repaint" cycle: shared shell and state invariants land before broad surface migration, and fallback/error quality is treated as milestone-owned product scope rather than cleanup.
 
-After the milestone audit, the remaining work is explicitly proof-layer recovery rather than new product scope. Phases 25-26 exist to backfill missing verification artifacts, restore requirement-level evidence, and close Nyquist discovery gaps so the shipped milestone can be archived honestly.
+After the milestone audit, the remaining work is no longer product-scope recovery. Phases 25-26 backfilled missing verification artifacts and restored requirement-level evidence; Phase 27 exists to clear the last audit-trail rough edges and residual non-blocking technical debt before archive.
 
 ## Phases
 
@@ -108,12 +108,24 @@ After the milestone audit, the remaining work is explicitly proof-layer recovery
 3. Validation artifacts for Phases 19-23 no longer present as draft/partial in milestone audit discovery.
 4. The milestone can be re-audited without reopening redesign implementation scope.
 
+### Phase 27: Final Audit Trail And Residual Debt Closure
+
+**Goal:** Remove the last archive-friction from `v0.5.0` by closing remaining validation-status debt, cleaning stale recovered-proof narration, and explicitly resolving the lingering non-blocking residuals carried by the re-audit.
+**Depends on:** Phase 26
+**Requirements:** none — tech-debt and audit-trail cleanup only
+**Gap Closure:** Closes the remaining `tech_debt` items from the re-audit and prepares the milestone for clean archive without caveats.
+**Success criteria:**
+1. `25-VALIDATION.md` and `26-VALIDATION.md` no longer present as `draft` / `Approval: pending`.
+2. Recovered proof artifacts for Phases 19-21 and Phase 25 no longer contain stale residual prose that contradicts the now-complete validation state.
+3. The Phase 23 test-execution residual and Phase 24 renderer-chunk residual are either resolved or explicitly retired from milestone debt with evidence strong enough for a clean final audit.
+4. The rerun milestone audit can return `passed` instead of `tech_debt`.
+
 ## Milestones
 
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
-- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-26 are complete; rerun the milestone audit before archive to confirm the recovered proof layer is accepted.
+- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-26 are complete; Phase 27 is planned to clear the last audit-trail and residual-debt blockers before archive.
 
 ## Progress
 
@@ -122,4 +134,4 @@ After the milestone audit, the remaining work is explicitly proof-layer recovery
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-26 | 24/24 + recovery 25/26 complete | Re-audit ready | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 24/24 + recovery 25/26 complete + cleanup 27 planned | Final cleanup planned | — |
