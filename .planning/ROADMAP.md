@@ -5,7 +5,7 @@
 **Status:** Phase 27 planned `2026-04-20`
 **Phases:** 19-27
 **Requirements:** 23  
-**Next step:** Plan Phase 27 to clear final audit-trail and residual technical debt before archive
+**Next step:** Execute Phase 27 to clear final audit-trail and residual technical debt before archive
 
 ## Overview
 
