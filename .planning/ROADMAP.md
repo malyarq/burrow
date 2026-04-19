@@ -2,10 +2,10 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Gap closure phases planned `2026-04-19`
+**Status:** Phase 25 planned `2026-04-19`
 **Phases:** 19-26  
 **Requirements:** 23  
-**Next step:** Plan Phase 25 to restore milestone auditability and close proof-layer gaps
+**Next step:** Execute Phase 25 to recover audit-grade verification artifacts for Phases 19-21
 
 ## Overview
 
