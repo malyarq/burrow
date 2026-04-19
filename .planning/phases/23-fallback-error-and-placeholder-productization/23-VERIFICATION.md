@@ -11,6 +11,11 @@ requirements:
 
 # Phase 23 Verification
 
+## Recovery Context
+
+- `v0.5.0-MILESTONE-AUDIT.md` marked `FALL-01`, `FALL-02`, `FALL-03`, and `FALL-04` as orphaned because Phase 23 shipped summaries and closeout evidence but no `23-VERIFICATION.md`.
+- Phase 26 recovers auditability from shipped Phase 23 evidence only. No new degraded-state behavior, placeholder sanitization, dependency-truth logic, or crash-surface implementation was introduced during recovery.
+
 ## Evidence Basis
 
 - Verified retrospectively from `23-VALIDATION.md`, `23-01-SUMMARY.md`, `23-02-SUMMARY.md`, `23-03-SUMMARY.md`, and `23-04-SUMMARY.md`.
@@ -24,10 +29,10 @@ requirements:
 
 | Requirement | Status | Evidence | Residual debt / blocker |
 | --- | --- | --- | --- |
-| FALL-01 | Verified | `23-01-SUMMARY.md` introduced shared `safeUiText` and `displayError` sanitizers for suspicious placeholders and wrapped IPC text, `23-03-SUMMARY.md` extended recovery-summary sanitization to the fatal crash surface, and `23-04-SUMMARY.md` closed add-mod, update, share or import, import-preview, and launcher-status placeholder or wrapper leaks. `23-VALIDATION.md` and the downstream `phase-24-degraded-closeout` proof confirm the shipped UI no longer relies on raw placeholder or debug copy for the owned seams. | No Phase 26 blocker. |
-| FALL-02 | Verified | `23-01-SUMMARY.md` established the calm degraded-state primitive, `23-02-SUMMARY.md` mapped route-level empty, zero-result, unavailable, and failed-load truth across browser, installed list, screenshots, statistics, and secondary-content tabs, and `23-04-SUMMARY.md` finished high-risk update, changelog, and import-preview degraded states. `23-VALIDATION.md` preserves the original regression matrix, and Phase 24 closeout reused those route states in the representative degraded proof. | No Phase 26 blocker. |
-| FALL-03 | Verified | `23-01-SUMMARY.md` prepared the shared `FatalErrorView`, `23-03-SUMMARY.md` wired both `ErrorBoundary` mounts to that recovery-first surface with localized copy and hidden details by default, and `23-VALIDATION.md` records `ErrorBoundary.recovery.test.tsx` as part of the shipped matrix. Phase 24 reused the landed crash-safe surface in the degraded closeout view and final gate instead of reopening renderer recovery behavior. | No Phase 26 blocker. |
-| FALL-04 | Verified | `23-02-SUMMARY.md` locked truthful unavailable and failed-load handling on route-owned async states, while `23-04-SUMMARY.md` made runtime dependency truth explicit, kept unknown loader-version proof conservative, and sanitized launcher-status availability copy. `23-VALIDATION.md` preserves the dependency and degraded-state regression contract, and the downstream Phase 24 degraded closeout route carried representative dependency and degraded-data proof into final milestone verification. | No Phase 26 blocker. |
+| FALL-01 | Verified | `23-01-SUMMARY.md` introduced shared `safeUiText` and `displayError` sanitizers for suspicious placeholders and wrapped IPC text, `23-03-SUMMARY.md` extended recovery-summary sanitization to the fatal crash surface, and `23-04-SUMMARY.md` closed add-mod, update, share or import, import-preview, and launcher-status placeholder or wrapper leaks. `23-VALIDATION.md` and the downstream `phase-24-degraded-closeout` proof confirm the shipped UI no longer relies on raw placeholder or debug copy for the owned seams. | No shipped blocker identified in Phase 23 evidence. |
+| FALL-02 | Verified | `23-01-SUMMARY.md` established the calm degraded-state primitive, `23-02-SUMMARY.md` mapped route-level empty, zero-result, unavailable, and failed-load truth across browser, installed list, screenshots, statistics, and secondary-content tabs, and `23-04-SUMMARY.md` finished high-risk update, changelog, and import-preview degraded states. `23-VALIDATION.md` preserves the original regression matrix, and Phase 24 closeout reused those route states in the representative degraded proof. | No shipped blocker identified in Phase 23 evidence. |
+| FALL-03 | Verified | `23-01-SUMMARY.md` prepared the shared `FatalErrorView`, `23-03-SUMMARY.md` wired both `ErrorBoundary` mounts to that recovery-first surface with localized copy and hidden details by default, and `23-VALIDATION.md` records `ErrorBoundary.recovery.test.tsx` as part of the shipped matrix. Phase 24 reused the landed crash-safe surface in the degraded closeout view and final gate instead of reopening renderer recovery behavior. | No shipped blocker identified in Phase 23 evidence. |
+| FALL-04 | Verified | `23-02-SUMMARY.md` locked truthful unavailable and failed-load handling on route-owned async states, while `23-04-SUMMARY.md` made runtime dependency truth explicit, kept unknown loader-version proof conservative, and sanitized launcher-status availability copy. `23-VALIDATION.md` preserves the dependency and degraded-state regression contract, and the downstream Phase 24 degraded closeout route carried representative dependency and degraded-data proof into final milestone verification. | No shipped blocker identified in Phase 23 evidence. |
 
 ## Bounded Residuals
 

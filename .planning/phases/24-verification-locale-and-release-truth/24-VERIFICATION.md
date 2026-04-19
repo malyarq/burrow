@@ -11,7 +11,7 @@ requirements:
 
 # Phase 24 Verification
 
-## Normalization Context
+## Recovery Context
 
 - `v0.5.0-MILESTONE-AUDIT.md` marked `VER-01`, `VER-02`, `VER-03`, and `VER-04` as orphaned because the original `24-VERIFICATION.md` was narrative-only and did not expose requirement-level evidence.
 - Phase 26 normalizes Phase 24 proof from shipped Phase 24 evidence only. No new manual closeout views, screenshot lanes, release-truth sync work, or milestone implementation were introduced during recovery.
