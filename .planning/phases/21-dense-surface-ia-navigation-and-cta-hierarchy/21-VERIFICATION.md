@@ -12,6 +12,11 @@ requirements:
 
 # Phase 21 Verification
 
+## Recovery Context
+
+- `v0.5.0-MILESTONE-AUDIT.md` marked `SHELL-04` and `DENSE-01` through `DENSE-04` as orphaned because Phase 21 shipped summaries and closeout evidence but no `21-VERIFICATION.md`.
+- Phase 25 recovers auditability from shipped Phase 21 evidence only. No new catalog, details, runtime-summary, or manual-harness behavior was introduced during recovery.
+
 ## Evidence Basis
 
 - Verified from `21-VALIDATION.md`, `21-01-SUMMARY.md`, `21-02-SUMMARY.md`, `21-03-SUMMARY.md`, and `21-04-SUMMARY.md`.
@@ -30,3 +35,15 @@ requirements:
 | DENSE-02 | Verified | `21-02-SUMMARY.md` proves readable details-route tabs and action groups plus dense secondary-content summaries, and `21-04-SUMMARY.md` proves the same behavior in constrained details and dense secondary-content manual views. | No shipped blocker identified in Phase 21 evidence. |
 | DENSE-03 | Verified | `21-03-SUMMARY.md` proves one shared runtime-summary seam for create and edit flows, and `21-04-SUMMARY.md` proves create and edit runtime truth in dedicated manual closeout views backed by one shared runtime fixture. | No shipped blocker identified in Phase 21 evidence. |
 | DENSE-04 | Verified | `21-01-SUMMARY.md`, `21-02-SUMMARY.md`, and `21-03-SUMMARY.md` together prove labeled counts, metadata, runtime warnings, and summary truth across catalog, details, and create/edit flows, while `21-04-SUMMARY.md` closes the same seams in manual proof and the focused matrix. | No shipped blocker identified in Phase 21 evidence. |
+
+## Bounded Residuals
+
+- `21-VALIDATION.md` still carries `status: draft`, so Nyquist closure for the validation artifact remains a later proof-layer task rather than something Phase 25 silently claims as already repaired.
+- `21-04-SUMMARY.md` explicitly notes a harness-only create-wizard priming step because the product surface did not expose a declarative seeded-step prop. That caveat remains part of the shipped proof story, but it is not a blocker on the verified dense-surface behavior.
+- The shipped dense-surface evidence itself is green: the dedicated shell-integrated proof views and the focused closeout matrix recorded in `21-04-SUMMARY.md` are the authoritative proof for Phase 21 behavior.
+
+## Audit Outcome
+
+- Phase 21 now has requirement-level verification evidence for `SHELL-04` and `DENSE-01` through `DENSE-04`.
+- The orphaned-proof blocker identified by the milestone audit is closed for dense-surface IA, constrained-width shell truth, and runtime-summary work.
+- Remaining follow-up is explicitly limited to validation-document/Nyquist closure, not Phase 21 product behavior.
