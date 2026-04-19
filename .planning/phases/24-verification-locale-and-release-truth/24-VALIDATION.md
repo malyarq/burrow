@@ -1,7 +1,7 @@
 ---
 phase: 24
 slug: verification-locale-and-release-truth
-status: in_progress
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-19
@@ -46,8 +46,8 @@ created: 2026-04-19
 | 24-02-02 | 02 | 2 | VER-01, VER-03 | manual seam + locale/theme audit | `npx eslint src/verification/manual/ManualVerificationApp.tsx src/verification/manual/views.ts src/verification/manual/scenarios.tsx src/verification/manual/mockEnvironment.ts && npx tsc --noEmit` | ✅ | ✅ green |
 | 24-03-01 | 03 | 3 | VER-02 | visual regression lane | `npx playwright test tests/visual/manual-closeout.spec.ts --project=chromium --update-snapshots && npm run test:visual:closeout` | ✅ | ✅ green |
 | 24-03-02 | 03 | 3 | VER-01, VER-02, VER-03 | closeout matrix | `npx vitest run src/contexts/settings/__tests__/themeRuntimeContract.test.ts src/utils/__tests__/format.test.ts src/components/settings/__tests__/AppearanceTab.state-fidelity.test.tsx src/components/modpacks/__tests__/ModpackBrowser.ergonomics.test.tsx src/components/modpacks/__tests__/AddModPlaceholderTruth.test.tsx src/components/modpacks/__tests__/ModpackUpdateModal.degraded-state.test.tsx src/components/modpacks/details/__tests__/SecondaryContentTabs.test.tsx src/features/screenshots/components/__tests__/ScreenshotsExperience.test.tsx src/features/settings/statistics/__tests__/StatisticsTab.test.tsx src/features/share/__tests__/ShareFlows.test.tsx src/components/__tests__/ErrorBoundary.recovery.test.tsx && npm run test:visual:closeout && npx tsc --noEmit` | ✅ | ✅ green |
-| 24-04-01 | 04 | 4 | VER-04 | docs truth audit | `rg -n 'v0\\.5\\.0|manual-verification\\.html\\?view=phase-24-|Phase 24|closeout' README.md docs/en/roadmap.md docs/ru/roadmap.md .planning/ROADMAP.md .planning/REQUIREMENTS.md .planning/STATE.md` | ✅ | ⬜ pending |
-| 24-04-02 | 04 | 4 | VER-01, VER-02, VER-03, VER-04 | full gate | `npm test && npm run lint && npx tsc --noEmit && npm run build -- --publish never && npm run test:visual:closeout` | ✅ | ⬜ pending |
+| 24-04-01 | 04 | 4 | VER-04 | docs truth audit | `rg -n 'v0\\.5\\.0|manual-verification\\.html\\?view=phase-24-|Phase 24|closeout' README.md docs/en/roadmap.md docs/ru/roadmap.md .planning/ROADMAP.md .planning/REQUIREMENTS.md .planning/STATE.md` | ✅ | ✅ green |
+| 24-04-02 | 04 | 4 | VER-01, VER-02, VER-03, VER-04 | full gate | `npm test && npm run lint && npx tsc --noEmit && npm run build -- --publish never && npm run test:visual:closeout` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -94,4 +94,4 @@ created: 2026-04-19
 - [x] Feedback latency < 480s
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** complete

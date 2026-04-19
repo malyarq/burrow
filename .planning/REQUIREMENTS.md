@@ -27,7 +27,7 @@
 
 ### Theme, Locale & State Fidelity
 
-- [ ] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
+- [x] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
 - [x] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
 - [x] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
 - [x] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
@@ -41,10 +41,10 @@
 
 ### Verification, Regression & Release Truth
 
-- [ ] **VER-01**: Team can review deterministic manual verification routes for redesigned core surfaces and degraded states.
-- [ ] **VER-02**: Team can catch screenshot regressions on milestone-owned views before release.
-- [ ] **VER-03**: Team can verify redesigned surfaces across dark/light themes and EN/RU locales before release.
-- [ ] **VER-04**: Release-facing docs and milestone truth stay aligned with shipped redesign behavior.
+- [x] **VER-01**: Team can review deterministic manual verification routes for redesigned core surfaces and degraded states.
+- [x] **VER-02**: Team can catch screenshot regressions on milestone-owned views before release.
+- [x] **VER-03**: Team can verify redesigned surfaces across dark/light themes and EN/RU locales before release.
+- [x] **VER-04**: Release-facing docs and milestone truth stay aligned with shipped redesign behavior.
 
 ## v2 Requirements
 
@@ -79,7 +79,7 @@
 | DENSE-02 | Phase 21 | Complete |
 | DENSE-03 | Phase 21 | Complete |
 | DENSE-04 | Phase 21 | Complete |
-| THEME-01 | Phase 22 | Pending |
+| THEME-01 | Phase 22 | Complete |
 | THEME-02 | Phase 22 | Complete |
 | THEME-03 | Phase 22 | Complete |
 | THEME-04 | Phase 22 | Complete |
@@ -87,10 +87,10 @@
 | FALL-02 | Phase 23 | Complete |
 | FALL-03 | Phase 23 | Complete |
 | FALL-04 | Phase 23 | Complete |
-| VER-01 | Phase 24 | Pending |
-| VER-02 | Phase 24 | Pending |
-| VER-03 | Phase 24 | Pending |
-| VER-04 | Phase 24 | Pending |
+| VER-01 | Phase 24 | Complete |
+| VER-02 | Phase 24 | Complete |
+| VER-03 | Phase 24 | Complete |
+| VER-04 | Phase 24 | Complete |
 
 **Coverage:**
 - v1 requirements: 23 total
@@ -99,4 +99,4 @@
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-19 after completing Phase 23 plan 04 degraded-flow closeout truth*
+*Last updated: 2026-04-19 after completing Phase 24 verification, screenshot gating, and release-truth sync*

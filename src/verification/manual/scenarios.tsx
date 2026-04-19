@@ -783,7 +783,7 @@ function Phase17PolishScenario({ onReady }: ManualVerificationScenarioProps) {
         <div className="grid gap-4 lg:grid-cols-[5.5rem,1fr]">
           <div className="surface-panel w-[5.5rem] rounded-[2rem] p-2">
             <SidebarHeader
-              appVersion="0.4.0"
+              appVersion="0.5.0"
               onShowMultiplayer={() => undefined}
               onShowSettings={() => undefined}
               getAccentStyles={() => ({ className: '', style: undefined })}

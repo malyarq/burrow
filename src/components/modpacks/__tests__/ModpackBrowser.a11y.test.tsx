@@ -84,7 +84,8 @@ describe('ModpackBrowser accessibility', () => {
   it('exposes accessible search, favorite, and result activation controls', async () => {
     const { onNavigate } = renderBrowser();
 
-    await screen.findByRole('search', { name: 'Enter modpack name...' });
+    await screen.findByRole('search', { name: t('modpacks.search') || 'Search modpacks' });
+    await screen.findByRole('textbox', { name: t('modpacks.search_placeholder') || 'Enter modpack name...' });
 
     const resultButton = await screen.findByRole('button', { name: 'Alpha Pack' });
     const favoriteButton = screen.getByRole('button', { name: 'Add to favorites: Alpha Pack' });
