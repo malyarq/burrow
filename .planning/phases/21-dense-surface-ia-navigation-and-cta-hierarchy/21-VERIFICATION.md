@@ -38,7 +38,7 @@ requirements:
 
 ## Bounded Residuals
 
-- `21-VALIDATION.md` still carries `status: draft`, so Nyquist closure for the validation artifact remains a later proof-layer task rather than something Phase 25 silently claims as already repaired.
+- `21-VALIDATION.md` is now retrospectively complete, so the recovered proof no longer depends on separate Nyquist cleanup work.
 - `21-04-SUMMARY.md` explicitly notes a harness-only create-wizard priming step because the product surface did not expose a declarative seeded-step prop. That caveat remains part of the shipped proof story, but it is not a blocker on the verified dense-surface behavior.
 - The shipped dense-surface evidence itself is green: the dedicated shell-integrated proof views and the focused closeout matrix recorded in `21-04-SUMMARY.md` are the authoritative proof for Phase 21 behavior.
 
@@ -46,4 +46,4 @@ requirements:
 
 - Phase 21 now has requirement-level verification evidence for `SHELL-04` and `DENSE-01` through `DENSE-04`.
 - The orphaned-proof blocker identified by the milestone audit is closed for dense-surface IA, constrained-width shell truth, and runtime-summary work.
-- Remaining follow-up is explicitly limited to validation-document/Nyquist closure, not Phase 21 product behavior.
+- Remaining follow-up is limited to milestone-level archive cleanup, not Phase 21 product behavior.

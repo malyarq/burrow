@@ -34,11 +34,11 @@ requirements:
 
 ## Bounded Residuals
 
-- `19-VALIDATION.md` still carries `status: draft`, so Nyquist closure for the validation artifact remains a later proof-layer task rather than something Phase 25 silently claims as already repaired.
+- `19-VALIDATION.md` is now retrospectively complete, so the recovered proof no longer depends on separate Nyquist cleanup work.
 - The shipped shell evidence itself is green: the owned manual proof routes and the focused gate recorded in `19-04-SUMMARY.md` are the authoritative proof for Phase 19 behavior.
 
 ## Audit Outcome
 
 - Phase 19 now has requirement-level verification evidence for `SHELL-01`, `SHELL-02`, and `SHELL-03`.
 - The orphaned-proof blocker identified by the milestone audit is closed for shell invariants.
-- Remaining follow-up is explicitly limited to validation-document/Nyquist closure, not Phase 19 product behavior.
+- Remaining follow-up is limited to milestone-level archive cleanup, not Phase 19 product behavior or proof completeness.

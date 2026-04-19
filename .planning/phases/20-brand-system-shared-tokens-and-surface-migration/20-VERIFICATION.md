@@ -34,11 +34,11 @@ requirements:
 
 ## Bounded Residuals
 
-- `20-VALIDATION.md` still carries `status: draft`, so Nyquist closure for the validation artifact remains a later proof-layer task rather than something Phase 25 silently claims as already repaired.
+- `20-VALIDATION.md` is now retrospectively complete, so the recovered proof no longer depends on separate Nyquist cleanup work.
 - The shipped brand evidence itself is green: the owned shell-integrated proof routes and the focused closeout matrix recorded in `20-04-SUMMARY.md` are the authoritative proof for Phase 20 behavior.
 
 ## Audit Outcome
 
 - Phase 20 now has requirement-level verification evidence for `BRAND-01`, `BRAND-02`, and `BRAND-03`.
 - The orphaned-proof blocker identified by the milestone audit is closed for brand-system and artwork-fallback work.
-- Remaining follow-up is explicitly limited to validation-document/Nyquist closure, not Phase 20 product visuals or fallback behavior.
+- Remaining follow-up is limited to milestone-level archive cleanup, not Phase 20 product visuals or fallback behavior.
