@@ -7,11 +7,14 @@ import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
 import { LazyImage } from '../ui/LazyImage';
+import { DegradedStateView } from '../layout/DegradedStateView';
 import { cn } from '../../utils/cn';
 import { modsIPC } from '../../services/ipc/modsIPC';
 import { modpacksIPC } from '../../services/ipc/modpacksIPC';
 import { MINECRAFT_VERSIONS } from '../../utils/minecraftVersionsList';
 import type { ModpackMetadata } from '@shared/types/modpack';
+import { sanitizeUiText } from '../../utils/safeUiText';
+import { toDisplayErrorMessage } from '../../utils/displayError';
 
 interface AddModPageProps {
   modpackId: string;
@@ -41,6 +44,13 @@ interface ModVersion {
 
 type CheckedEntry = { mod: ModSearchResult; version: ModVersion } | 'loading';
 
+function getSafeModVersionLabel(version: ModVersion, fallback: string) {
+  return sanitizeUiText(
+    version.name,
+    sanitizeUiText(version.versionNumber, sanitizeUiText(version.versionId, fallback)),
+  );
+}
+
 export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, contentType = 'mod' }) => {
   const { t, getAccentStyles, minecraftPath } = useSettings();
   const toast = useToast();
@@ -48,6 +58,7 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
   const [platform, setPlatform] = useState<'curseforge' | 'modrinth'>('modrinth');
   const [searchResults, setSearchResults] = useState<ModSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [checkedMods, setCheckedMods] = useState<Map<string, CheckedEntry>>(new Map());
   const [installing, setInstalling] = useState(false);
   const [modpackMetadata, setModpackMetadata] = useState<ModpackMetadata | null>(null);
@@ -86,6 +97,9 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
     if (offset === 0) setLoading(true);
     else setLoadingMore(true);
     try {
+      if (!append) {
+        setSearchError(null);
+      }
       const result = await modsIPC.searchMods({
         platform,
         query: query.trim() || '',
@@ -101,12 +115,21 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
       setTotal(data.total ?? 0);
     } catch (error) {
       console.error('Error searching mods:', error);
-      if (!append) setSearchResults([]);
+      if (!append) {
+        setSearchResults([]);
+        setTotal(0);
+        setSearchError(
+          toDisplayErrorMessage(
+            error,
+            t('modpacks.add_mod_search_error_desc') || 'We could not load catalog results right now.',
+          ),
+        );
+      }
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [query, platform, effectiveMCVersion, effectiveLoader, filterSort, contentType]);
+  }, [query, platform, effectiveMCVersion, effectiveLoader, filterSort, contentType, t]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -220,6 +243,7 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
       setInstalling(false);
     }
   };
+  const unavailableVersionLabel = t('modpacks.version_unavailable') || 'Version unavailable';
 
   const getTitle = () => {
     switch (contentType) {
@@ -359,7 +383,7 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
             </div>
           )}
 
-          {!loading && searchResults.length > 0 && (
+          {!loading && !searchError && searchResults.length > 0 && (
             <div
               className="space-y-2"
               data-testid="add-mod-results"
@@ -399,7 +423,7 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
                       </h4>
                       {version && (
                         <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">
-                          {version.name} {version.mcVersions[0] && `(${version.mcVersions[0]})`}
+                          {getSafeModVersionLabel(version, unavailableVersionLabel)} {version.mcVersions[0] && `(${version.mcVersions[0]})`}
                         </p>
                       )}
                       {mod.description && !version && (
@@ -431,6 +455,37 @@ export const AddModPage: React.FC<AddModPageProps> = ({ modpackId, onBack, conte
               )}
             </div>
           )}
+
+          {!loading && searchError ? (
+            <DegradedStateView
+              variant="error"
+              label={t('degraded.error_label')}
+              title={t('modpacks.add_mod_search_error_title') || 'Unable to search right now'}
+              description={searchError}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={() => void searchMods(0, false)}>
+                  {t('modpacks.search_btn')}
+                </Button>
+              )}
+            />
+          ) : null}
+
+          {!loading && !searchError && searchResults.length === 0 ? (
+            <DegradedStateView
+              variant={query.trim() ? 'zero-results' : 'empty'}
+              label={t(query.trim() ? 'degraded.zero_results_label' : 'degraded.empty_label')}
+              title={
+                query.trim()
+                  ? t('modpacks.no_mod_results') || 'No mods found for the current filters'
+                  : t('modpacks.add_mod_empty_title') || 'Search the catalog'
+              }
+              description={
+                query.trim()
+                  ? t('modpacks.mods_filter_hint') || 'Try a broader query or adjust the current filters.'
+                  : t('modpacks.add_mod_empty_desc') || 'Use search and filters to find loader-compatible files for this modpack.'
+              }
+            />
+          ) : null}
 
           <div
             className="surface-card flex flex-col gap-2 p-4 sm:flex-row"

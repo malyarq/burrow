@@ -1,8 +1,8 @@
 import { cn } from '../../utils/cn';
 import {
+  getRuntimeDependencyWarningMessage,
   getModloaderDisplayLabel,
   type RuntimeDependencyState,
-  type RuntimeDependencyWarning,
 } from './modpackRuntimeDependencies';
 
 function translateWithFallback(t: (key: string) => string, key: string, fallback: string) {
@@ -16,7 +16,7 @@ export function ModpackDependencySummary(props: {
   className?: string;
 }) {
   const { runtime, t, className } = props;
-  const runtimeWarnings = runtime.warnings.map((warning) => getRuntimeWarningMessage(warning, t));
+  const runtimeWarnings = runtime.warnings.map((warning) => getRuntimeDependencyWarningMessage(warning, t));
 
   return (
     <div className={cn('surface-muted rounded-2xl border border-border/70 p-4', className)} data-testid="modpack-dependency-summary">
@@ -48,13 +48,13 @@ export function ModpackDependencySummary(props: {
             {getModloaderDisplayLabel(runtime.modLoader, t)}
           </dd>
         </div>
-        {runtime.modLoader?.version ? (
+        {runtime.modLoader ? (
           <div className="flex items-center justify-between gap-4">
             <dt className="text-xs font-medium uppercase tracking-wide text-secondary">
               {translateWithFallback(t, 'modpacks.loader_version', 'Modloader Version')}
             </dt>
             <dd className="text-sm font-semibold text-foreground">
-              {runtime.modLoader.version}
+              {runtime.modLoader.version ?? translateWithFallback(t, 'modpacks.dep_unverified', 'Unverified')}
             </dd>
           </div>
         ) : null}
@@ -77,26 +77,4 @@ export function ModpackDependencySummary(props: {
       ) : null}
     </div>
   );
-}
-
-function getRuntimeWarningMessage(
-  warning: RuntimeDependencyWarning,
-  t: (key: string) => string,
-): string {
-  switch (warning) {
-    case 'optifine_requires_forge':
-      return translateWithFallback(
-        t,
-        'modpacks.optifine_requires_forge',
-        'OptiFine requires Forge in this launcher.',
-      );
-    case 'optifine_requires_supported_version':
-      return translateWithFallback(
-        t,
-        'modpacks.optifine_requires_supported_version',
-        'OptiFine is only available for supported Minecraft versions.',
-      );
-    default:
-      return warning;
-  }
 }

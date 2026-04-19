@@ -3,10 +3,12 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { useToast } from '../../contexts/ToastContext';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { Button } from '../ui/Button';
+import { DegradedStateView } from '../layout/DegradedStateView';
 import { cn } from '../../utils/cn';
 import { modpacksIPC } from '../../services/ipc/modpacksIPC';
 import type { ModpackManifest } from '@shared/types/modpack';
 import { useModpackListContext } from '../../contexts/ModpackContext';
+import { toDisplayErrorMessage } from '../../utils/displayError';
 
 interface ImportModpackPreviewPageProps {
   filePath: string;
@@ -43,14 +45,21 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
         setInfo(result as typeof info);
       } catch (error) {
         console.error('Error loading modpack info:', error);
-        setInfo({ format: null, manifest: null, error: error instanceof Error ? error.message : 'Unknown error' });
+        setInfo({
+          format: null,
+          manifest: null,
+          error: toDisplayErrorMessage(
+            error,
+            t('modpacks.unable_to_load_info') || 'Unable to load modpack information',
+          ),
+        });
       } finally {
         setLoading(false);
       }
     };
 
     loadInfo();
-  }, [filePath]);
+  }, [filePath, t]);
 
   const handleImport = async () => {
     setImporting(true);
@@ -96,9 +105,17 @@ export const ImportModpackPreviewPage: React.FC<ImportModpackPreviewPageProps> =
               </p>
             </div>
           ) : info?.error ? (
-            <div className="rounded-lg border border-[rgb(var(--color-error))]/25 bg-[rgb(var(--color-error))]/10 p-4">
-              <p className="text-sm text-[rgb(var(--color-error))]">{info.error}</p>
-            </div>
+            <DegradedStateView
+              variant="error"
+              label={t('degraded.error_label')}
+              title={t('modpacks.unable_to_load_info') || 'Unable to load modpack information'}
+              description={info.error}
+              footer={(
+                <Button variant="secondary" size="sm" onClick={onBack}>
+                  {t('general.back') || 'Back'}
+                </Button>
+              )}
+            />
           ) : info?.manifest ? (
             <>
               <div className="surface-soft p-4">

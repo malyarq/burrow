@@ -26,7 +26,7 @@ export interface ModpackRuntimeDependencyContext {
   };
 }
 
-type DependencyStatus = 'missing' | 'incompatible' | 'installed' | 'provided';
+type DependencyStatus = 'missing' | 'incompatible' | 'installed' | 'provided' | 'unverified';
 type DependencySource = 'runtime' | 'mod' | 'none';
 
 interface DependencyResolution {
@@ -161,6 +161,13 @@ export const ModpackDetailsModsTab: React.FC<ModpackDetailsModsTabProps> = ({
     (depId: string, versionRange?: string | string[]) => {
       const runtimeMatch = resolveRuntimeDependency(depId, runtimeContext);
       if (runtimeMatch.matched) {
+        if (versionRange && !runtimeMatch.version) {
+          return {
+            status: 'unverified',
+            source: 'runtime',
+          } satisfies DependencyResolution;
+        }
+
         const compatible = !versionRange || isVersionCompatible(runtimeMatch.version ?? '', versionRange);
         return {
           status: compatible ? 'provided' : 'incompatible',
@@ -357,7 +364,11 @@ const ModItem = React.memo<{
                   'rounded-full border px-2 py-0.5 text-xs font-medium',
                   mod.deps.some((dep) => {
                     const resolution = resolveDependency(dep.id, dep.versionRange);
-                    return dep.kind === 'depends' && (resolution.status === 'missing' || resolution.status === 'incompatible');
+                    return dep.kind === 'depends' && (
+                      resolution.status === 'missing' ||
+                      resolution.status === 'incompatible' ||
+                      resolution.status === 'unverified'
+                    );
                   })
                     ? 'border-red-500/30 bg-red-500/10 text-red-400'
                     : 'border-border/70 bg-background/70 text-secondary',
@@ -436,9 +447,12 @@ const ModItem = React.memo<{
               const requirementText = formatVersionRequirement(describeVersionRequirement(dep.versionRange), t);
               const isMissing = resolution.status === 'missing' && dep.kind === 'depends';
               const isIncompatible = resolution.status === 'incompatible';
+              const isUnverified = resolution.status === 'unverified';
               const isRuntimeProvided = resolution.status === 'provided';
               const statusText = isMissing
                 ? t('modpacks.dep_missing')
+                : isUnverified
+                  ? t('modpacks.dep_runtime_unverified')
                 : isIncompatible && resolution.source === 'runtime'
                   ? t('modpacks.dep_runtime_incompatible')
                   : isIncompatible
@@ -452,7 +466,7 @@ const ModItem = React.memo<{
                   <span
                     className={cn(
                       'h-2 w-2 rounded-full',
-                      isMissing ? 'bg-red-500' : isIncompatible ? 'bg-yellow-500' : 'bg-emerald-500',
+                      isMissing ? 'bg-red-500' : isIncompatible || isUnverified ? 'bg-yellow-500' : 'bg-emerald-500',
                     )}
                   />
                   <span className="font-mono text-foreground">{dep.id}</span>
@@ -467,7 +481,7 @@ const ModItem = React.memo<{
                     <span
                       className={cn(
                         'ml-auto font-medium',
-                        isMissing ? 'text-red-400' : isIncompatible ? 'text-yellow-400' : 'text-emerald-400',
+                        isMissing ? 'text-red-400' : isIncompatible || isUnverified ? 'text-yellow-400' : 'text-emerald-400',
                       )}
                     >
                       {statusText}

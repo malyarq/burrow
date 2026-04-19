@@ -8,12 +8,15 @@ import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { LazyImage } from '../ui/LazyImage';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
+import { DegradedStateView } from '../layout/DegradedStateView';
 import { cn } from '../../utils/cn';
 import { modsIPC } from '../../services/ipc/modsIPC';
 import { modpacksIPC } from '../../services/ipc/modpacksIPC';
 import type { ModpackMetadata } from '@shared/types/modpack';
 import { MINECRAFT_VERSIONS } from '../../utils/minecraftVersionsList';
 import { PackagePlus } from 'lucide-react';
+import { sanitizeUiText } from '../../utils/safeUiText';
+import { toDisplayErrorMessage } from '../../utils/displayError';
 
 interface AddModModalProps {
   modpackId: string;
@@ -45,6 +48,13 @@ interface ModVersion {
 
 type CheckedEntry = { mod: ModSearchResult; version: ModVersion } | 'loading';
 
+function getSafeModVersionLabel(version: ModVersion, fallback: string) {
+  return sanitizeUiText(
+    version.name,
+    sanitizeUiText(version.versionNumber, sanitizeUiText(version.versionId, fallback)),
+  );
+}
+
 export const AddModModal: React.FC<AddModModalProps> = ({
   modpackId,
   isOpen,
@@ -59,6 +69,7 @@ export const AddModModal: React.FC<AddModModalProps> = ({
   const [platform, setPlatform] = useState<'curseforge' | 'modrinth'>('modrinth');
   const [searchResults, setSearchResults] = useState<ModSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [checkedMods, setCheckedMods] = useState<Map<string, CheckedEntry>>(new Map());
   const [installing, setInstalling] = useState(false);
   const [modpackMetadata, setModpackMetadata] = useState<ModpackMetadata | null>(null);
@@ -102,6 +113,9 @@ export const AddModModal: React.FC<AddModModalProps> = ({
     if (offset === 0) setLoading(true);
     else setLoadingMore(true);
     try {
+      if (!append) {
+        setSearchError(null);
+      }
       const result = await modsIPC.searchMods({
         platform,
         query: debouncedQuery.trim() || '',
@@ -116,12 +130,21 @@ export const AddModModal: React.FC<AddModModalProps> = ({
       setTotal(data.total ?? 0);
     } catch (error) {
       console.error('Error searching mods:', error);
-      if (!append) setSearchResults([]);
+      if (!append) {
+        setSearchResults([]);
+        setTotal(0);
+        setSearchError(
+          toDisplayErrorMessage(
+            error,
+            t('modpacks.add_mod_search_error_desc') || 'We could not load catalog results right now.',
+          ),
+        );
+      }
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [debouncedQuery, platform, effectiveMCVersion, effectiveLoader, filterSort]);
+  }, [debouncedQuery, platform, effectiveMCVersion, effectiveLoader, filterSort, t]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -198,6 +221,7 @@ export const AddModModal: React.FC<AddModModalProps> = ({
   const activeStateBackground = getAccentStyles('soft-bg');
   const activeStateBorder = getAccentStyles('soft-border');
   const activeStateLabel = getAccentStyles('title');
+  const unavailableVersionLabel = t('modpacks.version_unavailable') || 'Version unavailable';
 
   const handleAddBulk = async () => {
     if (readyToAdd.length === 0) return;
@@ -364,7 +388,7 @@ export const AddModModal: React.FC<AddModModalProps> = ({
           </div>
         )}
 
-        {!loading && searchResults.length > 0 && (
+        {!loading && !searchError && searchResults.length > 0 && (
           <div
             className="space-y-2"
             data-testid="add-mod-modal-results"
@@ -417,7 +441,7 @@ export const AddModModal: React.FC<AddModModalProps> = ({
                     </h4>
                     {version && (
                       <p className="mt-0.5 text-xs text-secondary">
-                        {version.name} {version.mcVersions[0] && `(${version.mcVersions[0]})`}
+                        {getSafeModVersionLabel(version, unavailableVersionLabel)} {version.mcVersions[0] && `(${version.mcVersions[0]})`}
                       </p>
                     )}
                     {mod.description && !version && (
@@ -448,12 +472,37 @@ export const AddModModal: React.FC<AddModModalProps> = ({
           </div>
         )}
 
-        {!loading && searchResults.length === 0 && (
-          <div className="surface-muted py-10 text-center text-secondary">
-            {query.trim()
-              ? t('modpacks.no_mod_results') || 'No mods found for the current filters'
-              : t('modpacks.search_mod_placeholder') || 'Search mods...'}
-          </div>
+        {!loading && searchError ? (
+          <DegradedStateView
+            variant="error"
+            layout="inline"
+            label={t('degraded.error_label')}
+            title={t('modpacks.add_mod_search_error_title') || 'Unable to search right now'}
+            description={searchError}
+            footer={(
+              <Button variant="secondary" size="sm" onClick={() => void searchMods(0, false)}>
+                {t('modpacks.search_btn')}
+              </Button>
+            )}
+          />
+        ) : null}
+
+        {!loading && !searchError && searchResults.length === 0 && (
+          <DegradedStateView
+            variant={query.trim() ? 'zero-results' : 'empty'}
+            layout="inline"
+            label={t(query.trim() ? 'degraded.zero_results_label' : 'degraded.empty_label')}
+            title={
+              query.trim()
+                ? t('modpacks.no_mod_results') || 'No mods found for the current filters'
+                : t('modpacks.add_mod_empty_title') || 'Search the catalog'
+            }
+            description={
+              query.trim()
+                ? t('modpacks.mods_filter_hint') || 'Try a broader query or adjust the current filters.'
+                : t('modpacks.add_mod_empty_desc') || 'Use search and filters to find loader-compatible files for this modpack.'
+            }
+          />
         )}
 
         <div

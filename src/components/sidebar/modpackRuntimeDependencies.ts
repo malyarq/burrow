@@ -117,3 +117,25 @@ export function getModloaderDisplayLabel(
       return modLoader.type;
   }
 }
+
+export function getRuntimeDependencyWarningMessage(
+  warning: RuntimeDependencyWarning,
+  t: (key: string) => string,
+): string {
+  switch (warning) {
+    case 'optifine_requires_forge':
+      return translateWithFallback(
+        t,
+        'modpacks.optifine_requires_forge',
+        'OptiFine requires Forge in this launcher.',
+      );
+    case 'optifine_requires_supported_version':
+      return translateWithFallback(
+        t,
+        'modpacks.optifine_requires_supported_version',
+        'OptiFine is only available for supported Minecraft versions.',
+      );
+    default:
+      return warning;
+  }
+}
