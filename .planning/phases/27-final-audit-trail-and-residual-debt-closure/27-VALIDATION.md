@@ -1,7 +1,7 @@
 ---
 phase: 27
 slug: final-audit-trail-and-residual-debt-closure
-status: draft
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-20
@@ -10,6 +10,8 @@ created: 2026-04-20
 # Phase 27 — Validation Strategy
 
 > Per-phase validation contract for feedback sampling during execution.
+
+Retrospective closure note: this validation artifact is complete as a retrospective, backfilled record recovered from the Phase 27 docs-only cleanup work and its recorded summaries. The task map below remains the historical execution contract; the phase closes archive-trail debt without pretending any product or infrastructure rerun occurred.
 
 ---
 
@@ -70,5 +72,6 @@ All phase behaviors should be expressible through automated shell checks or boun
 - [x] No watch-mode flags
 - [x] Feedback latency < 20s for docs-only tasks
 - [x] `nyquist_compliant: true` set in frontmatter
+- [x] Retrospective sign-off is backfilled from the Phase 27 docs-only cleanup summaries and final closeout gate
 
-**Approval:** pending
+**Approval:** complete
