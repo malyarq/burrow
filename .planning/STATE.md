@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v0.5.0
 milestone_name: Experience Reinvention And Brand Reset
-current_phase: 26
-current_phase_name: 26-verification-artifact-recovery-for-theme-fallback-and-release-truth
+current_phase: 27
+current_phase_name: 27-final-audit-trail-and-residual-debt-closure
 current_plan: 4
-status: Phase 26 complete; milestone re-audit ready
-stopped_at: Phase 26 complete
-last_updated: "2026-04-20T00:14:23+0300"
-last_activity: 2026-04-20 - Closed Phase 26 on recovered verification completeness, planning-truth rollover, and explicit milestone re-audit readiness
+status: Phase 27 complete; milestone final audit ready
+stopped_at: Phase 27 complete
+last_updated: "2026-04-20T01:04:48+0300"
+last_activity: 2026-04-20 - Closed Phase 27 on final audit-trail cleanup, residual retirement, and explicit milestone re-audit readiness
 progress:
-  total_phases: 8
-  completed_phases: 7
-  total_plans: 28
-  completed_plans: 28
+  total_phases: 9
+  completed_phases: 9
+  total_plans: 36
+  completed_plans: 36
   percent: 100
 ---
 
@@ -24,19 +24,19 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-17)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Rerun the v0.5.0 milestone audit from the recovered proof set and archive only after the audit accepts the now-complete verification and validation layer.
+**Current focus:** Rerun the v0.5.0 audit milestone from the cleaned proof set and archive only after the audit returns a clean pass.
 
 ## Current Position
 
-Current Phase: 26
-Current Phase Name: 26-verification-artifact-recovery-for-theme-fallback-and-release-truth
+Current Phase: 27
+Current Phase Name: 27-final-audit-trail-and-residual-debt-closure
 Current Plan: 4
-Total Phases: 8
+Total Phases: 9
 Total Plans in Phase: 4
-Phase: 26
+Phase: 27
 Plan: Complete
-Status: Phase 26 complete; milestone re-audit ready
-Last activity: 2026-04-20 - Closed Phase 26 on recovered verification completeness, planning-truth rollover, and explicit milestone re-audit readiness
+Status: Phase 27 complete; milestone final audit ready
+Last activity: 2026-04-20 - Closed Phase 27 on final audit-trail cleanup, residual retirement, and explicit milestone re-audit readiness
 
 Progress: [██████████] 100%
 
@@ -62,8 +62,8 @@ Progress: [██████████] 100%
 | 14. Manual Verification And Release Truth | 4 | 0.9h | 14 min |
 
 **Recent Trend:**
-- Last 5 plans: 25-04, 26-01, 26-02, 26-03, 26-04
-- Trend: Phase 26 closed theme, fallback, and release-truth audit recovery; the milestone is now positioned for an immediate re-audit rather than additional implementation.
+- Last 5 plans: 26-04, 27-01, 27-02, 27-03, 27-04
+- Trend: Phase 27 removed the remaining audit-trail debt and converted the milestone from cleanup-in-progress to final-audit-ready.
 
 *Updated after each plan completion*
 - Previous milestone totals retained below as historical context

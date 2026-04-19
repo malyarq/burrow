@@ -2,10 +2,10 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Phase 27 planned `2026-04-20`
+**Status:** Phase 27 complete `2026-04-20`
 **Phases:** 19-27
 **Requirements:** 23  
-**Next step:** Execute Phase 27 to clear final audit-trail and residual technical debt before archive
+**Next step:** Rerun audit milestone to confirm `v0.5.0` passes cleanly before archive
 
 ## Overview
 
@@ -125,7 +125,7 @@ After the milestone audit, the remaining work is no longer product-scope recover
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
-- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-26 are complete; Phase 27 is planned to clear the last audit-trail and residual-debt blockers before archive.
+- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-27 are complete; the milestone is ready for a final audit rerun before archive.
 
 ## Progress
 
@@ -134,4 +134,4 @@ After the milestone audit, the remaining work is no longer product-scope recover
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 24/24 + recovery 25/26 complete + cleanup 27 planned | Final cleanup planned | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 36/36 | Re-audit ready | — |
