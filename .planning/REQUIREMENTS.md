@@ -7,16 +7,16 @@
 
 ### Shell & Layout Truth
 
-- [ ] **SHELL-01**: User can use every major launcher surface without content rendering under the custom title bar.
-- [ ] **SHELL-02**: User can scroll dense screens without sticky headers or fixed footers hiding actionable content.
-- [ ] **SHELL-03**: User sees one unambiguous primary action per launcher context.
+- [x] **SHELL-01**: User can use every major launcher surface without content rendering under the custom title bar.
+- [x] **SHELL-02**: User can scroll dense screens without sticky headers or fixed footers hiding actionable content.
+- [x] **SHELL-03**: User sees one unambiguous primary action per launcher context.
 - [ ] **SHELL-04**: User can use modpack and wizard flows at shipped desktop widths without clipped controls, orphan filters, or broken spacing.
 
 ### Brand System & Surface Language
 
-- [ ] **BRAND-01**: User sees one consistent FMCL visual language across shell, modpacks, settings, modals, empty states, and error states.
-- [ ] **BRAND-02**: User sees deliberate logo and wordmark usage instead of arbitrary or repetitive branding.
-- [ ] **BRAND-03**: User sees product-owned artwork fallbacks that feel intentional when remote or local media is missing.
+- [x] **BRAND-01**: User sees one consistent FMCL visual language across shell, modpacks, settings, modals, empty states, and error states.
+- [x] **BRAND-02**: User sees deliberate logo and wordmark usage instead of arbitrary or repetitive branding.
+- [x] **BRAND-03**: User sees product-owned artwork fallbacks that feel intentional when remote or local media is missing.
 
 ### Dense Surface IA & CTA Hierarchy
 
@@ -68,13 +68,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 25 | Pending |
-| SHELL-02 | Phase 25 | Pending |
-| SHELL-03 | Phase 25 | Pending |
+| SHELL-01 | Phase 25 | Complete |
+| SHELL-02 | Phase 25 | Complete |
+| SHELL-03 | Phase 25 | Complete |
 | SHELL-04 | Phase 25 | Pending |
-| BRAND-01 | Phase 25 | Pending |
-| BRAND-02 | Phase 25 | Pending |
-| BRAND-03 | Phase 25 | Pending |
+| BRAND-01 | Phase 25 | Complete |
+| BRAND-02 | Phase 25 | Complete |
+| BRAND-03 | Phase 25 | Complete |
 | DENSE-01 | Phase 25 | Pending |
 | DENSE-02 | Phase 25 | Pending |
 | DENSE-03 | Phase 25 | Pending |
