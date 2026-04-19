@@ -2,10 +2,10 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Phase 25 planned `2026-04-19`
+**Status:** Phase 25 complete `2026-04-19`
 **Phases:** 19-26  
 **Requirements:** 23  
-**Next step:** Execute Phase 25 to recover audit-grade verification artifacts for Phases 19-21
+**Next step:** Plan Phase 26 to recover theme, fallback, and release-truth verification artifacts
 
 ## Overview
 
@@ -113,7 +113,7 @@ After the milestone audit, the remaining work is explicitly proof-layer recovery
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
-- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-24 shipped, audit found proof-layer gaps, and recovery Phases 25-26 are now planned before archive.
+- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-25 are complete; Phase 26 remains to finish audit recovery and Nyquist closure before archive.
 
 ## Progress
 
@@ -122,4 +122,4 @@ After the milestone audit, the remaining work is explicitly proof-layer recovery
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-26 | 24/24 + recovery pending | Gap closure planned | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-26 | 24/24 + recovery 25/26 complete | Gap closure in progress | — |
