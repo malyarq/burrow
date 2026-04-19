@@ -1,7 +1,7 @@
 ---
 phase: 23-fallback-error-and-placeholder-productization
 slug: fallback-error-and-placeholder-productization
-status: draft
+status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-19
@@ -85,6 +85,13 @@ These files are not required for wave 1 feedback; they become part of the execut
 
 ---
 
+## Retrospective Recovery Note
+
+- Phase 26 normalized this validation record retrospectively and backfilled the final sign-off from shipped Phase 23 summaries, the original task-level verification contract above, and the later Phase 24 degraded closeout plus final gate evidence.
+- The per-task map remains the historical execution record from Phase 23. This document now records recovered closure truth; it does not claim that Phase 26 reran the phase from scratch.
+
+---
+
 ## Validation Sign-Off
 
 - [x] All tasks have `<automated>` verify or existing infrastructure dependencies
@@ -92,6 +99,7 @@ These files are not required for wave 1 feedback; they become part of the execut
 - [x] New Phase 23 structural tests are scheduled into later waves instead of blocking early feedback loops
 - [x] No watch-mode flags
 - [x] Final full matrix becomes mandatory only after wave 3 test seams land
+- [x] Retrospective sign-off is recovered from shipped evidence and final gates while preserving the original task map as history
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** complete
