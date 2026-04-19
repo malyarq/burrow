@@ -10,6 +10,11 @@ requirements:
 
 # Phase 19 Verification
 
+## Recovery Context
+
+- `v0.5.0-MILESTONE-AUDIT.md` marked `SHELL-01`, `SHELL-02`, and `SHELL-03` as orphaned because Phase 19 shipped summaries and closeout evidence but no `19-VERIFICATION.md`.
+- Phase 25 recovers auditability from shipped Phase 19 evidence only. No new shell behavior, layout implementation, or CTA logic was introduced during recovery.
+
 ## Evidence Basis
 
 - Verified from `19-VALIDATION.md`, `19-01-SUMMARY.md`, `19-02-SUMMARY.md`, `19-03-SUMMARY.md`, and `19-04-SUMMARY.md`.
@@ -26,3 +31,14 @@ requirements:
 | SHELL-01 | Verified | `19-01-SUMMARY.md` proves the shared `AppLayout` safe-area seam below the custom title bar, and `19-04-SUMMARY.md` proves the same contract inside the real shell through launcher-home and deep-route manual proof states. | No shipped blocker identified in Phase 19 evidence. |
 | SHELL-02 | Verified | `19-03-SUMMARY.md` proves flow-first page and modal endings for modpack details, create, add-content, and add-mod flows, and `19-04-SUMMARY.md` confirms the same surfaces in shell-integrated manual proof plus the focused regression gate. | No shipped blocker identified in Phase 19 evidence. |
 | SHELL-03 | Verified | `19-02-SUMMARY.md` proves the shell-versus-route CTA ownership seam and one dominant details action, and `19-04-SUMMARY.md` confirms the same hierarchy in the real shell across launcher-home and route-owned modpack proof states. | No shipped blocker identified in Phase 19 evidence. |
+
+## Bounded Residuals
+
+- `19-VALIDATION.md` still carries `status: draft`, so Nyquist closure for the validation artifact remains a later proof-layer task rather than something Phase 25 silently claims as already repaired.
+- The shipped shell evidence itself is green: the owned manual proof routes and the focused gate recorded in `19-04-SUMMARY.md` are the authoritative proof for Phase 19 behavior.
+
+## Audit Outcome
+
+- Phase 19 now has requirement-level verification evidence for `SHELL-01`, `SHELL-02`, and `SHELL-03`.
+- The orphaned-proof blocker identified by the milestone audit is closed for shell invariants.
+- Remaining follow-up is explicitly limited to validation-document/Nyquist closure, not Phase 19 product behavior.
