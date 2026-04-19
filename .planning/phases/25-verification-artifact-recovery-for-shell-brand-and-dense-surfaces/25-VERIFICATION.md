@@ -44,11 +44,11 @@ requirements:
 
 ## Bounded Residuals
 
-- Phase 25 closes orphaned proof coverage for Phases 19-21 only. Validation documents for Phases 19-21 still carry `status: draft`, so Nyquist closure remains explicitly deferred to Phase 26.
-- The next milestone-audit rerun still depends on Phase 26 recovering Phase 22-24 requirement evidence and validation-state closure. Phase 25 does not claim those gaps are already closed.
+- Phase 25 closes orphaned proof coverage for Phases 19-21 only. Later phases were still responsible for recovering theme, fallback, and release-truth evidence, but that dependency is now historically closed rather than active debt.
+- The recovered shell, brand, and dense-surface proof remains intentionally bounded to shipped evidence from Phases 19-21; it does not claim ownership of unrelated milestone cleanup beyond that scope.
 
 ## Audit Outcome
 
 - Phase 25 closes the milestone-audit blocker for missing Phase 19-21 `VERIFICATION.md` artifacts.
 - All shell, brand, and dense-surface requirements assigned to Phase 25 are now discoverable in both recovered proof and `REQUIREMENTS.md`.
-- Remaining milestone closure work is isolated to Phase 26 proof recovery and Nyquist cleanup rather than the already shipped Phase 19-21 product behavior.
+- Remaining milestone closure work sits outside the already shipped Phase 19-21 product behavior and no longer blocks the recovered proof set landed by Phase 25.
