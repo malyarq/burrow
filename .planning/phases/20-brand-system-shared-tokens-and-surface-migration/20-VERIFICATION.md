@@ -10,6 +10,11 @@ requirements:
 
 # Phase 20 Verification
 
+## Recovery Context
+
+- `v0.5.0-MILESTONE-AUDIT.md` marked `BRAND-01`, `BRAND-02`, and `BRAND-03` as orphaned because Phase 20 shipped summaries and closeout evidence but no `20-VERIFICATION.md`.
+- Phase 25 recovers auditability from shipped Phase 20 evidence only. No new brand canon, shell migration, or fallback implementation was introduced during recovery.
+
 ## Evidence Basis
 
 - Verified from `20-VALIDATION.md`, `20-01-SUMMARY.md`, `20-02-SUMMARY.md`, `20-03-SUMMARY.md`, and `20-04-SUMMARY.md`.
@@ -26,3 +31,14 @@ requirements:
 | BRAND-01 | Verified | `20-01-SUMMARY.md` proves the canonical FMCL brand contract and product-owned brand tokens, `20-02-SUMMARY.md` proves shell-owned surface migration, and `20-04-SUMMARY.md` proves the same language inside real-shell manual verification views. | No shipped blocker identified in Phase 20 evidence. |
 | BRAND-02 | Verified | `20-01-SUMMARY.md` proves deliberate mark, wordmark, and app-icon role separation, `20-02-SUMMARY.md` proves that shell surfaces stopped using arbitrary raw text-brand variants, and `20-04-SUMMARY.md` confirms the resulting logo and wordmark discipline in shell-integrated proof. | No shipped blocker identified in Phase 20 evidence. |
 | BRAND-03 | Verified | `20-03-SUMMARY.md` proves the shared neutral artwork fallback seam and route adoption on high-visibility media consumers, and `20-04-SUMMARY.md` proves the same behavior with deterministic no-art browser and resource-pack fixtures in the real shell. | No shipped blocker identified in Phase 20 evidence. |
+
+## Bounded Residuals
+
+- `20-VALIDATION.md` still carries `status: draft`, so Nyquist closure for the validation artifact remains a later proof-layer task rather than something Phase 25 silently claims as already repaired.
+- The shipped brand evidence itself is green: the owned shell-integrated proof routes and the focused closeout matrix recorded in `20-04-SUMMARY.md` are the authoritative proof for Phase 20 behavior.
+
+## Audit Outcome
+
+- Phase 20 now has requirement-level verification evidence for `BRAND-01`, `BRAND-02`, and `BRAND-03`.
+- The orphaned-proof blocker identified by the milestone audit is closed for brand-system and artwork-fallback work.
+- Remaining follow-up is explicitly limited to validation-document/Nyquist closure, not Phase 20 product visuals or fallback behavior.
