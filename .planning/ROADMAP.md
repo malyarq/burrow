@@ -2,16 +2,18 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Phase 24 complete `2026-04-19`
-**Phases:** 19-24  
+**Status:** Gap closure phases planned `2026-04-19`
+**Phases:** 19-26  
 **Requirements:** 23  
-**Next step:** Complete milestone archive and prepare the next roadmap cycle
+**Next step:** Plan Phase 25 to restore milestone auditability and close proof-layer gaps
 
 ## Overview
 
 `v0.5.0` is a redesign-quality milestone for the existing FMCL launcher, not a feature-expansion milestone. The plan starts by hardening the shipped desktop baseline, then moves through brand and token reset, dense-surface IA and CTA hierarchy, theme and locale truth, degraded-state productization, and finally verification plus release-facing truth.
 
 The roadmap is intentionally ordered to prevent another "screen-by-screen repaint" cycle: shared shell and state invariants land before broad surface migration, and fallback/error quality is treated as milestone-owned product scope rather than cleanup.
+
+After the milestone audit, the remaining work is explicitly proof-layer recovery rather than new product scope. Phases 25-26 exist to backfill missing verification artifacts, restore requirement-level evidence, and close Nyquist discovery gaps so the shipped milestone can be archived honestly.
 
 ## Phases
 
@@ -82,12 +84,36 @@ The roadmap is intentionally ordered to prevent another "screen-by-screen repain
 3. Verification evidence covers dark/light themes and EN/RU locales on milestone-owned surfaces.
 4. Release-facing docs and planning truth match the shipped redesign behavior at closeout.
 
+### Phase 25: Verification Artifact Recovery For Shell, Brand, And Dense Surfaces
+
+**Goal:** Restore milestone auditability for the shipped shell, brand, and dense-surface work by reconstructing requirement-backed verification artifacts for Phases 19-21 without reopening product scope.
+**Depends on:** Phase 24
+**Requirements:** `SHELL-01`, `SHELL-02`, `SHELL-03`, `SHELL-04`, `BRAND-01`, `BRAND-02`, `BRAND-03`, `DENSE-01`, `DENSE-02`, `DENSE-03`, `DENSE-04`
+**Gap Closure:** Closes audit orphan gaps for Phases 19-21.
+**Success criteria:**
+1. `19-VERIFICATION.md`, `20-VERIFICATION.md`, and `21-VERIFICATION.md` exist and map every assigned REQ-ID to shipped evidence and closeout gates.
+2. The verification artifacts distinguish real bounded residuals from proof reconstruction work instead of pretending the phases had no closeout risk.
+3. Requirements traceability points shell, brand, and dense-surface requirements at the owning gap-closure phase while the audit recovery is in progress.
+4. The recovered proof stays grounded in existing summaries, validation records, and manual verification seams rather than inventing net-new product work.
+
+### Phase 26: Verification Artifact Recovery For Theme, Fallback, And Release Truth
+
+**Goal:** Close the remaining audit blockers by backfilling theme and degraded-state verification artifacts, expanding Phase 24 requirement evidence, and finishing Nyquist closure for the shipped milestone.
+**Depends on:** Phase 25
+**Requirements:** `THEME-01`, `THEME-02`, `THEME-03`, `THEME-04`, `FALL-01`, `FALL-02`, `FALL-03`, `FALL-04`, `VER-01`, `VER-02`, `VER-03`, `VER-04`
+**Gap Closure:** Closes audit orphan gaps for Phases 22-24 and the remaining Nyquist partial state.
+**Success criteria:**
+1. `22-VERIFICATION.md` and `23-VERIFICATION.md` exist and map every assigned REQ-ID to shipped evidence and final gates.
+2. `24-VERIFICATION.md` includes explicit requirement-level evidence for `VER-01` through `VER-04`.
+3. Validation artifacts for Phases 19-23 no longer present as draft/partial in milestone audit discovery.
+4. The milestone can be re-audited without reopening redesign implementation scope.
+
 ## Milestones
 
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
-- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-24 complete, closeout verified 2026-04-19; milestone archive pending.
+- ◆ **v0.5.0 Experience Reinvention And Brand Reset** — Phases 19-24 shipped, audit found proof-layer gaps, and recovery Phases 25-26 are now planned before archive.
 
 ## Progress
 
@@ -96,4 +122,4 @@ The roadmap is intentionally ordered to prevent another "screen-by-screen repain
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-24 | 24/24 | Phase 24 complete | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-26 | 24/24 + recovery pending | Gap closure planned | — |

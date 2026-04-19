@@ -7,44 +7,44 @@
 
 ### Shell & Layout Truth
 
-- [x] **SHELL-01**: User can use every major launcher surface without content rendering under the custom title bar.
-- [x] **SHELL-02**: User can scroll dense screens without sticky headers or fixed footers hiding actionable content.
-- [x] **SHELL-03**: User sees one unambiguous primary action per launcher context.
-- [x] **SHELL-04**: User can use modpack and wizard flows at shipped desktop widths without clipped controls, orphan filters, or broken spacing.
+- [ ] **SHELL-01**: User can use every major launcher surface without content rendering under the custom title bar.
+- [ ] **SHELL-02**: User can scroll dense screens without sticky headers or fixed footers hiding actionable content.
+- [ ] **SHELL-03**: User sees one unambiguous primary action per launcher context.
+- [ ] **SHELL-04**: User can use modpack and wizard flows at shipped desktop widths without clipped controls, orphan filters, or broken spacing.
 
 ### Brand System & Surface Language
 
-- [x] **BRAND-01**: User sees one consistent FMCL visual language across shell, modpacks, settings, modals, empty states, and error states.
-- [x] **BRAND-02**: User sees deliberate logo and wordmark usage instead of arbitrary or repetitive branding.
-- [x] **BRAND-03**: User sees product-owned artwork fallbacks that feel intentional when remote or local media is missing.
+- [ ] **BRAND-01**: User sees one consistent FMCL visual language across shell, modpacks, settings, modals, empty states, and error states.
+- [ ] **BRAND-02**: User sees deliberate logo and wordmark usage instead of arbitrary or repetitive branding.
+- [ ] **BRAND-03**: User sees product-owned artwork fallbacks that feel intentional when remote or local media is missing.
 
 ### Dense Surface IA & CTA Hierarchy
 
-- [x] **DENSE-01**: User can scan and operate modpack browser filters, cards, and actions without wrapped or ambiguous controls.
-- [x] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
-- [x] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
-- [x] **DENSE-04**: User can understand counts, summaries, and metadata on dense surfaces without unlabeled or contradictory values.
+- [ ] **DENSE-01**: User can scan and operate modpack browser filters, cards, and actions without wrapped or ambiguous controls.
+- [ ] **DENSE-02**: User can read and use modpack detail tabs and action groups without broken wrapping or duplicated CTAs.
+- [ ] **DENSE-03**: User can create or edit modpack configuration with truthful summaries for version, loader, and dependencies.
+- [ ] **DENSE-04**: User can understand counts, summaries, and metadata on dense surfaces without unlabeled or contradictory values.
 
 ### Theme, Locale & State Fidelity
 
-- [x] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
-- [x] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
-- [x] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
-- [x] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
+- [ ] **THEME-01**: User can clearly distinguish selected, active, focus, hover, and disabled states in both dark and light themes.
+- [ ] **THEME-02**: User sees accent color applied consistently across controls that claim to use it.
+- [ ] **THEME-03**: User can choose presets that are visually distinct and truthful representations of the launcher appearance.
+- [ ] **THEME-04**: User sees dates, numbers, and translated copy consistently with the active locale on redesigned surfaces.
 
 ### Fallback, Error & Placeholder Productization
 
-- [x] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
-- [x] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
-- [x] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
-- [x] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
+- [ ] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
+- [ ] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
+- [ ] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
+- [ ] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
 
 ### Verification, Regression & Release Truth
 
-- [x] **VER-01**: Team can review deterministic manual verification routes for redesigned core surfaces and degraded states.
-- [x] **VER-02**: Team can catch screenshot regressions on milestone-owned views before release.
-- [x] **VER-03**: Team can verify redesigned surfaces across dark/light themes and EN/RU locales before release.
-- [x] **VER-04**: Release-facing docs and milestone truth stay aligned with shipped redesign behavior.
+- [ ] **VER-01**: Team can review deterministic manual verification routes for redesigned core surfaces and degraded states.
+- [ ] **VER-02**: Team can catch screenshot regressions on milestone-owned views before release.
+- [ ] **VER-03**: Team can verify redesigned surfaces across dark/light themes and EN/RU locales before release.
+- [ ] **VER-04**: Release-facing docs and milestone truth stay aligned with shipped redesign behavior.
 
 ## v2 Requirements
 
@@ -68,29 +68,29 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-01 | Phase 19 | Complete |
-| SHELL-02 | Phase 19 | Complete |
-| SHELL-03 | Phase 19 | Complete |
-| SHELL-04 | Phase 21 | Complete |
-| BRAND-01 | Phase 20 | Complete |
-| BRAND-02 | Phase 20 | Complete |
-| BRAND-03 | Phase 20 | Complete |
-| DENSE-01 | Phase 21 | Complete |
-| DENSE-02 | Phase 21 | Complete |
-| DENSE-03 | Phase 21 | Complete |
-| DENSE-04 | Phase 21 | Complete |
-| THEME-01 | Phase 22 | Complete |
-| THEME-02 | Phase 22 | Complete |
-| THEME-03 | Phase 22 | Complete |
-| THEME-04 | Phase 22 | Complete |
-| FALL-01 | Phase 23 | Complete |
-| FALL-02 | Phase 23 | Complete |
-| FALL-03 | Phase 23 | Complete |
-| FALL-04 | Phase 23 | Complete |
-| VER-01 | Phase 24 | Complete |
-| VER-02 | Phase 24 | Complete |
-| VER-03 | Phase 24 | Complete |
-| VER-04 | Phase 24 | Complete |
+| SHELL-01 | Phase 25 | Pending |
+| SHELL-02 | Phase 25 | Pending |
+| SHELL-03 | Phase 25 | Pending |
+| SHELL-04 | Phase 25 | Pending |
+| BRAND-01 | Phase 25 | Pending |
+| BRAND-02 | Phase 25 | Pending |
+| BRAND-03 | Phase 25 | Pending |
+| DENSE-01 | Phase 25 | Pending |
+| DENSE-02 | Phase 25 | Pending |
+| DENSE-03 | Phase 25 | Pending |
+| DENSE-04 | Phase 25 | Pending |
+| THEME-01 | Phase 26 | Pending |
+| THEME-02 | Phase 26 | Pending |
+| THEME-03 | Phase 26 | Pending |
+| THEME-04 | Phase 26 | Pending |
+| FALL-01 | Phase 26 | Pending |
+| FALL-02 | Phase 26 | Pending |
+| FALL-03 | Phase 26 | Pending |
+| FALL-04 | Phase 26 | Pending |
+| VER-01 | Phase 26 | Pending |
+| VER-02 | Phase 26 | Pending |
+| VER-03 | Phase 26 | Pending |
+| VER-04 | Phase 26 | Pending |
 
 **Coverage:**
 - v1 requirements: 23 total
@@ -99,4 +99,4 @@
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-19 after completing Phase 24 verification, screenshot gating, and release-truth sync*
+*Last updated: 2026-04-19 after the milestone audit created gap-closure Phases 25-26 and reset unsatisfied proof-layer requirements to pending*
