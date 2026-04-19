@@ -37,7 +37,7 @@
 - [x] **FALL-01**: User never sees raw template placeholders, unresolved bindings, or developer-facing debug strings in shipped UI.
 - [x] **FALL-02**: User sees productized empty, missing-data, and zero-result states instead of ambiguous blanks or orphan values.
 - [x] **FALL-03**: User sees a user-safe fatal error surface with recovery guidance instead of raw React internals.
-- [ ] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
+- [x] **FALL-04**: User sees dependency, availability, and degraded-data states expressed through truthful product copy rather than misleading missing-state logic.
 
 ### Verification, Regression & Release Truth
 
@@ -86,7 +86,7 @@
 | FALL-01 | Phase 23 | Complete |
 | FALL-02 | Phase 23 | Complete |
 | FALL-03 | Phase 23 | Complete |
-| FALL-04 | Phase 23 | Pending |
+| FALL-04 | Phase 23 | Complete |
 | VER-01 | Phase 24 | Pending |
 | VER-02 | Phase 24 | Pending |
 | VER-03 | Phase 24 | Pending |
@@ -99,4 +99,4 @@
 
 ---
 *Requirements defined: 2026-04-17*  
-*Last updated: 2026-04-18 after completing Phase 22 plan 01 theme runtime truth*
+*Last updated: 2026-04-19 after completing Phase 23 plan 04 degraded-flow closeout truth*

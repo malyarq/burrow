@@ -2,10 +2,10 @@
 
 ## Active Milestone: v0.5.0 Experience Reinvention And Brand Reset
 
-**Status:** Phase 23 in progress `2026-04-19`
+**Status:** Phase 23 complete `2026-04-19`
 **Phases:** 19-24  
 **Requirements:** 23  
-**Next step:** Execute Phase 23 plan 04 high-risk placeholder, dependency, and closeout truth
+**Next step:** Plan Phase 24 verification, locale, and release truth
 
 ## Overview
 
@@ -96,4 +96,4 @@ The roadmap is intentionally ordered to prevent another "screen-by-screen repain
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
-| v0.5.0 Experience Reinvention And Brand Reset | 19-24 | 19/24 | Phase 23 in progress | — |
+| v0.5.0 Experience Reinvention And Brand Reset | 19-24 | 20/24 | Phase 23 complete | — |
