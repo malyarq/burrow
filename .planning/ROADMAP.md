@@ -4,7 +4,7 @@
 
 **Active milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion
 **Latest shipped milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (`2026-04-20`)
-**Next step:** Execute Phase 29
+**Next step:** Execute Phase 29 Plan 02
 
 ## Latest Archive
 
@@ -40,7 +40,7 @@ Archive:
 
 **Goal:** Make the core modpack browse, detail, dependency, and creation seams smaller, clearer, and grounded in one authoritative runtime summary rather than split renderer interpretations.
 **Owns requirements:** `MODPACK-01`, `MODPACK-02`, `MODPACK-03`, `MODPACK-04`, `MODPACK-05`, `MODPACK-06`
-**Execution progress:** 0/4 plans complete (`29-01` through `29-04` planned)
+**Execution progress:** 1/4 plans complete (`29-01` complete; `29-02` through `29-04` planned)
 
 **Observable success criteria:**
 
@@ -77,7 +77,7 @@ Archive:
 
 ## Milestones
 
-- 🟡 **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases 28-31, roadmap created 2026-04-20. Next: Phase 29 execution.
+- 🟡 **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases 28-31, roadmap created 2026-04-20. Next: Phase 29 Plan 02 execution.
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
@@ -91,4 +91,4 @@ Archive:
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
 | v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 36/36 | Shipped | 2026-04-20 |
-| v0.6.0 Feedback-Driven Stabilization And Expansion | 28-31 | 4/8 | In Progress | — |
+| v0.6.0 Feedback-Driven Stabilization And Expansion | 28-31 | 5/8 | In Progress | — |
