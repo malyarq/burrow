@@ -33,8 +33,11 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
   getAccentStyles,
 }) => {
   return (
-    <section className="surface-card flex h-full flex-col gap-4 p-4" data-testid="modpack-details-actions">
-      <div className="space-y-3">
+    <section
+      className="flex h-full flex-col gap-3 rounded-2xl border border-border/60 bg-background/70 p-3 sm:p-4"
+      data-testid="modpack-details-actions"
+    >
+      <div className="space-y-2">
         <div className="kicker-label">{t('general.play')}</div>
         <Button
           variant="primary"
@@ -52,7 +55,7 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
         <div
           data-testid="modpack-details-update-notice"
           data-update-scope="modpack-local"
-          className="space-y-3 rounded-2xl border border-blue-200/60 bg-blue-50/55 p-4 text-blue-950 dark:border-blue-900/70 dark:bg-blue-950/20 dark:text-blue-100"
+          className="space-y-2 rounded-2xl border border-blue-200/60 bg-blue-50/55 p-3 text-blue-950 dark:border-blue-900/70 dark:bg-blue-950/20 dark:text-blue-100"
         >
           <div className="space-y-1">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-800/90 dark:text-blue-200/90">
@@ -77,20 +80,20 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
         </div>
       )}
 
-      <div className="border-t border-border/60 pt-4">
+      <div className="border-t border-border/60 pt-3">
         <div className="kicker-label">{t('modpacks.actions_title')}</div>
-        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
-          <Button variant="secondary" onClick={onRename} className="w-full">
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          <Button variant="secondary" size="sm" onClick={onRename} className="w-full">
             {t('modpacks.rename')}
           </Button>
-          <Button variant="secondary" onClick={onDuplicate} className="w-full">
+          <Button variant="secondary" size="sm" onClick={onDuplicate} className="w-full">
             {t('modpacks.duplicate')}
           </Button>
-          <Button variant="secondary" onClick={onExport} className="w-full">
+          <Button variant="secondary" size="sm" onClick={onExport} className="w-full">
             {t('modpacks.export') || 'Экспорт'}
           </Button>
           {canDelete && (
-            <Button variant="danger" onClick={onDelete} className="w-full">
+            <Button variant="danger" size="sm" onClick={onDelete} className="w-full">
               {t('modpacks.delete')}
             </Button>
           )}
