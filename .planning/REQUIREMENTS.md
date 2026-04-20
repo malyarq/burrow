@@ -62,15 +62,34 @@
 
 ## Traceability
 
-Roadmap mapping will be filled during milestone roadmap creation.
+Roadmap mapping is now fixed for milestone `v0.6.0`, with each requirement owned by exactly one phase.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| SHELL-05 | Phase 28 | Planned |
+| SHELL-06 | Phase 28 | Planned |
+| SHELL-07 | Phase 28 | Planned |
+| SHELL-08 | Phase 28 | Planned |
+| MODPACK-01 | Phase 29 | Planned |
+| MODPACK-02 | Phase 29 | Planned |
+| MODPACK-03 | Phase 29 | Planned |
+| MODPACK-04 | Phase 29 | Planned |
+| MODPACK-05 | Phase 29 | Planned |
+| MODPACK-06 | Phase 29 | Planned |
+| SETTINGS-01 | Phase 30 | Planned |
+| SETTINGS-02 | Phase 30 | Planned |
+| SETTINGS-03 | Phase 30 | Planned |
+| SETTINGS-04 | Phase 30 | Planned |
+| CONTENT-01 | Phase 31 | Planned |
+| CONTENT-02 | Phase 31 | Planned |
+| CONTENT-03 | Phase 31 | Planned |
+| CONTENT-04 | Phase 31 | Planned |
+| CONTENT-05 | Phase 31 | Planned |
 
 **Coverage:**
 - v0.6.0 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19 ⚠️
+- Mapped to phases: 19
+- Unmapped: 0 ✅
 
 ---
 *Requirements defined: 2026-04-20*  

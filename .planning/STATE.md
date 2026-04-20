@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v0.6.0
 milestone_name: Feedback-Driven Stabilization And Expansion
-current_phase: null
-current_phase_name: null
+current_phase: 28
+current_phase_name: Product Restraint And Native Shell Truth
 current_plan: null
-status: Defining requirements for milestone `v0.6.0`
+status: Milestone roadmap created; Phase `28` is queued for planning
 stopped_at: null
-last_updated: "2026-04-20T02:35:00+0300"
-last_activity: 2026-04-20 - Started milestone `v0.6.0` and reset planning state for requirements definition
+last_updated: "2026-04-20T12:35:00+0300"
+last_activity: 2026-04-20 - Created the `v0.6.0` milestone roadmap and queued Phase 28 as the next phase
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -24,16 +24,16 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Define milestone `v0.6.0` requirements and roadmap from the shipped `v0.5.0` baseline.
+**Current focus:** Plan Phase `28` from the approved `v0.6.0` milestone roadmap.
 
 ## Current Position
 
 - Active milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Latest shipped milestone: `v0.5.0` — Experience Reinvention And Brand Reset
-- Current phase: Not started (defining requirements)
+- Current phase: Phase 28 — Product Restraint And Native Shell Truth (queued, not started)
 - Current plan: —
-- Status: defining requirements
-- Last activity: 2026-04-20 - milestone `v0.6.0` started and planning reset
+- Status: milestone roadmap created; awaiting Phase 28 planning
+- Last activity: 2026-04-20 - milestone roadmap created and Phase 28 queued next
 
 Progress: [░░░░░░░░░░] 0% for the active milestone
 
@@ -42,5 +42,6 @@ Progress: [░░░░░░░░░░] 0% for the active milestone
 - Use `.planning/milestones/v0.5.0-ROADMAP.md` and `.planning/milestones/v0.5.0-REQUIREMENTS.md` as the authoritative shipped milestone record.
 - Use `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md` as the authoritative audit result for the archived redesign milestone.
 - Use `docs/ru/product-feedback-2026-04-20.md` and `docs/ru/ui-qa-audit-2026-04-14.md` as the primary scope inputs for `v0.6.0`.
-- There is no active `.planning/REQUIREMENTS.md`; the new milestone should define a fresh requirement set instead of extending archived scope.
+- `.planning/REQUIREMENTS.md` now holds 19 scoped `v0.6.0` requirements mapped one-to-one onto Phases 28-31.
+- `.planning/ROADMAP.md` now makes `v0.6.0` the active milestone and points the workflow at Phase 28 next.
 - Unrelated local files such as `AGENTS.md`, local `*/AGENTS.md`, `.planning/config.json`, `new_screens/`, and `screens/` remain untouched.
