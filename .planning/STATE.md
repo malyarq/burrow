@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v0.6.0
 milestone_name: Feedback-Driven Stabilization And Expansion
-current_phase: 28
-current_phase_name: Product Restraint And Native Shell Truth
-current_plan: "04"
-status: Phase `29` context gathered; next step is planning Phase `29`
-stopped_at: Phase 29 context gathered
-last_updated: "2026-04-20T16:23:49+0300"
-last_activity: 2026-04-20 - Gathered Phase 29 context for modpack workflow simplification and runtime truth
+current_phase: 29
+current_phase_name: Modpack Workflow Simplification And Runtime Truth
+current_plan: null
+status: Phase `29` planned with 4 execution plans and ready for execution
+stopped_at: null
+last_updated: "2026-04-20T16:35:07+0300"
+last_activity: 2026-04-20 - Planned Phase 29 with four execution plans covering compact catalog controls, details tab reachability, authoritative runtime truth, and stable async create/add recovery
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 4
+  total_plans: 8
   completed_plans: 4
-  percent: 100
+  percent: 50
 ---
 
 # Project State
@@ -24,18 +24,18 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Plan Phase `29` using the new modpack workflow and runtime-truth context.
+**Current focus:** Execute the four approved plans for Phase `29` from the `v0.6.0` roadmap.
 
 ## Current Position
 
 - Active milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Latest shipped milestone: `v0.5.0` — Experience Reinvention And Brand Reset
-- Current phase: Phase 28 — Product Restraint And Native Shell Truth (complete)
-- Current plan: 04 of 04
-- Status: Phase `29` context gathered; next step is planning Phase `29`
-- Last activity: 2026-04-20 - gathered Phase 29 context for modpack workflow simplification and runtime truth
+- Current phase: Phase 29 — Modpack Workflow Simplification And Runtime Truth (planned, not started)
+- Current plan: —
+- Status: Phase 29 planned; execution can begin
+- Last activity: 2026-04-20 - planned Phase 29 with four execution plans
 
-Progress: [██████████] 100% for Phase 28 of the active milestone
+Progress: [█████░░░░░] 50% for the active milestone
 
 ## Decisions
 
@@ -49,6 +49,8 @@ Progress: [██████████] 100% for Phase 28 of the active miles
 - [Phase 28]: Play remains the only route-primary details CTA; update review is a local secondary affordance.
 - [Phase 28]: Startup shell surfaces stay pending until selected/classic runtime truth is hydrated instead of rendering hardcoded defaults.
 - [Phase 28]: Missing index or config files now reuse persisted config or metadata truth before any 1.12.2/vanilla fallback is allowed.
+- [Phase 29]: Approved execution now converges installed and remote catalog controls into one compact scanning seam with quieter cards.
+- [Phase 29]: Approved execution now treats runtime summary as a config-first modpack-owned contract and create/add flows as committed async workflows with explicit recovery.
 
 ## Performance Metrics
 
@@ -59,9 +61,9 @@ Progress: [██████████] 100% for Phase 28 of the active miles
 
 ## Session Info
 
-- Last updated: 2026-04-20T16:23:49+0300
-- Stopped at: Phase 29 context gathered
-- Resume file: `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-CONTEXT.md`
+- Last updated: 2026-04-20T16:35:07+0300
+- Stopped at: —
+- Resume file: `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-01-PLAN.md`
 
 ## Accumulated Context
 
@@ -69,8 +71,11 @@ Progress: [██████████] 100% for Phase 28 of the active miles
 - Use `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md` as the authoritative audit result for the archived redesign milestone.
 - Use `docs/ru/product-feedback-2026-04-20.md` and `docs/ru/ui-qa-audit-2026-04-14.md` as the primary scope inputs for `v0.6.0`.
 - `.planning/REQUIREMENTS.md` now holds 19 scoped `v0.6.0` requirements mapped one-to-one onto Phases 28-31.
-- `.planning/ROADMAP.md` now tracks Phase 28 as complete and points next work at Phase 29 planning.
+- `.planning/ROADMAP.md` now tracks Phase 28 as complete and Phase 29 as planned for execution next.
 - `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-CONTEXT.md` captures the locked decisions for Phase 29 planning.
+- `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-RESEARCH.md` captures the code-informed implementation guidance for Phase 29 planning.
+- `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-VALIDATION.md` defines the Nyquist validation contract for shared controls, runtime truth, and async recovery.
+- `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-01-PLAN.md` through `29-04-PLAN.md` are the approved execution plans for compact catalog controls, details tab reachability, runtime-summary authority, and create/add async stabilization.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-01-SUMMARY.md` is the authoritative execution record for the native macOS shell contract work.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-02-SUMMARY.md` is the authoritative execution record for shell restraint across sidebar, classic launcher surfaces, and appearance settings.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-03-SUMMARY.md` is the authoritative execution record for local-only modpack update visibility and shell/home regression coverage.
