@@ -1,5 +1,12 @@
-import fs from 'node:fs/promises';
-import { assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
+import fs from 'fs-extra';
+import path from 'node:path';
+import AdmZip from 'adm-zip';
+import type {
+    ShaderPackAcquisitionIssue,
+    ShaderPackAcquisitionIssueStatus,
+    ShaderPackAcquisitionResult,
+} from '../../../shared/contracts/shaders';
+import { assertAbsolutePath, assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
 import { resolveApprovedInstancePath, resolveShaderPacksDir } from '../instances/paths';
 
 export interface ShaderPack {
@@ -9,6 +16,42 @@ export interface ShaderPack {
 }
 
 export class ShadersService {
+    private createAcquisitionIssue(
+        fileName: string,
+        status: ShaderPackAcquisitionIssueStatus,
+        message: string,
+    ): ShaderPackAcquisitionIssue {
+        return { fileName, status, message };
+    }
+
+    private createAcquisitionResult(
+        status: ShaderPackAcquisitionResult['status'],
+        importedFileNames: string[] = [],
+        issues: ShaderPackAcquisitionIssue[] = [],
+    ): ShaderPackAcquisitionResult {
+        return { status, importedFileNames, issues };
+    }
+
+    private async hasShaderPayload(filePath: string): Promise<boolean> {
+        try {
+            const stat = await fs.stat(filePath);
+
+            if (stat.isDirectory()) {
+                return await fs.pathExists(path.join(filePath, 'shaders'));
+            }
+
+            if (!filePath.toLowerCase().endsWith('.zip')) {
+                return false;
+            }
+
+            const data = await fs.readFile(filePath);
+            const zip = new AdmZip(data);
+            return zip.getEntries().some((entry) => entry.entryName.startsWith('shaders/'));
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Get the shaderpacks directory path for an instance.
      */
@@ -126,6 +169,49 @@ export class ShadersService {
         }
 
         return packs;
+    }
+
+    async import(filePath: string, instancePath: string): Promise<ShaderPackAcquisitionResult> {
+        const fallbackFileName = path.basename(filePath || 'shaderpack.zip') || 'shaderpack.zip';
+
+        try {
+            const safeSourcePath = assertAbsolutePath(filePath, 'Shader pack source path');
+            const fileName = assertChildName(path.basename(safeSourcePath), 'Shader pack name');
+            const shaderDir = this.getShaderPacksDir(instancePath);
+            await fs.ensureDir(shaderDir);
+
+            const destinationPath = resolvePathWithinRoot(shaderDir, fileName, 'Shader pack path');
+            if (await fs.pathExists(destinationPath)) {
+                return this.createAcquisitionResult('duplicate', [], [
+                    this.createAcquisitionIssue(
+                        fileName,
+                        'duplicate',
+                        'A shader pack with this file name already exists in the instance.',
+                    ),
+                ]);
+            }
+
+            if (!(await this.hasShaderPayload(safeSourcePath))) {
+                return this.createAcquisitionResult('invalid-archive', [], [
+                    this.createAcquisitionIssue(
+                        fileName,
+                        'invalid-archive',
+                        'The selected archive does not contain a shaders/ directory.',
+                    ),
+                ]);
+            }
+
+            await fs.copy(safeSourcePath, destinationPath);
+            return this.createAcquisitionResult('success', [fileName], []);
+        } catch {
+            return this.createAcquisitionResult('failure', [], [
+                this.createAcquisitionIssue(
+                    fallbackFileName,
+                    'failure',
+                    'FMCL could not import the selected shader pack into this instance.',
+                ),
+            ]);
+        }
     }
 
     /**
