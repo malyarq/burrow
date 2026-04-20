@@ -19,6 +19,10 @@ import { Compass, Download, FolderOpen, MoreHorizontal, PackagePlus, Share2 } fr
 import type { ModLoaderType } from '../../contexts/instances/types';
 import { DegradedStateView } from '../layout/DegradedStateView';
 import { toDisplayErrorMessage } from '../../utils/displayError';
+import {
+  resolveInstalledModpackUpdates,
+  type ModpackUpdateInfo,
+} from '../../features/modpacks/hooks/useModpackUpdates';
 
 interface ModpackListItemWithMetadata {
   id: string;
@@ -118,6 +122,7 @@ const ModpackListComponentInternal: React.FC<{
   const [modpacks, setModpacks] = useState<ModpackListItemWithMetadata[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<unknown | null>(null);
+  const [availableUpdatesById, setAvailableUpdatesById] = useState<Record<string, ModpackUpdateInfo>>({});
   const [isDragging, setIsDragging] = useState(false);
   const [contextMenu, setContextMenu] = useState<{
     anchorRect: AnchoredRect;
@@ -157,6 +162,29 @@ const ModpackListComponentInternal: React.FC<{
   useEffect(() => {
     loadModpacks();
   }, [loadModpacks]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (loading || loadError || modpacks.length === 0) {
+      setAvailableUpdatesById({});
+      return;
+    }
+
+    void resolveInstalledModpackUpdates(modpacks, minecraftPath).then((updates) => {
+      if (cancelled) {
+        return;
+      }
+
+      setAvailableUpdatesById(
+        Object.fromEntries(updates.map((update) => [update.modpackId, update])),
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [loadError, loading, minecraftPath, modpacks]);
 
   // Sync with context modpacks list changes (only when list actually changes, not config)
   // Use a ref to track previous modpacks list to avoid unnecessary reloads
@@ -579,6 +607,7 @@ const ModpackListComponentInternal: React.FC<{
   // Мемоизированный компонент карточки модпака
   interface ModpackCardProps {
     modpack: ModpackListItemWithMetadata;
+    availableUpdate?: ModpackUpdateInfo;
     index: number;
     isSelected: boolean;
     isMenuOpen: boolean;
@@ -591,6 +620,7 @@ const ModpackListComponentInternal: React.FC<{
 
   const ModpackCard = React.memo<ModpackCardProps>(({
     modpack,
+    availableUpdate,
     index,
     isSelected,
     isMenuOpen,
@@ -602,6 +632,10 @@ const ModpackListComponentInternal: React.FC<{
   }) => {
     const { t, getAccentStyles, formatDate } = useSettings();
     const iconSrc = useMemo(() => getModpackIcon(modpack), [modpack]);
+    const iconFallbackKind = useMemo(
+      () => (!modpack.metadata?.source || modpack.metadata.source === 'local' ? 'app-icon' : 'content-artwork'),
+      [modpack.metadata?.source],
+    );
     const sourceBadge = useMemo(() => getModpackSourceBadge(modpack.metadata?.source), [modpack.metadata?.source]);
     const updatedLabel = useMemo(
       () => formatDateLabel(modpack.metadata?.updatedAt ?? modpack.metadata?.createdAt, formatDate),
@@ -619,6 +653,7 @@ const ModpackListComponentInternal: React.FC<{
     const openDetailsText = translateWithFallback(t, 'modpacks.open_details', 'Open details');
     const makeActiveText = translateWithFallback(t, 'modpacks.make_active', 'Make active');
     const activeNowText = translateWithFallback(t, 'modpacks.active_now', 'Active now');
+    const updateBadgeText = translateWithFallback(t, 'modpacks.update_available', 'Update available');
 
     return (
       <div
@@ -680,6 +715,7 @@ const ModpackListComponentInternal: React.FC<{
               <LazyImage
                 src={iconSrc}
                 alt={modpack.name}
+                fallbackKind={iconFallbackKind}
                 className="h-full w-full rounded-2xl border border-border/70 object-cover"
                 placeholder={
                   <SkeletonLoader variant="rounded" width={80} height={80} />
@@ -689,6 +725,15 @@ const ModpackListComponentInternal: React.FC<{
             <div className="flex-1 min-w-0">
               <div className="mb-2 flex flex-wrap items-start gap-2">
                 {sourceBadge}
+                {availableUpdate && (
+                  <div
+                    data-testid={`installed-modpack-update-indicator-${modpack.id}`}
+                    data-update-scope="modpack-local"
+                    className="inline-flex items-center rounded-full border border-blue-200/70 bg-blue-100/70 px-2.5 py-1 text-[11px] font-medium text-blue-900 dark:border-blue-900/80 dark:bg-blue-950/40 dark:text-blue-100"
+                  >
+                    {updateBadgeText}
+                  </div>
+                )}
                 {isSelected && (
                   <div
                     className={cn(
@@ -822,7 +867,8 @@ const ModpackListComponentInternal: React.FC<{
       prevProps.modpack.metadata?.updatedAt === nextProps.modpack.metadata?.updatedAt &&
       prevProps.modpack.metadata?.createdAt === nextProps.modpack.metadata?.createdAt &&
       prevProps.modpack.metadata?.description === nextProps.modpack.metadata?.description &&
-      prevProps.modpack.metadata?.source === nextProps.modpack.metadata?.source
+      prevProps.modpack.metadata?.source === nextProps.modpack.metadata?.source &&
+      prevProps.availableUpdate?.latestVersion.versionId === nextProps.availableUpdate?.latestVersion.versionId
     );
   });
   ModpackCard.displayName = 'ModpackCard';
@@ -1099,6 +1145,7 @@ const ModpackListComponentInternal: React.FC<{
               <ModpackCard
                 key={modpack.id}
                 modpack={modpack}
+                availableUpdate={availableUpdatesById[modpack.id]}
                 index={index}
                 isSelected={modpack.id === selectedId}
                 isMenuOpen={contextMenu?.modpackId === modpack.id}
