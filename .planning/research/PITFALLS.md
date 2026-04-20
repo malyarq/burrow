@@ -1,315 +1,343 @@
 # Pitfalls Research
 
-**Domain:** deep redesign and brand reset of an already shipped Electron desktop launcher UI
-**Milestone:** `v0.5.0 Experience Reinvention And Brand Reset`
-**Researched:** `2026-04-17`
+**Domain:** stabilization and bounded expansion of an already redesigned Electron desktop launcher
+**Milestone:** `v0.6.0 Feedback-Driven Stabilization And Expansion`
+**Researched:** `2026-04-20`
 **Confidence:** HIGH
 
-## Future Phase Buckets Used In This Mapping
+## Phase Buckets Used In This Mapping
 
-These phase names are proposed planning buckets for `v0.5.0`, not already-approved roadmap phases.
-
-| Proposed future phase | What it should own |
+| Phase | What it should own |
 | --- | --- |
-| Phase 19: Baseline Stability, Scope, And Shell Invariants | clear crash-causing baseline debt, freeze the defect ledger, and define shared titlebar/footer/scroll contracts before visual restyling starts |
-| Phase 20: Brand System, Shared Tokens, And Surface Migration | new brand primitives, fallback policy, shared visual seams, and migration off mixed old/new styling |
-| Phase 21: Dense Surface IA, Navigation, And CTA Hierarchy | modpack details, wizards, filter rows, dense tabs, and ownership of primary vs contextual actions |
-| Phase 22: Theme Truth And Interaction-State Fidelity | accent application, preset differentiation, contrast, selected/focus/disabled states, and readable controls in dark/light modes |
-| Phase 23: Fallback, Error, And Placeholder Productization | degraded states, missing art, empty states, raw template leaks, crash surfaces, and low-trust default visuals |
-| Phase 24: Verification, Locale, And Release Truth | multi-size and multi-theme proof, EN/RU verification, manual walkthrough expansion, and docs truth |
+| Phase 28: Product Restraint And Native Shell Truth | shell restraint, content-first fallbacks, native macOS behavior, localized modpack-update visibility, truthful top-level state after reopen or restart |
+| Phase 29: Modpack Workflow Simplification And Runtime Truth | compact list/detail flows, tab discoverability, truthful loader/version/dependency semantics, stable async actions, unified content-tab contract |
+| Phase 30: Settings Truth And Honest Personalization | removal of noisy settings branding, deterministic preset-theme behavior, consistent control geometry, removal or rewording of misleading controls, only bounded `CUSTOM-01` |
+| Phase 31: Guided Content Browsers And Capability Expansion | in-app resource-pack and shader flows, compatibility guidance, recoverable errors, only bounded `EXPAND-01` tied to the launcher core |
 
-## Critical Pitfalls
+## Why This Milestone Is Easy To Get Wrong
 
-### Pitfall 1: Starting the redesign on top of an unstable shipped baseline
+`v0.5.0` already shipped the redesign. The next release is not supposed to be another broad visual reinvention. The strongest evidence in the current milestone inputs points to a different kind of risk:
+
+- feedback is about overreach, noise, and untruth, not lack of styling;
+- users are explicitly asking for less shell interference and more native behavior;
+- modpack flows already look "redesigned" but still do not feel trustworthy;
+- settings already have many controls, but some controls do not produce truthful visible results;
+- resource-pack and shader flows already exist, but they still feel like system-detour plumbing instead of guided product flows.
+
+The common failure mode for `v0.6.0` is to keep polishing surfaces while leaving the trust break underneath untouched.
+
+## Primary Pitfalls
+
+### Pitfall 1: Treating shell restraint as another brand wave
 
 **What goes wrong:**
-The milestone spends its energy repainting screens while known runtime or lint-level defects remain in the same shell. The result is a launcher that looks newer in screenshots but is still one bad render path away from a broken session.
+The team hears "the shell feels wrong" and answers with more visual replacement work: new marks, new placeholders, new branded chrome. The release ships different shell styling, but not a calmer shell.
 
-**Why it happens:**
-Deep redesign work feels visually urgent, so teams classify hook-order issues, stale effect wiring, and crash-prone screens as "separate cleanup" instead of gating the redesign baseline.
+**Why it is likely here:**
+The previous milestone was a redesign and brand reset. That makes it easy to keep solving discomfort with more design activity even when the feedback is explicitly asking for less branding and less weirdness.
 
-**How to avoid:**
-Make `v0.5.0` start with a baseline-stability gate. Close crash-level defects in shared or high-traffic surfaces before major restyling begins, and keep `tsc`, lint, and the current verification seam green while the redesign lands.
+**Milestone-specific warning signs:**
+- critical surfaces still debate which logo/mark should be shown instead of whether the mark should be shown at all;
+- fallback states keep replacing missing content with launcher identity rather than a neutral content placeholder;
+- the sidebar or shell gains new decorative blocks while feedback is asking for noise reduction;
+- review language focuses on "refreshing" the shell instead of making it quieter and more native.
 
-**Warning signs:**
-- `docs/KNOWN_ISSUES.md` still lists crash-capable or runtime-breaking issues in shipped surfaces like `BackgroundLayer.tsx` and `AccountsPage.tsx`.
-- Design work starts while the app can still trip `react-hooks/rules-of-hooks` or `ReferenceError` class problems.
-- Review discussion is about gradients and spacing while the baseline shell is still operationally fragile.
+**Concrete prevention strategies:**
+- Define a strict allowlist for branding on app-critical surfaces before implementation starts.
+- Write one fallback policy: missing content gets a calm content placeholder, not a logo substitute.
+- Require every shell change to answer: "what user confusion or noise does this remove?"
+- Reject shell work whose main value is "looks more branded" rather than "feels less intrusive."
 
-**Phase to address:**
-Phase 19: Baseline Stability, Scope, And Shell Invariants
+**Phase owner:**
+Phase 28
 
 ---
 
-### Pitfall 2: Painting over broken shell and window-chrome contracts
+### Pitfall 2: Fixing macOS complaints with route-level chrome hacks
 
 **What goes wrong:**
-The redesign makes the launcher more decorative without fixing structural geometry, so the same shipped defects stay visible under nicer paint: content under the custom title bar, sticky headers covering cards, and fixed action bars eating the bottom of pages.
+The launcher keeps its custom shell tension on macOS, but the fixes land as local padding and button-placement patches. The result is duplicated controls, fragile titlebar spacing, and routes that only look correct on one window size.
 
-**Why it happens:**
-Existing desktop launchers accumulate route-specific padding and "just move it down" fixes. A brand reset often lands above those hacks instead of replacing them with one shell contract.
+**Why it is likely here:**
+The feedback is precise: macOS already has system traffic lights, and the app should not fight them. Existing Electron shells often drift into page-specific compensation instead of one platform-aware contract.
 
-**How to avoid:**
-Define shared invariants first: top safe area below the custom title bar, bottom reservation for fixed footers, and one scroll-container rule per page type. Make every redesigned route consume those seams instead of shipping new magic numbers.
+**Milestone-specific warning signs:**
+- right-side duplicate window controls survive on macOS after "native" fixes;
+- individual routes add bespoke top spacing to avoid shell overlap;
+- drag regions, safe areas, and titlebar behavior differ by screen;
+- reopen/restart flows restore a shell state that does not match the current platform expectations.
 
-**Warning signs:**
-- The same top clipping described in `R1` survives across classic, modpack, wizard, and modal screenshots.
-- `R2` and `S18` style overlaps persist after visual refreshes.
-- Individual pages introduce custom `pt-*`, sticky offsets, or extra spacer divs to "line up" with the new shell.
+**Concrete prevention strategies:**
+- Move macOS shell rules into one platform-aware shell contract owned centrally, not per route.
+- Remove duplicate macOS controls instead of visually restyling both sets.
+- Test native behavior with reopen/restart, focus restore, narrow widths, and modal states.
+- Treat shell-safe geometry as a reusable invariant, not as per-page CSS cleanup.
 
-**Phase to address:**
-Phase 19: Baseline Stability, Scope, And Shell Invariants
+**Phase owner:**
+Phase 28
 
 ---
 
-### Pitfall 3: Running the brand reset as a per-screen repaint
+### Pitfall 3: Leaving modpack-specific urgency in the global shell
 
 **What goes wrong:**
-Core routes get new typography, gradients, and logo usage, but sidebars, modals, sliders, fallback art, and secondary settings controls still use the old visual language. The launcher ends up looking half-replaced instead of intentionally redesigned.
+Modpack update state keeps leaking into the app shell, dashboard, or top-level messaging. Users get launcher-wide urgency for a local modpack property, and the shell starts competing with the actual thing they want to launch.
 
-**Why it happens:**
-Shipped apps have too many surfaces to repaint manually. Teams start with hero screens, then defer the "boring" seams where the old product identity is most visible.
+**Why it is likely here:**
+The feedback explicitly rejects global update banners and asks for local, optional update UX. This is a classic shipped-launcher mistake: one object-level state becomes a shell-level interruption because it is easy to surface globally.
 
-**How to avoid:**
-Create a brand migration inventory before touching screens. Move colors, elevation, marks, fallback art, and spacing rhythm into shared tokens/components, then migrate routes in batches that eliminate mixed old/new identity rather than spreading the reset thinly.
+**Milestone-specific warning signs:**
+- dashboard or home surfaces still advertise specific modpack updates globally;
+- the shell exposes update pressure even when no relevant modpack is selected;
+- "update available" visually competes with or outranks the primary launch action;
+- the team talks about "making updates more visible" without saying where that visibility should live.
 
-**Warning signs:**
-- `R6` already shows accent drift: green accent selected, blue slider handle still present.
-- New preset names or hero cards change, but modal overlays, sidebars, and list-row controls still read as a previous design generation.
-- The visual diff is strongest on marketing-like areas and weakest on settings, dense lists, and error/fallback surfaces.
+**Concrete prevention strategies:**
+- Define a locality rule: modpack updates belong in modpack list/detail surfaces, not in route-unrelated shell zones.
+- Keep launch as the default primary intent unless the user explicitly enters an update flow.
+- Use calm indicators in list/detail views instead of global banners or shell-level warnings.
+- Validate the design against large libraries: 10, 50, and 100 installed modpacks should still feel quiet.
 
-**Phase to address:**
-Phase 20: Brand System, Shared Tokens, And Surface Migration
+**Phase owner:**
+Phase 28
 
 ---
 
-### Pitfall 4: Preserving the old action hierarchy under new chrome
+### Pitfall 4: Simplifying modpack UI by subtracting fields without fixing truth
 
 **What goes wrong:**
-The redesign adds polished new action bars or page-level CTAs, but the legacy launcher's global actions remain equally prominent. Users see two competing "primary" actions and lose confidence about which action owns the current context.
+Cards, list rows, and headers become visually smaller, but the underlying semantics stay wrong. The launcher looks cleaner while still lying about loader, version, dependencies, or health state.
 
-**Why it happens:**
-Desktop launchers often already have a sidebar-level play affordance. Redesign work adds route-local CTAs without explicitly demoting, removing, or redefining the older ones.
+**Why it is likely here:**
+Current feedback wants fewer details in cards and less noisy composition, but the QA audit also shows conflicting modloader truth, broken dependency semantics, and raw version-range leakage. Visual compression alone does not solve that.
 
-**How to avoid:**
-Write an action-ownership map for every major route: what is global, what is contextual, and what deserves primary emphasis. The redesigned page should expose one primary action, with all other actions deliberately secondary or grouped.
+**Milestone-specific warning signs:**
+- list cards show fewer facts, but detail screens still contradict them;
+- badges remain red even when everything is actually satisfied;
+- version or dependency strings still look like debug output;
+- "vanilla" or loader summary text remains contextually wrong after layout cleanup.
 
-**Warning signs:**
-- `R4` already shows two green `Play` CTAs on modpack details.
-- Fixed footer actions duplicate controls that are still visible in the shell/sidebar.
-- Reviews praise the new action bar while no one answers which button a user should click first.
+**Concrete prevention strategies:**
+- Define canonical truth sources for loader, runtime version, dependency state, and update state before redesigning the rows.
+- Decide which facts belong in list cards and which belong only in detail views.
+- Normalize badge semantics: neutral for healthy, warning for caution, red only for actual failure.
+- Add explicit review cases for base dependencies like Minecraft and Forge to avoid false absence states.
 
-**Phase to address:**
-Phase 21: Dense Surface IA, Navigation, And CTA Hierarchy
+**Phase owner:**
+Phase 29
 
 ---
 
-### Pitfall 5: Designing dense existing surfaces against happy-path content only
+### Pitfall 5: Reworking modpack details route-by-route instead of creating one tab contract
 
 **What goes wrong:**
-Comps look clean, but the shipped launcher's real data breaks them immediately: tabs wrap with empty space still available, labels split across lines, orphan counters appear, summary text contradicts controls, and dense rows collapse under long localized strings.
+The team makes `Mods` better, then adjusts `Resource Packs`, then `Shaders`, then `Worlds`, each with slightly different containers, spacing, empty states, and action placement. The tab set remains hard to discover and feels authored by multiple people.
 
-**Why it happens:**
-Brand-reset work is often validated with short English copy, full-width windows, and mock data that avoids worst-case states. Existing launcher surfaces like modpack details and creation wizards are the opposite of that.
+**Why it is likely here:**
+The feedback directly calls out low tab discoverability, scroll fights, and inconsistent visual language across content tabs. Once a launcher has already shipped, the fastest fix is often per-tab surgery, which usually makes cross-tab consistency worse.
 
-**How to avoid:**
-Build the redesign with hostile fixtures from day one: long modpack names, long tab labels, Russian strings, narrow windows, missing art, long dependency ranges, and mixed runtime metadata. Dense surfaces need real content pressure, not idealized demo data.
+**Milestone-specific warning signs:**
+- tabs still overflow into awkward horizontal scroll with no stronger pattern;
+- switching tabs changes header density, action placement, or content width rules;
+- `Mods`, `Resourcepacks`, `Shaders`, `Worlds`, and `Screenshots` still feel like different products;
+- useful tab content keeps living below large summary/action blocks.
 
-**Warning signs:**
-- `R3`, `S02`, `S03`, `S15`, and `S17` already show tab wrapping, broken buttons, ambiguous dropdowns, contradictory summaries, and template-driven rows under stress.
-- The redesigned dense screens are approved from one window size and one locale.
-- "Looks good in the mock" is doing more work than route-level verification with seeded bad cases.
+**Concrete prevention strategies:**
+- Build one reusable tab-shell contract for header, actions, summary strip, empty state, and content container.
+- Keep tab switching and tab reading above the fold on standard desktop sizes.
+- Test tab discoverability in Russian and at narrower widths before approving the layout.
+- Require every content tab to adopt the same density, hierarchy, and empty-state rules unless there is a documented exception.
 
-**Phase to address:**
-Phase 21: Dense Surface IA, Navigation, And CTA Hierarchy
+**Phase owner:**
+Phase 29
 
 ---
 
-### Pitfall 6: Making themes expressive but not state-truthful
+### Pitfall 6: Making async modpack flows look calmer while keeping reload-based recovery
 
 **What goes wrong:**
-The launcher gains moodier dark presets or brighter light themes, but users cannot tell what is selected, focused, disabled, or active. Themes become poster art instead of dependable interaction systems.
+Errors become better styled, but the workflow logic still depends on hard reloads, unclear failures, and unstable button placement. The launcher appears more polished while the user still cannot understand why a flow failed or how to recover.
 
-**Why it happens:**
-Brand resets frequently optimize for screenshots and not for state matrices. In shipped UI, the hardest part is not the resting surface but the dozens of control states across presets, accents, and locales.
+**Why it is likely here:**
+The codebase concerns already flag full-page reload recovery in modpack flows. The product feedback also calls out unexplained create failures, confirm buttons that move away during infinite loading, and visible flicker when switching active modpacks.
 
-**How to avoid:**
-Treat theme work as state-system work. Define contrast and differentiation requirements for selected, hover, focus, disabled, segmented, slider, scrollbar, and modal states in every supported preset and accent combination.
+**Milestone-specific warning signs:**
+- success or failure paths still use full renderer reloads as the main recovery mechanism;
+- async flows still collapse into generic "something went wrong" copy;
+- confirm actions move because the list beneath them keeps loading;
+- active modpack selection still flickers or rerenders multiple times during state changes.
 
-**Warning signs:**
-- `R6` and `R7` already show partial accent application and weak selected-state contrast.
-- `S14` shows a disabled `Next` state that is too faint to read confidently.
-- `S12` shows presets that barely differ visually despite different names.
-- Theme QA is based on hero screenshots instead of a control-state matrix.
+**Concrete prevention strategies:**
+- Replace reload-driven state sync with explicit local/shared state transitions for install, import, create, and add-mod flows.
+- Pin confirmation actions so infinite lists cannot push them away.
+- Map known failure categories to user-understandable copy: compatibility, loader conflict, network, filesystem, or dependency issue.
+- Require async flows to expose retry, cancel, and recovery next steps without losing local context.
 
-**Phase to address:**
-Phase 22: Theme Truth And Interaction-State Fidelity
+**Phase owner:**
+Phase 29
 
 ---
 
-### Pitfall 7: Treating degraded, fallback, and error states as post-redesign cleanup
+### Pitfall 7: Cleaning settings visually without proving control truth
 
 **What goes wrong:**
-The happy path looks branded, but the launcher still collapses into low-trust defaults the moment data or rendering gets messy: raw template placeholders, bad pluralization, generic missing-art states, and full React runtime internals on the crash screen.
+The settings surface loses some noise and gains better alignment, but the actual controls still lie. Presets remain unpredictable, sliders and toggles stay visually inconsistent, and low-value controls continue pretending to do something meaningful.
 
-**Why it happens:**
-Teams naturally prioritize the visible main flow first. In a shipped launcher, though, users hit empty states, missing art, update states, and broken metadata constantly, so those surfaces dominate perceived quality.
+**Why it is likely here:**
+The product feedback is not mainly about settings beauty. It is about settings trust: preset behavior that does not match visible results, duplicate descriptions, controls with weak or invisible effect, and broken geometry.
 
-**How to avoid:**
-Make degraded-state productization an owned phase, not the cleanup pile. Standardize fallback art, placeholder handling, error wording, and crash-screen disclosure rules as branded product surfaces.
+**Milestone-specific warning signs:**
+- preset changes only become visible after unrelated theme toggles;
+- switching between presets changes dark/light mode in surprising ways;
+- toggles, sliders, and pills still do not share the same geometry contract;
+- settings copy is cleaned up while controls with no meaningful visible result remain in place.
 
-**Warning signs:**
-- `S17` and `S18` expose `${file.jarVersion}` directly in the UI.
-- `S17` shows broken pluralization (`1 Dependencies`).
-- `S20` exposes `localhost`, `node_modules`, and the raw React error text on a user-facing crash screen.
-- The redesign deck has hero mocks but no empty-state, error-state, or missing-art frames.
+**Concrete prevention strategies:**
+- Create a settings truth matrix: each control must state its visible effect, persistence rule, and interaction with other controls.
+- Remove or reword controls whose effect is too weak to be honest.
+- Make preset themes deterministic by defining whether they own palette only, palette plus mode, or the full visual package.
+- Verify control alignment and geometry through shared components instead of route-local CSS fixes.
 
-**Phase to address:**
-Phase 23: Fallback, Error, And Placeholder Productization
+**Phase owner:**
+Phase 30
 
 ---
 
-### Pitfall 8: Declaring the redesign done from curated screenshots
+### Pitfall 8: Expanding personalization before the launcher earns trust back
 
 **What goes wrong:**
-The milestone closes on before/after captures of the best-looking routes, while resize behavior, theme switching, light mode, Russian copy, modal isolation, and failure states stay effectively untested. The launcher ships with a cleaner gallery and the same trust gaps.
+The milestone starts adding `CUSTOM-01` polish, extra presets, or decorative appearance options before the existing settings become truthful. This grows the surface area of confusion instead of reducing it.
 
-**Why it happens:**
-Redesign work is emotionally driven by visible diffs. Once the main screenshots feel better, verification pressure drops unless the team deliberately expands the proof contract.
+**Why it is likely here:**
+Once a redesign has shipped, adding more personalization options is tempting because it feels like forward motion. In this milestone, that instinct is dangerous because the current complaint is "settings are noisy and misleading," not "there are not enough choices."
 
-**How to avoid:**
-Upgrade the existing browser-backed verification seam to `v0.5.0` and require proof across route families, sizes, themes, locales, and degraded states. Keep docs synchronized with that evidence instead of letting them trail the shipped reality.
+**Milestone-specific warning signs:**
+- new presets or appearance options land while old ones still have ambiguous behavior;
+- the team talks about customization delight before closing preset truth and geometry consistency;
+- settings cleanup becomes mixed with cosmetic expansion in the same phase;
+- the phase cannot clearly say which controls were removed because they were not honest.
 
-**Warning signs:**
-- Verification covers only dark mode or only one window size.
-- The redesign has no proof for `R1`/`R2` style overlap cases, `S20` style crash handling, or Russian copy.
-- Screenshots are being refreshed faster than regression tests and manual verification routes.
+**Concrete prevention strategies:**
+- Gate `CUSTOM-01` behind a passed settings-truth checklist.
+- Require one of three outcomes for every existing appearance control: keep and prove, reword honestly, or remove.
+- Separate trust-restoration tasks from optional delight tasks in planning and review.
+- Make new personalization work prove user value beyond "more options."
 
-**Phase to address:**
-Phase 24: Verification, Locale, And Release Truth
+**Phase owner:**
+Phase 30
 
 ---
 
-### Pitfall 9: Letting "deep redesign" become a license for scope drift
+### Pitfall 9: Calling resource-pack and shader flows "guided" while still detouring into Finder or Explorer
 
 **What goes wrong:**
-The milestone quietly expands from redesigning shipped surfaces into architecture rewrites, brand-new navigation models, animation experiments, or unrelated feature additions. The result is a larger diff, weaker reviewability, and fewer closed user-facing problems.
+The launcher adds new entry points or nicer wrappers, but the actual workflow still throws the user into the system file manager or a raw picker. The product remains a thin shell around local file operations rather than a guided in-app flow.
 
-**Why it happens:**
-Once a milestone is described as reinvention, almost any change can sound justified. Existing visual debt and existing product debt get merged into one giant bucket.
+**Why it is likely here:**
+The feedback explicitly rejects the current OS-file-manager detour and asks for real in-app browser flows. Existing desktop launchers often stop halfway by adding one more import button instead of designing the acquisition/install path.
 
-**How to avoid:**
-Keep a strict defect-and-brand ledger tied to shipped surfaces. Every planned task should answer which current trust issue, warning sign, or product-drift symptom it closes. Everything else becomes follow-up, not redesign scope.
+**Milestone-specific warning signs:**
+- the "new" flow still ends in a raw file picker as the default path;
+- content install starts without showing source, target, or compatibility context;
+- the workflow assumes the user already knows the right file type, folder, and loader constraints;
+- errors still read like filesystem or importer failures rather than guided product feedback.
 
-**Warning signs:**
-- Planned work cannot be traced back to `PROJECT.md`, `KNOWN_ISSUES.md`, or the screenshot report.
-- Route count or feature count increases during a milestone that was supposed to be about redesigning existing UI.
-- Commit or PR size starts looking like the `163 files / +11000 lines` warning already called out in `docs/KNOWN_ISSUES.md`.
+**Concrete prevention strategies:**
+- Make in-app browse/import the primary flow and demote raw local import to an explicit secondary option.
+- Show what is being installed, where it will go, and why it is or is not compatible before commit.
+- Use step-based guidance: select source, inspect compatibility, confirm install, recover if needed.
+- Treat OS dialogs as escape hatches, not the core experience.
 
-**Phase to address:**
-Phase 19: Baseline Stability, Scope, And Shell Invariants
+**Phase owner:**
+Phase 31
 
-## Technical Debt Patterns
+---
 
-Shortcuts that feel efficient during a redesign but usually make a shipped launcher harder to stabilize.
+### Pitfall 10: Shipping content browsers without compatibility truth and recoverable failure paths
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-| --- | --- | --- | --- |
-| Route-specific top padding fixes for titlebar overlap | Fast visual alignment on one screenshot | More `R1` drift, inconsistent drag-safe areas, and repeated shell math | Never after Phase 19 starts |
-| Hardcoding new copy or preset names in components to hide locale leaks | Screens look fixed quickly | EN/RU drift returns on the next untouched route | Only for a throwaway prototype, never for milestone code |
-| Keeping both old and new primary actions "until we decide later" | Avoids hard product decisions | Duplicated CTA hierarchy, worse user trust, and harder accessibility semantics | Never on shipped routes |
-| Shipping route-specific fallback art or empty states | Unblocks one screen | Brand reset stays inconsistent and degraded states remain low-trust | Only as a temporary local stub before Phase 23 consolidation |
-| Rewriting a page from scratch instead of extracting a shared seam | Big visual movement fast | More token drift, more layout bugs, and duplicated modal/footer/overlay logic | Acceptable only if the route also becomes the new shared primitive owner in Phase 20 |
-| Approving redesign work from static screenshots only | Fast review cycle | Resize, locale, state, and failure regressions escape into the shipped app | Never for milestone closeout |
+**What goes wrong:**
+Resource-pack and shader flows become broader, but users still do not know whether a shader requires a specific modloader or whether a content package is installable in the active instance. When something fails, the flow stops without a clear recovery path.
 
-## Integration Gotchas
+**Why it is likely here:**
+The feedback asks exactly these questions: are shaders universally installable, what are the constraints, and why do resource packs still error? Expansion without compatibility truth will deepen distrust faster than the old minimal flow did.
 
-Common places where a redesign of an existing launcher surface usually reconnects to the wrong seam.
+**Milestone-specific warning signs:**
+- shader flows do not explain loader/runtime prerequisites before install;
+- resource-pack errors still appear as generic failure states;
+- retry means restarting the whole flow instead of correcting the mismatch;
+- the UI cannot distinguish unsupported content, temporary failure, and already-installed state.
 
-| Integration seam | Common mistake | Correct approach |
+**Concrete prevention strategies:**
+- Add compatibility summaries before install: supported runtime, loader expectations, conflicts, and likely requirements.
+- Normalize failure modes into clear categories with tailored recovery actions.
+- Keep install flows resumable so a user can change a choice instead of starting over.
+- Validate the flow against both happy path and wrong-content path, especially on modpack-heavy instances.
+
+**Phase owner:**
+Phase 31
+
+---
+
+### Pitfall 11: Letting content expansion reintroduce the performance and freeze problems users already tolerate elsewhere
+
+**What goes wrong:**
+New guided content flows feel richer, but they block the main process during scans, imports, or archive work. Users perceive the launcher as hanging exactly when the new feature is supposed to feel safer and more guided.
+
+**Why it is likely here:**
+The codebase concerns already call out synchronous filesystem and ZIP-heavy work in the Electron main process. Resource-pack and shader flows are the kind of capability expansion that often piles onto that same execution model.
+
+**Milestone-specific warning signs:**
+- importing or scanning content causes visible UI stalls;
+- progress states feel frozen or jump from idle to done;
+- the window becomes unresponsive during large local imports;
+- "guided" flows still behave like blocking maintenance operations.
+
+**Concrete prevention strategies:**
+- Design content flows around async job execution with explicit progress and cancellation.
+- Keep large scans and archive work off the user-perceived critical path when possible.
+- Test large local imports and retry paths before treating the browser flow as shippable.
+- Do not treat main-thread blocking as acceptable just because `PERF-01` is deferred; avoid introducing new stalls in `v0.6.0`.
+
+**Phase owner:**
+Phase 31
+
+## "Looks Fixed But Isn't" Checklist
+
+- [ ] Shell cleanup removed noise instead of replacing it with different noise.
+- [ ] macOS behavior is truly more native and no route depends on its own titlebar-offset hack.
+- [ ] Modpack updates are local to the relevant modpack surfaces and do not hijack primary launch intent.
+- [ ] Modpack cards got smaller without losing truthful loader/version/dependency semantics.
+- [ ] Tab discoverability works without scroll fights and the content tabs share one visual contract.
+- [ ] Async create/import/add-mod flows recover without full-page reload and explain failure causes.
+- [ ] Settings presets produce deterministic visible results and dead appearance controls were removed or reworded.
+- [ ] `CUSTOM-01` did not start before settings truth was proven.
+- [ ] Resource-pack and shader flows are actually guided in-app flows, not renamed file-manager detours.
+- [ ] Compatibility guidance appears before install, not only after failure.
+- [ ] New content flows do not freeze the window during realistic imports.
+
+## Risk Ownership Summary
+
+| Risk | Owning phase | Why that phase should own it |
 | --- | --- | --- |
-| Electron custom title bar and draggable region | Restyling page headers without a shared top inset contract | Centralize titlebar-safe geometry in the shell and make routes consume it |
-| Shared renderer state vs user-facing launch/config summaries | Rewording labels while leaving contradictory state mapping intact | Fix the data contract first, then redesign the summary surface |
-| Theme tokens and control primitives | Applying new colors directly in route components | Move brand tokens and state variants into shared primitives before route rollout |
-| Locale catalogs | Renaming presets or buttons inline during redesign | Keep every user-facing string in `src/locales/en.json` and `src/locales/ru.json`, then verify both |
-| Manual verification seam | Creating one-off proof screens for redesigned pages | Extend the existing shared verification entry and seed real failure cases there |
-| Fallback imagery and crash surfaces | Handling each missing-art or error state ad hoc per route | Define one fallback/error policy and reuse it across shell, catalog, details, and modals |
-
-## Performance Traps
-
-Patterns that often seem harmless in a redesign but break down on real desktop hardware and real launcher sessions.
-
-| Trap | Symptoms | Prevention | When It Breaks |
-| --- | --- | --- | --- |
-| Layering blur, glow, and backdrop effects on every modal and page background | Fan spin-up, sluggish overlays, muddy text, and obvious lag when opening settings or modals | Limit live blur layers, prefer composited assets where possible, and test stacked overlays on typical laptops | Breaks first on integrated GPUs and when multiple translucent layers stack, which FMCL already does in settings and modals |
-| Fixing overlap bugs with resize/scroll listeners and measured JS offsets | Jank while resizing, sticky headers drifting, footer collisions returning on some routes | Prefer CSS layout contracts and shared shell reservations over per-route measurements | Breaks under narrow-window drag, dense scroll pages, and sticky headers like `S18` |
-| Implementing theme or locale switching by remounting whole route trees | Lost scroll position, flicker, and state resets while previewing presets | Use token/state updates and scoped rerenders, not full route teardown | Breaks on long settings and modpack-detail flows where users are actively editing content |
-
-## Security Mistakes
-
-Redesign-specific mistakes that leak internals because error and debug surfaces are treated as design leftovers.
-
-| Mistake | Risk | Prevention |
-| --- | --- | --- |
-| Rendering raw `Error` objects and runtime stacks in the user-facing crash screen | Leaks local URLs, file paths, framework internals, and makes the app feel unsafe | Replace with a branded crash surface that logs technical detail elsewhere and shows safe user copy |
-| Surfacing IPC or filesystem payloads verbatim in redesigned toasts, dialogs, or helpers | Reveals local paths, account names, or implementation details to end users and screenshots | Normalize error messages before rendering and keep raw payloads out of user-visible UI |
-| Leaving template placeholders or debug text in list rows and helpers during rollout | Trains users to distrust the launcher and exposes internal field names | Add placeholder-leak checks to Phase 23 and Phase 24 verification |
-
-## UX Pitfalls
-
-Launcher-specific experience mistakes that a brand reset often amplifies instead of solving.
-
-| Pitfall | User Impact | Better Approach |
-| --- | --- | --- |
-| Two primary CTAs on one route | Users hesitate and may launch the wrong thing | One surface, one primary action, with explicit global/context split |
-| Overly translucent modals and drawers | Background keeps competing for attention and the active task feels unfocused | Stronger background suppression and clearer active-layer framing |
-| Hidden or weak selected states in segmented controls and toggles | Users cannot trust what mode, language, or loader is active | Treat selected-state contrast as a hard requirement, not a visual preference |
-| Dense tabs wrapping or scrolling without a clear pattern | Navigation feels improvised and expensive to scan | Decide on one discoverable desktop pattern for overflowed tab sets |
-| Scroll indicators that disappear into the theme | Users miss available content and assume the page ends early | Make scroll affordances visible in both dark and light presets |
-
-## "Looks Done But Isn't" Checklist
-
-- [ ] **Shell redesign:** verify no route still clips under the custom title bar and no fixed footer or sticky header covers live content.
-- [ ] **Brand reset:** verify old accent blues, generic fallback art, and previous-generation controls are gone from sidebars, modals, settings, and list rows, not only hero screens.
-- [ ] **Dense-route refresh:** verify long modpack names, wrapped tabs, Russian labels, orphan counters, and dependency rows still read coherently.
-- [ ] **CTA refresh:** verify each major route exposes one obvious primary action and does not duplicate it elsewhere on the same screen.
-- [ ] **Theme rollout:** verify selected, focus, disabled, scrollbar, slider, and segmented states are readable in every supported preset and accent combination.
-- [ ] **Fallback/error polish:** verify missing-art, empty, loading, and crash states use branded language and never leak raw template variables, raw i18n keys, or framework internals.
-- [ ] **Verification closeout:** verify proof exists for dark and light, EN and RU, wide and narrow, plus at least one degraded-state route family.
-
-## Recovery Strategies
-
-| Pitfall | Recovery Cost | Recovery Steps |
-| --- | --- | --- |
-| Unstable baseline under a redesign diff | HIGH | Pause visual expansion, fix the baseline lint/runtime blockers, rerun the current verification seam, then resume route migration |
-| Shell/window contract drift | MEDIUM | Centralize top/bottom safe-area rules, remove route-level padding hacks, and rerun wide/narrow captures across owned routes |
-| Mixed old/new brand language | HIGH | Inventory all visible tokens and fallback surfaces, move them to shared primitives, and delete route-specific overrides |
-| CTA hierarchy conflict | MEDIUM | Write an action-ownership matrix per route, demote or remove duplicates, and update tests plus manual walkthroughs |
-| Happy-path-only dense surfaces | MEDIUM | Seed worst-case content fixtures, rerun modpack/wizard verification, and revise layout patterns against real data pressure |
-| Technical leaks in degraded states | LOW | Centralize fallback and error rendering, replace raw payloads with safe copy, and add explicit regression checks for placeholder leaks |
-| Screenshot-only proof | HIGH | Expand the manual verification seam, capture multi-state evidence, and update release docs only after that proof is stable |
-
-## Pitfall-to-Phase Mapping
-
-| Pitfall | Prevention Phase | Verification |
-| --- | --- | --- |
-| Starting the redesign on an unstable baseline | Phase 19 | Lint, `tsc`, and the current manual verification seam are green before major visual migration starts |
-| Painting over broken shell/window contracts | Phase 19 | Wide and narrow route captures show no titlebar clipping, footer overlap, or sticky-header collision |
-| Running the brand reset as a per-screen repaint | Phase 20 | Token inventory and fallback policy are shared, and legacy accent/fallback remnants are absent across route families |
-| Preserving old action hierarchy under new chrome | Phase 21 | Each major route has one primary CTA and no competing duplicate on the same screen |
-| Designing dense surfaces against happy-path content only | Phase 21 | Long-name, RU-copy, narrow-width, and worst-case fixture passes exist for modpack and wizard flows |
-| Making themes expressive but not state-truthful | Phase 22 | Control-state matrix passes for dark/light presets, accent variants, and disabled/focus/selected states |
-| Treating degraded states as cleanup | Phase 23 | Missing-art, empty, loading, placeholder, and crash routes all render branded safe states |
-| Declaring the redesign done from curated screenshots | Phase 24 | Browser-backed proof covers route families, sizes, themes, locales, and degraded states before docs roll forward |
-| Letting deep redesign become scope drift | Phase 19 | Every plan item maps back to a shipped defect, warning sign, or explicit brand-consistency gap |
+| Overbranding and shell overcorrection | Phase 28 | This is top-level restraint work and must be solved before deeper flow cleanup |
+| Non-native macOS shell behavior | Phase 28 | Platform shell truth belongs at the shared shell layer, not in route follow-up |
+| Global modpack update noise | Phase 28 | The mistake is shell-level leakage of local state |
+| Smaller UI but still false modpack semantics | Phase 29 | This is the phase that owns runtime truth in list/detail seams |
+| Cross-tab inconsistency and tab discoverability failures | Phase 29 | The detail/content-tab contract belongs with modpack workflow simplification |
+| Async flow calmness without real recovery | Phase 29 | Create/add-mod/import behavior is a modpack workflow responsibility |
+| Settings cleanup without truthful behavior | Phase 30 | This phase exists to make settings honest, not merely prettier |
+| Personalization expansion before trust recovery | Phase 30 | The phase boundary explicitly says bounded `CUSTOM-01` only after truth is restored |
+| Guided content flows that are still system detours | Phase 31 | This is the expansion seam and must redefine the workflow, not just rename it |
+| Missing compatibility guidance and weak recovery in content flows | Phase 31 | This is the main user-value promise of the new browser flows |
+| Content-browser freezes or blocking operations | Phase 31 | The expansion should not introduce new trust regressions while `PERF-01` stays deferred |
 
 ## Sources
 
 - `/Users/kszinikov/fmcl/.planning/PROJECT.md`
-- `/Users/kszinikov/fmcl/docs/KNOWN_ISSUES.md`
-- `/Users/kszinikov/fmcl/new_screens/BUG_REPORT_2026-04-17.md`
-- `/Users/kszinikov/.codex/get-shit-done/templates/research-project/PITFALLS.md`
+- `/Users/kszinikov/fmcl/.planning/MILESTONES.md`
+- `/Users/kszinikov/fmcl/.planning/codebase/CONCERNS.md`
+- `/Users/kszinikov/fmcl/docs/ru/product-feedback-2026-04-20.md`
+- `/Users/kszinikov/fmcl/docs/ru/ui-qa-audit-2026-04-14.md`
 
 ---
-*Pitfalls research for: FMCL `v0.5.0` redesign and brand reset*
-*Researched: 2026-04-17*
+*Pitfalls research for FMCL milestone `v0.6.0 Feedback-Driven Stabilization And Expansion`*

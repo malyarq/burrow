@@ -1,413 +1,342 @@
-# Architecture Research
-
-**Domain:** FMCL `v0.5.0` redesign integration inside the current Electron + React launcher
-**Researched:** `2026-04-17`
-**Confidence:** `HIGH`
-
-## Standard Architecture
-
-### Current System Overview
-
-```text
-┌────────────────────────────────────────────────────────────────────┐
-│                         Electron Main Process                      │
-├────────────────────────────────────────────────────────────────────┤
-│ BrowserWindow lifecycle                                            │
-│ hidden native frame + custom title bar                             │
-│ packaged asset resolution + preload exposure                       │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │ preload + IPC
-┌──────────────────────────────▼─────────────────────────────────────┐
-│                         Shared Contracts                           │
-├────────────────────────────────────────────────────────────────────┤
-│ window controls · assets · modpacks · launcher · settings         │
-│ only native / filesystem / cross-process seams belong here        │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │ typed wrappers
-┌──────────────────────────────▼─────────────────────────────────────┐
-│                        Renderer Root (`src/`)                      │
-├────────────────────────────────────────────────────────────────────┤
-│ `main.tsx`                                                         │
-│   → `AppProviders`                                                 │
-│     → `SettingsProvider`                                           │
-│     → `ModpackProvider`                                            │
-│     → `ToastProvider` / `ConfirmProvider`                          │
-│   → `App`                                                          │
-│     → `AppLayout`                                                  │
-│       → `BackgroundLayer`                                          │
-│       → `TitleBar`                                                 │
-│       → `Sidebar`                                                  │
-│       → overlay pages (`SettingsPage`, `MultiplayerPage`)          │
-│       → main content (`SimplePlayDashboard` / `ModpackRouter`)     │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │ shared UI primitives
-┌──────────────────────────────▼─────────────────────────────────────┐
-│                    Design / Verification Surfaces                  │
-├────────────────────────────────────────────────────────────────────┤
-│ `index.css` surface classes + CSS vars                             │
-│ `theme.ts` + `theme-presets.ts` document token application         │
-│ `app/assets/branding.ts` asset fallback entrypoint                 │
-│ `verification/manual/*` browser-backed proof harness               │
-└────────────────────────────────────────────────────────────────────┘
-```
-
-### Architecture Baseline
-
-| Area | Current owner | Why it matters for `v0.5.0` |
-| --- | --- | --- |
-| Shell composition | `src/App.tsx`, `src/components/AppLayout.tsx` | The redesign must land through the existing shell rather than bypassing it page by page. |
-| Window chrome | `src/components/TitleBar.tsx`, `electron/window/windowManager.ts` | Screenshot bugs around top overlap come from the custom title-bar contract. |
-| Theme and appearance state | `src/contexts/SettingsContext.tsx`, `src/contexts/settings/theme.ts`, `src/contexts/settings/theme-presets.ts`, `src/index.css` | FMCL already applies document-level tokens; this is the right leverage point for the brand reset. |
-| Shared UI primitives | `src/components/ui/*`, `src/index.css` | Accent inconsistency, weak selected states, and overlay bleed are primitive problems, not page-only problems. |
-| Brand assets and fallbacks | `src/app/assets/branding.ts`, `src/app/hooks/useAppIcon.ts`, `src/components/layout/EmptyStateView.tsx` | Brand reset fails if logos, empty states, and image fallbacks stay fragmented. |
-| Modpack content shell | `src/components/modpacks/ModpackDetails.tsx`, `src/components/modpacks/details/*` | Several screenshot bugs sit at the boundary between shell actions and detail-page actions. |
-| Verification seam | `src/verification/manual/*` | `v0.5.0` should extend the existing proof harness instead of inventing a new one. |
-
-## Main Conclusions
-
-- `v0.5.0` is primarily a renderer-shell milestone. Most work should stay in `src/`; `electron/` and `shared/` should only move when asset packaging or native window behavior truly requires it.
-- The redesign should be driven by semantic design tokens and shell primitives first, not by screen-by-screen Tailwind overrides.
-- The current architecture already has reusable seams worth preserving: `SettingsProvider` for appearance state, `index.css` surface classes, the custom `Modal`, shared form controls, and the manual verification harness.
-- Several visible bugs are architectural mismatches, not isolated screen defects:
-  - title bar / overlay offsets are hard-coded in multiple places
-  - primary action ownership is split between `Sidebar` and detail pages
-  - tab, segmented, and modal states are implemented ad hoc instead of through a single state-visibility contract
-- Fatal-error presentation is also split today: `src/main.tsx` mounts a plain `ErrorBoundary`, while `src/App.tsx` mounts a translated `ErrorBoundaryWrapper`. `v0.5.0` should keep the safety but collapse the user-facing presentation into one branded fallback language.
-- The redesign should not introduce a new router, state library, or Electron bridge. That would spend milestone budget on platform churn instead of product quality.
-
-## Integration Points
-
-### Redesign Pressure Map
-
-| Product problem | Primary integration point | Type | Notes |
-| --- | --- | --- | --- |
-| Top content sliding under custom title bar | `AppLayout`, `TitleBar`, onboarding overlays, modal offsets, shared chrome metrics | Modified seam | Current code mixes `h-9`, `top-[32px]`, and page-local spacing. This should become one shell inset contract. |
-| Footer / action bar overlapping page content | `ModpackDetails`, `ModpackDetailsActions`, modal footer layouts, shared action-bar primitive | Modified seam | Fix once at the layout contract level, not by adding extra bottom padding per screen. |
-| Duplicate primary launch CTA | `Sidebar`, `ModpackRouter`, `ModpackDetailsActions` | Modified seam | `v0.5.0` should define one owner for the primary action on each route. |
-| Inconsistent accent and selected states | `SettingsContext`, `theme.ts`, `theme-presets.ts`, `index.css`, `Button`, `Input`, `Select`, tab/segmented controls | Modified seam | This is the core brand-system integration point. |
-| Weak modal isolation and background bleed | `Modal`, `UpdateModal`, `ShareModal`, create/add flows, overlay tokens | Modified seam | Overlay blur, dimming, z-order, and padding should come from one primitive contract. |
-| Placeholder leakage and broken fallbacks | `branding.ts`, `useAppIcon`, `EmptyStateView`, `ErrorBoundary`, `LazyImage` fallback usage | Modified seam | Brand reset needs a single asset and fallback registry. |
-| Settings tab clarity and shell consistency | `SettingsPage`, `SettingsTabsHeader`, `settingsTabs.ts` | Modified seam | The redesign should keep tab semantics but improve active-state legibility and hierarchy. |
-| Modpack tab wrapping and dense secondary surfaces | `ModpackDetailsHeader`, `ModpackDetails*Tab`, `SecondaryContentTabs` tests | Modified seam | Current tests explicitly lock in wrapped tabs; that contract likely changes in `v0.5.0`. |
-| Redesign proof and screenshot regression checks | `verification/manual/views.ts`, `verification/manual/scenarios.tsx` | Modified seam | Add `v0.5.0` scenarios here instead of building a new harness. |
-| Additional packaged brand assets | `assetsIPC`, preload bridge, `shared/contracts/assets*` | Optional new contract | Only needed if renderer must request filesystem-resolved assets beyond the current icon path. |
-
-### Internal Boundaries To Respect
-
-| Boundary | Keep / change | Guidance |
-| --- | --- | --- |
-| `electron/` ↔ renderer | Keep narrow | Do not move theme, layout, or brand state into IPC just because the milestone is visual. |
-| `shared/contracts/*` ↔ design system | Keep separate | Shared contracts should stay about native capability, not renderer styling. |
-| `SettingsProvider` ↔ feature components | Keep and extend | Appearance, language, compact mode, and animation settings already live here; keep using that seam. |
-| `AppLayout` ↔ feature routes | Extend carefully | Shell metrics, route-level action ownership, and overlay behavior belong here. |
-| `verification/manual/*` ↔ live components | Keep | Continue mounting real components with fixture data. |
-
-## Recommended Project Structure
-
-The milestone should stay inside the existing directory model and only add a few focused seams where repetition already exists.
-
-```text
-src/
-├── app/
-│   ├── assets/
-│   │   └── branding.ts                # expand into the single brand asset registry
-│   └── providers.tsx                  # existing provider stack; keep
-├── components/
-│   ├── layout/
-│   │   ├── BackgroundLayer.tsx        # existing ambient layer
-│   │   ├── EmptyStateView.tsx         # shared fallback surface
-│   │   └── AppChrome.tsx              # NEW only if title-bar/inset logic needs extraction
-│   ├── settings/
-│   │   └── SettingsTabsHeader.tsx     # shared secondary navigation
-│   ├── ui/
-│   │   ├── Button.tsx                 # existing CTA primitive
-│   │   ├── Input.tsx / Select.tsx     # existing control primitives
-│   │   ├── Modal.tsx                  # existing overlay primitive
-│   │   ├── SegmentedControl.tsx       # NEW recommended primitive
-│   │   ├── TabStrip.tsx               # NEW recommended primitive
-│   │   └── ActionBar.tsx              # NEW recommended primitive
-│   └── modpacks/details/              # consumers of shared tab/action primitives
-├── contexts/
-│   └── settings/
-│       ├── theme.ts                   # keep as document-token writer
-│       ├── theme-presets.ts           # keep as preset definitions
-│       └── chrome.ts                  # NEW renderer-only shell metrics if constants grow
-├── verification/
-│   └── manual/
-│       ├── views.ts                   # extend with v0.5 views
-│       └── scenarios.tsx              # extend with shell/fallback/brand proofs
-└── index.css                          # keep as semantic surface + token home
-```
-
-### Structure Rationale
-
-- **Keep the redesign in `src/`:** the milestone is about product quality on existing surfaces, not about new native capabilities.
-- **Add only renderer-local seams:** a small `chrome.ts`, `SegmentedControl`, `TabStrip`, or `ActionBar` is justified because the same problems repeat across pages.
-- **Do not create a separate “new UI” subtree:** that would fork the app and slow roadmap execution. Rebuild existing primitives and consumers in place.
-- **Treat `index.css` + `theme.ts` as the design-system kernel:** the current code already centralizes document CSS variables and surface classes there.
+# v0.6.0 Architecture Integration Research
 
-## New vs Modified Seams
+## Scope
 
-### Modified Seams
+Milestone: `v0.6.0 Feedback-Driven Stabilization And Expansion`
 
-| Seam | Current files | Why modify it |
-| --- | --- | --- |
-| Shell chrome and insets | `src/components/AppLayout.tsx`, `src/components/TitleBar.tsx`, onboarding overlays, `src/components/ui/Modal.tsx` | Needed to fix title-bar overlap, top safe-area drift, and overlay layering. |
-| Theme token application | `src/contexts/SettingsContext.tsx`, `src/contexts/settings/theme.ts`, `src/contexts/settings/theme-presets.ts`, `src/index.css` | Best place to impose a stronger visual language without page-level duplication. |
-| Shared controls | `src/components/ui/Button.tsx`, `Input.tsx`, `Select.tsx`, plus page-local segmented/tab controls | Needed to make selected, disabled, focus, and accent states consistent. |
-| Brand and fallback surfaces | `src/app/assets/branding.ts`, `src/app/hooks/useAppIcon.ts`, `src/components/layout/EmptyStateView.tsx`, `src/components/ErrorBoundary.tsx`, `src/main.tsx`, `src/App.tsx` | Brand reset needs a single registry and one user-facing degraded-state language across empty, missing-media, and fatal-error surfaces. |
-| Settings shell | `src/components/SettingsPage.tsx`, `src/components/settings/SettingsTabsHeader.tsx`, `src/components/settings/tabs/AppearanceTab.tsx` | The appearance editor is part of the milestone and already sits on a reusable shell. |
-| Modpack detail shell | `src/components/modpacks/ModpackDetails.tsx`, `src/components/modpacks/details/ModpackDetailsHeader.tsx`, `ModpackDetailsActions.tsx` | Current route has layout overlap, wrapped tabs, and duplicate CTA ownership. |
-| Manual verification | `src/verification/manual/*` | `v0.5.0` needs proof for chrome, brand fallbacks, error states, and redesigned core screens. |
+This note only covers the architecture impact of these milestone themes:
 
-### Recommended New Seams
+- Phase 28: shell restraint and native behavior
+- Phase 29: modpack runtime truth
+- Phase 30: settings truth
+- Phase 31: guided resource-pack and shader flows
 
-| Seam | Scope | Why it is justified |
-| --- | --- | --- |
-| `chrome.ts` or CSS shell variables | Renderer only | Gives one source for title-bar height, content inset, overlay offset, and z-index layers. |
-| `SegmentedControl` primitive | Renderer only | The same weak selected-state problem appears in theme mode, language, loader choice, and settings toggles. |
-| `TabStrip` primitive | Renderer only | Modpack detail tabs and future secondary navigation should not each reinvent wrapping, overflow, and active states. |
-| `ActionBar` primitive | Renderer only | Sticky/bottom action bars repeat across details and modal flows and need a shared spacing contract. |
-| Expanded brand manifest | Renderer only, optional asset IPC | Centralizes logos, wordmarks, empty/error illustrations, and generic fallback imagery. |
+It does not reopen unrelated launcher expansion, performance work, or broad redesign outside these seams.
 
-### Seams That Should Not Be Added
+## Main Architectural Conclusion
 
-- No new global state library.
-- No new routing library.
-- No “design IPC” bridge for theme or layout state.
-- No parallel `src/redesign/` tree.
+FMCL already has the right high-level split for this milestone:
 
-## Shared Primitives, Assets, and Contracts
+- the main process owns durable modpack, filesystem, launch, and runtime behavior
+- the renderer owns layout, navigation, and local UI preferences
+- preload and `shared/contracts/*` are the trust boundary between them
 
-### Shared Primitives To Normalize Early
+The remaining product problems mostly come from truth drifting across that split:
 
-| Primitive | Current source | `v0.5.0` expectation |
-| --- | --- | --- |
-| Shell inset / chrome height | scattered between `TitleBar`, overlay offsets, page padding | One renderer-local metric contract. |
-| Surface hierarchy | `surface-panel`, `surface-card`, `surface-inline`, `surface-soft` in `src/index.css` | Fewer, stronger semantic tiers with clearer role mapping. |
-| CTA states | `src/components/ui/Button.tsx` | One contract for primary, secondary, destructive, disabled, busy, and progress states. |
-| Input / select field states | `src/components/ui/Input.tsx`, `Select.tsx` | Consistent contrast, focus, disabled, and error treatment under brand tokens. |
-| Segmented / tab controls | page-local implementations in settings, modpacks, onboarding | Shared primitives with accessibility preserved and layout behavior explicit. |
-| Modal / overlay frame | `src/components/ui/Modal.tsx` and feature modals | Shared backdrop opacity, blur, spacing, and focus-trap behavior. |
-| Empty / error / missing-media states | `EmptyStateView`, `ErrorBoundary`, `LazyImage` fallbacks | Branded, non-irritating fallback system instead of literal one-off placeholders. |
+- shell behavior is partly native and partly custom, with a few renderer-side bypasses
+- runtime truth is still derived in multiple renderer places instead of projected once from main-process state
+- settings truth is spread across preset inference, theme mode, and noisy UI composition
+- guided content browsing already exists for resource packs and shaders, but some entrypoints still bypass it and drop back to raw OS file picking
 
-### Brand Assets
+The milestone should therefore add as little new architecture as possible. The right move is to consolidate truth at existing seams, not create parallel state systems.
 
-Recommended asset set for the brand reset:
+## Integration Map
 
-- app icon
-- monochrome mark
-- wordmark
-- compact sidebar mark
-- empty-state illustration
-- generic missing-cover fallback
-- graceful fatal-error illustration or badge
+| Workstream | Current integration points | Modified components | New components or seams worth adding | Data flow / IPC impact |
+| --- | --- | --- | --- | --- |
+| Shell restraint and native behavior | `electron/window/windowManager.ts`, `src/components/AppLayout.tsx`, `src/components/TitleBar.tsx`, `src/components/sidebar/SidebarHeader.tsx`, `src/contexts/SettingsContext.tsx`, `src/services/ipc/windowControlsIPC.ts` | `windowManager.ts`, `TitleBar.tsx`, `SidebarHeader.tsx`, `AppLayout.tsx`, `SettingsContext.tsx`, `windowControlsIPC.ts`, `electron/preload/bridges/WindowControlsBridge.ts`, `electron/ipc/handlers/windowHandlers.ts`, `shared/contracts/windowControls.ts` | Small shell-capabilities seam if needed, for example a typed platform or window-capability read model instead of renderer guessing | Low-to-moderate IPC change. Minimum change is to expose existing console controls through the wrapper and keep shell logic platform-aware. No new persistent state required. |
+| Modpack runtime truth | `src/contexts/ModpackContext.tsx`, `src/features/launch/hooks/useLaunchState.ts`, `src/features/modpacks/hooks/useModpackDetailsConfig.ts`, `src/components/modpacks/ModpackList.tsx`, `src/components/SimplePlayDashboard.tsx`, `electron/services/instances/*`, `electron/services/launcher/launchFlow/*`, `electron/services/modpacks/modpackService.ts` | `ModpackContext.tsx`, `useLaunchState.ts`, `ModpackList.tsx`, `SimplePlayDashboard.tsx`, `modpackService.ts`, `instanceService.ts`, `indexStore.ts`, `configStore.ts`, launch-flow runtime resolution | Add one authoritative runtime-summary projection shared by list, detail, dashboard, and guided content flows. This should be a shared type plus a modpack IPC read method, not a renderer-only helper. | High IPC relevance. Runtime truth should be projected from main process to renderer once. Renderer must stop inventing fallback runtime values independently of main launch resolution. |
+| Settings truth | `src/contexts/SettingsContext.tsx`, `src/contexts/settings/theme.ts`, `src/contexts/settings/theme-presets.ts`, `src/components/SettingsPage.tsx`, `src/components/settings/SettingsTabsHeader.tsx`, `src/components/settings/tabs/AppearanceTab.tsx`, `src/components/settings/tabs/LauncherTab.tsx` | `SettingsContext.tsx`, settings tab layout and shared controls, theme preset resolution helpers | Add a small internal settings-view-model seam and a shared control row system. This is renderer-local; it does not need a new main-process settings service. | Mostly no IPC change. The important architectural rule is to keep product settings truth in one renderer store and remove UI that implies behavior the app does not actually deliver. |
+| Guided resource-pack and shader flows | `src/components/modpacks/ModpackRouter.tsx`, `src/components/modpacks/AddModPage.tsx`, `src/components/modpacks/details/ResourcePacksTab.tsx`, `src/components/modpacks/details/ShadersTab.tsx`, `src/components/SimplePlayDashboard.tsx`, `electron/services/mods/platform/modPlatformService.ts`, `electron/services/resourcePacks/*`, `electron/services/shaders/*`, `shared/contracts/mods.ts` | `AddModPage.tsx`, `ModpackRouter.tsx`, `SimplePlayDashboard.tsx`, resource-pack and shader detail tabs, `shared/contracts/mods.ts`, `modsIPC.ts`, preload bridge, mod-platform service | Add typed search, compatibility, and install result models for non-mod content. Add a reusable compatibility-guidance panel instead of separate per-surface heuristics. | Moderate IPC change. Search and install are already IPC-backed, but they are weakly typed. Guided compatibility should consume authoritative runtime truth and return recoverable install errors. |
 
-Guidance:
+## Phase 28: Product Restraint And Native Shell Truth
 
-- Keep asset identifiers centralized in `src/app/assets/branding.ts`.
-- Prefer bundled renderer assets first.
-- Use the existing `assetsIPC.getIconPath()` pattern only for assets that truly need packaged native resolution.
-- Do not scatter `'/icon.png'` and similar literals through feature components.
+### What the existing architecture already gives us
 
-### Contracts
+- `electron/window/windowManager.ts` already differentiates macOS shell behavior with `titleBarStyle: 'hiddenInset'` on Darwin and a frameless custom shell on other platforms.
+- `src/components/TitleBar.tsx` already renders a minimal drag region on macOS and custom controls elsewhere.
+- `src/components/AppLayout.tsx` already keeps app-wide updater messaging in one place through `UpdateNotification`.
+- Modpack update visibility is already mostly local to modpack surfaces through `src/components/modpacks/ModpackList.tsx` and `src/components/modpacks/details/ModpackDetailsActions.tsx`.
 
-Default position for `v0.5.0`:
+### Where the current architecture still fights the product goal
 
-- **No new shared contracts are required for the redesign itself.**
-- Theme selection, preset choice, brand tokens, compact mode, and visual fallback behavior should remain renderer-local in `SettingsProvider` and CSS variables.
+- `src/components/sidebar/SidebarHeader.tsx` still carries a large share of launcher branding and high-level chrome weight, so shell noise is not isolated to one replaceable seam.
+- `src/contexts/SettingsContext.tsx` still bypasses the renderer IPC wrapper and calls `window.windowControls?.openConsole()` and `closeConsole()` directly.
+- The shell has two different urgency layers:
+  - app-updater urgency in `AppLayout.tsx`
+  - modpack-update urgency in modpack surfaces
 
-Optional contract changes only if needed:
+This split is correct, but it is easy to accidentally blur if Phase 28 edits do not preserve the separation explicitly.
 
-- extend assets contract if renderer needs multiple packaged asset paths, not just the app icon
-- extend window-controls contract only if the redesign requires native window actions beyond `minimize` and `close`
+### Integration recommendation
 
-If a contract must change, follow the existing FMCL path in one pass:
+- Treat `AppLayout.tsx`, `TitleBar.tsx`, and `SidebarHeader.tsx` as the only shell-restraint entrypoints.
+- Do not push shell decisions down into route components.
+- Normalize all window-control access through `src/services/ipc/windowControlsIPC.ts`, even when the underlying preload API already exists.
+- Keep app update messaging global and modpack update messaging local. That is already the right architecture and should be protected during cleanup.
 
-`shared/contracts/*` → preload bridge → `electron/ipc/*` handler → `src/services/ipc/*` wrapper → UI consumer → `docs/ru/contracts-map.md`
+### New vs modified components
 
-## Architectural Patterns For `v0.5.0`
+Modified:
 
-### Pattern 1: Token-First Redesign
-
-**What:** Change document tokens, surface classes, and shared control primitives before rewriting page markup.
-
-**When to use:** Any issue that repeats across settings, dashboard, modpack flows, or modals.
-
-**Trade-offs:** Slight upfront cost, but it avoids drift and reduces per-screen patch work.
-
-### Pattern 2: Shell-Owned Layout Metrics
-
-**What:** Define title-bar height, overlay offsets, and content insets once and consume them from shell/layout primitives.
-
-**When to use:** Title-bar overlap, sticky header drift, modal frame positioning, footer/action-bar spacing.
-
-**Trade-offs:** Requires touching a few cross-cutting files early, but removes a large class of screenshot regressions.
-
-### Pattern 3: One Owner Per Primary Action
-
-**What:** Each route must have a single owner for its primary CTA.
-
-**When to use:** Especially on `modpack-details`, where `Sidebar` and `ModpackDetailsActions` currently compete.
-
-**Trade-offs:** Requires an explicit shell decision, but it removes contradictory hierarchy and simplifies future tests.
-
-**Recommended direction:** when a content page exposes a route-specific primary action bar, the shell CTA should be demoted or hidden contextually rather than duplicated.
-
-### Pattern 4: Brand Fallback Registry
-
-**What:** Resolve logos, placeholders, error imagery, and missing-media fallbacks through one branding module.
-
-**When to use:** Title bar, empty states, screenshot placeholders, modpack cards, crash screens, onboarding.
-
-**Trade-offs:** Slightly more centralization, but it prevents visual drift and “annoying default” regressions.
-
-## Verification Implications
-
-Current architecture already has useful regression nets:
-
-- `src/components/settings/__tests__/SettingsTabsHeader.a11y.test.tsx`
-- `src/components/settings/__tests__/ThemeSurfaceContrast.test.tsx`
-- `src/components/modpacks/__tests__/ModpackDetailsHeader.i18n.test.tsx`
-- `src/components/layout/__tests__/BackgroundLayer.motion.test.tsx`
-- `src/components/settings/__tests__/AppearanceTab.presets.test.tsx`
-- `src/verification/manual/*`
-
-Important note for roadmap planning:
-
-- `ModpackDetailsHeader.i18n.test.tsx` currently asserts wrapped tabs (`flex-wrap`) and explicitly rejects horizontal overflow. If `v0.5.0` changes tab behavior, this is an intentional contract update, not an incidental regression.
-- `KNOWN_ISSUES.md` says the project has no tests, but the current renderer already contains targeted UI tests. The roadmap should build on them instead of assuming no safety net exists.
-- The manual verification hub still labels itself as milestone `v0.4.0`; `v0.5.0` should update and extend that same harness.
-
-## Recommended Build Order
-
-1. **Define semantic tokens and chrome metrics first.**
-   Files: `src/index.css`, `src/contexts/settings/theme.ts`, `src/contexts/settings/theme-presets.ts`, optional new `src/contexts/settings/chrome.ts`.
-   Output: one source for shell spacing, surface tiers, accent usage, and contrast rules.
-
-2. **Refactor shell chrome and overlay positioning.**
-   Files: `src/components/AppLayout.tsx`, `src/components/TitleBar.tsx`, `src/components/ui/Modal.tsx`, onboarding overlay offsets.
-   Output: no top overlap, stable z-order, and reusable inset rules before feature screens change.
-
-3. **Centralize brand assets and fallback behavior.**
-   Files: `src/app/assets/branding.ts`, `src/app/hooks/useAppIcon.ts`, `src/components/layout/EmptyStateView.tsx`, `src/components/ErrorBoundary.tsx`, image fallback consumers.
-   Output: logo, fallback art, empty states, and crash state all draw from one registry.
-
-4. **Normalize shared control primitives.**
-   Files: `src/components/ui/Button.tsx`, `Input.tsx`, `Select.tsx`, new `SegmentedControl` / `TabStrip` / `ActionBar` if needed.
-   Output: selected, disabled, focused, and accent-driven states become coherent everywhere.
-
-5. **Rebuild the shell-owned high-traffic screens on top of those primitives.**
-   Files: `SettingsPage`, `AppearanceTab`, `SimplePlayDashboard`, `Sidebar`, `ModpackList`, `ModpackBrowser`, `ModpackDetails*`.
-   Output: the launcher’s main flows share one visual and action hierarchy.
-
-6. **Resolve route-specific ownership decisions before finishing detail pages.**
-   Biggest case: `Sidebar` launch CTA vs `ModpackDetailsActions`.
-   Output: one primary action owner per route and no competing CTAs.
-
-7. **Finish secondary flows and technical fallback cleanup.**
-   Files: create/import/export/add-mod/share/screenshots/utilities plus error/empty states.
-   Output: the redesign does not collapse into legacy-looking secondary surfaces.
-
-8. **Extend verification and close the milestone through the existing proof seam.**
-   Files: `src/verification/manual/views.ts`, `src/verification/manual/scenarios.tsx`, related tests, roadmap/docs updates.
-   Output: browser-backed evidence for the redesign without a parallel verification toolchain.
-
-## Anti-Patterns To Avoid
-
-### Anti-Pattern 1: Per-Screen Safe-Area Patches
-
-**What people do:** add one-off top margins, `pt-*`, or route-local offsets to dodge the custom title bar.
-
-**Why it is wrong:** it guarantees future overlap drift across onboarding, modpacks, settings, and dialogs.
-
-**Do this instead:** define one shell inset contract and consume it everywhere.
-
-### Anti-Pattern 2: Visual State Stored in IPC
-
-**What people do:** push theme, brand, or layout state into Electron/shared contracts because it feels “global.”
-
-**Why it is wrong:** it bloats cross-process seams for renderer-only concerns and slows iteration.
-
-**Do this instead:** keep visual state in `SettingsProvider` and document CSS variables unless native packaging truly demands otherwise.
-
-### Anti-Pattern 3: Screen-Specific Brand Fallbacks
-
-**What people do:** hardcode different fallback images or copy in every component.
-
-**Why it is wrong:** brand reset immediately fragments and low-trust defaults come back.
-
-**Do this instead:** resolve all brand assets and degraded states through one registry.
-
-### Anti-Pattern 4: Locking Old Layout Decisions Into Tests
-
-**What people do:** preserve incidental class-level behavior like wrapped tabs just because tests currently assert it.
-
-**Why it is wrong:** `v0.5.0` is intentionally changing some of those contracts.
-
-**Do this instead:** keep accessibility, translation, and interaction guarantees, but update layout assertions where the product decision changes.
-
-## Roadmap Guidance
-
-For downstream roadmap creation, the milestone should be framed as four bounded architecture tracks:
-
-1. **Shell and chrome foundation**
-   Title bar, insets, overlays, z-order, action ownership.
-
-2. **Design token and primitive foundation**
-   Theme tokens, surface hierarchy, CTA/control states, tabs and segmented controls.
-
-3. **Brand and fallback foundation**
-   Logos, wordmarks, empty/error/missing-media states, asset registry.
-
-4. **Feature-surface migration and proof**
-   Settings, dashboard, modpack surfaces, then secondary flows, with manual verification updates.
-
-This keeps `v0.5.0` inside the existing Electron + React architecture while still allowing a meaningful redesign and brand reset.
-
-## Sources
-
-- `.planning/PROJECT.md`
-- `AGENTS.md`
-- `electron/AGENTS.md`
-- `src/AGENTS.md`
-- `shared/AGENTS.md`
-- `docs/KNOWN_ISSUES.md`
-- `new_screens/BUG_REPORT_2026-04-17.md`
-- `src/main.tsx`
-- `src/app/providers.tsx`
-- `src/App.tsx`
+- `electron/window/windowManager.ts`
 - `src/components/AppLayout.tsx`
 - `src/components/TitleBar.tsx`
-- `src/components/Sidebar.tsx`
-- `src/components/SettingsPage.tsx`
-- `src/components/modpacks/ModpackDetails.tsx`
-- `src/components/modpacks/details/ModpackDetailsHeader.tsx`
-- `src/components/modpacks/details/ModpackDetailsActions.tsx`
-- `src/components/ui/Button.tsx`
-- `src/components/ui/Input.tsx`
-- `src/components/ui/Select.tsx`
-- `src/components/ui/Modal.tsx`
-- `src/components/layout/BackgroundLayer.tsx`
-- `src/components/layout/EmptyStateView.tsx`
-- `src/components/ErrorBoundary.tsx`
+- `src/components/sidebar/SidebarHeader.tsx`
+- `src/contexts/SettingsContext.tsx`
+- `src/services/ipc/windowControlsIPC.ts`
+- `electron/preload/bridges/WindowControlsBridge.ts`
+- `electron/ipc/handlers/windowHandlers.ts`
+- `shared/contracts/windowControls.ts`
+
+New, only if the cleanup needs them:
+
+- a small shared `WindowShellCapabilities` contract if renderer logic needs a typed, future-safe platform capability read model
+
+### IPC implications
+
+- Minimum required change: expose console controls through the existing IPC wrapper so renderer settings stop bypassing the wrapper layer.
+- Optional change: add a typed capability getter if shell decisions start depending on more than `isMac`.
+
+## Phase 29: Modpack Workflow Simplification And Runtime Truth
+
+### What the existing architecture already gives us
+
+- The main process already owns real runtime resolution through `electron/services/instances/*` and `electron/services/launcher/launchFlow/*`.
+- Modpack product behavior already sits above that storage layer in `electron/services/modpacks/modpackService.ts`.
+- Renderer modpack state already has one main orchestration point in `src/contexts/ModpackContext.tsx`.
+
+### Where runtime truth currently splits
+
+- `src/contexts/ModpackContext.tsx` only loads the hidden `classic` config when `isClassicMode && minecraftPath`.
+- `electron/services/launcher/launchFlow/resolveModpack.ts` still resolves from the default root path even when renderer-side `minecraftPath` is unset.
+- `src/features/launch/hooks/useLaunchState.ts` falls back to `1.12.2` and `vanilla` when the renderer has no runtime config.
+- `src/contexts/instances/services/legacySeed.ts`, `electron/services/instances/indexStore.ts`, `configStore.ts`, and `instanceService.ts` still carry bootstrap defaults that can leak into UI semantics.
+- `electron/services/modpacks/modpackService.ts` currently syncs `metadata.minecraftVersion` on config save, but not `metadata.modLoader`, so list cards can drift from real runtime state.
+
+### Integration recommendation
+
+Phase 29 should establish one authoritative runtime-summary projection owned by the main process and consumed everywhere in the renderer.
+
+That projection should answer, for each modpack or classic profile:
+
+- effective Minecraft version
+- effective loader type and version
+- whether the value is explicit, inferred, or unresolved
+- whether dependency checks and content compatibility checks may trust it
+
+The renderer should then stop deriving fallback runtime values in multiple places. `ModpackContext`, launch UI, sidebar summaries, list cards, details headers, dependency badges, and later Phase 31 compatibility guidance should all consume the same projected runtime summary.
+
+### New vs modified components
+
+Modified:
+
+- `src/contexts/ModpackContext.tsx`
+- `src/features/launch/hooks/useLaunchState.ts`
+- `src/features/modpacks/hooks/useModpackDetailsConfig.ts`
+- `src/components/modpacks/ModpackList.tsx`
+- `src/components/SimplePlayDashboard.tsx`
+- `src/components/modpacks/details/ModpackDetailsModsTab.tsx`
+- `src/components/sidebar/modpackRuntimeDependencies.ts`
+- `electron/services/modpacks/modpackService.ts`
+- `electron/services/instances/instanceService.ts`
+- `electron/services/instances/indexStore.ts`
+- `electron/services/instances/configStore.ts`
+- launch-flow runtime resolution under `electron/services/launcher/launchFlow/`
+- `shared/contracts/modpacks.ts` and the related preload and renderer IPC wrapper path
+
+New:
+
+- a shared type such as `ResolvedRuntimeSummary`
+- one modpack IPC read seam that returns authoritative runtime summaries for:
+  - modpack list rows
+  - selected modpack detail
+  - classic mode
+
+### IPC implications
+
+- This phase should add or extend a modpack IPC contract so runtime truth comes from main to renderer as data, not as duplicated heuristics.
+- The renderer should stop assuming `1.12.2` or `vanilla` as user-facing truth unless main explicitly marks them as unresolved bootstrap defaults.
+- `modpackService.ts` should keep projected metadata and persisted config synchronized enough that list surfaces do not lie after runtime edits.
+
+## Phase 30: Settings Truth And Honest Personalization
+
+### What the existing architecture already gives us
+
+- Settings state already has one renderer-level owner in `src/contexts/SettingsContext.tsx`.
+- Theme helpers already live under `src/contexts/settings/`.
+- The settings route is already decomposed into tab-level components.
+
+### Where settings truth currently weakens
+
+- Preset truth is split between `themePresetId`, the active `theme`, and preset resolution logic that changes behavior depending on current light or dark mode.
+- `inferThemePresetId()` and `resolveThemeConfig()` do not form one stable, user-facing preset model.
+- `src/components/settings/tabs/AppearanceTab.tsx` mixes high-value controls with decorative or weak-result controls.
+- `AppearanceTab.tsx` and `LauncherTab.tsx` use different control geometry systems.
+- `src/components/SettingsPage.tsx` and `src/components/settings/SettingsTabsHeader.tsx` still spend too much structure on navigation chrome instead of truthful settings content.
+
+### Integration recommendation
+
+This phase should stay renderer-local and avoid inventing a new persisted settings backend.
+
+The right architectural move is:
+
+- keep `SettingsContext.tsx` as the owner
+- simplify it into one stable settings view model
+- make preset resolution explicit and reviewable
+- reduce settings UI to controls that map cleanly to a real state change
+
+If a control does not map to a durable, explainable outcome, it should leave the settings architecture instead of being “made prettier”.
+
+### New vs modified components
+
+Modified:
+
 - `src/contexts/SettingsContext.tsx`
 - `src/contexts/settings/theme.ts`
 - `src/contexts/settings/theme-presets.ts`
-- `src/index.css`
-- `src/app/assets/branding.ts`
-- `src/app/hooks/useAppIcon.ts`
-- `electron/window/windowManager.ts`
-- `shared/contracts/settings.ts`
-- `shared/contracts/windowApi.ts`
-- `src/services/ipc/windowControlsIPC.ts`
-- `src/services/ipc/assetsIPC.ts`
-- `src/verification/manual/ManualVerificationApp.tsx`
-- `src/verification/manual/views.ts`
-- `src/verification/manual/scenarios.tsx`
-- `src/components/settings/__tests__/SettingsTabsHeader.a11y.test.tsx`
-- `src/components/settings/__tests__/ThemeSurfaceContrast.test.tsx`
-- `src/components/modpacks/__tests__/ModpackDetailsHeader.i18n.test.tsx`
+- `src/components/SettingsPage.tsx`
+- `src/components/settings/SettingsTabsHeader.tsx`
+- `src/components/settings/tabs/AppearanceTab.tsx`
+- `src/components/settings/tabs/LauncherTab.tsx`
+- `src/components/settings/settingsTabs.ts`
 
----
-*Architecture research for FMCL milestone `v0.5.0`*
+New:
+
+- a small renderer-only settings view-model layer if needed to separate persisted state from panel presentation
+- a shared settings control row or field component system used by both appearance and launcher settings
+
+### IPC implications
+
+- No major IPC expansion is needed for this phase.
+- The only shell-adjacent setting that crosses the boundary is console visibility, and that should use the normalized window-controls wrapper established in Phase 28.
+
+## Phase 31: Guided Content Browsers And Capability Expansion
+
+### What the existing architecture already gives us
+
+- `src/components/modpacks/ModpackRouter.tsx` already has in-app routes for `addResourcePack` and `addShader`.
+- `src/components/modpacks/AddModPage.tsx` already supports `contentType="resourcepack"` and `contentType="shader"`.
+- `electron/services/mods/platform/modPlatformService.ts` already maps content types to Modrinth and CurseForge search/install behavior and installs into the correct target directories.
+
+This means the core architecture for in-app resource-pack and shader browsing already exists.
+
+### Where the user experience still bypasses that architecture
+
+- `src/components/SimplePlayDashboard.tsx` still uses `resourcePacksIPC.add(instancePath)` and `shadersIPC.add(instancePath)`, which pushes users into native file-picking detours.
+- `shared/contracts/mods.ts`, the preload bridge, and `src/services/ipc/modsIPC.ts` still use weak `unknown` typing for search, version, and install payloads.
+- Compatibility guidance is not modeled as a first-class response tied to authoritative runtime truth.
+- Resource-pack and shader management tabs are good inventory surfaces, but not yet the primary acquisition architecture.
+
+### Integration recommendation
+
+Phase 31 should build on the existing in-app browser path instead of creating another acquisition stack.
+
+The phase should:
+
+- reroute the main add-entry surfaces toward `AddModPage`
+- keep native file import only as an explicit fallback action
+- use the runtime-summary contract from Phase 29 for compatibility guidance
+- make install failure and incompatibility states typed and recoverable
+
+This is the clearest place where milestone sequencing matters. Phase 31 should not invent its own runtime heuristics because Phase 29 already needs to solve that problem for the whole product.
+
+### New vs modified components
+
+Modified:
+
+- `src/components/SimplePlayDashboard.tsx`
+- `src/components/modpacks/ModpackRouter.tsx`
+- `src/components/modpacks/AddModPage.tsx`
+- `src/components/modpacks/details/ResourcePacksTab.tsx`
+- `src/components/modpacks/details/ShadersTab.tsx`
+- `src/services/ipc/modsIPC.ts`
+- `electron/preload/bridges/ModsBridge.ts`
+- `electron/ipc/handlers/modsHandlers.ts`
+- `electron/services/mods/platform/modPlatformService.ts`
+- `shared/contracts/mods.ts`
+
+New:
+
+- shared typed models for content search results, version choices, compatibility guidance, and install outcomes
+- a reusable compatibility-guidance panel or decision block inside the existing add-content flow
+- a small fallback import action that keeps the old local-file behavior available without making it the primary architecture
+
+### IPC implications
+
+- `shared/contracts/mods.ts` should stop returning `unknown` for the Phase 31 path.
+- Search results should return enough typed information to render source, loader or game-version compatibility, and recoverable failure states.
+- Install calls should return a typed outcome that can distinguish:
+  - installed successfully
+  - compatible but optional caveats
+  - incompatible with current runtime truth
+  - recoverable platform or network failure
+
+## Cross-Phase Architectural Rules
+
+- Do not create a second durable modpack truth in renderer state. Runtime truth must come from main-process projection.
+- Do not add a second settings store. Settings truth should remain renderer-local and simpler, not more distributed.
+- Do not create separate resource-pack and shader acquisition architectures. Reuse the `AddModPage` plus platform-service path and make it first-class.
+- Do not let Phase 28 shell cleanup absorb route-level product work that belongs to Phases 29 to 31.
+- Protect the existing split between global app updates and local modpack updates.
+
+## Recommended Build Order For Roadmap Creation
+
+### 1. Phase 28 first: shell restraint and native behavior
+
+Why first:
+
+- it is the cleanest top-level scope boundary
+- it removes shell noise without needing deeper data model changes
+- it normalizes the shell and window-control seam before other phases touch nearby UI
+
+Expected output:
+
+- restrained shell entrypoints
+- native-first macOS behavior preserved through one shell seam
+- normalized window-controls access
+- no accidental shell-wide modpack urgency
+
+### 2. Phase 29 second: authoritative runtime truth
+
+Why second:
+
+- it fixes the highest-risk product trust problem
+- it establishes a reusable runtime-summary contract needed by later phases
+- it prevents Phase 31 from duplicating compatibility logic in renderer-only code
+
+Expected output:
+
+- one authoritative runtime projection from main to renderer
+- list, detail, dashboard, and dependency surfaces reading the same truth
+- metadata and config no longer drifting on loader or version semantics
+
+### 3. Phase 30 third: settings truth
+
+Why third:
+
+- it depends only lightly on earlier phases
+- it benefits from the shell restraint already established in Phase 28
+- it stays mostly renderer-local, making it a clean follow-on after the higher-risk runtime work
+
+Expected output:
+
+- stable preset truth
+- shared control geometry
+- removal of misleading settings surfaces
+
+### 4. Phase 31 fourth: guided resource-pack and shader flows
+
+Why fourth:
+
+- it should consume the runtime-summary contract from Phase 29
+- it can reuse shell and settings restraint work rather than reopening them
+- the existing add-content architecture already exists, so the milestone value comes from making it truthful and primary, not from inventing a new route family
+
+Expected output:
+
+- in-app browsing as the default content-acquisition path
+- compatibility guidance tied to authoritative runtime truth
+- typed, recoverable install outcomes
+- native file import preserved only as an explicit fallback
+
+## Roadmap-Shaping Summary
+
+For `v0.6.0`, the architecture should evolve by consolidation, not expansion:
+
+- Phase 28 consolidates shell behavior at the existing shell seam.
+- Phase 29 consolidates runtime truth at the main-process modpack seam.
+- Phase 30 consolidates settings truth at the existing renderer settings seam.
+- Phase 31 consolidates guided content acquisition around the add-content path that already exists, while upgrading contracts and compatibility modeling.
+
+If roadmap planning keeps those boundaries intact, the milestone can remove the main trust and clarity problems without starting another broad architectural migration.

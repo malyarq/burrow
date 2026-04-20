@@ -1,165 +1,279 @@
 # Project Research: Stack
 
 **Project:** FriendLauncher (FMCL)  
-**Milestone:** `v0.5.0 Experience Reinvention And Brand Reset`  
-**Researched:** 2026-04-17  
+**Milestone:** `v0.6.0 Feedback-Driven Stabilization And Expansion`  
+**Researched:** 2026-04-20  
 **Confidence:** HIGH
 
 ## Research Question
 
-What stack additions or stack-level changes are actually justified for a deep launcher redesign, brand reset, fallback/error-state quality, and screenshot-backed UI regression reduction in FMCL without replacing the existing Electron + React + TypeScript + TailwindCSS + Vite architecture?
+Which stack patterns should FMCL reuse for `v0.6.0`, and what minimal stack additions are actually justified for shell restraint/native behavior, modpack workflow truth, settings truth, and guided resource-pack/shader flows without leaving the current Electron + React + TypeScript architecture?
 
 ## Bottom Line
 
-FMCL should keep its core runtime stack. `v0.5.0` does not need a new UI framework, a new state manager, or a broad testing-platform rewrite.
+`v0.6.0` should stay inside the current stack. This milestone is not blocked by missing frameworks.
 
-It does need four stack-level upgrades that the current repo does not formalize strongly enough:
+The repo already has the right core ingredients:
 
-1. a real brand-token layer on top of the current Tailwind v4 and runtime theme system
-2. shared shell/layout metrics plus shared fallback and error-state primitives
-3. automated screenshot regression coverage on top of the existing `manual-verification.html` seam
-4. repo-level guards against raw locale keys, unresolved template placeholders, and fallback drift
+- Electron main-process ownership for filesystem, runtime, dialogs, updater, and shell behavior
+- React + Context state for renderer composition
+- typed preload and IPC seams for privileged operations
+- local JSON i18n and CSS-variable theme application
+- XMCL plus Modrinth and CurseForge clients for content lookup and installation
+- Vitest, Playwright, and `manual-verification.html` for regression proof
 
-These changes stay fully inside the current architecture and directly target the defects called out in `.planning/PROJECT.md`, `docs/KNOWN_ISSUES.md`, and `new_screens/BUG_REPORT_2026-04-17.md`.
+The milestone should therefore be treated as a contract-hardening and composition milestone, not a platform migration.
 
-## Core Stack To Keep
+Only four repo-local additions are justified:
 
-| Technology | Current version | Keep for `v0.5.0` | Why |
-| --- | --- | --- | --- |
-| Electron | `^40.0.0` | Yes | The milestone is about redesigning and stabilizing the shipped launcher, not replacing the desktop shell. |
-| React | `^19.2.3` | Yes | Existing renderer seams already cover layout, overlays, onboarding, modpacks, settings, and error boundaries. |
-| TypeScript | `^5.9.3` | Yes | Strong typing is still the cheapest way to keep launcher truth, locale contracts, and fixture data aligned. |
-| TailwindCSS | `^4.1.18` | Yes | Tailwind v4 already supports theme-token driven styling; FMCL is not blocked by missing CSS capability. |
-| Vite | `^7.3.1` | Yes | The existing browser-backed verification entry already depends on Vite and should stay the main redesign proof seam. |
-| Vitest | `^4.1.4` | Yes | Keep it for unit and seam tests; do not replace it just to add visual coverage. |
+1. one shared shell and control-metrics contract in the existing CSS/token layer
+2. one renderer-side truth-normalization layer for modpack and settings views
+3. stronger typed IPC result contracts for mods, resource packs, shaders, and other truth-sensitive flows
+4. a thin compatibility-guidance helper for resource packs and shaders
 
-## Required Stack Changes
+No new UI framework, state library, router, theming library, i18n framework, native window package, or backend service is warranted.
 
-| Change | Scope | Integration points | Why it is required for `v0.5.0` |
-| --- | --- | --- | --- |
-| Tailwind-backed brand token system | Repo-local stack change, no framework swap | `src/index.css`, `src/contexts/settings/theme.ts`, `src/contexts/settings/types.ts`, `src/contexts/settings/theme-presets.ts`, `src/components/ui/*` | The current theme layer mainly covers colors and background, while the redesign needs shared typography, radius, shadow, spacing, shell, and overlay tokens. Today `src/index.css` still hardcodes `Inter`, and `theme.ts` only pushes a narrow color palette into CSS variables. |
-| Shared shell metrics and surface-state primitives | Repo-local UI infrastructure | `src/components/AppLayout.tsx`, `src/components/TitleBar.tsx`, `src/components/layout/BackgroundLayer.tsx`, settings/modal surfaces, detail footers | Repeated defects like content sitting under the title bar, fixed footers covering content, and weak modal isolation are shell-contract problems, not single-screen bugs. Central tokens for titlebar height, safe bottom padding, scrim strength, and surface elevation are needed before a redesign can stay consistent. |
-| Shared branded fallback/error-state layer | Repo-local UI primitive and asset layer | `src/components/ErrorBoundary.tsx`, `src/components/ErrorBoundaryWrapper.tsx`, `src/components/ui/LazyImage.tsx`, `src/app/assets/branding.ts`, empty/error states across modpacks/settings/screenshots | The current app already has `LazyImage` and launcher-brand fallbacks, but the behavior is inconsistent and the fatal error screen still exposes raw React internals. `v0.5.0` needs one product-owned way to render missing art, empty states, recoverable errors, and fatal failures. |
-| Visual regression tooling on the existing manual seam | New dev-only tooling | `manual-verification.html`, `src/verification/manual/ManualVerificationApp.tsx`, `src/verification/manual/views.ts`, `src/verification/manual/scenarios.tsx`, new `playwright.config.*`, new visual test directory | The repo already has a deterministic manual verification entry, but screenshot regressions are still discovered manually after the fact. Add `@playwright/test` and snapshot only milestone-owned views and viewports instead of creating a second verification system. |
-| UI contract guards for locale and template leakage | Repo-local checks, no platform migration | `src/contexts/settings/i18n.ts`, `src/locales/en.json`, `src/locales/ru.json`, new `scripts/check-ui-contracts.*` or focused Vitest contracts | Current translator behavior returns the raw key on missing translations, and the screenshot audit already shows raw `${...}` placeholders and mixed-locale output. `v0.5.0` needs guardrails, not another post-hoc QA pass. |
+## Reuse By Capability
 
-## Optional Stack Changes
+### 1. Shell restraint and native behavior
 
-| Optional change | When it becomes worth it | Why it stays optional |
-| --- | --- | --- |
-| `@vitest/browser-playwright` | If the team wants browser-native assertions inside the existing Vitest runner after the first Playwright visual layer is stable | Useful for narrow browser-behavior tests, but it is not the fastest path to screenshot regression reduction. The milestone should land Playwright snapshots first. |
-| Tiny Playwright Electron smoke suite | If titlebar, frameless-window, or draggable-region bugs keep escaping browser-only screenshots | Browser snapshots do not prove real Electron shell behavior. Playwright does support Electron automation, but that support is still experimental, so keep this suite minimal and shell-only. |
-| Local brand-font asset pipeline | If the redesign introduces one or two custom brand fonts that materially change the launcher identity | Worth doing only when typography is part of the approved redesign direction. Use local WOFF2 assets and tokenized font variables, not hosted font loaders. |
+**Reuse these patterns**
 
-## What Not To Add
+- `electron/window/windowManager.ts` already owns shell policy:
+  - frameless main window
+  - `titleBarStyle: 'hiddenInset'` on macOS
+  - secure navigation and popup guards
+- `src/components/TitleBar.tsx` already has a platform split:
+  - macOS renders a quiet drag region
+  - non-macOS renders custom controls through `windowControlsIPC`
+- `src/utils/platform.ts` already provides lightweight platform detection without another native dependency.
+- `src/components/AppLayout.tsx`, `src/components/sidebar/SidebarHeader.tsx`, and `src/components/UpdateNotification.tsx` are already the right renderer shell seams for top-level restraint.
+- `src/index.css` already exposes reusable shell and surface primitives through:
+  - CSS variables
+  - `surface-*`
+  - `kicker-label`
+  - `app-drag-region`
+  - `no-drag`
+- `src/app/assets/branding.ts` is already the correct bounded asset contract. For this milestone it should be reduced and applied more carefully, not expanded.
 
-| Avoid | Why | Use instead |
-| --- | --- | --- |
-| Radix, MUI, Chakra, shadcn, or another component-kit rollout | The launcher does not have a widget shortage. The current problems are brand inconsistency, shell metrics, and fallback behavior. | Strengthen existing FMCL primitives and Tailwind tokens. |
-| Redux, Zustand, XState, RxJS, or another global state migration | The milestone is not blocked by missing state technology. Most failures are surface contracts and inconsistent UI interpretation. | Keep the existing hooks/context approach and tighten the specific seams that lie to the user. |
-| Storybook + Chromatic/Percy/Loki as the first visual-regression move | FMCL already owns a deterministic manual verification entry that mounts real launcher surfaces with fixture data. Replacing that with a component-lab workflow is unnecessary scope. | Snapshot the current `manual-verification.html` routes first. |
-| A new i18n framework | The app only ships EN/RU and already has locale catalogs plus a translator. The real gap is missing-key discipline and format consistency. | Add locale-completeness and placeholder-leak checks. |
-| A new theming library or CSS-in-JS layer | Tailwind v4 plus root CSS variables already cover dynamic theming. Another styling runtime adds migration cost without solving the milestone bugs. | Use Tailwind theme variables and the existing runtime settings context. |
-| More effect libraries for backgrounds or motion | FMCL already has background and particle infrastructure. More visual libraries will increase variability and make screenshots harder to stabilize. | Keep motion CSS-first and make backgrounds deterministic under verification. |
+**Minimal addition justified**
 
-## Integration Points
+Add one repo-local shell contract, not a library. Concretely:
 
-### 1. Brand Tokens
+- shared shell chrome metrics for titlebar height, safe top padding, collapsed and expanded sidebar rhythm, and banner slots
+- one route-ownership rule for global notices so modpack-local state does not leak back into app-wide chrome
+- if needed, one small renderer-readable shell descriptor instead of repeating platform/layout branching ad hoc
 
-- Use Tailwind v4 theme variables in `src/index.css` for stable launcher-wide tokens: font family, radius, shadows, spacing, shell heights, and scrim strengths.
-- Keep `src/contexts/settings/theme.ts` as the runtime override seam for user-controlled theme, accent, and background selections.
-- Extend `src/contexts/settings/types.ts` and `theme-presets.ts` only where the redesign needs semantic tokens, not one-off style booleans.
+This should stay as CSS variables plus a small TS helper module and feed `AppLayout`, `TitleBar`, `SidebarHeader`, and shell-level notification placement.
 
-### 2. Shell And Surface Contracts
+**Why this is enough**
 
-- `src/components/TitleBar.tsx` and `src/components/AppLayout.tsx` should consume shared shell metrics instead of hardcoded heights and implicit padding assumptions.
-- Modal, detail-footer, and overlay surfaces should share one elevation and scrim policy so `R1`, `R2`, and `R5` class bugs stop recurring under different skins.
+The current stack already knows how to render platform-specific chrome and already uses Electron window options directly. The `v0.6.0` problem is not missing native capability. The problem is inconsistent shell composition and too much chrome noise.
 
-### 3. Fallback And Error States
+**Do not add**
 
-- Keep `src/components/ui/LazyImage.tsx` as the image-loading seam, but move fallback-art policy into a broader branded surface-state layer.
-- Replace the current crash presentation in `src/components/ErrorBoundary.tsx` with a product-facing fatal state that can still expose diagnostic details behind an explicit reveal or copy action.
-- Grow `src/app/assets/branding.ts` from two asset paths into a small, stable brand-asset contract for hero marks, missing-cover states, and fatal/empty illustrations.
+- `electron-titlebar-*` or another native titlebar package
+- a new routing layer just to control shell chrome
+- a second branding system or more branded placeholder infrastructure
+- OS-specific native modules for macOS chrome beyond what Electron already provides
 
-### 4. Screenshot Regression Reduction
+### 2. Modpack workflow truth
 
-- Add Playwright visual tests against `manual-verification.html?view=...`, not against ad-hoc pages.
-- Cover milestone-owned views at a small fixed matrix: default desktop, narrower desktop, light/dark where relevant, EN/RU where relevant.
-- Use deterministic fixtures from `src/verification/manual/*` and freeze or mask volatile regions during captures instead of loosening expectations broadly.
+**Reuse these patterns**
 
-### 5. Quality Gates
+- `src/contexts/ModpackContext.tsx` already owns selected modpack, classic-vs-modpack mode behavior, and bootstrap around persisted selection.
+- `src/contexts/instances/services/instancesService.ts` and `src/services/ipc/modpacksIPC.ts` already keep selection and config truth anchored to main-process storage.
+- `electron/services/modpacks/modpackService.ts` and the lower-level instance services already own filesystem truth.
+- `src/components/modpacks/ModpackRouter.tsx` already localizes primary-action ownership by route. This is the right direction for reducing global noise.
+- `src/features/modpacks/hooks/useModpackUpdates.ts` plus `src/components/modpacks/details/ModpackDetailsActions.tsx` already support calm, local update visibility on the relevant modpack surface.
+- `src/components/layout/DegradedStateView.tsx`, confirm/toast contexts, and existing modpack tests already provide the right renderer error and degraded-state pattern.
 
-- Add a repo-owned check that fails on unresolved `${...}` placeholders, raw locale keys rendered in the DOM, and locale key drift between `en.json` and `ru.json`.
-- Keep these checks inside the existing `npm test` / `npm run lint` / `npx tsc --noEmit` gate rather than inventing another CI lane just for the milestone.
+**Minimal addition justified**
 
-## Rationale By Current Evidence
+Add one shared truth-normalization layer for renderer-facing modpack views:
 
-| Current evidence | Stack implication |
-| --- | --- |
-| `new_screens/BUG_REPORT_2026-04-17.md` shows titlebar overlap, footer overlap, weak overlay isolation, inconsistent accent states, and a fatal React stack screen | FMCL needs shell/layout tokens plus shared fallback/error-state primitives before redesign work starts landing screen by screen. |
-| `src/index.css` and `src/contexts/settings/theme.ts` currently define only a narrow color system and still hardcode typography choices | The redesign needs a first-class brand token layer, not more ad-hoc utility strings. |
-| `src/components/ErrorBoundary.tsx` still renders raw stack traces into the user-facing crash screen | Error-state quality is a stack concern now, not only a copy/style concern. |
-| `src/components/ui/LazyImage.tsx` and `src/app/assets/branding.ts` already provide the beginnings of a fallback pipeline | The milestone should standardize and extend these seams instead of introducing another image/fallback library. |
-| `manual-verification.html` and `src/verification/manual/*` already mount deterministic fixtures for milestone walkthroughs | The right screenshot-regression move is to automate the existing seam, not replace it. |
-| `src/contexts/settings/i18n.ts` falls back to raw keys, and the bug report shows unresolved `${file.jarVersion}` and mixed locale output | Add repo-level leakage guards rather than migrating to a new translation system. |
+- merge metadata, resolved runtime config, dependency evaluation, version badges, and update state into one view-model before rendering
+- keep this local to the repo in `src/features/modpacks/*` or in shared types only where cross-process data must be formalized
+- tighten weak contracts where truth is currently too loose, especially:
+  - `shared/contracts/mods.ts` still uses `unknown`
+  - boolean-only add/import results for resource packs and shaders are not enough for explainable failures
+  - any dependency/status DTOs that currently force the renderer to infer too much
 
-## External References
+**Why this is enough**
 
-- Tailwind CSS theme variables: Tailwind v4 already treats theme variables as design-token inputs and exposes namespaces for color, font, spacing, radius, shadow, blur, and more. That fits FMCL’s need for a branded token layer without leaving Tailwind.
-- Playwright visual comparisons: Playwright Test supports committed screenshot baselines via `expect(page).toHaveScreenshot()` and allows diff thresholds and style masking. That matches FMCL’s need to automate the existing browser-backed verification seam.
-- Playwright Electron automation: official Electron automation exists but is experimental, so use it only for a tiny shell-smoke layer if browser snapshots still miss real frameless-window regressions.
-- Vitest Browser Mode: current Vitest supports browser providers, including Playwright, but this is better treated as a later refinement than the first screenshot-regression investment.
+The repo already has the privileged data and the route structure. The instability comes from rendering multiple partial truths side by side: metadata, config, dependency interpretation, and local component state. A shared normalizer and stricter IPC types solve this inside the current architecture.
 
-## Recommended Scope Boundary
+**Do not add**
 
-Do in `v0.5.0`:
+- Redux, Zustand, MobX, or TanStack Query
+- a backend sync service for modpack state
+- a React Router migration for modpack subviews
+- optimistic client caches that duplicate main-process truth
 
-- formalize brand and shell tokens inside the current Tailwind/runtime theme stack
-- unify fallback/error-state rendering
-- add screenshot baselines on top of the existing manual verification seam
-- add locale/placeholder leakage guards
+### 3. Settings truth and honest personalization
 
-Do not do in `v0.5.0`:
+**Reuse these patterns**
 
-- swap UI frameworks
-- rebuild the app around a new state or theming library
-- build a full component-lab platform
-- turn visual regression into a broad cross-browser matrix project
+- `src/contexts/SettingsContext.tsx` already owns persistent settings state and document-side theme application.
+- `src/contexts/settings/theme.ts` and `src/contexts/settings/theme-presets.ts` already provide the theme and preset seam.
+- `src/contexts/settings/i18n.ts` plus `src/locales/en.json` and `src/locales/ru.json` already provide the localization model.
+- `src/index.css` already carries theme variables and shared surface primitives.
+- Existing UI primitives such as `Button`, `Input`, `Select`, and the current settings tabs are enough to normalize geometry without a component-library swap.
+
+**Minimal addition justified**
+
+Add one small appearance/control contract inside the current renderer stack:
+
+- shared geometry tokens for toggles, sliders, segmented controls, and button heights
+- one typed map of appearance capabilities that separates:
+  - controls that visibly change the UI
+  - controls that should be hidden, reworded, or deferred because they currently do not produce meaningful results
+- if preset behavior remains confusing, add derived preset-preview/state helpers inside the existing settings module rather than changing theme architecture
+
+**Why this is enough**
+
+The current settings system is already centralized. The milestone problem is truth and control consistency, not missing theming power. The correct fix is to make the current preset and control layer more explicit, not to adopt a new theme engine or a third-party form system.
+
+**Do not add**
+
+- MUI, Chakra, Radix, or another component framework
+- a new theming library
+- an external i18n runtime
+- open-ended customization infrastructure beyond bounded `CUSTOM-01`
+
+### 4. Guided resource-pack and shader flows
+
+**Reuse these patterns**
+
+- `src/components/modpacks/AddModPage.tsx` already supports `contentType="resourcepack"` and `contentType="shader"`.
+- `electron/services/mods/platform/modPlatformService.ts` already maps those content types to Modrinth and CurseForge search and installs into `resourcepacks/` or `shaderpacks/`.
+- `src/components/modpacks/details/ResourcePacksTab.tsx` and `src/components/modpacks/details/ShadersTab.tsx` already provide the post-install management surfaces.
+- `electron/services/resourcePacks/resourcePackService.ts` already parses `pack.mcmeta`, icon data, enable/disable state, and ordering.
+- `electron/services/shaders/shaderService.ts` already manages installed shader packs and active shader state.
+- `shared/contracts/resourcePacks.ts` and `shared/contracts/shaders.ts` already give these domains their own IPC seams.
+- `dialogIPC`, `resourcePacks:add`, and `shaders:add` already exist as fallback import paths.
+
+**Minimal addition justified**
+
+Add thin guidance and better result typing, not a new subsystem:
+
+- enrich the typed search, version, and install result model with compatibility and readiness hints where the UI needs them
+- add structured error results for install and import instead of plain `boolean` so the renderer can explain what failed
+- add a small compatibility helper that can evaluate known prerequisites from existing launcher truth, such as:
+  - whether the modpack/runtime combination is likely shader-capable
+  - whether resource pack metadata suggests format or version mismatch
+  - whether a failure is recoverable by re-download, different version choice, or local import fallback
+- keep OS file dialog import as a secondary escape hatch, not the primary guided flow
+
+This helper can stay repo-local. It does not need a new service boundary unless the same logic must be shared across multiple IPC handlers.
+
+**Why this is enough**
+
+The repo already has both halves of the feature:
+
+- remote discovery and install via the `mods` platform services
+- local management via resource-pack and shader domain services
+
+What is missing is truthful guidance between those halves. That is a contract and UX problem, not a stack deficiency.
+
+**Do not add**
+
+- an embedded webview marketplace
+- a separate catalog backend
+- a database or sync layer for content metadata
+- OS-specific file-manager integrations beyond the existing dialog fallback
+- a second content-browser implementation separate from `AddModPage`
+
+## Cross-Cutting Reuse
+
+These current stack patterns should be reused across the whole milestone:
+
+- Typed IPC path: shared contract -> preload bridge -> IPC handler -> renderer wrapper -> UI consumer
+- Main-process ownership of real state:
+  - modpack selection and config
+  - filesystem-backed content
+  - window and dialog behavior
+- Renderer ownership of view composition only:
+  - derive and display truth
+  - do not duplicate persistence logic that already belongs to Electron services
+- Existing design tokens and surface utilities in `src/index.css`
+- Existing degraded and recovery patterns via `DegradedStateView`, confirm dialogs, and toast feedback
+- Existing proof lane via:
+  - `manual-verification.html`
+  - `src/verification/manual/*`
+  - `tests/visual/manual-closeout.spec.ts`
+  - Vitest component and behavior tests
+
+## What Not To Add In v0.6.0
+
+- No router migration.
+- No global state rewrite.
+- No new theming or settings framework.
+- No new i18n framework.
+- No native titlebar or window library.
+- No component-library replacement.
+- No backend service or database for content metadata.
+- No separate marketplace app or embedded browser surface.
+- No open-ended performance stack work under the `v0.6.0` milestone banner.
+- No decorative customization expansion beyond bounded `CUSTOM-01`.
+- No new verification platform; expand the existing manual and Playwright seams instead.
+
+## Practical Recommendation
+
+For `v0.6.0`, the stack plan should be:
+
+1. Reuse the current Electron, preload, IPC, and main-process ownership model unchanged.
+2. Add shell and control metrics tokens inside the current CSS and renderer shell seams.
+3. Add view-model and contract hardening where UI truth is currently split or weakly typed.
+4. Add thin compatibility and readiness helpers for guided resource-pack and shader flows.
+5. Prove the milestone through the existing manual-verification and Playwright lanes, not a new QA stack.
+
+That is the smallest stack move that matches the milestone inputs from `.planning/PROJECT.md`, `.planning/MILESTONES.md`, `docs/ru/product-feedback-2026-04-20.md`, and `docs/ru/ui-qa-audit-2026-04-14.md`.
 
 ## Sources
 
-### Local evidence
-
 - `.planning/PROJECT.md`
-- `docs/KNOWN_ISSUES.md`
-- `new_screens/BUG_REPORT_2026-04-17.md`
+- `.planning/MILESTONES.md`
+- `.planning/codebase/STACK.md`
+- `.planning/codebase/ARCHITECTURE.md`
+- `docs/ru/product-feedback-2026-04-20.md`
+- `docs/ru/ui-qa-audit-2026-04-14.md`
 - `package.json`
 - `manual-verification.html`
+- `tests/visual/manual-closeout.spec.ts`
 - `src/index.css`
-- `src/App.tsx`
+- `src/app/assets/branding.ts`
+- `src/utils/platform.ts`
 - `src/components/AppLayout.tsx`
 - `src/components/TitleBar.tsx`
-- `src/components/ErrorBoundary.tsx`
-- `src/components/ui/LazyImage.tsx`
-- `src/components/layout/BackgroundLayer.tsx`
+- `src/components/UpdateNotification.tsx`
+- `src/components/sidebar/SidebarHeader.tsx`
 - `src/contexts/SettingsContext.tsx`
+- `src/contexts/ModpackContext.tsx`
 - `src/contexts/settings/theme.ts`
 - `src/contexts/settings/theme-presets.ts`
-- `src/contexts/settings/i18n.ts`
-- `src/verification/manual/ManualVerificationApp.tsx`
-- `src/verification/manual/views.ts`
-- `src/verification/manual/scenarios.tsx`
-- `shared/contracts/launcher.ts`
-- `src/features/launcher/hooks/useLauncherIPC.ts`
-- `src/features/launcher/services/launcherService.ts`
-
-### External references
-
-- https://tailwindcss.com/docs/theme
-- https://playwright.dev/docs/next/test-snapshots
-- https://playwright.dev/docs/api/class-electron
-- https://vitest.dev/guide/browser/
+- `src/contexts/instances/services/instancesService.ts`
+- `src/services/ipc/windowControlsIPC.ts`
+- `src/services/ipc/modpacksIPC.ts`
+- `src/services/ipc/resourcePacksIPC.ts`
+- `src/services/ipc/shadersIPC.ts`
+- `src/components/modpacks/ModpackRouter.tsx`
+- `src/components/modpacks/ModpackDetails.tsx`
+- `src/components/modpacks/details/ModpackDetailsActions.tsx`
+- `src/components/modpacks/details/ResourcePacksTab.tsx`
+- `src/components/modpacks/details/ShadersTab.tsx`
+- `src/components/modpacks/AddModPage.tsx`
+- `src/features/modpacks/hooks/useModpackUpdates.ts`
+- `electron/window/windowManager.ts`
+- `electron/ipc/handlers/resourcePacksHandlers.ts`
+- `electron/ipc/handlers/shadersHandlers.ts`
+- `electron/services/mods/platform/modPlatformService.ts`
+- `electron/services/resourcePacks/resourcePackService.ts`
+- `electron/services/shaders/shaderService.ts`
+- `shared/contracts/mods.ts`
+- `shared/contracts/resourcePacks.ts`
+- `shared/contracts/shaders.ts`
 
 ---
-*Research completed: 2026-04-17*  
+*Research completed: 2026-04-20*  
 *Ready for milestone planning: yes*
