@@ -5,14 +5,14 @@ milestone_name: Feedback-Driven Stabilization And Expansion
 current_phase: 28
 current_phase_name: Product Restraint And Native Shell Truth
 current_plan: null
-status: Milestone roadmap created; Phase `28` is queued for planning
+status: Phase `28` planned with 4 execution plans and ready for execution
 stopped_at: null
-last_updated: "2026-04-20T12:35:00+0300"
-last_activity: 2026-04-20 - Created the `v0.6.0` milestone roadmap and queued Phase 28 as the next phase
+last_updated: "2026-04-20T13:14:15+0300"
+last_activity: 2026-04-20 - Planned Phase 28 with four execution plans covering native shell truth, shell restraint, local modpack update visibility, and startup state truth
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
+  total_plans: 4
   completed_plans: 0
   percent: 0
 ---
@@ -24,16 +24,16 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Plan Phase `28` from the approved `v0.6.0` milestone roadmap.
+**Current focus:** Execute the four approved plans for Phase `28` from the `v0.6.0` roadmap.
 
 ## Current Position
 
 - Active milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Latest shipped milestone: `v0.5.0` — Experience Reinvention And Brand Reset
-- Current phase: Phase 28 — Product Restraint And Native Shell Truth (queued, not started)
+- Current phase: Phase 28 — Product Restraint And Native Shell Truth (planned, not started)
 - Current plan: —
-- Status: milestone roadmap created; awaiting Phase 28 planning
-- Last activity: 2026-04-20 - milestone roadmap created and Phase 28 queued next
+- Status: Phase 28 planned; execution can begin
+- Last activity: 2026-04-20 - planned Phase 28 with four execution plans
 
 Progress: [░░░░░░░░░░] 0% for the active milestone
 

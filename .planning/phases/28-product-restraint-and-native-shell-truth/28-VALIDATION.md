@@ -2,7 +2,7 @@
 phase: 28
 slug: product-restraint-and-native-shell-truth
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-04-20
 ---
@@ -20,7 +20,7 @@ created: 2026-04-20
 | **Framework** | vitest |
 | **Config file** | `vitest.config.ts` |
 | **Quick run command** | `npx vitest run src/components/__tests__/TitleBar.branding.test.tsx src/components/__tests__/UpdateNotification.layout.test.tsx src/components/sidebar/__tests__/SidebarHeader.compact-mode.test.tsx src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx src/components/modpacks/__tests__/ModpackList.ergonomics.test.tsx src/components/modpacks/__tests__/ModpackDetails.actions.test.tsx src/components/modpacks/__tests__/ModpackUpdateModal.degraded-state.test.tsx src/components/settings/__tests__/AppearanceTab.branding.test.tsx && npx tsc --noEmit` |
-| **Full suite command** | `npx vitest run electron/window/__tests__/windowManager.macos.test.ts src/components/__tests__/TitleBar.branding.test.tsx src/components/__tests__/UpdateNotification.layout.test.tsx src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx src/components/__tests__/SimplePlayHome.visualTruth.test.tsx src/components/sidebar/__tests__/SidebarHeader.compact-mode.test.tsx src/components/modpacks/__tests__/ModpackList.ergonomics.test.tsx src/components/modpacks/__tests__/ModpackDetails.actions.test.tsx src/components/modpacks/__tests__/ModpackUpdateModal.degraded-state.test.tsx src/components/settings/__tests__/AppearanceTab.branding.test.tsx src/contexts/__tests__/ModpackContext.startup-truth.test.ts electron/services/instances/__tests__/legacySeed.startupTruth.test.ts && npx tsc --noEmit && npx eslint src/ electron/` |
+| **Full suite command** | `npx vitest run electron/window/__tests__/windowManager.macos.test.ts src/components/__tests__/TitleBar.branding.test.tsx src/components/__tests__/UpdateNotification.layout.test.tsx src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx src/components/__tests__/SimplePlayHome.visualTruth.test.tsx src/components/sidebar/__tests__/SidebarHeader.compact-mode.test.tsx src/components/modpacks/__tests__/ModpackList.ergonomics.test.tsx src/components/modpacks/__tests__/ModpackDetails.actions.test.tsx src/components/modpacks/__tests__/ModpackUpdateModal.degraded-state.test.tsx src/components/settings/__tests__/AppearanceTab.branding.test.tsx src/contexts/__tests__/ModpackContext.startup-truth.test.ts electron/services/instances/__tests__/instanceMetadataCrud.test.ts electron/services/instances/__tests__/legacySeed.startupTruth.test.ts && npx tsc --noEmit && npx eslint src/ electron/` |
 | **Estimated runtime** | ~240 seconds |
 
 ---
@@ -39,13 +39,13 @@ created: 2026-04-20
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
 | 28-01-01 | 01 | 1 | SHELL-05 | main-process shell branch | `npx vitest run electron/window/__tests__/windowManager.macos.test.ts && npx tsc --noEmit` | ❌ W0 | ⬜ pending |
-| 28-01-02 | 01 | 1 | SHELL-05 | renderer shell seam | `npx vitest run src/components/__tests__/TitleBar.branding.test.tsx src/components/__tests__/UpdateNotification.layout.test.tsx && npx eslint src/components/TitleBar.tsx src/components/AppLayout.tsx electron/window/windowManager.ts && npx tsc --noEmit` | ✅ / ❌ W0 | ⬜ pending |
+| 28-01-02 | 01 | 1 | SHELL-05 | renderer shell seam | `npx vitest run src/components/__tests__/TitleBar.branding.test.tsx src/components/__tests__/UpdateNotification.layout.test.tsx && npx eslint src/components/TitleBar.tsx src/components/AppLayout.tsx electron/window/windowManager.ts src/services/ipc/windowControlsIPC.ts && npx tsc --noEmit` | ✅ / ❌ W0 | ⬜ pending |
 | 28-02-01 | 02 | 2 | SHELL-06 | shell restraint surfaces | `npx vitest run src/components/sidebar/__tests__/SidebarHeader.compact-mode.test.tsx src/components/__tests__/SimplePlayHome.visualTruth.test.tsx src/components/settings/__tests__/AppearanceTab.branding.test.tsx && npx tsc --noEmit` | ✅ | ⬜ pending |
 | 28-02-02 | 02 | 2 | SHELL-06 | shell surface lint/type | `npx eslint src/components/sidebar/SidebarHeader.tsx src/components/SimplePlayDashboard.tsx src/components/SimplePlayHome.tsx src/components/settings/tabs/AppearanceTab.tsx && npx tsc --noEmit` | ✅ | ⬜ pending |
 | 28-03-01 | 03 | 3 | SHELL-07 | positive update locality | `npx vitest run src/components/modpacks/__tests__/ModpackList.ergonomics.test.tsx src/components/modpacks/__tests__/ModpackDetails.actions.test.tsx src/components/modpacks/__tests__/ModpackUpdateModal.degraded-state.test.tsx && npx tsc --noEmit` | ✅ | ⬜ pending |
 | 28-03-02 | 03 | 3 | SHELL-07 | negative shell-level update urgency | `npx vitest run src/components/__tests__/UpdateNotification.layout.test.tsx src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx && npx eslint src/components/UpdateNotification.tsx src/components/SimplePlayDashboard.tsx src/features/modpacks/hooks/useModpackUpdates.ts && npx tsc --noEmit` | ✅ | ⬜ pending |
 | 28-04-01 | 04 | 4 | SHELL-08 | startup truth hydration | `npx vitest run src/contexts/__tests__/ModpackContext.startup-truth.test.ts src/components/__tests__/SimplePlayDashboard.launch-state.test.tsx && npx tsc --noEmit` | ❌ W0 | ⬜ pending |
-| 28-04-02 | 04 | 4 | SHELL-08 | persistence + legacy migration | `npx vitest run electron/services/instances/__tests__/instanceMetadataCrud.test.ts electron/services/instances/__tests__/legacySeed.startupTruth.test.ts && npx eslint src/contexts/ModpackContext.tsx src/contexts/instances/hooks/useInstanceBootstrap.ts src/features/launch/hooks/useLaunchState.ts electron/services/instances/indexStore.ts electron/services/instances/configStore.ts electron/services/instances/instanceService.ts && npx tsc --noEmit` | ✅ / ❌ W0 | ⬜ pending |
+| 28-04-02 | 04 | 4 | SHELL-08 | persistence + legacy migration | `npx vitest run electron/services/instances/__tests__/instanceMetadataCrud.test.ts electron/services/instances/__tests__/legacySeed.startupTruth.test.ts && npx eslint src/contexts/instances/services/instancesService.ts src/contexts/instances/services/legacySeed.ts electron/services/instances/indexStore.ts electron/services/instances/configStore.ts electron/services/instances/instanceService.ts && npx tsc --noEmit` | ✅ / ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -64,6 +64,12 @@ Existing infrastructure otherwise covers the phase:
 - existing instance persistence seam `electron/services/instances/__tests__/instanceMetadataCrud.test.ts`
 - standard repo checks `npx tsc --noEmit`, `npx eslint src/`, and `npx eslint electron/`
 
+Wave 0 ownership is explicit inside the execution plans:
+
+- `28-01-01` lands the missing main-process macOS shell seam before renderer shell cleanup depends on it.
+- `28-04-01` lands the visible startup-truth seam before the shell hydration path can claim Phase 28 is fixed.
+- `28-04-02` lands the legacy-migration and persisted-reload seams before phase closeout depends on restart truth.
+
 ---
 
 ## Manual-Only Verifications
@@ -79,11 +85,11 @@ Existing infrastructure otherwise covers the phase:
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or explicit Wave 0 dependencies
-- [ ] Wave 0 closes every missing main-process or startup-truth seam before execution depends on them
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 240s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or explicit Wave 0 dependencies
+- [x] Wave 0 closes every missing main-process or startup-truth seam before execution depends on them
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] No watch-mode flags
+- [x] Feedback latency < 240s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved 2026-04-20
