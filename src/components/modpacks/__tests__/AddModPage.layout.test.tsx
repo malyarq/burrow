@@ -102,4 +102,23 @@ describe('AddModPage flow layout', () => {
     expect(results.className).not.toContain('overflow-y-auto');
     expect(scrollContainer.contains(actions)).toBe(true);
   });
+
+  it('keeps guided resource-pack browsing instance-scoped without modloader filters', async () => {
+    render(<AddModPage modpackId="alpha" onBack={vi.fn()} contentType="resourcepack" />);
+
+    await act(async () => {
+      vi.advanceTimersByTime(500);
+      await Promise.resolve();
+    });
+
+    expect(searchModsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        contentType: 'resourcepack',
+        loader: undefined,
+      }),
+    );
+    expect(screen.getByRole('heading', { name: 'Add Resource Pack' })).toBeTruthy();
+    expect(screen.getByPlaceholderText('Search resource packs...')).toBeTruthy();
+    expect(screen.queryByText(/all modloaders/i)).toBeNull();
+  });
 });

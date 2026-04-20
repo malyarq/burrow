@@ -3,8 +3,6 @@ import { Boxes, Settings2, Sparkles } from 'lucide-react';
 import { useSettings, useUIMode } from '../contexts/SettingsContext';
 import { useModpack } from '../contexts/ModpackContext';
 import { modpacksIPC } from '../services/ipc/modpacksIPC';
-import { resourcePacksIPC } from '../services/ipc/resourcePacksIPC';
-import { shadersIPC } from '../services/ipc/shadersIPC';
 import type { ModpackMetadata } from '@shared/types/modpack';
 import { ModsTab } from './modpacks/details/ModsTab';
 import { Button } from './ui/Button';
@@ -17,6 +15,7 @@ import { cn } from '../utils/cn';
 import { ProgressBar } from './ui/ProgressBar';
 import { getLaunchStageTitle, type LaunchStage } from '../features/launcher/services/launcherService';
 import { BrandMark } from './branding/BrandMark';
+import { queueInitialModpackView } from '../features/modpacks/hooks/useModpackNavigation';
 import {
   buildModpackRuntimeSummary,
   getModpackRuntimeLoaderLabel,
@@ -208,6 +207,21 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
       getAccentStyles={getAccentStyles}
       isReadOnly={lockLaunchSurface}
     />
+  );
+
+  const handleOpenGuidedContent = useCallback(
+    (contentType: 'resourcepack' | 'shader') => {
+      if (!modpackId) {
+        return;
+      }
+
+      queueInitialModpackView({
+        type: contentType === 'resourcepack' ? 'addResourcePack' : 'addShader',
+        modpackId,
+      });
+      setMode('modpacks');
+    },
+    [modpackId, setMode],
   );
 
   useEffect(() => {
@@ -596,6 +610,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           modpackId={modpackId}
           defaultMCVersion={runtimeSummary.minecraftVersion || launch.version}
           defaultLoader={runtimeSummary.modLoader?.type ?? 'vanilla'}
+          onOpenGuidedContent={handleOpenGuidedContent}
         />
       </CollapsibleSection>
 
@@ -653,6 +668,7 @@ function ContentManagerSection({
   modpackId,
   defaultMCVersion,
   defaultLoader,
+  onOpenGuidedContent,
 }: {
   minecraftPath?: string;
   t: (k: string) => string;
@@ -660,26 +676,12 @@ function ContentManagerSection({
   modpackId?: string;
   defaultMCVersion?: string;
   defaultLoader?: string;
+  onOpenGuidedContent: (contentType: 'resourcepack' | 'shader') => void;
 }) {
   const { getAccentHex } = useSettings();
   const accentHex = getAccentHex();
   const [activeTab, setActiveTab] = useState<ContentTab>(showMods ? 'mods' : 'resourcepacks');
   const instancePath = minecraftPath || '';
-
-  const [rpUpdateKey, setRpUpdateKey] = useState(0);
-  const [shUpdateKey, setShUpdateKey] = useState(0);
-
-  const onAddRP = useCallback(async () => {
-    if (!instancePath) return;
-    await resourcePacksIPC.add(instancePath);
-    setRpUpdateKey(k => k + 1);
-  }, [instancePath]);
-
-  const onAddSH = useCallback(async () => {
-    if (!instancePath) return;
-    await shadersIPC.add(instancePath);
-    setShUpdateKey(k => k + 1);
-  }, [instancePath]);
 
   if (!instancePath) {
     return (
@@ -752,16 +754,14 @@ function ContentManagerSection({
         )}
         {activeTab === 'resourcepacks' && (
           <ResourcePacksTab
-            key={rpUpdateKey}
             instancePath={instancePath}
-            onAddResourcePack={onAddRP}
+            onAddResourcePack={() => onOpenGuidedContent('resourcepack')}
           />
         )}
         {activeTab === 'shaders' && (
           <ShadersTab
-            key={shUpdateKey}
             instancePath={instancePath}
-            onAddShader={onAddSH}
+            onAddShader={() => onOpenGuidedContent('shader')}
           />
         )}
         {activeTab === 'worlds' && <WorldsTab instancePath={instancePath} mcVersion={defaultMCVersion} />}
