@@ -9,6 +9,51 @@ import { pickPrimaryModrinthFile } from './modrinthUtils';
 import { InstanceManifestManager } from '../../instances/manifestManager';
 import type { ModInstallRequest, ModInstallResult, ModSearchQuery, ModSearchResult, ModVersionDescriptor, ModVersionQuery } from './types';
 
+type CurseforgeSearchMod = CurseforgeMod & {
+  dateCreated?: string;
+  dateModified?: string;
+  latestFilesIndexes?: Array<{
+    gameVersion?: string | null;
+  }>;
+  latestFiles?: Array<{
+    gameVersions?: string[] | null;
+  }>;
+};
+
+type ModrinthSearchHitWithVersions = Awaited<ReturnType<ModrinthV2Client['searchProjects']>>['hits'][number] & {
+  versions?: string[];
+};
+
+function isReleaseMinecraftVersion(value: string | null | undefined): value is string {
+  return typeof value === 'string' && /^\d+\.\d+(?:\.\d+)?$/.test(value.trim());
+}
+
+function compareMinecraftReleaseVersions(left: string, right: string): number {
+  const leftParts = left.split('.').map((part) => Number.parseInt(part, 10));
+  const rightParts = right.split('.').map((part) => Number.parseInt(part, 10));
+  const maxLength = Math.max(leftParts.length, rightParts.length);
+
+  for (let index = 0; index < maxLength; index += 1) {
+    const leftPart = leftParts[index] ?? 0;
+    const rightPart = rightParts[index] ?? 0;
+
+    if (leftPart !== rightPart) {
+      return rightPart - leftPart;
+    }
+  }
+
+  return 0;
+}
+
+function pickPreferredMinecraftVersion(values: Array<string | null | undefined>): string | undefined {
+  const versions = Array.from(
+    new Set(values.map((value) => value?.trim()).filter(isReleaseMinecraftVersion)),
+  );
+
+  versions.sort(compareMinecraftReleaseVersions);
+  return versions[0];
+}
+
 export class ModPlatformService {
   private readonly modrinth: ModrinthV2Client;
   private readonly curseforge: CurseforgeV1Client | null;
@@ -369,9 +414,15 @@ export class ModPlatformService {
 
     return {
       items: res.data.map((m: CurseforgeMod) => {
-        // CurseForge Mod type may not include date fields in type definition
-        // but they might be available at runtime
-        const modWithDates = m as CurseforgeMod & { dateCreated?: string; dateModified?: string };
+        const modWithMetadata = m as CurseforgeSearchMod;
+        const minecraftVersion =
+          mcVersion && mcVersion !== 'all'
+            ? mcVersion
+            : pickPreferredMinecraftVersion([
+                ...(modWithMetadata.latestFilesIndexes?.map((item) => item.gameVersion) ?? []),
+                ...(modWithMetadata.latestFiles?.flatMap((item) => item.gameVersions ?? []) ?? []),
+              ]);
+
         return {
           platform: 'curseforge',
           projectId: String(m.id),
@@ -379,9 +430,10 @@ export class ModPlatformService {
           title: m.name,
           description: m.summary,
           iconUrl: m.logo?.thumbnailUrl,
+          minecraftVersion,
           downloads: m.downloadCount,
-          dateCreated: modWithDates.dateCreated,
-          dateModified: modWithDates.dateModified,
+          dateCreated: modWithMetadata.dateCreated,
+          dateModified: modWithMetadata.dateModified,
         };
       }),
       total: res.pagination.totalCount,
@@ -456,17 +508,26 @@ export class ModPlatformService {
     }
 
     const facetsJson = JSON.stringify(facets);
-    const mapSearchHit = (hit: Awaited<ReturnType<ModrinthV2Client['searchProjects']>>['hits'][number]) => ({
-      platform: 'modrinth' as const,
-      projectId: hit.project_id,
-      slug: hit.slug,
-      title: hit.title,
-      description: hit.description,
-      iconUrl: hit.icon_url,
-      downloads: hit.downloads,
-      dateCreated: hit.date_created,
-      dateModified: hit.date_modified,
-    });
+    const mapSearchHit = (hit: Awaited<ReturnType<ModrinthV2Client['searchProjects']>>['hits'][number]) => {
+      const hitWithVersions = hit as ModrinthSearchHitWithVersions;
+      const minecraftVersion =
+        mcVersion && mcVersion !== 'all'
+          ? mcVersion
+          : pickPreferredMinecraftVersion(hitWithVersions.versions ?? []);
+
+      return {
+        platform: 'modrinth' as const,
+        projectId: hit.project_id,
+        slug: hit.slug,
+        title: hit.title,
+        description: hit.description,
+        iconUrl: hit.icon_url,
+        minecraftVersion,
+        downloads: hit.downloads,
+        dateCreated: hit.date_created,
+        dateModified: hit.date_modified,
+      };
+    };
 
     // Map sort option to Modrinth index
     let index: string;

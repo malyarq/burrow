@@ -83,6 +83,17 @@ function formatLoaderLabel(
   return getModloaderDisplayLabel({ type: loader.toLowerCase() as ModLoaderType }, t);
 }
 
+function resolveResultMinecraftVersion(modpack: ModpackSearchResultItem, activeFilter: FilterMCVersion): string | null {
+  const explicitVersion = modpack.minecraftVersion?.trim();
+  if (explicitVersion) {
+    return explicitVersion;
+  }
+
+  return activeFilter !== DEFAULT_MODPACK_BROWSER_STATE.filterMCVersion
+    ? activeFilter
+    : null;
+}
+
 export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, onBack, onNavigate, onStateChange }) => {
   const { t, getAccentStyles, formatDate, formatNumber } = useSettings();
   const normalizedInitialState = normalizeModpackBrowserState(initialState);
@@ -431,6 +442,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
     const providerLabel = modpack.platform === 'curseforge'
       ? translateWithFallback(t, 'modpacks.platform_curseforge', 'CurseForge')
       : translateWithFallback(t, 'modpacks.platform_modrinth', 'Modrinth');
+    const minecraftVersion = resolveResultMinecraftVersion(modpack, filterMCVersion);
     const updatedLabel = formatDateLabel(modpack.dateModified ?? modpack.dateCreated, formatDate);
     const favoritesActionLabel = isFavorited
       ? translateWithFallback(t, 'modpacks.remove_favorite', 'Remove favorite')
@@ -520,16 +532,28 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
             </div>
           </div>
 
-          {updatedLabel && (
+          {(minecraftVersion || updatedLabel) && (
             <div className="grid gap-2 text-xs text-secondary sm:grid-cols-2">
-              <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
-                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
-                  {translateWithFallback(t, 'modpacks.updated', 'Updated')}
+              {minecraftVersion && (
+                <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                    {translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">
+                    {minecraftVersion}
+                  </div>
                 </div>
-                <div className="mt-1 text-sm font-medium text-foreground">
-                  {updatedLabel}
+              )}
+              {updatedLabel && (
+                <div className="rounded-2xl border border-border/70 bg-background/72 px-3 py-2">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+                    {translateWithFallback(t, 'modpacks.updated', 'Updated')}
+                  </div>
+                  <div className="mt-1 text-sm font-medium text-foreground">
+                    {updatedLabel}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -550,7 +574,7 @@ export const ModpackBrowser: React.FC<ModpackBrowserProps> = ({ initialState, on
         </div>
       </div>
     );
-  }, [formatDate, getAccentStyles, handleCardKeyDown, handleModpackClick, isFavorite, t, toggleFavorite]);
+  }, [filterMCVersion, formatDate, getAccentStyles, handleCardKeyDown, handleModpackClick, isFavorite, t, toggleFavorite]);
 
 
   return (

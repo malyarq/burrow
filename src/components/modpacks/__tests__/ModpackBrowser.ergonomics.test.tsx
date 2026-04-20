@@ -72,6 +72,7 @@ describe('ModpackBrowser ergonomics', () => {
           projectId: 'alpha-pack',
           title: 'Alpha Pack',
           description: 'A polished kitchen-sink pack',
+          minecraftVersion: '1.20.1',
           downloads: 1200,
           dateModified: '2026-04-11T10:00:00.000Z',
         },
@@ -172,9 +173,12 @@ describe('ModpackBrowser ergonomics', () => {
     expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
     expect(within(searchRegion).getByText('Modloader')).toBeTruthy();
     expect(within(searchRegion).getByText('Items per page')).toBeTruthy();
-    expect(screen.getByText('Updated')).toBeTruthy();
+    const card = screen.getByRole('button', { name: 'Open details: Alpha Pack' }).closest('[role="listitem"]');
+    expect(card).not.toBeNull();
+    expect(within(card as HTMLElement).getByText('Minecraft Version')).toBeTruthy();
+    expect(within(card as HTMLElement).getByText('1.20.1')).toBeTruthy();
+    expect(within(card as HTMLElement).getByText('Updated')).toBeTruthy();
     expect(screen.queryByText('Downloads')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Open details: Alpha Pack' })).toBeTruthy();
 
     await waitFor(() => {
       expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);
