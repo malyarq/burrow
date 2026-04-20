@@ -4,17 +4,17 @@ milestone: v0.6.0
 milestone_name: Feedback-Driven Stabilization And Expansion
 current_phase: 28
 current_phase_name: Product Restraint And Native Shell Truth
-current_plan: null
-status: Phase `28` planned with 4 execution plans and ready for execution
-stopped_at: null
-last_updated: "2026-04-20T13:14:15+0300"
-last_activity: 2026-04-20 - Planned Phase 28 with four execution plans covering native shell truth, shell restraint, local modpack update visibility, and startup state truth
+current_plan: "02"
+status: Phase `28` is in progress with plan `28-01` completed and `28-02` next
+stopped_at: Completed 28-01-PLAN.md
+last_updated: "2026-04-20T10:50:29Z"
+last_activity: 2026-04-20 - Completed plan 28-01 for native macOS shell truth and marked SHELL-05 complete
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 25
 ---
 
 # Project State
@@ -30,12 +30,27 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 - Active milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Latest shipped milestone: `v0.5.0` — Experience Reinvention And Brand Reset
-- Current phase: Phase 28 — Product Restraint And Native Shell Truth (planned, not started)
-- Current plan: —
-- Status: Phase 28 planned; execution can begin
-- Last activity: 2026-04-20 - planned Phase 28 with four execution plans
+- Current phase: Phase 28 — Product Restraint And Native Shell Truth (in progress)
+- Current plan: 02 of 04
+- Status: Plan `28-01` completed; continue Phase 28 execution with `28-02`
+- Last activity: 2026-04-20 - completed Plan 28-01 and locked the native-first macOS shell contract
 
-Progress: [░░░░░░░░░░] 0% for the active milestone
+Progress: [██░░░░░░░░] 25% for the active milestone
+
+## Decisions
+
+- macOS main windows now use framed `hiddenInset` chrome so Electron owns the native traffic lights.
+- Renderer title-bar chrome now follows `windowControlsIPC` for native-versus-custom control decisions.
+- The app update banner remains ordered between the title bar and the shell-safe content seam.
+
+## Performance Metrics
+
+- 2026-04-20 — Phase 28 Plan 01 — 9 min — 2 tasks — 7 files
+
+## Session Info
+
+- Last updated: 2026-04-20T10:50:29Z
+- Stopped at: Completed 28-01-PLAN.md
 
 ## Accumulated Context
 
@@ -43,5 +58,6 @@ Progress: [░░░░░░░░░░] 0% for the active milestone
 - Use `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md` as the authoritative audit result for the archived redesign milestone.
 - Use `docs/ru/product-feedback-2026-04-20.md` and `docs/ru/ui-qa-audit-2026-04-14.md` as the primary scope inputs for `v0.6.0`.
 - `.planning/REQUIREMENTS.md` now holds 19 scoped `v0.6.0` requirements mapped one-to-one onto Phases 28-31.
-- `.planning/ROADMAP.md` now makes `v0.6.0` the active milestone and points the workflow at Phase 28 next.
+- `.planning/ROADMAP.md` now tracks Phase 28 as in progress with `28-01` complete and `28-02` next.
+- `.planning/phases/28-product-restraint-and-native-shell-truth/28-01-SUMMARY.md` is the authoritative execution record for the native macOS shell contract work.
 - Unrelated local files such as `AGENTS.md`, local `*/AGENTS.md`, `.planning/config.json`, `new_screens/`, and `screens/` remain untouched.

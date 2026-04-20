@@ -4,7 +4,7 @@
 
 **Active milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion
 **Latest shipped milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (`2026-04-20`)
-**Next step:** `$gsd-plan-phase 28`
+**Next step:** Continue Phase 28 execution with `28-02`
 
 ## Latest Archive
 
@@ -27,6 +27,7 @@ Archive:
 
 **Goal:** Remove top-level launcher noise, restore native shell behavior where the platform expects it, and make reopened app state match the user's real runtime context before deeper workflow cleanup begins.
 **Owns requirements:** `SHELL-05`, `SHELL-06`, `SHELL-07`, `SHELL-08`
+**Execution progress:** 1/4 plans complete (`28-01` complete, `28-02` next)
 
 **Observable success criteria:**
 
@@ -75,7 +76,7 @@ Archive:
 
 ## Milestones
 
-- 🟡 **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases 28-31, roadmap created 2026-04-20. Next: Phase 28 planning.
+- 🟡 **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases 28-31, roadmap created 2026-04-20. Next: execute Phase 28 plan 02.
 - ✅ **v0.2.0 UI System And Experience Rework** — Phases 7-10, shipped 2026-04-13. Archive: `.planning/milestones/v0.2.0-ROADMAP.md`
 - ✅ **v0.3.0 Adaptive UX Hardening And Launcher Ergonomics** — Phases 11-14, shipped 2026-04-14. Archive: `.planning/milestones/v0.3.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases 15-18, shipped 2026-04-17. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
@@ -89,4 +90,4 @@ Archive:
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
 | v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 36/36 | Shipped | 2026-04-20 |
-| v0.6.0 Feedback-Driven Stabilization And Expansion | 28-31 | 0/0 | Planned | — |
+| v0.6.0 Feedback-Driven Stabilization And Expansion | 28-31 | 1/4 | In Progress | — |
