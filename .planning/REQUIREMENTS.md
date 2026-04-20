@@ -16,7 +16,7 @@
 
 - [x] **MODPACK-01**: User can scan installed and browsed modpacks through one compact filter and search composition without clipped or vertically stacked controls.
 - [x] **MODPACK-02**: User can scan modpack cards using only the minimum high-value summary data needed before opening details.
-- [ ] **MODPACK-03**: User can switch and read modpack detail tabs without scrolling past oversized summary and action blocks just to reach tab content.
+- [x] **MODPACK-03**: User can switch and read modpack detail tabs without scrolling past oversized summary and action blocks just to reach tab content.
 - [ ] **MODPACK-04**: User sees one authoritative loader, version, dependency, and runtime summary across list, details, and launch-related surfaces.
 - [ ] **MODPACK-05**: User sees dependency status colors and copy that distinguish healthy, warning, and broken states truthfully.
 - [ ] **MODPACK-06**: User can finish create-modpack and add-mod flows with stable confirmation actions and actionable failure explanations instead of silent errors, flicker, or reload-style recovery.
@@ -72,7 +72,7 @@ Roadmap mapping is now fixed for milestone `v0.6.0`, with each requirement owned
 | SHELL-08 | Phase 28 | Completed |
 | MODPACK-01 | Phase 29 | Completed |
 | MODPACK-02 | Phase 29 | Completed |
-| MODPACK-03 | Phase 29 | Planned |
+| MODPACK-03 | Phase 29 | Completed |
 | MODPACK-04 | Phase 29 | Planned |
 | MODPACK-05 | Phase 29 | Planned |
 | MODPACK-06 | Phase 29 | Planned |
@@ -93,4 +93,4 @@ Roadmap mapping is now fixed for milestone `v0.6.0`, with each requirement owned
 
 ---
 *Requirements defined: 2026-04-20*  
-*Last updated: 2026-04-20 after completing Phase 29 plan 01*
+*Last updated: 2026-04-20 after completing Phase 29 plan 02*
