@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import type { SetStateAction } from 'react';
 import { useSettings, useUIMode } from './SettingsContext';
 import { CLASSIC_MODPACK_ID } from '../../shared/constants';
 import type { ModpackConfig, ModpackListItem, ModLoaderType, NetworkMode } from './instances/types';
@@ -75,9 +76,30 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [modpacks, setModpacks] = useState<ModpackListItem[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
   const [config, setConfig] = useState<ModpackConfig | null>(null);
-  const [classicConfig, setClassicConfig] = useState<ModpackConfig | null>(null);
+  const [classicConfigState, setClassicConfigState] = useState<{
+    rootPath?: string;
+    config: ModpackConfig | null;
+  }>({
+    rootPath: undefined,
+    config: null,
+  });
 
   const isClassicMode = uiMode === 'simple';
+  const classicConfig = classicConfigState.rootPath === rootPath ? classicConfigState.config : null;
+
+  const setClassicConfig = useCallback((next: SetStateAction<ModpackConfig | null>) => {
+    setClassicConfigState((current) => {
+      const currentConfig = current.rootPath === rootPath ? current.config : null;
+      const resolvedConfig = typeof next === 'function'
+        ? next(currentConfig)
+        : next;
+
+      return {
+        rootPath,
+        config: resolvedConfig,
+      };
+    });
+  }, [rootPath]);
 
   const fetchConfig = useCallback(async (id: string) => {
     return await fetchModpackConfig(id, rootPath);
@@ -109,15 +131,16 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Load classic config when in Classic mode (hidden default instance).
   useEffect(() => {
-    if (!isClassicMode || !rootPath) {
-      setClassicConfig(null);
-      return;
-    }
+    if (!isClassicMode || !rootPath) return;
 
     let cancelled = false;
-    setClassicConfig(null);
     fetchModpackConfig(CLASSIC_MODPACK_ID, rootPath).then((cfg) => {
-      if (!cancelled) setClassicConfig(cfg);
+      if (!cancelled) {
+        setClassicConfigState({
+          rootPath,
+          config: cfg,
+        });
+      }
     });
     return () => { cancelled = true; };
   }, [isClassicMode, rootPath]);
@@ -179,7 +202,7 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setMemoryGb(gb);
       }
     },
-    [isClassicMode, classicConfig, rootPath, setClassicMemoryGb, setMemoryGb]
+    [classicConfig, isClassicMode, rootPath, setClassicConfig, setClassicMemoryGb, setMemoryGb]
   );
 
   const effectiveSetMinMemoryGb = useCallback(
@@ -199,7 +222,7 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setMinMemoryGb(gb);
       }
     },
-    [isClassicMode, classicConfig, rootPath, setClassicMinMemoryGb, setMinMemoryGb]
+    [classicConfig, isClassicMode, rootPath, setClassicConfig, setClassicMinMemoryGb, setMinMemoryGb]
   );
 
   const effectiveSetJavaPath = useCallback(
@@ -219,7 +242,7 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setJavaPath(javaPath);
       }
     },
-    [isClassicMode, classicConfig, rootPath, setClassicJavaPath, setJavaPath]
+    [classicConfig, isClassicMode, rootPath, setClassicConfig, setClassicJavaPath, setJavaPath]
   );
   const effectiveSetRuntimeMinecraft = useCallback(
     (mc: string) => {
@@ -238,7 +261,7 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setRuntimeMinecraft(mc);
       }
     },
-    [isClassicMode, classicConfig, rootPath, setClassicRuntimeMinecraft, setRuntimeMinecraft]
+    [classicConfig, isClassicMode, rootPath, setClassicConfig, setClassicRuntimeMinecraft, setRuntimeMinecraft]
   );
 
   const effectiveSetRuntimeLoader = useCallback(
@@ -258,7 +281,7 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setRuntimeLoader(loader);
       }
     },
-    [isClassicMode, classicConfig, rootPath, setClassicRuntimeLoader, setRuntimeLoader]
+    [classicConfig, isClassicMode, rootPath, setClassicConfig, setClassicRuntimeLoader, setRuntimeLoader]
   );
   const effectiveSetNetworkMode = isClassicMode ? setClassicNetworkMode : setNetworkMode;
   const effectiveSetVmOptions = isClassicMode ? setClassicVmOptions : setVmOptions;
