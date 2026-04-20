@@ -16,8 +16,11 @@ import { WorldsTab } from './modpacks/details/WorldsTab';
 import { cn } from '../utils/cn';
 import { ProgressBar } from './ui/ProgressBar';
 import { getLaunchStageTitle, type LaunchStage } from '../features/launcher/services/launcherService';
-import { buildRuntimeDependencyState, getModloaderDisplayLabel } from './sidebar/modpackRuntimeDependencies';
 import { BrandMark } from './branding/BrandMark';
+import {
+  buildModpackRuntimeSummary,
+  getModpackRuntimeLoaderLabel,
+} from '../features/modpacks/hooks/useModpackRuntimeSummary';
 
 interface Particle {
   id: string;
@@ -151,13 +154,20 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
   const lastFireworksTimeRef = useRef(0);
 
   const accentHex = getAccentHex();
-  const runtimeDependencyState = buildRuntimeDependencyState(
-    launch.version,
-    launch.loaderType,
-    modpackConfig?.runtime?.modLoader?.version,
-  );
-  const loaderLabel = getModloaderDisplayLabel(runtimeDependencyState.modLoader, t);
-  const showMods = launch.loaderType !== 'vanilla';
+  const runtimeSummary = buildModpackRuntimeSummary({
+    config: modpackConfig,
+    metadata,
+    fallback: {
+      minecraftVersion: launch.version,
+      modLoader: {
+        type: launch.loaderType,
+        version: modpackConfig?.runtime?.modLoader?.version,
+      },
+      useOptiFine: modpackConfig?.game?.useOptiFine,
+    },
+  });
+  const loaderLabel = getModpackRuntimeLoaderLabel(runtimeSummary, t);
+  const showMods = Boolean(runtimeSummary.modLoader);
   const reducedMotion = disableAnimations || prefersReducedMotion;
   const launchStage = runtime.launchStage ?? (runtime.isLaunching ? 'launching' : 'idle');
   const launchStatusTitle = runtime.statusText || getLaunchStageTitle(launchStage, t);
@@ -182,7 +192,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
     currentModpack?.name ||
     modpackConfig?.name ||
     (t('ui_mode.simple') || 'Classic');
-  const heroSubtitle = `${launch.version} • ${loaderLabel}`;
+  const heroSubtitle = `${runtimeSummary.minecraftVersion || launch.version} • ${loaderLabel}`;
   const advancedSettingsTitle = translateWithFallback(t, 'dashboard.advanced_settings', 'Advanced settings');
   const advancedSettingsContent = (
     <GameTab
@@ -533,7 +543,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <InfoCard
             label={t('modpacks.minecraft_version') || 'Minecraft version'}
-            value={launch.version}
+            value={runtimeSummary.minecraftVersion || launch.version}
           />
           <InfoCard
             label={t('general.modloader') || 'Modloader'}
@@ -584,8 +594,8 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           t={t}
           showMods={showMods}
           modpackId={modpackId}
-          defaultMCVersion={launch.version}
-          defaultLoader={launch.loaderType}
+          defaultMCVersion={runtimeSummary.minecraftVersion || launch.version}
+          defaultLoader={runtimeSummary.modLoader?.type ?? 'vanilla'}
         />
       </CollapsibleSection>
 
