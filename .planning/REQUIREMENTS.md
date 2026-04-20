@@ -8,7 +8,7 @@
 ### Shell Restraint & Native Behavior
 
 - [x] **SHELL-05**: User can use the launcher on macOS without duplicate or conflicting window chrome competing with native traffic-light controls.
-- [ ] **SHELL-06**: User sees restrained app identity on critical shell surfaces instead of loud branding replacing missing content or fallback media.
+- [x] **SHELL-06**: User sees restrained app identity on critical shell surfaces instead of loud branding replacing missing content or fallback media.
 - [ ] **SHELL-07**: User sees modpack update signals only on the relevant modpack list and detail surfaces, not as global launcher urgency.
 - [ ] **SHELL-08**: User sees launcher state after reopen or restart match the actual selected profile or runtime instead of stale default values.
 
@@ -66,8 +66,8 @@ Roadmap mapping is now fixed for milestone `v0.6.0`, with each requirement owned
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-05 | Phase 28 | Planned |
-| SHELL-06 | Phase 28 | Planned |
+| SHELL-05 | Phase 28 | Completed |
+| SHELL-06 | Phase 28 | Completed |
 | SHELL-07 | Phase 28 | Planned |
 | SHELL-08 | Phase 28 | Planned |
 | MODPACK-01 | Phase 29 | Planned |
