@@ -5,16 +5,16 @@ milestone_name: Feedback-Driven Stabilization And Expansion
 current_phase: 28
 current_phase_name: Product Restraint And Native Shell Truth
 current_plan: "04"
-status: Phase `28` is in progress with plans `28-01`, `28-02`, and `28-03` completed and `28-04` next
-stopped_at: Completed 28-03-PLAN.md
-last_updated: "2026-04-20T11:16:23Z"
-last_activity: 2026-04-20 - Completed plan 28-03 for local-only modpack update urgency and marked SHELL-07 complete
+status: Phase `28` is complete; next step is planning Phase `29`
+stopped_at: Completed 28-04-PLAN.md
+last_updated: "2026-04-20T11:32:38Z"
+last_activity: 2026-04-20 - Completed plan 28-04 and closed Phase 28 shell-truth verification
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
-  percent: 75
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -24,18 +24,18 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Execute the four approved plans for Phase `28` from the `v0.6.0` roadmap.
+**Current focus:** Plan Phase `29` after closing Phase `28` for the `v0.6.0` roadmap.
 
 ## Current Position
 
 - Active milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Latest shipped milestone: `v0.5.0` — Experience Reinvention And Brand Reset
-- Current phase: Phase 28 — Product Restraint And Native Shell Truth (in progress)
+- Current phase: Phase 28 — Product Restraint And Native Shell Truth (complete)
 - Current plan: 04 of 04
-- Status: Plans `28-01`, `28-02`, and `28-03` completed; continue Phase 28 execution with `28-04`
-- Last activity: 2026-04-20 - completed Plan 28-03 and locked local-only modpack update urgency
+- Status: Phase `28` is complete; next step is planning Phase `29`
+- Last activity: 2026-04-20 - completed Plan 28-04 and closed Phase 28 shell-truth verification
 
-Progress: [████████░░] 75% for the active milestone
+Progress: [██████████] 100% for Phase 28 of the active milestone
 
 ## Decisions
 
@@ -47,17 +47,20 @@ Progress: [████████░░] 75% for the active milestone
 - [Phase 28]: Appearance guidance now lives in theme/accent copy instead of a separate launcher-brand explainer card.
 - [Phase 28]: The shell banner now names launcher updates explicitly so modpack updates stay scoped to pack surfaces.
 - [Phase 28]: Play remains the only route-primary details CTA; update review is a local secondary affordance.
+- [Phase 28]: Startup shell surfaces stay pending until selected/classic runtime truth is hydrated instead of rendering hardcoded defaults.
+- [Phase 28]: Missing index or config files now reuse persisted config or metadata truth before any 1.12.2/vanilla fallback is allowed.
 
 ## Performance Metrics
 
 - 2026-04-20 — Phase 28 Plan 01 — 9 min — 2 tasks — 7 files
 - 2026-04-20 — Phase 28 Plan 02 — 6 min — 2 tasks — 10 files
 - 2026-04-20 — Phase 28 Plan 03 — 5 min — 2 tasks — 11 files
+- 2026-04-20 — Phase 28 Plan 04 — 5 min — 2 tasks — 11 files
 
 ## Session Info
 
-- Last updated: 2026-04-20T11:16:23Z
-- Stopped at: Completed 28-03-PLAN.md
+- Last updated: 2026-04-20T11:32:38Z
+- Stopped at: Completed 28-04-PLAN.md
 
 ## Accumulated Context
 
@@ -65,8 +68,9 @@ Progress: [████████░░] 75% for the active milestone
 - Use `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md` as the authoritative audit result for the archived redesign milestone.
 - Use `docs/ru/product-feedback-2026-04-20.md` and `docs/ru/ui-qa-audit-2026-04-14.md` as the primary scope inputs for `v0.6.0`.
 - `.planning/REQUIREMENTS.md` now holds 19 scoped `v0.6.0` requirements mapped one-to-one onto Phases 28-31.
-- `.planning/ROADMAP.md` now tracks Phase 28 as in progress with `28-01` and `28-02` complete and `28-03` next.
+- `.planning/ROADMAP.md` now tracks Phase 28 as complete and points next work at Phase 29 planning.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-01-SUMMARY.md` is the authoritative execution record for the native macOS shell contract work.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-02-SUMMARY.md` is the authoritative execution record for shell restraint across sidebar, classic launcher surfaces, and appearance settings.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-03-SUMMARY.md` is the authoritative execution record for local-only modpack update visibility and shell/home regression coverage.
+- `.planning/phases/28-product-restraint-and-native-shell-truth/28-04-SUMMARY.md` is the authoritative execution record for startup shell truth and persisted-runtime recovery on reopen.
 - Unrelated local files such as `AGENTS.md`, local `*/AGENTS.md`, `.planning/config.json`, `new_screens/`, and `screens/` remain untouched.
