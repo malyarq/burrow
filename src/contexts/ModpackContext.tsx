@@ -71,9 +71,9 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const { uiMode } = useUIMode();
   const rootPath = minecraftPath || undefined;
 
-  const [isReady, setIsReady] = useState(false);
+  const [bootstrapReady, setBootstrapReady] = useState(false);
   const [modpacks, setModpacks] = useState<ModpackListItem[]>([]);
-  const [selectedId, setSelectedId] = useState<string>('default');
+  const [selectedId, setSelectedId] = useState<string>('');
   const [config, setConfig] = useState<ModpackConfig | null>(null);
   const [classicConfig, setClassicConfig] = useState<ModpackConfig | null>(null);
 
@@ -102,15 +102,20 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
     rootPath,
     refresh,
     loadSelected,
-    setIsReady,
+    setIsReady: setBootstrapReady,
     setSelectedId,
     setConfig,
   });
 
   // Load classic config when in Classic mode (hidden default instance).
   useEffect(() => {
-    if (!isClassicMode || !rootPath) return;
+    if (!isClassicMode || !rootPath) {
+      setClassicConfig(null);
+      return;
+    }
+
     let cancelled = false;
+    setClassicConfig(null);
     fetchModpackConfig(CLASSIC_MODPACK_ID, rootPath).then((cfg) => {
       if (!cancelled) setClassicConfig(cfg);
     });
@@ -151,6 +156,7 @@ export const ModpackProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const effectiveConfig = isClassicMode ? classicConfig : config;
   const effectiveModpackId = isClassicMode ? CLASSIC_MODPACK_ID : selectedId;
+  const isReady = bootstrapReady && effectiveConfig !== null;
 
   const effectiveSaveConfig = isClassicMode ? saveClassicConfig : saveConfig;
   const effectivePatchConfig = isClassicMode ? patchClassicConfig : patchConfig;
@@ -349,5 +355,3 @@ export const useModpack = () => {
   if (!ctx) throw new Error('useModpack must be used within a ModpackProvider');
   return ctx;
 };
-
-

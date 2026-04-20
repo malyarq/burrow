@@ -193,7 +193,9 @@ describe('SimplePlayDashboard launch-state seam', () => {
     expect(heroImage.closest('.logo-container')).toBeTruthy();
     expect(container.querySelector('[data-brand-wordmark]')).toBeNull();
     expect(screen.getByText('Classic Pack')).toBeTruthy();
+    expect(screen.queryByText('1.12.2')).toBeNull();
     expect(screen.getAllByText('Fabric').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Vanilla')).toBeNull();
     expect(screen.getByText('Use the sidebar to choose your version, nickname, and launch settings before you play.')).toBeTruthy();
     expect(screen.queryByTestId('app-update-notification')).toBeNull();
     expect(screen.queryByText('Review update')).toBeNull();
