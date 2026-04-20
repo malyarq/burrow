@@ -3,7 +3,7 @@
 ## Current State
 
 **Latest shipped milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (`2026-04-20`)
-**Active milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion (`2026-04-20`, planning started)
+**Active milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion (`2026-04-20`, Phase `28` complete)
 **Audit status:** `v0.5.0` passed milestone audit with `23/23` requirements satisfied, Phases `19-27` verified, and Nyquist fully compliant.
 
 FMCL is now a shipped desktop Minecraft launcher with stable shell geometry, explicit CTA ownership, a product-owned brand system, neutral artwork fallbacks, denser but clearer modpack flows, truthful theme and locale behavior, recovery-first degraded states, and deterministic closeout proof with screenshot regression coverage.
@@ -86,6 +86,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Keep closeout proof on the existing manual seam and add explicit screenshot coverage | The milestone needed deterministic evidence, not another verification harness | Validated in `v0.5.0` |
 | Recover missing audit evidence through explicit phases instead of hand-waving archive readiness | The archive needed honest proof recovery without reopening already-shipped implementation | Validated in `v0.5.0` |
 | Treat the next release as one truthful milestone `v0.6.0` | Feedback points to one coherent release story, and pseudo-patch versions would misrepresent shipped history | — Pending |
+| Start `v0.6.0` with shell restraint and native startup truth before deeper workflow cleanup | Live feedback still concentrated on shell trust, reopen truth, and top-level launcher noise rather than on missing expansion scope | Validated in Phase `28` |
 
 ## Archived Milestone Definitions
 
@@ -134,4 +135,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-20 after starting milestone `v0.6.0`*
+*Last updated: 2026-04-20 after completing Phase `28`*
