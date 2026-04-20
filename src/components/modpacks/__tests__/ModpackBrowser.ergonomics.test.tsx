@@ -135,7 +135,8 @@ describe('ModpackBrowser ergonomics', () => {
 
     await screen.findByText('Alpha Pack');
 
-    expect(screen.getByText('Active filters')).toBeTruthy();
+    const searchRegion = screen.getByRole('search', { name: 'Search modpacks' });
+    expect(searchRegion.getAttribute('data-catalog-controls')).toBe('shared');
     expect(screen.getByText('Search modpacks: "alpha"')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Clear filters' })).toBeTruthy();
 
@@ -164,14 +165,15 @@ describe('ModpackBrowser ergonomics', () => {
     const searchRegion = screen.getByRole('search', { name: 'Search modpacks' });
     const controlsGrid = within(searchRegion).getByTestId('remote-modpack-filter-controls');
 
-    expect(controlsGrid.className).toContain('grid');
-    expect(controlsGrid.className).toContain('xl:grid-cols-4');
+    expect(searchRegion.getAttribute('data-catalog-controls')).toBe('shared');
+    expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('compact-shared');
+    expect(controlsGrid.className).toContain('lg:flex-row');
     expect(within(searchRegion).getByText('Search modpacks')).toBeTruthy();
     expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
     expect(within(searchRegion).getByText('Modloader')).toBeTruthy();
     expect(within(searchRegion).getByText('Items per page')).toBeTruthy();
-    expect(screen.getByText('Downloads')).toBeTruthy();
     expect(screen.getByText('Updated')).toBeTruthy();
+    expect(screen.queryByText('Downloads')).toBeNull();
     expect(screen.getByRole('button', { name: 'Open details: Alpha Pack' })).toBeTruthy();
 
     await waitFor(() => {
