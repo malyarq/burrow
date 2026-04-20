@@ -195,5 +195,8 @@ describe('SimplePlayDashboard launch-state seam', () => {
     expect(screen.getByText('Classic Pack')).toBeTruthy();
     expect(screen.getAllByText('Fabric').length).toBeGreaterThan(0);
     expect(screen.getByText('Use the sidebar to choose your version, nickname, and launch settings before you play.')).toBeTruthy();
+    expect(screen.queryByTestId('app-update-notification')).toBeNull();
+    expect(screen.queryByText('Review update')).toBeNull();
+    expect(screen.queryByText('Launcher update available')).toBeNull();
   });
 });

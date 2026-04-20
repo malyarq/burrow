@@ -11,6 +11,7 @@ function renderActions(hasUpdate: boolean) {
       onLaunch={vi.fn()}
       hasUpdate={hasUpdate}
       onShowUpdate={vi.fn()}
+      updateVersionSummary={hasUpdate ? '1.0.0 → 1.1.0' : null}
       onRename={vi.fn()}
       onDuplicate={vi.fn()}
       onExport={vi.fn()}
@@ -32,18 +33,21 @@ describe('ModpackDetailsActions primary-action truth', () => {
     expect(screen.getByRole('button', { name: 'Play' }).getAttribute('data-primary-action')).toBe('route');
   });
 
-  it('promotes Update Available to the single route-primary action when an update exists', () => {
+  it('keeps Play as the only route-primary action and renders update as a non-blocking notice', () => {
     renderActions(true);
 
     const primaryButtons = document.querySelectorAll('[data-primary-action="route"]');
     expect(primaryButtons).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Play' }).getAttribute('data-route-action')).toBe('play');
+    expect(screen.getByRole('button', { name: 'Play' }).getAttribute('data-primary-action')).toBe('route');
 
-    const updateButton = screen.getByRole('button', { name: /update available/i });
+    const updateButton = screen.getByRole('button', { name: /review update/i });
+    const updateNotice = screen.getByTestId('modpack-details-update-notice');
+    expect(updateNotice.getAttribute('data-update-scope')).toBe('modpack-local');
     expect(updateButton.getAttribute('data-route-action')).toBe('update');
-    expect(updateButton.getAttribute('data-primary-action')).toBe('route');
-
-    const playButton = screen.getByRole('button', { name: 'Play' });
-    expect(playButton.getAttribute('data-route-action')).toBe('play');
-    expect(playButton.getAttribute('data-primary-action')).toBeNull();
+    expect(updateButton.getAttribute('data-primary-action')).toBeNull();
+    expect(updateButton.getAttribute('data-variant')).toBe('ghost');
+    expect(updateButton.className).not.toContain('w-full');
+    expect(screen.getByTestId('modpack-details-update-notice').textContent).toContain('1.0.0 → 1.1.0');
   });
 });

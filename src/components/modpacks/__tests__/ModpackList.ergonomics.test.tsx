@@ -4,9 +4,11 @@ import { cleanup, render, screen, waitFor, within } from '@testing-library/react
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ModpackList } from '../ModpackList';
 import { createTranslator } from '../../../contexts/settings/i18n';
-import { MEDIA_FALLBACK_PATH } from '../../../app/assets/branding';
+import { APP_ICON_PATH } from '../../../app/assets/branding';
 
 const listWithMetadataMock = vi.fn();
+const getModrinthVersionsMock = vi.fn();
+const getCurseForgeVersionsMock = vi.fn();
 const selectMock = vi.fn();
 const refreshMock = vi.fn();
 const t = createTranslator('en');
@@ -53,6 +55,8 @@ vi.mock('../../../contexts/ConfirmContext', () => ({
 vi.mock('../../../services/ipc/modpacksIPC', () => ({
   modpacksIPC: {
     listWithMetadata: (...args: unknown[]) => listWithMetadataMock(...args),
+    getModrinthVersions: (...args: unknown[]) => getModrinthVersionsMock(...args),
+    getCurseForgeVersions: (...args: unknown[]) => getCurseForgeVersionsMock(...args),
   },
 }));
 
@@ -68,11 +72,15 @@ describe('ModpackList ergonomics', () => {
   beforeEach(() => {
     cleanup();
     listWithMetadataMock.mockReset();
+    getModrinthVersionsMock.mockReset();
+    getCurseForgeVersionsMock.mockReset();
     selectMock.mockReset();
     refreshMock.mockReset();
 
     selectMock.mockResolvedValue(undefined);
     refreshMock.mockResolvedValue(undefined);
+    getModrinthVersionsMock.mockResolvedValue([]);
+    getCurseForgeVersionsMock.mockResolvedValue([]);
     listWithMetadataMock.mockResolvedValue([
       {
         id: 'alpha',
@@ -113,7 +121,52 @@ describe('ModpackList ergonomics', () => {
     expect(cardScope.getByText('Modloader')).toBeTruthy();
 
     await waitFor(() => {
-      expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);
+      expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(APP_ICON_PATH);
     });
+  });
+
+  it('surfaces available updates on the modpack card instead of a global shell banner', async () => {
+    listWithMetadataMock.mockResolvedValue([
+      {
+        id: 'alpha',
+        name: 'Alpha Pack',
+        path: '/packs/alpha',
+        selected: false,
+        metadata: {
+          description: 'Route truth test pack',
+          version: '1.2.0',
+          source: 'modrinth',
+          sourceId: 'alpha-pack',
+          sourceVersionId: 'release-1',
+          minecraftVersion: '1.20.1',
+          modLoader: { type: 'fabric' },
+        },
+      },
+    ]);
+    getModrinthVersionsMock.mockResolvedValue([
+      {
+        platform: 'modrinth',
+        versionId: 'release-2',
+        name: '1.3.0',
+        versionNumber: '1.3.0',
+        mcVersions: ['1.20.1'],
+        loaders: ['fabric'],
+        files: [],
+      },
+    ]);
+
+    render(<ModpackList />);
+
+    await screen.findByRole('button', { name: 'Open details: Alpha Pack' });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('installed-modpack-update-indicator-alpha')).toBeTruthy();
+    });
+
+    const updateIndicator = screen.getByTestId('installed-modpack-update-indicator-alpha');
+    expect(updateIndicator.getAttribute('data-update-scope')).toBe('modpack-local');
+    expect(updateIndicator.className).not.toContain('uppercase');
+    expect(updateIndicator.textContent).toContain('Update available');
+    expect(screen.queryByTestId('app-update-notification')).toBeNull();
   });
 });

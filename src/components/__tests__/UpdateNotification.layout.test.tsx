@@ -139,8 +139,11 @@ describe('UpdateNotification shell layout', () => {
     expect(titleBar.nextElementSibling).toBe(notifications);
     expect(notifications.nextElementSibling).toBe(safeArea);
     expect(safeArea.getAttribute('data-shell-safe-area')).toBe('shell-chrome');
+    expect(banner.getAttribute('data-update-scope')).toBe('app-shell');
     expect(banner.className).toContain('relative');
     expect(banner.className).not.toContain('fixed');
+    expect(banner.textContent).toContain('Launcher update available');
+    expect(banner.textContent).not.toContain('Review update');
   });
 
   it('keeps the macOS update banner inline under the native-first shell seam', () => {
@@ -154,7 +157,10 @@ describe('UpdateNotification shell layout', () => {
 
     expect(titleBar.getAttribute('data-platform')).toBe('macos');
     expect(titleBar.nextElementSibling).toBe(notifications);
+    expect(banner.getAttribute('data-update-scope')).toBe('app-shell');
     expect(banner.className).toContain('relative');
     expect(banner.className).not.toContain('fixed');
+    expect(banner.textContent).toContain('Launcher update available');
+    expect(banner.textContent).not.toContain('Review update');
   });
 });
