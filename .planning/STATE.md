@@ -5,10 +5,10 @@ milestone_name: Feedback-Driven Stabilization And Expansion
 current_phase: 28
 current_phase_name: Product Restraint And Native Shell Truth
 current_plan: "04"
-status: Phase `28` is complete; next step is planning Phase `29`
-stopped_at: Completed 28-04-PLAN.md
-last_updated: "2026-04-20T14:38:53+0300"
-last_activity: 2026-04-20 - Completed Phase 28 execution and verification; next step is planning Phase 29
+status: Phase `29` context gathered; next step is planning Phase `29`
+stopped_at: Phase 29 context gathered
+last_updated: "2026-04-20T16:23:49+0300"
+last_activity: 2026-04-20 - Gathered Phase 29 context for modpack workflow simplification and runtime truth
 progress:
   total_phases: 4
   completed_phases: 1
@@ -24,7 +24,7 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Players should be able to install, manage, share, and launch Minecraft modpacks and play with friends through P2P from one stable desktop launcher without juggling multiple external tools.
-**Current focus:** Plan Phase `29` after closing Phase `28` for the `v0.6.0` roadmap.
+**Current focus:** Plan Phase `29` using the new modpack workflow and runtime-truth context.
 
 ## Current Position
 
@@ -32,8 +32,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 - Latest shipped milestone: `v0.5.0` — Experience Reinvention And Brand Reset
 - Current phase: Phase 28 — Product Restraint And Native Shell Truth (complete)
 - Current plan: 04 of 04
-- Status: Phase `28` is complete; next step is planning Phase `29`
-- Last activity: 2026-04-20 - completed Plan 28-04 and closed Phase 28 shell-truth verification
+- Status: Phase `29` context gathered; next step is planning Phase `29`
+- Last activity: 2026-04-20 - gathered Phase 29 context for modpack workflow simplification and runtime truth
 
 Progress: [██████████] 100% for Phase 28 of the active milestone
 
@@ -59,8 +59,9 @@ Progress: [██████████] 100% for Phase 28 of the active miles
 
 ## Session Info
 
-- Last updated: 2026-04-20T11:32:38Z
-- Stopped at: Completed 28-04-PLAN.md
+- Last updated: 2026-04-20T16:23:49+0300
+- Stopped at: Phase 29 context gathered
+- Resume file: `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-CONTEXT.md`
 
 ## Accumulated Context
 
@@ -69,6 +70,7 @@ Progress: [██████████] 100% for Phase 28 of the active miles
 - Use `docs/ru/product-feedback-2026-04-20.md` and `docs/ru/ui-qa-audit-2026-04-14.md` as the primary scope inputs for `v0.6.0`.
 - `.planning/REQUIREMENTS.md` now holds 19 scoped `v0.6.0` requirements mapped one-to-one onto Phases 28-31.
 - `.planning/ROADMAP.md` now tracks Phase 28 as complete and points next work at Phase 29 planning.
+- `.planning/phases/29-modpack-workflow-simplification-and-runtime-truth/29-CONTEXT.md` captures the locked decisions for Phase 29 planning.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-01-SUMMARY.md` is the authoritative execution record for the native macOS shell contract work.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-02-SUMMARY.md` is the authoritative execution record for shell restraint across sidebar, classic launcher surfaces, and appearance settings.
 - `.planning/phases/28-product-restraint-and-native-shell-truth/28-03-SUMMARY.md` is the authoritative execution record for local-only modpack update visibility and shell/home regression coverage.
