@@ -1,9 +1,9 @@
 ---
 phase: 28
 slug: product-restraint-and-native-shell-truth
-status: draft
+status: complete
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-04-20
 ---
 
