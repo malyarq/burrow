@@ -2,27 +2,11 @@
 
 ## Current State
 
-**Latest shipped milestone:** `v0.5.0` — Experience Reinvention And Brand Reset (`2026-04-20`)
-**Active milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion (`2026-04-20`, Phase `28` complete)
-**Audit status:** `v0.5.0` passed milestone audit with `23/23` requirements satisfied, Phases `19-27` verified, and Nyquist fully compliant.
+**Latest shipped milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion (`2026-04-21`)  
+**Active milestone:** none  
+**Audit status:** `v0.6.0` passed milestone audit with `19/19` requirements satisfied, Phases `28-31` verified, and Nyquist fully compliant.
 
-FMCL is now a shipped desktop Minecraft launcher with stable shell geometry, explicit CTA ownership, a product-owned brand system, neutral artwork fallbacks, denser but clearer modpack flows, truthful theme and locale behavior, recovery-first degraded states, and deterministic closeout proof with screenshot regression coverage.
-
-## Current Milestone: v0.6.0 Feedback-Driven Stabilization And Expansion
-
-**Goal:** Ship one coherent release that removes the remaining product weirdness from live feedback, restores trust in core launcher and modpack flows, makes settings honest instead of noisy, and only then adds the next bounded content-flow expansion.
-
-**Target features:**
-- Product restraint and native shell truth across app-critical surfaces, fallback states, macOS window behavior, modpack-update visibility, and top-level runtime state after reopen or restart.
-- Modpack workflow simplification and runtime truth across list, detail, tab, dependency, loader, version, and async action seams.
-- Settings truth and honest personalization through real preset-theme behavior, consistent control geometry, removal of misleading appearance controls, and only bounded `CUSTOM-01`.
-- Guided resource-pack and shader content browsers with compatibility guidance, recoverable failures, and only bounded `EXPAND-01`.
-
-**Boundaries:**
-- Treat the next public release as one milestone: `v0.6.0`, not pseudo-releases like `v0.5.1`, `v0.5.2`, and `v0.5.3`.
-- Use internal phases `28-31` to structure execution instead of pretending intermediate public patches shipped.
-- Keep `PERF-01` explicit but deferred until shell, modpack, and settings truth stop being the dominant product complaint.
-- If intermediate artifacts are needed before release, prefer prerelease labels such as `0.6.0-alpha.*`, `0.6.0-beta.*`, or `0.6.0-rc.*`.
+FMCL is now a shipped desktop Minecraft launcher with restrained shell behavior, truthful runtime and dependency summaries, stable create/add modpack recovery, honest settings behavior, bounded preset-adjacent customization, and first-class guided resource-pack and shader management that stays scoped to the current modpack instead of expanding into a marketplace.
 
 ## What This Is
 
@@ -47,10 +31,12 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
   - `.planning/milestones/v0.5.0-ROADMAP.md`
   - `.planning/milestones/v0.5.0-REQUIREMENTS.md`
   - `.planning/milestones/v0.5.0-MILESTONE-AUDIT.md`
-- The launcher now has one reusable closeout proof seam on `manual-verification.html` plus a milestone-owned screenshot regression lane.
-- `v0.5.0` closed the redesign scope and its audit-trail recovery; there is no active milestone in progress.
-- `v0.6.0` planning starts from the shipped redesign baseline and uses `docs/ru/product-feedback-2026-04-20.md` plus `docs/ru/ui-qa-audit-2026-04-14.md` as the primary scope inputs.
-- Future scope should start from the shipped redesign baseline rather than reopening archived proof recovery or archive cleanup work.
+  - `.planning/milestones/v0.6.0-ROADMAP.md`
+  - `.planning/milestones/v0.6.0-REQUIREMENTS.md`
+  - `.planning/milestones/v0.6.0-MILESTONE-AUDIT.md`
+- The launcher now has one reusable manual verification seam on `manual-verification.html` plus milestone-owned proof routes for settings and guided content closeout.
+- There is no active milestone in progress. The next milestone should start from shipped `v0.6.0` truth rather than reopening archived shell, settings, or guided-content closeout work.
+- Future scope should assume the current product baseline includes restrained shell identity, compact modpack workflows, bounded honest settings behavior, and guided resource-pack/shader flows as shipped capability.
 
 ## Constraints
 
@@ -59,7 +45,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - Maintain green quality gates for `npm test`, `npm run lint`, and `npx tsc --noEmit`.
 - Keep EN/RU user-facing strings synchronized when launcher behavior changes.
 - Treat public docs and closeout proof as part of shipped product truth, not post-release cleanup.
-- Start the next milestone with fresh requirements instead of extending archived `v0.5.0` scope by inertia.
+- Start the next milestone with fresh requirements instead of extending archived `v0.6.0` scope by inertia.
 
 ## Key Decisions
 
@@ -85,10 +71,27 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Treat logo usage, artwork fallback, empty states, and error states as milestone-owned product surfaces | These repeatedly visible seams were amplifying product drift and low-trust behavior | Validated in `v0.5.0` |
 | Keep closeout proof on the existing manual seam and add explicit screenshot coverage | The milestone needed deterministic evidence, not another verification harness | Validated in `v0.5.0` |
 | Recover missing audit evidence through explicit phases instead of hand-waving archive readiness | The archive needed honest proof recovery without reopening already-shipped implementation | Validated in `v0.5.0` |
-| Treat the next release as one truthful milestone `v0.6.0` | Feedback points to one coherent release story, and pseudo-patch versions would misrepresent shipped history | — Pending |
-| Start `v0.6.0` with shell restraint and native startup truth before deeper workflow cleanup | Live feedback still concentrated on shell trust, reopen truth, and top-level launcher noise rather than on missing expansion scope | Validated in Phase `28` |
+| Treat the next release as one truthful milestone `v0.6.0` | Feedback pointed to one coherent release story, and pseudo-patch versions would have misrepresented shipped history | Validated in `v0.6.0` |
+| Start `v0.6.0` with shell restraint and native startup truth before deeper workflow cleanup | Live feedback still concentrated on shell trust, reopen truth, and top-level launcher noise | Validated in `v0.6.0` |
+| Keep modpack cleanup focused on shared runtime truth and explicit async recovery before any capability expansion | Core modpack flows still carried the most day-to-day user friction after shell cleanup | Validated in `v0.6.0` |
+| Restore settings truth before shipping even bounded personalization | Appearance controls had to become deterministic and honest before any `CUSTOM-01` slice could be defensible | Validated in `v0.6.0` |
+| Limit content expansion to guided resource-pack and shader flows, not a marketplace | FMCL needed first-class content management tied to the current modpack, not broad discovery sprawl | Validated in `v0.6.0` |
 
 ## Archived Milestone Definitions
+
+<details>
+<summary>v0.6.0 milestone definition before archive</summary>
+
+The shipped milestone focused on removing the remaining product weirdness called out in live feedback by restoring shell trust, making modpack and settings behavior truthful, and only then adding one bounded guided content-flow expansion.
+
+Primary target areas before archive:
+
+- restrained shell identity, native macOS behavior, local update ownership, and truthful startup or reopen state
+- smaller modpack browse, detail, dependency, loader, version, and async create or add seams
+- deterministic preset-theme behavior, compact settings hierarchy, honest control scope, and only bounded `CUSTOM-01`
+- guided resource-pack and shader flows with explicit local fallback, honest capability guidance, recoverable failures, and no marketplace framing
+
+</details>
 
 <details>
 <summary>v0.5.0 milestone definition before archive</summary>
@@ -135,4 +138,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-20 after completing Phase `28`*
+*Last updated: 2026-04-21 after shipping milestone `v0.6.0`*

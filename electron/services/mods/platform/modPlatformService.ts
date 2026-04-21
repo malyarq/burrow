@@ -1,4 +1,6 @@
 import path from 'node:path';
+import fs from 'fs-extra';
+import AdmZip from 'adm-zip';
 import { download } from '@xmcl/file-transfer';
 import { ModrinthV2Client } from '@xmcl/modrinth';
 import { CurseforgeV1Client, type File as CurseforgeFile, type Mod as CurseforgeMod } from '@xmcl/curseforge';
@@ -7,7 +9,18 @@ import { ensureDir } from './fsUtils';
 import { CF_SORT_POPULARITY, CF_SORT_LAST_UPDATED, CF_SORT_NAME, mapLoaderToCurseforge, mapLoaderToModrinth } from './loaderMapping';
 import { pickPrimaryModrinthFile } from './modrinthUtils';
 import { InstanceManifestManager } from '../../instances/manifestManager';
-import type { ModInstallRequest, ModInstallResult, ModSearchQuery, ModSearchResult, ModVersionDescriptor, ModVersionQuery } from './types';
+import {
+  type GuidedContentInstallIssue,
+  type GuidedContentInstallIssueStatus,
+  type GuidedContentInstallResult,
+  isManifestManagedContentType,
+  type ModInstallRequest,
+  type ModInstallResult,
+  type ModSearchQuery,
+  type ModSearchResult,
+  type ModVersionDescriptor,
+  type ModVersionQuery,
+} from './types';
 
 type CurseforgeSearchMod = CurseforgeMod & {
   dateCreated?: string;
@@ -54,6 +67,10 @@ function pickPreferredMinecraftVersion(values: Array<string | null | undefined>)
   return versions[0];
 }
 
+function isGuidedContentType(contentType: ModInstallRequest['contentType']): contentType is 'resourcepack' | 'shader' {
+  return contentType === 'resourcepack' || contentType === 'shader';
+}
+
 export class ModPlatformService {
   private readonly modrinth: ModrinthV2Client;
   private readonly curseforge: CurseforgeV1Client | null;
@@ -66,6 +83,94 @@ export class ModPlatformService {
   }
 
   private manifestManager = new InstanceManifestManager();
+
+  private createGuidedContentInstallIssue(
+    fileName: string,
+    status: GuidedContentInstallIssueStatus,
+    message: string,
+  ): GuidedContentInstallIssue {
+    return { fileName, status, message };
+  }
+
+  private createGuidedContentInstallResult(
+    status: GuidedContentInstallResult['status'],
+    details: Partial<Omit<GuidedContentInstallResult, 'status' | 'issues'>> = {},
+    issues: GuidedContentInstallIssue[] = [],
+  ): GuidedContentInstallResult {
+    return {
+      status,
+      destination: details.destination,
+      filename: details.filename,
+      usedUrl: details.usedUrl,
+      issues,
+    };
+  }
+
+  private async hasResourcePackPayload(filePath: string): Promise<boolean> {
+    try {
+      if (!filePath.toLowerCase().endsWith('.zip')) {
+        return false;
+      }
+
+      const data = await fs.readFile(filePath);
+      const zip = new AdmZip(data);
+      const mcmetaEntry = zip.getEntry('pack.mcmeta');
+
+      if (!mcmetaEntry) {
+        return false;
+      }
+
+      const content = JSON.parse(zip.readAsText(mcmetaEntry)) as {
+        pack?: {
+          pack_format?: number;
+        };
+      };
+
+      return typeof content.pack?.pack_format === 'number';
+    } catch {
+      return false;
+    }
+  }
+
+  private async hasShaderPayload(filePath: string): Promise<boolean> {
+    try {
+      if (!filePath.toLowerCase().endsWith('.zip')) {
+        return false;
+      }
+
+      const data = await fs.readFile(filePath);
+      const zip = new AdmZip(data);
+      return zip.getEntries().some((entry) => entry.entryName.startsWith('shaders/'));
+    } catch {
+      return false;
+    }
+  }
+
+  private async validateGuidedContentArchive(
+    filePath: string,
+    fileName: string,
+    contentType: 'resourcepack' | 'shader',
+  ): Promise<GuidedContentInstallIssue | null> {
+    const isValid = contentType === 'resourcepack'
+      ? await this.hasResourcePackPayload(filePath)
+      : await this.hasShaderPayload(filePath);
+
+    if (isValid) {
+      return null;
+    }
+
+    const message = contentType === 'resourcepack'
+      ? 'The downloaded archive is missing a readable pack.mcmeta file.'
+      : 'The downloaded archive does not contain a shaders/ directory.';
+
+    return this.createGuidedContentInstallIssue(fileName, 'invalid-archive', message);
+  }
+
+  private getGuidedContentFailureMessage(contentType: 'resourcepack' | 'shader'): string {
+    return contentType === 'resourcepack'
+      ? 'FMCL could not download this resource pack into the current modpack.'
+      : 'FMCL could not download this shader pack into the current modpack.';
+  }
 
   public async searchMods(query: ModSearchQuery): Promise<ModSearchResult> {
     const sort = query.sort ?? 'popularity';
@@ -275,31 +380,109 @@ export class ModPlatformService {
         : path.join(rootPath, folderName);
     ensureDir(destDir);
 
-    if (req.platform === 'modrinth') {
-      const version = await this.modrinth.getProjectVersion(req.versionId);
-      const file = pickPrimaryModrinthFile(version);
-      if (!file?.url || !file.filename) throw new Error('Modrinth version has no downloadable file.');
+    const instanceDir = req.instancePath || (req.instanceId ? this.instances.getModpackDir(rootPath, req.instanceId) : null);
+    const guidedContentType = isGuidedContentType(contentType) ? contentType : null;
 
-      const destination = path.join(destDir, file.filename);
-      const urls = [file.url, ...(req.fallbackUrls ?? [])];
-      const sha1 = file.hashes?.sha1;
-
-      await download({
-        url: urls,
+    const finalizeInstall = async (params: {
+      destination: string;
+      primaryUrl: string;
+      fallbackUrls?: string[];
+      filename: string;
+      sha1?: string;
+      trackSource: 'modrinth' | 'curseforge';
+      trackProjectId: string;
+      trackVersionId: string;
+    }): Promise<ModInstallResult> => {
+      const {
         destination,
-        validator: sha1 ? { algorithm: 'sha1', hash: sha1 } : undefined,
-      });
+        primaryUrl,
+        fallbackUrls,
+        filename,
+        sha1,
+        trackSource,
+        trackProjectId,
+        trackVersionId,
+      } = params;
+
+      if (guidedContentType) {
+        if (await fs.pathExists(destination)) {
+          return this.createGuidedContentInstallResult('duplicate', {}, [
+            this.createGuidedContentInstallIssue(
+              filename,
+              'duplicate',
+              guidedContentType === 'resourcepack'
+                ? 'A resource pack with this file name already exists in the instance.'
+                : 'A shader pack with this file name already exists in the instance.',
+            ),
+          ]);
+        }
+      }
+
+      const tempDestination = guidedContentType
+        ? path.join(destDir, `.${filename}.fmcl-download`)
+        : destination;
+
+      try {
+        if (guidedContentType && await fs.pathExists(tempDestination)) {
+          await fs.remove(tempDestination);
+        }
+
+        await download({
+          url: [primaryUrl, ...(fallbackUrls ?? [])],
+          destination: tempDestination,
+          validator: sha1 ? { algorithm: 'sha1', hash: sha1 } : undefined,
+        });
+
+        if (guidedContentType) {
+          const validationIssue = await this.validateGuidedContentArchive(
+            tempDestination,
+            filename,
+            guidedContentType,
+          );
+
+          if (validationIssue) {
+            await fs.remove(tempDestination);
+            return this.createGuidedContentInstallResult('invalid-archive', {}, [validationIssue]);
+          }
+
+          await fs.move(tempDestination, destination, { overwrite: false });
+          return this.createGuidedContentInstallResult(
+            'success',
+            {
+              destination,
+              filename,
+              usedUrl: primaryUrl,
+            },
+            [],
+          );
+        }
+      } catch (error) {
+        if (guidedContentType) {
+          if (await fs.pathExists(tempDestination)) {
+            await fs.remove(tempDestination);
+          }
+
+          return this.createGuidedContentInstallResult('failure', {}, [
+            this.createGuidedContentInstallIssue(
+              filename,
+              'failure',
+              this.getGuidedContentFailureMessage(guidedContentType),
+            ),
+          ]);
+        }
+
+        throw error;
+      }
 
       // Track installation
       try {
-        const instanceDir = req.instancePath || (req.instanceId ? this.instances.getModpackDir(rootPath, req.instanceId) : null);
-        if (instanceDir) {
+        if (instanceDir && isManifestManagedContentType(contentType)) {
           this.manifestManager.addMod(instanceDir, {
-            fileName: file.filename,
-            source: 'modrinth',
-            projectId: req.projectId,
-            versionId: req.versionId,
-            sha1: sha1,
+            fileName: filename,
+            source: trackSource,
+            projectId: trackProjectId,
+            versionId: trackVersionId,
+            sha1,
             installDate: new Date().toISOString()
           });
         }
@@ -309,9 +492,28 @@ export class ModPlatformService {
 
       return {
         destination,
-        filename: file.filename,
-        usedUrl: file.url,
+        filename,
+        usedUrl: primaryUrl,
       };
+    };
+
+    if (req.platform === 'modrinth') {
+      const version = await this.modrinth.getProjectVersion(req.versionId);
+      const file = pickPrimaryModrinthFile(version);
+      if (!file?.url || !file.filename) throw new Error('Modrinth version has no downloadable file.');
+
+      const destination = path.join(destDir, file.filename);
+      const sha1 = file.hashes?.sha1;
+      return finalizeInstall({
+        destination,
+        primaryUrl: file.url,
+        fallbackUrls: req.fallbackUrls,
+        filename: file.filename,
+        sha1,
+        trackSource: 'modrinth',
+        trackProjectId: req.projectId,
+        trackVersionId: req.versionId,
+      });
     }
 
     // curseforge
@@ -331,38 +533,16 @@ export class ModPlatformService {
     }
     const destination = path.join(destDir, file.fileName);
     const sha1 = file.hashes?.find((h) => h.algo === 1 /* sha1 */)?.value;
-    const urls = [url, ...(req.fallbackUrls ?? [])];
-
-    await download({
-      url: urls,
+    return finalizeInstall({
       destination,
-      validator: sha1 ? { algorithm: 'sha1', hash: sha1 } : undefined,
-    });
-
-    const result = {
-      destination,
+      primaryUrl: url,
+      fallbackUrls: req.fallbackUrls,
       filename: file.fileName,
-      usedUrl: url,
-    };
-
-    // Track installation
-    try {
-      const instanceDir = req.instancePath || (req.instanceId ? this.instances.getModpackDir(rootPath, req.instanceId) : null);
-      if (instanceDir) {
-        this.manifestManager.addMod(instanceDir, {
-          fileName: file.fileName,
-          source: 'curseforge',
-          projectId: String(modId),
-          versionId: String(fileId),
-          sha1: sha1,
-          installDate: new Date().toISOString()
-        });
-      }
-    } catch (e) {
-      console.error('Failed to save mod manifest:', e);
-    }
-
-    return result;
+      sha1,
+      trackSource: 'curseforge',
+      trackProjectId: String(modId),
+      trackVersionId: String(fileId),
+    });
   }
 
   /**

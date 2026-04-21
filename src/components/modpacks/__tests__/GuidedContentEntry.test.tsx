@@ -299,6 +299,7 @@ describe('guided content entry', () => {
     render(<ModpackRouter />);
 
     expect(await screen.findByText('guided:resourcepack:classic')).toBeTruthy();
+    expect(screen.queryByText('Modpack browser')).toBeNull();
   });
 
   it('routes simple-dashboard shader entry into the same guided browser route', async () => {
@@ -330,6 +331,7 @@ describe('guided content entry', () => {
     render(<ModpackRouter />);
 
     expect(await screen.findByText('guided:shader:classic')).toBeTruthy();
+    expect(screen.queryByText('Modpack browser')).toBeNull();
   });
 
   it('keeps modpack details resource-pack entry on the route-owned guided browser view', () => {

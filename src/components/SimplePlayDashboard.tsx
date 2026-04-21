@@ -20,6 +20,7 @@ import {
   buildModpackRuntimeSummary,
   getModpackRuntimeLoaderLabel,
 } from '../features/modpacks/hooks/useModpackRuntimeSummary';
+import { useModSupportedVersions } from '../features/launcher/hooks/useModSupportedVersions';
 
 interface Particle {
   id: string;
@@ -153,6 +154,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
   const lastFireworksTimeRef = useRef(0);
 
   const accentHex = getAccentHex();
+  const { optiFineVersions } = useModSupportedVersions();
   const runtimeSummary = buildModpackRuntimeSummary({
     config: modpackConfig,
     metadata,
@@ -164,6 +166,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
       },
       useOptiFine: modpackConfig?.game?.useOptiFine,
     },
+    optiFineVersions: optiFineVersions.length > 0 ? optiFineVersions : undefined,
   });
   const loaderLabel = getModpackRuntimeLoaderLabel(runtimeSummary, t);
   const showMods = Boolean(runtimeSummary.modLoader);
@@ -610,6 +613,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           modpackId={modpackId}
           defaultMCVersion={runtimeSummary.minecraftVersion || launch.version}
           defaultLoader={runtimeSummary.modLoader?.type ?? 'vanilla'}
+          runtimeSummary={runtimeSummary}
           onOpenGuidedContent={handleOpenGuidedContent}
         />
       </CollapsibleSection>
@@ -668,6 +672,7 @@ function ContentManagerSection({
   modpackId,
   defaultMCVersion,
   defaultLoader,
+  runtimeSummary,
   onOpenGuidedContent,
 }: {
   minecraftPath?: string;
@@ -676,6 +681,7 @@ function ContentManagerSection({
   modpackId?: string;
   defaultMCVersion?: string;
   defaultLoader?: string;
+  runtimeSummary?: ReturnType<typeof buildModpackRuntimeSummary>;
   onOpenGuidedContent: (contentType: 'resourcepack' | 'shader') => void;
 }) {
   const { getAccentHex } = useSettings();
@@ -761,6 +767,7 @@ function ContentManagerSection({
         {activeTab === 'shaders' && (
           <ShadersTab
             instancePath={instancePath}
+            runtimeSummary={runtimeSummary}
             onAddShader={() => onOpenGuidedContent('shader')}
           />
         )}

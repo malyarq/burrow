@@ -221,12 +221,17 @@ export class ShadersService {
         const shaderDir = this.getShaderPacksDir(instancePath);
         const safeFileName = assertChildName(fileName, 'Shader pack name');
         const filePath = resolvePathWithinRoot(shaderDir, safeFileName, 'Shader pack path');
+        const activeShader = await this.getActiveShader(instancePath);
 
         const stat = await fs.stat(filePath);
         if (stat.isDirectory()) {
             await fs.rm(filePath, { recursive: true, force: true });
         } else {
             await fs.unlink(filePath);
+        }
+
+        if (activeShader === safeFileName) {
+            await this.disable(instancePath);
         }
     }
 

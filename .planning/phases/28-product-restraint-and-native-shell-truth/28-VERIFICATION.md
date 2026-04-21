@@ -26,9 +26,9 @@ That goal is satisfied in the current codebase:
 
 - Execution evidence comes from `28-01-SUMMARY.md`, `28-02-SUMMARY.md`, `28-03-SUMMARY.md`, and `28-04-SUMMARY.md`.
 - Validation contract comes from `28-VALIDATION.md`, now marked `complete` with Wave 0 seams landed.
-- Requirement ownership still matches the roadmap and requirements truth:
+- Requirement ownership still matches the roadmap and archived milestone requirements truth:
   - `.planning/ROADMAP.md` assigns `SHELL-05` through `SHELL-08` to Phase 28.
-  - `.planning/REQUIREMENTS.md` marks `SHELL-05` through `SHELL-08` complete.
+  - `.planning/milestones/v0.6.0-REQUIREMENTS.md` marks `SHELL-05` through `SHELL-08` complete.
 - Final automated closeout was rerun on the current baseline:
 
 ```bash

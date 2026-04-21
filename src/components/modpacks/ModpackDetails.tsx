@@ -81,8 +81,9 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({
       buildModpackRuntimeSummary({
         config: effectiveConfig,
         metadata,
+        optiFineVersions: optiFineVersions.length > 0 ? optiFineVersions : undefined,
       }),
-    [effectiveConfig, metadata],
+    [effectiveConfig, metadata, optiFineVersions],
   );
 
   const loaderType = runtimeSummary.modLoader?.type;
@@ -420,6 +421,7 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({
                   {activeTab === 'shaders' && modpack && (
                     <ShadersTab
                       instancePath={modpack.path}
+                      runtimeSummary={runtimeSummary}
                       onUpdate={refresh}
                       onAddShader={() => onNavigate({ type: 'addShader', modpackId })}
                     />

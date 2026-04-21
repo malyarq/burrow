@@ -4,6 +4,8 @@ import type { ModpackConfig } from '../../../contexts/instances/types';
 import type { ModpackMetadata } from '@shared/types/modpack';
 import {
   buildModpackRuntimeSummary,
+  getModpackShaderCapabilityDescription,
+  getModpackShaderCapabilityLabel,
   getModpackRuntimeLoaderLabel,
 } from '../hooks/useModpackRuntimeSummary';
 
@@ -48,7 +50,15 @@ describe('buildModpackRuntimeSummary', () => {
     expect(summary.status).toBe('healthy');
     expect(summary.minecraftVersion).toBe('1.20.1');
     expect(summary.modLoader).toEqual({ type: 'forge', version: '47.2.0' });
+    expect(summary.requestedOptiFine).toBe(true);
     expect(summary.useOptiFine).toBe(true);
+    expect(summary.shaderCapability).toEqual({
+      status: 'supported',
+      reason: 'optifine_enabled',
+      warnings: [],
+    });
+    expect(getModpackShaderCapabilityLabel(summary.shaderCapability.status, t)).toBe('Supported');
+    expect(getModpackShaderCapabilityDescription(summary, t)).toContain('Individual shader packs can still be incompatible');
     expect(getModpackRuntimeLoaderLabel(summary, t)).toBe('Forge 47.2.0');
   });
 
@@ -71,6 +81,13 @@ describe('buildModpackRuntimeSummary', () => {
     expect(summary.status).toBe('healthy');
     expect(summary.minecraftVersion).toBe('1.19.4');
     expect(summary.modLoader).toEqual({ type: 'fabric', version: undefined });
+    expect(summary.shaderCapability).toEqual({
+      status: 'unverified',
+      reason: 'runtime_source_unverified',
+      warnings: [],
+    });
+    expect(getModpackShaderCapabilityLabel(summary.shaderCapability.status, t)).toBe('Unverified');
+    expect(getModpackShaderCapabilityDescription(summary, t)).toContain('metadata');
     expect(getModpackRuntimeLoaderLabel(summary, t)).toBe('Fabric');
   });
 
@@ -96,7 +113,50 @@ describe('buildModpackRuntimeSummary', () => {
     });
 
     expect(summary.status).toBe('warning');
+    expect(summary.requestedOptiFine).toBe(true);
     expect(summary.runtime.warnings).toContain('optifine_requires_supported_version');
     expect(summary.useOptiFine).toBe(false);
+    expect(summary.shaderCapability).toEqual({
+      status: 'unsupported',
+      reason: 'optifine_requires_supported_version',
+      warnings: ['optifine_requires_supported_version'],
+    });
+    expect(getModpackShaderCapabilityLabel(summary.shaderCapability.status, t)).toBe('Unsupported');
+    expect(getModpackShaderCapabilityDescription(summary, t)).toContain(
+      'OptiFine is only available for supported Minecraft versions.',
+    );
+  });
+
+  it('marks config-backed runtimes without shader setup as needs-setup instead of pretending they are ready', () => {
+    const config: ModpackConfig = {
+      id: 'setup-pack',
+      name: 'Setup Pack',
+      runtime: {
+        minecraft: '1.20.1',
+        modLoader: {
+          type: 'forge',
+          version: '47.2.0',
+        },
+      },
+      game: {
+        useOptiFine: false,
+      },
+    };
+
+    const summary = buildModpackRuntimeSummary({
+      config,
+      optiFineVersions: ['1.20.1'],
+    });
+
+    expect(summary.status).toBe('healthy');
+    expect(summary.requestedOptiFine).toBe(false);
+    expect(summary.useOptiFine).toBe(false);
+    expect(summary.shaderCapability).toEqual({
+      status: 'needs-setup',
+      reason: 'shader_runtime_not_configured',
+      warnings: [],
+    });
+    expect(getModpackShaderCapabilityLabel(summary.shaderCapability.status, t)).toBe('Needs setup');
+    expect(getModpackShaderCapabilityDescription(summary, t)).toContain('does not see shader support configured');
   });
 });
