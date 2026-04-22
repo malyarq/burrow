@@ -64,11 +64,14 @@ describe('StatisticsTab layout', () => {
   });
 
   it('removes the standalone statistics hero when embedded inside SettingsPage', async () => {
-    render(<StatisticsTab embedded />);
+    const { container } = render(<StatisticsTab embedded />);
 
     expect(screen.queryByRole('heading', { name: 'Statistics' })).toBeNull();
     expect(await screen.findByRole('heading', { name: 'Global Stats' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Export' })).toBeTruthy();
+    const summaryShell = screen.getByRole('button', { name: 'Export' }).closest('.settings-section-shell');
+    expect(summaryShell?.contains(screen.getByText('Total play time'))).toBe(true);
+    expect(container.querySelectorAll('.settings-section-shell').length).toBeGreaterThanOrEqual(4);
     expect(screen.queryByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toBeNull();
   });
 });

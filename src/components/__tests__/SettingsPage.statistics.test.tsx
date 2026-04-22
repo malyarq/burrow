@@ -144,6 +144,9 @@ describe('SettingsPage statistics route', () => {
     expect(screen.getByRole('tabpanel', { name: 'Statistics' })).toBeTruthy();
     expect(await screen.findByRole('heading', { name: 'Global Stats' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Export' })).toBeTruthy();
+    expect(screen.getAllByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Export' }).closest('.settings-section-shell')).toBeTruthy();
+    expect(screen.getByText('Total play time')).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Statistics' })).toBeNull();
   });
 });

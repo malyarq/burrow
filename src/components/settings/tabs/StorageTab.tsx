@@ -82,8 +82,8 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
     }
 
     return (
-        <div className="grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
-            <div className="space-y-4">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+            <div className="min-w-0 space-y-4">
                 {!embedded && (
                     <div className="settings-section-shell settings-section-copy p-5">
                         <div className="kicker-label">{t('settings.storage.title')}</div>
@@ -129,43 +129,45 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
             </div>
 
             {stats && (
-                <div className="settings-stat-grid">
-                    <div className="settings-stat-card">
-                        <div className="mb-1 text-sm text-secondary">
-                            {t('settings.storage.totalSize')}
+                <div className="settings-section-shell min-w-0 p-5">
+                    <div className="settings-stat-grid">
+                        <div className="settings-stat-card">
+                            <div className="mb-1 text-sm text-secondary">
+                                {t('settings.storage.totalSize')}
+                            </div>
+                            <div className="text-2xl font-bold text-foreground">
+                                {formatSize(stats.totalSize)}
+                            </div>
                         </div>
-                        <div className="text-2xl font-bold text-foreground">
-                            {formatSize(stats.totalSize)}
-                        </div>
-                    </div>
 
-                    <div className="settings-stat-card">
-                        <div className="mb-1 text-sm text-secondary">
-                            {t('settings.storage.savedSize')}
+                        <div className="settings-stat-card">
+                            <div className="mb-1 text-sm text-secondary">
+                                {t('settings.storage.savedSize')}
+                            </div>
+                            <div
+                                className={cn("text-2xl font-bold", getAccentStyles('text').className)}
+                                style={getAccentStyles('text').style}
+                            >
+                                {formatSize(stats.dedupedSize)}
+                            </div>
                         </div>
-                        <div
-                            className={cn("text-2xl font-bold", getAccentStyles('text').className)}
-                            style={getAccentStyles('text').style}
-                        >
-                            {formatSize(stats.dedupedSize)}
-                        </div>
-                    </div>
 
-                    <div className="settings-stat-card">
-                        <div className="mb-1 text-sm text-secondary">
-                            {t('settings.storage.storedFiles')}
+                        <div className="settings-stat-card">
+                            <div className="mb-1 text-sm text-secondary">
+                                {t('settings.storage.storedFiles')}
+                            </div>
+                            <div className="text-2xl font-bold text-foreground">
+                                {stats.storedFiles}
+                            </div>
                         </div>
-                        <div className="text-2xl font-bold text-foreground">
-                            {stats.storedFiles}
-                        </div>
-                    </div>
 
-                    <div className="settings-stat-card">
-                        <div className="mb-1 text-sm text-secondary">
-                            {t('settings.storage.totalLogicalFiles')}
-                        </div>
-                        <div className="text-2xl font-bold text-foreground">
-                            {stats.totalFiles}
+                        <div className="settings-stat-card">
+                            <div className="mb-1 text-sm text-secondary">
+                                {t('settings.storage.totalLogicalFiles')}
+                            </div>
+                            <div className="text-2xl font-bold text-foreground">
+                                {stats.totalFiles}
+                            </div>
                         </div>
                     </div>
                 </div>
