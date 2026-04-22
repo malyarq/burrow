@@ -17,11 +17,11 @@ import { extractThemeOverrides } from '../../../contexts/settings/theme';
 import type { CustomThemeConfig, ThemePresetId } from '../../../contexts/settings/types';
 
 const COLORS = [
-  { id: 'emerald', class: 'bg-emerald-500', ring: 'ring-emerald-500' },
-  { id: 'blue', class: 'bg-blue-500', ring: 'ring-blue-500' },
-  { id: 'purple', class: 'bg-purple-500', ring: 'ring-purple-500' },
-  { id: 'orange', class: 'bg-orange-500', ring: 'ring-orange-500' },
-  { id: 'rose', class: 'bg-rose-500', ring: 'ring-rose-500' },
+  { id: 'emerald', class: 'bg-emerald-500' },
+  { id: 'blue', class: 'bg-blue-500' },
+  { id: 'purple', class: 'bg-purple-500' },
+  { id: 'orange', class: 'bg-orange-500' },
+  { id: 'rose', class: 'bg-rose-500' },
 ] as const;
 
 type BackgroundConfig = NonNullable<CustomThemeConfig['background']>;
@@ -62,8 +62,10 @@ function ToggleRow(props: {
   const { label, checked, onToggle } = props;
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-sm font-medium text-foreground">{label}</span>
+    <div className="settings-toggle-row">
+      <div className="settings-toggle-copy">
+        <p className="settings-toggle-title">{label}</p>
+      </div>
       <button
         type="button"
         role="switch"
@@ -98,6 +100,7 @@ export const AppearanceTab: React.FC = () => {
   } = useSettings();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const customAccentInputRef = useRef<HTMLInputElement>(null);
   const selectedPreset = getThemePreset(themePresetId);
   const themePresetsLabel = translateWithFallback(t, 'settings.theme_presets', 'Theme Presets');
   const themePresetsDescription = translateWithFallback(
@@ -127,6 +130,7 @@ export const AppearanceTab: React.FC = () => {
   const selectedModeLabel = getThemeModeLabel(t, theme);
   const accentRangeStyles = getAccentStyles('accent');
   const accentLabel = t('settings.accent');
+  const customColorLabel = t('settings.custom_color') || 'Custom Color';
   const hasCustomizations = themeRuntimeState.hasCustomizations;
   const runtimeContractTitle = translateWithFallback(
     t,
@@ -195,6 +199,11 @@ export const AppearanceTab: React.FC = () => {
       { preset: selectedPresetSummary },
     )
     : '';
+  const resetPresetA11yLabel = translateWithFallback(
+    t,
+    'settings.reset_to_preset',
+    'Reset to Preset',
+  );
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);
@@ -294,8 +303,8 @@ export const AppearanceTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="surface-card space-y-4 p-5">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
+        <div className="surface-card min-w-0 space-y-4 p-5">
           <div className="space-y-2">
             <div className="kicker-label">{t('settings.tab_appearance')}</div>
             <div className="flex flex-wrap items-center gap-2">
@@ -384,21 +393,17 @@ export const AppearanceTab: React.FC = () => {
             </div>
 
             <div className="surface-muted space-y-4 p-4">
-              <div className="flex items-center gap-2">
-                <Paintbrush2 className="h-4 w-4 text-secondary" />
-                <label className="text-sm font-medium text-foreground">
-                  {t('settings.appearance_branding') || t('settings.accent')}
-                </label>
-              </div>
-              <p className="text-sm text-secondary">
-                {t('settings.appearance_branding_desc') || 'Accent colors personalize launch highlights and active controls without changing the FMCL mark, wordmark, or shell surfaces.'}
-              </p>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  {t('settings.accent')}
-                </label>
-                <div className="flex flex-wrap items-center gap-3">
+              <div className="settings-control-card space-y-3">
+                <div className="flex items-center gap-2">
+                  <Paintbrush2 className="h-4 w-4 text-secondary" />
+                  <label className="text-sm font-medium text-foreground">
+                    {accentLabel}
+                  </label>
+                </div>
+                <p className="settings-embedded-copy">
+                  {t('settings.appearance_branding_desc') || 'Accent colors personalize launch highlights and active controls without changing the FMCL mark, wordmark, or shell surfaces.'}
+                </p>
+                <div className="settings-accent-grid">
                   {COLORS.map((c) => (
                     <button
                       type="button"
@@ -408,44 +413,46 @@ export const AppearanceTab: React.FC = () => {
                       aria-label={`${accentLabel}: ${c.id}`}
                       data-state={accentColor === c.id ? 'active' : 'inactive'}
                       className={cn(
-                        'h-8 w-8 rounded-full border border-white/30 shadow-[0_8px_18px_rgba(0,0,0,0.16)] transition-all ring-offset-2 ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2',
-                        c.class,
-                        accentColor === c.id
-                          ? `ring-2 ${c.ring} scale-110 opacity-100`
-                          : 'opacity-80 hover:scale-105 hover:opacity-100',
+                        'settings-accent-chip',
+                        accentColor === c.id ? 'ring-2 scale-110' : '',
                       )}
                       title={c.id}
-                    />
+                    >
+                      <span className={cn('settings-accent-swatch', c.class)} />
+                    </button>
                   ))}
 
-                  <div className="relative group h-8 w-8">
-                    <div
-                      className={cn(
-                        'flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/30 shadow-[0_8px_18px_rgba(0,0,0,0.16)] transition-all ring-offset-2 ring-offset-background',
-                        isCustom
-                          ? 'ring-2 ring-[rgb(var(--accent-main))] scale-110 opacity-100'
-                          : 'bg-zinc-200 opacity-80 group-hover:scale-105 group-hover:opacity-100 dark:bg-zinc-800',
-                      )}
-                    >
-                      {isCustom ? (
-                        <div className="h-full w-full" style={{ backgroundColor: accentColor }} />
-                      ) : (
-                        <span className="text-base text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-200">+</span>
-                      )}
-                    </div>
-                    <input
-                      type="color"
-                      value={isCustom ? accentColor : '#10b981'}
-                      onChange={(e) => setAccentColor(e.target.value)}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                      aria-label={t('settings.custom_color') || 'Custom Color'}
-                      title={t('settings.custom_color') || 'Custom Color'}
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => customAccentInputRef.current?.click()}
+                    aria-pressed={isCustom}
+                    aria-label={`${accentLabel}: ${customColorLabel}`}
+                    data-state={isCustom ? 'active' : 'inactive'}
+                    className={cn(
+                      'settings-accent-chip',
+                      isCustom ? 'ring-2 scale-110' : '',
+                    )}
+                    title={customColorLabel}
+                  >
+                    {isCustom ? (
+                      <span className="settings-accent-swatch" style={{ backgroundColor: accentColor }} />
+                    ) : (
+                      <span className="settings-accent-chip-symbol">+</span>
+                    )}
+                  </button>
+                  <input
+                    ref={customAccentInputRef}
+                    type="color"
+                    value={isCustom ? accentColor : '#10b981'}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                    className="sr-only"
+                    tabIndex={-1}
+                    aria-label={customColorLabel}
+                  />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="settings-control-card space-y-3">
                 <label className="text-sm font-medium text-foreground">
                   {t('settings.language')}
                 </label>
@@ -468,7 +475,7 @@ export const AppearanceTab: React.FC = () => {
           </div>
         </div>
 
-        <div className="surface-card space-y-4 p-5">
+        <div className="surface-card min-w-0 space-y-4 p-5">
           <div className="space-y-2">
             <div className="kicker-label">{runtimeContractTitle}</div>
             <h4 className="text-lg font-semibold text-foreground">
@@ -818,7 +825,7 @@ export const AppearanceTab: React.FC = () => {
 
       {hasCustomizations && (
         <div className="flex justify-end">
-          <Button variant="danger" onClick={resetCustomTheme} size="sm">
+          <Button variant="danger" onClick={resetCustomTheme} size="sm" aria-label={resetPresetA11yLabel}>
             {themePresetId
               ? resetPresetLabel
               : (t('settings.reset_custom_theme') || 'Reset Custom Theme')}

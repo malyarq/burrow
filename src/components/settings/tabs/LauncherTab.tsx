@@ -159,8 +159,8 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
   const accentRangeStyles = useMemo(() => ({ accentColor: 'rgb(var(--accent-main))' }), []);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-      <div className="space-y-4">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)]">
+      <div className="min-w-0 space-y-4">
         {!embedded && (
           <div className="settings-section-shell settings-section-copy p-5">
             <div className="kicker-label">{t('settings.tab_launcher')}</div>
@@ -169,7 +169,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
           </div>
         )}
 
-        <div className="settings-section-shell settings-section-stack p-5">
+        <div className="settings-section-shell settings-section-stack min-w-0 p-5">
           <div className="settings-section-copy">
             <h4 className="settings-embedded-title">
               {translateWithFallback(t, 'settings.launcher_runtime_title', 'Launcher Runtime')}
@@ -270,11 +270,11 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
           </div>
         </div>
 
-        <div className="settings-section-shell p-4">
+        <div className="settings-section-shell min-w-0 p-4">
           <MinecraftPathSection minecraftPath={minecraftPath} setMinecraftPath={setMinecraftPath} t={t} />
         </div>
 
-        <div className="settings-section-shell flex flex-col gap-4 p-5">
+        <div className="settings-section-shell min-w-0 flex flex-col gap-4 p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
               <p className="settings-embedded-title">{t('settings.updatesTitle')}</p>
@@ -308,7 +308,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="min-w-0 space-y-4">
         {imageCacheState && (
           <div className="surface-card space-y-4 p-5">
             <div className="flex items-start justify-between gap-4">

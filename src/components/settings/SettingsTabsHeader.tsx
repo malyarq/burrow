@@ -76,7 +76,7 @@ export function SettingsTabsHeader(props: {
 
   return (
     <div
-      className="settings-segmented-row grid-cols-2 md:grid-cols-3 xl:grid-cols-6"
+      className="settings-segmented-row settings-tab-row grid-cols-2 md:grid-cols-3 xl:grid-cols-6"
       role="tablist"
       aria-label={t('settings.title')}
       aria-orientation="horizontal"
@@ -104,7 +104,7 @@ export function SettingsTabsHeader(props: {
             tabIndex={isActive ? 0 : -1}
             data-state={isActive ? 'active' : 'inactive'}
             className={cn(
-              'settings-segmented-option min-h-11 w-full px-3 py-2 text-left sm:text-center',
+              'settings-segmented-option settings-tab-option w-full text-center',
               isActive ? 'bg-card/92' : 'bg-transparent'
             )}
             style={
