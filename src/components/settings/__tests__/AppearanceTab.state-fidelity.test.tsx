@@ -78,6 +78,6 @@ describe('AppearanceTab state fidelity', () => {
 
     expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Customized')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Reset to Preset' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Return to Forest · Dark' })).toBeTruthy();
   });
 });

@@ -100,6 +100,7 @@
     "settings.sidebar_position_right": "Right",
     "settings.sidebar_position_desc": "Moves launcher navigation only; preset visuals stay unchanged.",
     "settings.reset_custom_theme": "Reset Custom Theme",
+    "settings.reset_to_preset": "Reset to Preset",
     "settings.reset_preset_customizations": "Return to {{preset}}",
     "settings.reset_preset_customizations_desc": "Remove refinements and return to the untouched {{preset}} runtime contract.",
     "settings.theme_customized_state": "Customized",

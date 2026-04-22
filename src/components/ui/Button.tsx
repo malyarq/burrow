@@ -4,6 +4,7 @@ import { cn } from '../../utils/cn';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
     size?: 'sm' | 'md' | 'lg';
+    geometry?: 'default' | 'catalog-primary';
     isLoading?: boolean;
     progress?: number;
 }
@@ -13,6 +14,7 @@ export const Button: React.FC<ButtonProps> = ({
     className,
     variant = 'primary',
     size = 'md',
+    geometry = 'default',
     isLoading,
     progress,
     children,
@@ -40,12 +42,18 @@ export const Button: React.FC<ButtonProps> = ({
         lg: 'min-h-[3.25rem] px-5 text-base',
     };
 
+    const geometries = {
+        default: '',
+        'catalog-primary': 'min-h-10 px-4 text-sm leading-tight whitespace-normal [&_svg]:h-4 [&_svg]:w-4',
+    };
+
     return (
         <button
-            className={cn(baseStyles, variants[variant], sizes[size], "relative overflow-hidden", className)}
+            className={cn(baseStyles, variants[variant], sizes[size], geometries[geometry], "relative overflow-hidden", className)}
             disabled={disabled || isLoading}
             aria-busy={isBusy || undefined}
             data-variant={variant}
+            data-button-geometry={geometry !== 'default' ? geometry : undefined}
             type={props.type ?? 'button'}
             {...props}
         >

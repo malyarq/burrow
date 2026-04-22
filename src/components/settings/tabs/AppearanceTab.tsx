@@ -199,11 +199,13 @@ export const AppearanceTab: React.FC = () => {
       { preset: selectedPresetSummary },
     )
     : '';
-  const resetPresetA11yLabel = translateWithFallback(
-    t,
-    'settings.reset_to_preset',
-    'Reset to Preset',
-  );
+  const resetPresetA11yLabel = themePresetId
+    ? resetPresetLabel
+    : translateWithFallback(
+      t,
+      'settings.reset_to_preset',
+      'Reset to Preset',
+    );
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);

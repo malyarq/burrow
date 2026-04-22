@@ -16,6 +16,7 @@ import MultiplayerPage from './MultiplayerPage';
 import { cn } from '../utils/cn';
 import { useSettings } from '../contexts/SettingsContext';
 import type { LaunchStage } from '../features/launcher/services/launcherService';
+import { windowControlsIPC } from '../services/ipc/windowControlsIPC';
 
 export type AppLayoutProps = {
   theme: 'light' | 'dark';
@@ -87,6 +88,7 @@ export function AppLayout(props: AppLayoutProps) {
   const { theme, updates, modpackOnLaunch, overlays, actions, launch, runtime } = props;
   const { uiMode } = useUIMode();
   const { sidebarPosition } = useSettings();
+  const shellContract = windowControlsIPC.shellContract();
 
   // ... global hotkeys ...
 
@@ -100,14 +102,22 @@ export function AppLayout(props: AppLayoutProps) {
             className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border shadow-2xl transition-colors duration-300 sm:rounded-[28px]"
           >
             <TitleBar />
-            <div data-testid={APP_LAYOUT_NOTIFICATIONS_TEST_ID} className="relative z-[90] flex shrink-0 flex-col">
+            <div
+              data-testid={APP_LAYOUT_NOTIFICATIONS_TEST_ID}
+              data-shell-platform={shellContract}
+              className="relative z-[90] flex shrink-0 flex-col"
+            >
               <UpdateNotification status={updates.status} updateInfo={updates.info} onInstall={updates.onInstall} />
             </div>
 
             <div
               data-testid={APP_LAYOUT_SAFE_AREA_TEST_ID}
               data-shell-safe-area="shell-chrome"
-              className="relative flex min-h-0 flex-1 flex-col overflow-hidden pt-2"
+              data-shell-platform={shellContract}
+              className={cn(
+                'relative flex min-h-0 flex-1 flex-col overflow-hidden',
+                shellContract === 'native-macos' ? 'pt-1' : 'pt-2',
+              )}
             >
               {overlays.showSettings && (
                 <SettingsPage onClose={overlays.onCloseSettings} />

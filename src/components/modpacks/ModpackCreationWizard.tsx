@@ -16,7 +16,7 @@ import { ModloaderSection } from '../sidebar/ModloaderSection';
 import { ModpackDependencySummary } from '../sidebar/ModpackDependencySummary';
 import {
   buildRuntimeDependencyState,
-  shouldKeepOptiFineEnabled,
+  getCreateRuntimeDependencyErrorMessage,
 } from '../sidebar/modpackRuntimeDependencies';
 import { OptifineToggle } from '../sidebar/OptifineToggle';
 import { AddModModal } from './AddModModal';
@@ -146,12 +146,13 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
   });
 
   const setLoader = (loader: 'vanilla' | 'forge' | 'fabric' | 'neoforge') => {
+    setError(null);
     setDraft((prev) => ({
       ...prev,
       useForge: loader === 'forge',
       useFabric: loader === 'fabric',
       useNeoForge: loader === 'neoforge',
-      useOptiFine: loader === 'forge' ? prev.useOptiFine : false,
+      useOptiFine: prev.useOptiFine,
     }));
   };
 
@@ -280,7 +281,9 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
         }
       } catch (err) {
         console.error('Error creating modpack:', err);
-        const errorMessage = t('modpacks.create_error') || 'Ошибка при создании модпака';
+        const errorMessage =
+          getCreateRuntimeDependencyErrorMessage(runtimeDependencies, t) ??
+          (t('modpacks.create_error') || 'Ошибка при создании модпака');
         setError(errorMessage);
         toast.error(errorMessage);
       } finally {
@@ -358,7 +361,9 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
         );
         return;
       }
-      const errorMessage = t('modpacks.create_error') || 'Ошибка при создании модпака';
+      const errorMessage =
+        getCreateRuntimeDependencyErrorMessage(runtimeDependencies, t) ??
+        (t('modpacks.create_error') || 'Ошибка при создании модпака');
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -426,7 +431,10 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
       <Textarea
         label={t('modpacks.description') || 'Описание'}
         value={draft.description}
-        onChange={(e) => setDraft((prev) => ({ ...prev, description: e.target.value }))}
+        onChange={(e) => {
+          setError(null);
+          setDraft((prev) => ({ ...prev, description: e.target.value }));
+        }}
         placeholder={t('modpacks.description_placeholder')}
         rows={3}
       />
@@ -442,7 +450,10 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
         <Input
           label={t('modpacks.version')}
           value={draft.version}
-          onChange={(e) => setDraft((prev) => ({ ...prev, version: e.target.value }))}
+          onChange={(e) => {
+            setError(null);
+            setDraft((prev) => ({ ...prev, version: e.target.value }));
+          }}
           placeholder="1.0.0"
         />
 
@@ -450,16 +461,10 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
             label={t('modpacks.minecraft_version')}
             value={draft.minecraftVersion}
             onChange={(e) => {
-              const nextMinecraftVersion = e.target.value;
+              setError(null);
               setDraft((prev) => ({
                 ...prev,
-                minecraftVersion: nextMinecraftVersion,
-                useOptiFine: shouldKeepOptiFineEnabled({
-                  useOptiFine: prev.useOptiFine,
-                  modLoaderType:
-                    prev.useNeoForge ? 'neoforge' : prev.useForge ? 'forge' : prev.useFabric ? 'fabric' : 'vanilla',
-                  isOptiFineSupported: optiFineVersions.includes(nextMinecraftVersion),
-                }),
+                minecraftVersion: e.target.value,
               }));
             }}
           >
@@ -491,7 +496,10 @@ export const ModpackCreationWizard: React.FC<ModpackCreationWizardProps> = ({
         isOptiFineSupported={isOptiFineSupported}
         useForge={draft.useForge}
         useOptiFine={draft.useOptiFine}
-        setUseOptiFine={(val) => setDraft((prev) => ({ ...prev, useOptiFine: val }))}
+        setUseOptiFine={(val) => {
+          setError(null);
+          setDraft((prev) => ({ ...prev, useOptiFine: val }));
+        }}
         t={t}
         getAccentStyles={getAccentStyles}
       />

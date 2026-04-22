@@ -100,6 +100,7 @@
     "settings.sidebar_position_right": "Справа",
     "settings.sidebar_position_desc": "Перемещает только навигацию лаунчера, не меняя визуальный пресет.",
     "settings.reset_custom_theme": "Сбросить кастомную тему",
+    "settings.reset_to_preset": "Сбросить до пресета",
     "settings.reset_preset_customizations": "Вернуть {{preset}}",
     "settings.reset_preset_customizations_desc": "Уберите правки, чтобы вернуться к исходному runtime-контракту {{preset}}.",
     "settings.theme_customized_state": "Кастомизировано",
