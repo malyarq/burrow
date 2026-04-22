@@ -5,6 +5,9 @@ import { Button } from '../ui/Button';
 import { cn } from '../../utils/cn';
 import type { UIMode } from '../../contexts/settings/types';
 
+export const SIDEBAR_COMPACT_CONTROL_CLASSNAME =
+  'transition-all duration-500 ease-out scale-100 translate-y-0 opacity-100';
+
 export function SidebarHeader(props: {
   appVersion: string;
   onShowMultiplayer: () => void;
@@ -36,23 +39,23 @@ export function SidebarHeader(props: {
   return (
     <div className={cn("relative mb-3", isCollapsed && "mb-2")}>
       {onToggleCollapse && isCollapsed && (
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
+          geometry="compact-control"
           onClick={onToggleCollapse}
           aria-label={t('sidebar.expand') || 'Expand sidebar'}
           aria-controls={contentId}
           aria-expanded={!isCollapsed}
           data-testid="sidebar-expand-button"
-          className={cn(
-            'mx-auto flex h-10 w-10 items-center justify-center rounded-2xl border border-border/60 bg-card/78 text-secondary transition-all duration-300 ease-out hover:bg-card/96 hover:text-foreground',
-            'mx-auto block',
-          )}
+          className={cn('mx-auto block', SIDEBAR_COMPACT_CONTROL_CLASSNAME)}
           style={{
             transition: 'opacity 300ms ease-out, transform 300ms ease-out',
             transform: 'scale(1)',
           }}
         >
-          <Menu className="h-4 w-4" />
-        </button>
+          <Menu className="h-5 w-5" />
+        </Button>
       )}
 
       {/* Header content - скрывается при сворачивании */}

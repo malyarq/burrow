@@ -62,7 +62,8 @@ describe('LauncherTab layout', () => {
             'settings.updatesTitle': 'Updates',
             'settings.updatesDesc': 'Check for launcher updates on demand.',
             'settings.reset': 'Reset',
-            'updater.check': 'Check for updates',
+            'updater.check': 'Check for updates and keep the launcher shell aligned',
+            'settings.clear_cache': 'Clear cache and reload the launcher shell cleanly',
           }[key] ?? key)
         }
         uiScale={110}
@@ -86,6 +87,8 @@ describe('LauncherTab layout', () => {
     const slider = screen.getAllByRole('slider')[0];
     const hideLauncherToggle = screen.getByRole('switch', { name: 'Hide launcher while playing' });
     const sidebarRow = screen.getByText('Sidebar Position').closest('.settings-control-card') as HTMLElement;
+    const updatesButton = screen.getByRole('button', { name: 'Check for updates and keep the launcher shell aligned' });
+    const clearCacheButton = screen.getByRole('button', { name: 'Clear cache and reload the launcher shell cleanly' });
 
     expect(root.className).toContain('xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]');
     expect(screen.queryByRole('heading', { name: 'Launcher' })).toBeNull();
@@ -96,6 +99,13 @@ describe('LauncherTab layout', () => {
     expect(slider.className).toContain('settings-slider');
     expect(sidebarRow.className).toContain('settings-control-card');
     expect(screen.getByRole('button', { name: 'Left' }).className).toContain('settings-segmented-option');
+    expect(updatesButton.getAttribute('data-button-geometry')).toBe('utility');
+    expect(updatesButton.className).toContain('whitespace-normal');
+    expect(updatesButton.className).toContain('leading-tight');
+    expect(updatesButton.className).toContain('w-full');
+    expect(clearCacheButton.getAttribute('data-button-geometry')).toBe('utility');
+    expect(clearCacheButton.className).toContain('whitespace-normal');
+    expect(clearCacheButton.className).toContain('w-full');
     expect(screen.getByText('Minecraft path surface')).toBeTruthy();
   });
 });

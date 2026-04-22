@@ -6,7 +6,7 @@ import { useModpack } from '../contexts/ModpackContext';
 import { loadLastGame, formatLastLaunch } from '../features/launch/services/lastGame';
 import type { MCVersion } from '../services/versions/types';
 import type { VersionHint } from '../utils/minecraftVersions';
-import { SidebarHeader } from './sidebar/SidebarHeader';
+import { SIDEBAR_COMPACT_CONTROL_CLASSNAME, SidebarHeader } from './sidebar/SidebarHeader';
 import { NicknameSection } from './sidebar/NicknameSection';
 import { LaunchControls } from './sidebar/LaunchControls';
 import { ModloaderSection } from './sidebar/ModloaderSection';
@@ -244,10 +244,11 @@ const Sidebar = ({
                     <Button
                         variant="ghost"
                         size="sm"
+                        geometry="compact-control"
                         onClick={actions.onShowMultiplayer}
                         disabled={runtime.isLaunching}
                         aria-label={t('multiplayer.title') || 'Multiplayer'}
-                        className="w-12 h-12 p-0 transition-all duration-500 ease-out scale-100 translate-y-0 opacity-100"
+                        className={SIDEBAR_COMPACT_CONTROL_CLASSNAME}
                         style={{
                             transitionDelay: '100ms',
                         }}
@@ -259,10 +260,11 @@ const Sidebar = ({
                         <Button
                             variant="ghost"
                             size="sm"
+                            geometry="compact-control"
                             onClick={actions.onShowSettings}
                             disabled={runtime.isLaunching}
                             aria-label={t('general.settings') || 'Settings'}
-                            className="w-12 h-12 p-0 transition-all duration-500 ease-out scale-100 translate-y-0 opacity-100"
+                            className={SIDEBAR_COMPACT_CONTROL_CLASSNAME}
                             style={{
                                 transitionDelay: '200ms',
                             }}

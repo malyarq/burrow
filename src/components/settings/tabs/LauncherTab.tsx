@@ -298,7 +298,8 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
             }}
             disabled={status === 'checking' || status === 'downloading'}
             variant="secondary"
-            className="sm:w-fit"
+            geometry="utility"
+            className="w-full"
           >
             {status === 'checking' ? t('updater.checking') : t('updater.check')}
           </Button>
@@ -349,16 +350,20 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
                 <Button
                   type="button"
                   variant="secondary"
+                  geometry="utility"
                   onClick={handleSaveImageCacheLimit}
                   isLoading={isImageCacheBusy}
+                  className="w-full sm:flex-1"
                 >
                   {t('settings.image_cache_save')}
                 </Button>
                 <Button
                   type="button"
                   variant="secondary"
+                  geometry="utility"
                   onClick={handleCleanupImageCache}
                   isLoading={isImageCacheBusy}
+                  className="w-full sm:flex-1"
                 >
                   {t('settings.image_cache_cleanup')}
                 </Button>
@@ -396,7 +401,8 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
               }
             }}
             variant="secondary"
-            className="sm:w-fit"
+            geometry="utility"
+            className="w-full"
           >
             {t('settings.clear_cache')}
           </Button>

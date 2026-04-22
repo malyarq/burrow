@@ -72,8 +72,9 @@ describe('SidebarHeader compact mode', () => {
     expect(screen.getByTestId('sidebar-mode-simple-glyph')).toBeTruthy();
     expect(screen.getByTestId('sidebar-mode-modpacks-glyph')).toBeTruthy();
     expect(screen.queryByText(/^M$/)).toBeNull();
-    expect(expandButton.className).toContain('h-10');
-    expect(expandButton.className).toContain('w-10');
+    expect(expandButton.getAttribute('data-button-geometry')).toBe('compact-control');
+    expect(expandButton.className).toContain('h-12');
+    expect(expandButton.className).toContain('w-12');
     expect(modeSwitcher.className).toContain('rounded-[18px]');
 
     expect(classicButton.getAttribute('aria-pressed')).toBe('false');

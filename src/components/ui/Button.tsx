@@ -4,7 +4,7 @@ import { cn } from '../../utils/cn';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
     size?: 'sm' | 'md' | 'lg';
-    geometry?: 'default' | 'catalog-primary';
+    geometry?: 'default' | 'catalog-primary' | 'compact-control' | 'utility';
     isLoading?: boolean;
     progress?: number;
 }
@@ -45,6 +45,9 @@ export const Button: React.FC<ButtonProps> = ({
     const geometries = {
         default: '',
         'catalog-primary': 'min-h-10 px-4 text-sm leading-tight whitespace-normal [&_svg]:h-4 [&_svg]:w-4',
+        'compact-control': 'h-12 w-12 rounded-2xl p-0 [&_svg]:h-5 [&_svg]:w-5',
+        utility:
+            'max-w-full whitespace-normal px-4 py-2.5 text-center leading-tight [&_svg]:h-4 [&_svg]:w-4 [&>div]:min-w-0 [&>div]:w-full [&>div]:flex-wrap [&>div]:justify-center',
     };
 
     return (
