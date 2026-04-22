@@ -34,9 +34,9 @@
 ### Settings Predictability & Shared Design Contract
 
 - [x] **SETTINGS-05**: User no longer sees leftover branding blocks or duplicated explanatory copy in settings surfaces that should stay task-focused.
-- [ ] **SETTINGS-06**: User sees preset-theme changes produce visible, predictable results without hidden theme-mode jumps or “nothing changed” states.
+- [x] **SETTINGS-06**: User sees preset-theme changes produce visible, predictable results without hidden theme-mode jumps or “nothing changed” states.
 - [ ] **SETTINGS-07**: User sees accent, slider, toggle, and tab controls follow one aligned geometry contract with no overlap, drift, or overflow.
-- [ ] **SETTINGS-08**: User only sees appearance controls that have a visible effect or an explicit scoped explanation of what they change.
+- [x] **SETTINGS-08**: User only sees appearance controls that have a visible effect or an explicit scoped explanation of what they change.
 - [ ] **DESIGN-01**: User experiences one shared button and control contract across shell, catalog, details, content, and settings surfaces.
 
 ## Future Requirements
@@ -81,9 +81,9 @@
 | CONTENT-08 | Phase 35 | Complete |
 | CONTENT-09 | Phase 35 | Complete |
 | SETTINGS-05 | Phase 36 | Complete |
-| SETTINGS-06 | Phase 36 | Pending |
+| SETTINGS-06 | Phase 36 | Complete |
 | SETTINGS-07 | Phase 36 | Pending |
-| SETTINGS-08 | Phase 36 | Pending |
+| SETTINGS-08 | Phase 36 | Complete |
 | DESIGN-01 | Phase 36 | Pending |
 
 **Coverage:**

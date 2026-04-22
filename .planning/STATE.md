@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.7.0
 milestone_name: Direct Feedback Closure And Interface Cohesion
-status: Phase 36 plan 01 complete; plan 02 next
-last_updated: "2026-04-22T17:37:36Z"
+status: Phase 36 plan 02 complete; plan 03 next
+last_updated: "2026-04-22T17:52:20Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 20
-  completed_plans: 17
-  percent: 85
+  completed_plans: 18
+  percent: 90
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 - Active milestone: `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 - Latest shipped milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Current phase: `36` — Settings Predictability And Shared Control Contract
-- Current plan: `36-02` - make preset themes read predictably on the surface before geometry work
-- Status: Phase 36 execution is in progress; `36-01` landed the lighter shell contract and one-copy settings guidance, while `36-02` next tackles preset predictability and visible theme ancestry
-- Last activity: 2026-04-22 - completed `36-01` with compact settings tabs, shell-owned summary copy, and embedded statistics copy dedupe
+- Current plan: `36-03` - align settings controls under one shared geometry and scope contract
+- Status: Phase 36 execution is in progress; `36-01` landed the lighter shell contract, `36-02` made preset ancestry and reset semantics product-readable, and `36-03` next tackles shared control geometry
+- Last activity: 2026-04-22 - completed `36-02` with a visible preset runtime summary, preserved mode switching across preset families, and product-facing preset predictability tests
 
-Progress: [█████████░] 85% of milestone `v0.7.0`
+Progress: [█████████░] 90% of milestone `v0.7.0`
 
 ## Key Decisions
 
@@ -46,6 +46,8 @@ Progress: [█████████░] 85% of milestone `v0.7.0`
 - Phase 36 treats settings as the milestone-owned shared-control contract seam: the shell must lose duplicate copy, preset behavior must become product-readable, and tabs, toggles, sliders, and accent pickers must align under one geometry system.
 - The settings shell now owns first-read summary copy; the tab rail exposes compact labels and preserved tab semantics instead of visible description cards.
 - Embedded statistics keeps headings and data only, leaving repeated summary language to the shell-level contract.
+- Preset-family changes now preserve the active light/dark mode once a preset is already selected, removing hidden mode jumps while keeping the same normalized theme state.
+- Appearance now exposes one preset runtime summary with exact reset-target copy instead of scattering ancestry hints across badges and helper text.
 
 ## Open Blockers
 
@@ -56,7 +58,7 @@ Progress: [█████████░] 85% of milestone `v0.7.0`
 - Phase 33 still carries manual-only signoff debt: classic cold-start feel, desktop-width catalog compactness, and CTA geometry/product-feel were not rerun interactively in this turn.
 - Phase 34 closeout still carries manual-only signoff debt: tab reachability at live desktop width, first-read runtime/dependency authority feel, and one-session cross-tab cohesion were not rerun interactively in this turn.
 - Phase 35 closeout still carries manual-only signoff debt: live create/add feel, guided runtime clarity, and active-modpack switching calmness were not rerun interactively in this turn.
-- Phase 36 shell-density live signoff is still pending: the manual-verification harness launched in this session, but browser automation was blocked by proxy and Chromium crashpad permission failures.
+- Phase 36 live settings signoff is still pending: shell density and preset predictability are covered by targeted tests, but the updated appearance surface was not rerun interactively because browser automation remains blocked by local Chromium/crashpad limitations.
 
 ## Accumulated Context
 
@@ -69,4 +71,4 @@ Progress: [█████████░] 85% of milestone `v0.7.0`
 ## Resume Point
 
 - Next command: `$gsd-execute-phase 36`
-- Optional follow-up before that: rerun the live Phase 36 settings walkthrough once local browser automation is available, then continue with `36-02`.
+- Optional follow-up before that: rerun the live Phase 36 settings walkthrough once local browser automation is available, then continue with `36-03`.
