@@ -298,8 +298,14 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
     reader.readAsText(file);
   };
 
-  const resetCustomTheme = () => {
-    setCustomTheme({});
+  const resetAppearanceCustomizations = () => {
+    applyAppearanceState({
+      accentColor,
+      accentColorSource: 'preset',
+      customTheme: {},
+      theme,
+      themePresetId,
+    });
   };
 
   return (
@@ -342,7 +348,7 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
               {hasCustomizations && (
                 <Button
                   variant="danger"
-                  onClick={resetCustomTheme}
+                  onClick={resetAppearanceCustomizations}
                   size="sm"
                   aria-label={resetPresetA11yLabel}
                   className="w-full shrink-0 sm:w-auto"

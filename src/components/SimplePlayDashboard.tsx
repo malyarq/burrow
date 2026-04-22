@@ -560,7 +560,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
       )}
 
       <section className="w-full max-w-2xl mb-6" aria-label={t('dashboard.info_panel') || 'Current settings'}>
-        <h2 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-secondary">
           {t('dashboard.current_settings') || 'Current settings'}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

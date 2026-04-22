@@ -83,8 +83,8 @@ Archive:
 
 **Goal:** Remove leftover settings weirdness and align the launcher under one visible button, toggle, slider, tab, and copy contract.
 **Owns requirements:** `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`, `SETTINGS-08`, `DESIGN-01`
-**Execution progress:** `5/9` plans complete, `4` settings-owned gap-closure plans pending after UAT
-**Status:** initial closeout was invalidated by Phase 36 UAT on `2026-04-22`; `36-05` is complete and revised settings gap packet `36-06` through `36-09` remains
+**Execution progress:** `6/9` plans complete, `3` settings-owned gap-closure plans pending after UAT
+**Status:** initial closeout was invalidated by Phase 36 UAT on `2026-04-22`; `36-05` and `36-06` are complete and revised settings gap packet `36-07` through `36-09` remains
 
 **Observable success criteria:**
 
@@ -108,7 +108,7 @@ Archive:
 
 ## Shipped Milestones
 
-- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36.1`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` has UAT-diagnosed settings gaps with `5/9` plans complete and `36-06..36-09` pending, and inserted Phase `36.1` holds `2` modpack spillover plans. Next: `$gsd-execute-phase 36 --gaps-only`.
+- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36.1`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` has UAT-diagnosed settings gaps with `6/9` plans complete and `36-07..36-09` pending, and inserted Phase `36.1` holds `2` modpack spillover plans. Next: `$gsd-execute-phase 36 --gaps-only`.
 - ✅ **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases `28-31`, shipped `2026-04-21`. Progress: `20/20` plans complete. Audit: `19/19` requirements satisfied.
 - ✅ **v0.5.0 Experience Reinvention And Brand Reset** — Phases `19-27`, shipped `2026-04-20`. Archive: `.planning/milestones/v0.5.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases `15-18`, shipped `2026-04-17`. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
@@ -146,7 +146,7 @@ Archive:
 
 | Milestone | Phases | Plans | Status | Shipped |
 | --- | --- | --- | --- | --- |
-| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36.1 | 21/27 | Active | — |
+| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36.1 | 22/27 | Active | — |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
