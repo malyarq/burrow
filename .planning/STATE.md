@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.7.0
 milestone_name: Direct Feedback Closure And Interface Cohesion
-status: Phase 36 plan 02 complete; plan 03 next
-last_updated: "2026-04-22T17:52:20Z"
+status: Phase 36 plan 03 complete; plan 04 next
+last_updated: "2026-04-22T18:10:29Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 20
-  completed_plans: 18
-  percent: 90
+  completed_plans: 19
+  percent: 95
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 - Active milestone: `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 - Latest shipped milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Current phase: `36` — Settings Predictability And Shared Control Contract
-- Current plan: `36-03` - align settings controls under one shared geometry and scope contract
-- Status: Phase 36 execution is in progress; `36-01` landed the lighter shell contract, `36-02` made preset ancestry and reset semantics product-readable, and `36-03` next tackles shared control geometry
-- Last activity: 2026-04-22 - completed `36-02` with a visible preset runtime summary, preserved mode switching across preset families, and product-facing preset predictability tests
+- Current plan: `36-04` - refresh proof wording and close out the settings shared-control contract
+- Status: Phase 36 execution is in progress; `36-01` landed the lighter shell contract, `36-02` made preset ancestry and reset semantics product-readable, `36-03` aligned the shared settings control geometry, and `36-04` next updates proof wording for closeout
+- Last activity: 2026-04-22 - completed `36-03` with one settings control family for tabs/toggles/sliders/accent chips and dedicated appearance, downloads, and launcher layout seams
 
-Progress: [█████████░] 90% of milestone `v0.7.0`
+Progress: [█████████▌] 95% of milestone `v0.7.0`
 
 ## Key Decisions
 
@@ -48,6 +48,8 @@ Progress: [█████████░] 90% of milestone `v0.7.0`
 - Embedded statistics keeps headings and data only, leaving repeated summary language to the shell-level contract.
 - Preset-family changes now preserve the active light/dark mode once a preset is already selected, removing hidden mode jumps while keeping the same normalized theme state.
 - Appearance now exposes one preset runtime summary with exact reset-target copy instead of scattering ancestry hints across badges and helper text.
+- Custom accent selection now uses the same chip contract as preset accents, with the native color input hidden behind the same visible button semantics instead of acting as an overlay exception.
+- Phase 36 now has dedicated layout seams for appearance, downloads, and launcher, so control-family drift is no longer proven only through broader SettingsPage route tests.
 
 ## Open Blockers
 
@@ -58,7 +60,7 @@ Progress: [█████████░] 90% of milestone `v0.7.0`
 - Phase 33 still carries manual-only signoff debt: classic cold-start feel, desktop-width catalog compactness, and CTA geometry/product-feel were not rerun interactively in this turn.
 - Phase 34 closeout still carries manual-only signoff debt: tab reachability at live desktop width, first-read runtime/dependency authority feel, and one-session cross-tab cohesion were not rerun interactively in this turn.
 - Phase 35 closeout still carries manual-only signoff debt: live create/add feel, guided runtime clarity, and active-modpack switching calmness were not rerun interactively in this turn.
-- Phase 36 live settings signoff is still pending: shell density and preset predictability are covered by targeted tests, but the updated appearance surface was not rerun interactively because browser automation remains blocked by local Chromium/crashpad limitations.
+- Phase 36 live settings signoff is still pending: shell density, preset predictability, and shared control geometry are covered by targeted tests, but the updated settings surfaces were not rerun interactively because browser automation remains blocked by local Chromium/crashpad limitations.
 
 ## Accumulated Context
 
@@ -71,4 +73,4 @@ Progress: [█████████░] 90% of milestone `v0.7.0`
 ## Resume Point
 
 - Next command: `$gsd-execute-phase 36`
-- Optional follow-up before that: rerun the live Phase 36 settings walkthrough once local browser automation is available, then continue with `36-03`.
+- Optional follow-up before that: rerun the live Phase 36 settings walkthrough once local browser automation is available, then continue with `36-04`.

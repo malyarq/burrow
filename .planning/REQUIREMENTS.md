@@ -35,9 +35,9 @@
 
 - [x] **SETTINGS-05**: User no longer sees leftover branding blocks or duplicated explanatory copy in settings surfaces that should stay task-focused.
 - [x] **SETTINGS-06**: User sees preset-theme changes produce visible, predictable results without hidden theme-mode jumps or “nothing changed” states.
-- [ ] **SETTINGS-07**: User sees accent, slider, toggle, and tab controls follow one aligned geometry contract with no overlap, drift, or overflow.
+- [x] **SETTINGS-07**: User sees accent, slider, toggle, and tab controls follow one aligned geometry contract with no overlap, drift, or overflow.
 - [x] **SETTINGS-08**: User only sees appearance controls that have a visible effect or an explicit scoped explanation of what they change.
-- [ ] **DESIGN-01**: User experiences one shared button and control contract across shell, catalog, details, content, and settings surfaces.
+- [x] **DESIGN-01**: User experiences one shared button and control contract across shell, catalog, details, content, and settings surfaces.
 
 ## Future Requirements
 
@@ -82,9 +82,9 @@
 | CONTENT-09 | Phase 35 | Complete |
 | SETTINGS-05 | Phase 36 | Complete |
 | SETTINGS-06 | Phase 36 | Complete |
-| SETTINGS-07 | Phase 36 | Pending |
+| SETTINGS-07 | Phase 36 | Complete |
 | SETTINGS-08 | Phase 36 | Complete |
-| DESIGN-01 | Phase 36 | Pending |
+| DESIGN-01 | Phase 36 | Complete |
 
 **Coverage:**
 - v0.7.0 requirements: 19 total
@@ -93,4 +93,4 @@
 
 ---
 *Requirements defined: 2026-04-22*  
-*Last updated: 2026-04-22 after completing Plan `36-01`*
+*Last updated: 2026-04-22 after completing Plan `36-03`*

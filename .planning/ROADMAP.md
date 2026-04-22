@@ -83,7 +83,7 @@ Archive:
 
 **Goal:** Remove leftover settings weirdness and align the launcher under one visible button, toggle, slider, tab, and copy contract.
 **Owns requirements:** `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`, `SETTINGS-08`, `DESIGN-01`
-**Execution progress:** `2/4` plans complete
+**Execution progress:** `3/4` plans complete
 **Status:** in progress on `2026-04-22`
 
 **Observable success criteria:**
@@ -95,7 +95,7 @@ Archive:
 
 ## Shipped Milestones
 
-- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` in progress (`2/4` plans). Next: `$gsd-execute-phase 36`.
+- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` in progress (`3/4` plans). Next: `$gsd-execute-phase 36`.
 - ✅ **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases `28-31`, shipped `2026-04-21`. Progress: `20/20` plans complete. Audit: `19/19` requirements satisfied.
 - ✅ **v0.5.0 Experience Reinvention And Brand Reset** — Phases `19-27`, shipped `2026-04-20`. Archive: `.planning/milestones/v0.5.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases `15-18`, shipped `2026-04-17`. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
@@ -133,7 +133,7 @@ Archive:
 
 | Milestone | Phases | Plans | Status | Shipped |
 | --- | --- | --- | --- | --- |
-| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36 | 18/20 | Active | — |
+| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36 | 19/20 | Active | — |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
