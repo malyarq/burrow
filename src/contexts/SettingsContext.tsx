@@ -10,7 +10,8 @@ import {
         useLocalStorageState,
 } from './settings/persistence';
 import { getThemePreset, inferThemePresetId } from './settings/theme-presets';
-import { applyThemeToDocument, extractThemeOverrides, pruneThemeConfig, resolveThemeConfig } from './settings/theme';
+import type { ThemeRuntimeState } from './settings/theme';
+import { applyThemeToDocument, extractThemeOverrides, pruneThemeConfig, resolveThemeConfig, resolveThemeRuntimeState } from './settings/theme';
 import { createTranslator, getLocaleForLanguage } from './settings/i18n';
 import { getAccentClassForColor, getAccentHexForColor, getAccentStylesForColor, getPresetAccentSafelistClassName } from './settings/accent';
 import { formatDateForLocale, formatNumberForLocale } from '../utils/format';
@@ -52,6 +53,7 @@ interface SettingsState {
     getAccentHex: () => string;
     customTheme: CustomThemeConfig;
     activeThemeConfig: CustomThemeConfig;
+    themeRuntimeState: ThemeRuntimeState;
     brandTheme: BrandThemeConfig;
     setCustomTheme: (val: CustomThemeConfig) => void;
     uiScale: number;
@@ -203,15 +205,21 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             return;
         }
 
+        const nextTheme = appearanceState.themePresetId ? appearanceState.theme : preset.defaultTheme;
+
         applyAppearanceState({
             ...appearanceState,
             customTheme: {},
-            theme: preset.defaultTheme,
+            theme: nextTheme,
             themePresetId: preset.id,
         });
     }, [appearanceState, applyAppearanceState]);
     const activeThemeConfig = useMemo(
         () => resolveThemeConfig(theme, themePresetId, customTheme),
+        [customTheme, theme, themePresetId],
+    );
+    const themeRuntimeState = useMemo(
+        () => resolveThemeRuntimeState(theme, themePresetId, customTheme),
         [customTheme, theme, themePresetId],
     );
     const brandTheme = activeThemeConfig.brand ?? {};
@@ -328,6 +336,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             getAccentHex,
             customTheme,
             activeThemeConfig,
+            themeRuntimeState,
             brandTheme,
             setCustomTheme,
             uiScale, setUiScale,

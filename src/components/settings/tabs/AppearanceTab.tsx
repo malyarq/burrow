@@ -7,6 +7,7 @@ import { Input } from '../../ui/Input';
 import { Button } from '../../ui/Button';
 import { Select } from '../../ui/Select';
 import {
+  getThemeModeLabel,
   getThemePreset,
   getThemePresetLabel,
   getThemePresetSummary,
@@ -33,9 +34,24 @@ const BACKGROUND_TYPES: readonly BackgroundType[] = ['image', 'video', 'particle
 const BACKGROUND_POSITIONS: readonly BackgroundPosition[] = ['cover', 'contain', 'center', 'repeat'];
 const BACKGROUND_PARTICLE_TYPES: readonly BackgroundParticleType[] = ['stars', 'snow', 'rain'];
 
-function translateWithFallback(t: (key: string) => string, key: string, fallback: string): string {
-  const translated = t(key);
-  return translated === key ? fallback : translated;
+function translateWithFallback(
+  t: (key: string, params?: Record<string, string | number>) => string,
+  key: string,
+  fallback: string,
+  params?: Record<string, string | number>,
+): string {
+  const translated = t(key, params);
+  if (translated !== key) {
+    return translated;
+  }
+
+  if (!params) {
+    return fallback;
+  }
+
+  return Object.entries(params).reduce((text, [paramKey, value]) => (
+    text.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(value))
+  ), fallback);
 }
 
 function ToggleRow(props: {
@@ -78,6 +94,7 @@ export const AppearanceTab: React.FC = () => {
     getAccentStyles,
     customTheme, setCustomTheme,
     activeThemeConfig,
+    themeRuntimeState,
   } = useSettings();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -105,14 +122,79 @@ export const AppearanceTab: React.FC = () => {
     'settings.theme_custom_export_name',
     'Custom Theme',
   );
+  const selectedPresetLabel = getThemePresetLabel(t, selectedPreset);
   const selectedPresetSummary = getThemePresetSummary(t, selectedPreset, theme);
+  const selectedModeLabel = getThemeModeLabel(t, theme);
   const accentRangeStyles = getAccentStyles('accent');
   const accentLabel = t('settings.accent');
-  const hasCustomizations = Boolean(
-    Object.keys(customTheme.colors ?? {}).length
-      || Object.keys(customTheme.background ?? {}).length
-      || Object.keys(customTheme.brand ?? {}).length,
+  const hasCustomizations = themeRuntimeState.hasCustomizations;
+  const runtimeContractTitle = translateWithFallback(
+    t,
+    'settings.theme_runtime_title',
+    'Preset Runtime',
   );
+  const runtimeContractDescription = translateWithFallback(
+    t,
+    'settings.theme_runtime_desc',
+    'Preset family, mode, and reset behavior stay visible here so appearance changes never feel hidden.',
+  );
+  const runtimeModeState = translateWithFallback(
+    t,
+    themeRuntimeState.matchesPresetDefaultMode
+      ? 'settings.theme_mode_default_state'
+      : 'settings.theme_mode_variant_state',
+    themeRuntimeState.matchesPresetDefaultMode ? 'Preset default' : 'Preset variant',
+  );
+  const runtimeStateLabel = selectedPreset
+    ? translateWithFallback(
+      t,
+      hasCustomizations
+        ? 'settings.theme_runtime_state_customized'
+        : 'settings.theme_runtime_state_preset',
+      hasCustomizations ? 'Customized preset' : 'Untouched preset',
+    )
+    : translateWithFallback(t, 'settings.theme_runtime_state_manual', 'Manual appearance');
+  const runtimeDescription = selectedPreset
+    ? hasCustomizations
+      ? translateWithFallback(
+        t,
+        'settings.theme_runtime_customized_desc',
+        '{{preset}} stays active in {{mode}} mode while bounded accent, background, and surface refinements are layered on top.',
+        {
+          mode: selectedModeLabel,
+          preset: selectedPresetLabel ?? selectedPresetSummary ?? customThemeExportName,
+        },
+      )
+      : translateWithFallback(
+        t,
+        themeRuntimeState.matchesPresetDefaultMode
+          ? 'settings.theme_runtime_default_desc'
+          : 'settings.theme_runtime_variant_desc',
+        themeRuntimeState.matchesPresetDefaultMode
+          ? '{{preset}} is active in its default {{mode}} mode. Switch modes to preview the other preset variant without leaving this preset family.'
+          : '{{preset}} stays active while you preview its {{mode}} variant instead of the default.',
+        {
+          mode: selectedModeLabel,
+          preset: selectedPresetLabel ?? selectedPresetSummary ?? customThemeExportName,
+        },
+      )
+    : themeDescription;
+  const resetPresetLabel = selectedPresetSummary
+    ? translateWithFallback(
+      t,
+      'settings.reset_preset_customizations',
+      `Return to ${selectedPresetSummary}`,
+      { preset: selectedPresetSummary },
+    )
+    : t('settings.reset_custom_theme') || 'Reset Custom Theme';
+  const resetPresetDescription = selectedPresetSummary
+    ? translateWithFallback(
+      t,
+      'settings.reset_preset_customizations_desc',
+      `Remove refinements and return to the untouched ${selectedPresetSummary} runtime contract.`,
+      { preset: selectedPresetSummary },
+    )
+    : '';
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);
@@ -220,22 +302,14 @@ export const AppearanceTab: React.FC = () => {
               <h3 className="text-lg font-bold text-foreground">
                 {selectedPresetSummary || themePresetsLabel}
               </h3>
-              {themePresetId && hasCustomizations && (
+              {selectedPreset && hasCustomizations && (
                 <span className="rounded-full border border-[rgb(var(--accent-main)/0.22)] bg-[rgb(var(--accent-main)/0.12)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
                   {translateWithFallback(t, 'settings.theme_customized_state', 'Customized')}
                 </span>
               )}
             </div>
             <p className="text-sm text-secondary">
-              {selectedPreset
-                ? (hasCustomizations && themePresetId
-                  ? translateWithFallback(
-                    t,
-                    'settings.theme_customized_desc',
-                    'This preset stays active while bounded accent, background, and surface refinements are layered on top.',
-                  )
-                  : themePresetsDescription)
-                : themeDescription}
+              {selectedPreset ? runtimeDescription : themeDescription}
             </p>
           </div>
 
@@ -247,6 +321,13 @@ export const AppearanceTab: React.FC = () => {
                   {t('settings.theme')}
                 </label>
               </div>
+              <p className="text-sm text-secondary">
+                {translateWithFallback(
+                  t,
+                  'settings.theme_mode_scope_desc',
+                  'Light and dark only switch the active runtime variant of the selected preset.',
+                )}
+              </p>
               <div className="settings-segmented-row">
                 {(['light', 'dark'] as const).map((m) => (
                   <button
@@ -266,6 +347,9 @@ export const AppearanceTab: React.FC = () => {
                 <label className="text-sm font-medium text-foreground">
                   {themePresetsLabel}
                 </label>
+                <p className="text-sm text-secondary">
+                  {themePresetsDescription}
+                </p>
                 <Select
                   value={themePresetId || ''}
                   onChange={(e) => handlePresetChange(e.target.value)}
@@ -386,31 +470,54 @@ export const AppearanceTab: React.FC = () => {
 
         <div className="surface-card space-y-4 p-5">
           <div className="space-y-2">
-            <div className="kicker-label">{translateWithFallback(t, 'settings.background_effects', 'Background Effects')}</div>
+            <div className="kicker-label">{runtimeContractTitle}</div>
             <h4 className="text-lg font-semibold text-foreground">
-              {translateWithFallback(t, 'settings.background_preview_title', 'Visible Background Scope')}
+              {selectedPresetSummary || translateWithFallback(t, 'settings.theme_runtime_state_manual', 'Manual appearance')}
             </h4>
             <p className="text-sm text-secondary">
-              {translateWithFallback(
-                t,
-                'settings.background_scope_desc',
-                'Background controls only change the active backdrop layer. Layout density, motion, and launcher chrome live under Launcher.',
-              )}
+              {runtimeContractDescription}
             </p>
           </div>
 
-          <div className="settings-control-card space-y-2">
-            <p className="settings-toggle-title">{translateWithFallback(t, 'settings.active_preset', 'Active preset')}</p>
-            <p className="text-sm text-foreground">{selectedPresetSummary || translateWithFallback(t, 'settings.theme_custom_export_name', 'Custom Theme')}</p>
-            {themePresetId && hasCustomizations && (
+          <div className="space-y-3">
+            <div className="settings-control-card space-y-2">
+              <p className="settings-toggle-title">
+                {translateWithFallback(t, 'settings.theme_runtime_preset_label', 'Preset family')}
+              </p>
+              <p className="text-sm text-foreground">
+                {selectedPresetLabel ?? translateWithFallback(t, 'settings.theme_runtime_state_manual', 'Manual appearance')}
+              </p>
+            </div>
+            <div className="settings-control-card space-y-2">
+              <p className="settings-toggle-title">
+                {translateWithFallback(t, 'settings.theme_runtime_mode_label', 'Current mode')}
+              </p>
+              <p className="text-sm text-foreground">{selectedModeLabel}</p>
+              {selectedPreset && (
+                <p className="settings-embedded-copy">{runtimeModeState}</p>
+              )}
+            </div>
+            <div className="settings-control-card space-y-2">
+              <p className="settings-toggle-title">
+                {translateWithFallback(t, 'settings.theme_runtime_state_label', 'Runtime state')}
+              </p>
+              <p className="text-sm text-foreground">{runtimeStateLabel}</p>
+              {selectedPreset && hasCustomizations && (
+                <p className="settings-embedded-copy">{resetPresetDescription}</p>
+              )}
+            </div>
+            <div className="settings-control-card space-y-2">
+              <p className="settings-toggle-title">
+                {translateWithFallback(t, 'settings.background_preview_title', 'Visible Background Scope')}
+              </p>
               <p className="settings-embedded-copy">
                 {translateWithFallback(
                   t,
-                  'settings.reset_preset_customizations_desc',
-                  'Reset refinements to return to the untouched preset runtime contract.',
+                  'settings.background_scope_desc',
+                  'Background controls only change the active backdrop layer. Layout density, motion, and launcher chrome live under Launcher.',
                 )}
               </p>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -713,7 +820,7 @@ export const AppearanceTab: React.FC = () => {
         <div className="flex justify-end">
           <Button variant="danger" onClick={resetCustomTheme} size="sm">
             {themePresetId
-              ? translateWithFallback(t, 'settings.reset_preset_customizations', 'Reset to Preset')
+              ? resetPresetLabel
               : (t('settings.reset_custom_theme') || 'Reset Custom Theme')}
           </Button>
         </div>

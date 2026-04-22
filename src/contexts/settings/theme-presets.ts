@@ -8,11 +8,27 @@ export interface ThemePreset {
     themes: Record<Theme, CustomThemeConfig>;
 }
 
-type ThemeTranslator = (key: string) => string;
+type ThemeTranslator = (key: string, params?: Record<string, string | number>) => string;
 
-function translateWithFallback(t: ThemeTranslator, key: string, fallback: string): string {
-    const translated = t(key);
-    return translated === key ? fallback : translated;
+function translateWithFallback(
+    t: ThemeTranslator,
+    key: string,
+    fallback: string,
+    params?: Record<string, string | number>,
+): string {
+    const translated = t(key, params);
+    if (translated !== key) {
+        return translated;
+    }
+
+    if (!params) {
+        return fallback;
+    }
+
+    return Object.entries(params).reduce(
+        (text, [paramKey, value]) => text.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(value)),
+        fallback,
+    );
 }
 
 function createPresetColors(colors: NonNullable<CustomThemeConfig['colors']>): CustomThemeConfig {
@@ -285,13 +301,17 @@ export function getThemePresetSummary(
         return undefined;
     }
 
-    const modeLabel = translateWithFallback(
+    const modeLabel = getThemeModeLabel(t, theme);
+
+    return `${presetLabel} · ${modeLabel}`;
+}
+
+export function getThemeModeLabel(t: ThemeTranslator, theme: Theme) {
+    return translateWithFallback(
         t,
         theme === 'light' ? 'settings.theme_light' : 'settings.theme_dark',
         theme === 'light' ? 'Light' : 'Dark',
     );
-
-    return `${presetLabel} · ${modeLabel}`;
 }
 
 export function getThemePresetConfig(
