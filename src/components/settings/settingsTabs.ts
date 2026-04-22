@@ -4,13 +4,10 @@ export type SettingsTabConfig = {
   id: SettingsTabId;
   labelKey: string;
   labelFallback: string;
-  descriptionKey: string;
-  descriptionFallback: string;
 };
 
 export type ResolvedSettingsTabConfig = SettingsTabConfig & {
   label: string;
-  description: string;
 };
 
 type SettingsTranslator = (key: string) => string;
@@ -25,43 +22,31 @@ export const SETTINGS_TABS: SettingsTabConfig[] = [
     id: 'appearance',
     labelKey: 'settings.tab_appearance',
     labelFallback: 'Appearance',
-    descriptionKey: 'settings.theme_presets_desc',
-    descriptionFallback: 'Apply a ready-made visual profile, or import/export your own configuration.',
   },
   {
     id: 'downloads',
     labelKey: 'settings.tab_downloads',
     labelFallback: 'Downloads',
-    descriptionKey: 'settings.downloadsHint',
-    descriptionFallback: 'Tune mirrors, concurrency, and connection limits for a stable download pipeline.',
   },
   {
     id: 'launcher',
     labelKey: 'settings.tab_launcher',
     labelFallback: 'Launcher',
-    descriptionKey: 'settings.launcherHint',
-    descriptionFallback: 'Manage runtime behavior, update checks, and persistent launcher caches from one place.',
   },
   {
     id: 'storage',
     labelKey: 'settings.tab_storage',
     labelFallback: 'Storage',
-    descriptionKey: 'settings.storage.description',
-    descriptionFallback: 'Review shared content usage and run cleanup without digging through extra utility panels.',
   },
   {
     id: 'accounts',
     labelKey: 'settings.tab_accounts',
     labelFallback: 'Accounts',
-    descriptionKey: 'accounts.description',
-    descriptionFallback: 'Keep your launch-ready accounts, provider access, and skin tools in one place.',
   },
   {
     id: 'statistics',
     labelKey: 'settings.tab_statistics',
     labelFallback: 'Statistics',
-    descriptionKey: 'stats.description',
-    descriptionFallback: 'Keep the most useful launch and play-time trends visible without opening extra sections.',
   },
 ];
 
@@ -90,7 +75,6 @@ export function getTranslatedSettingsTabConfig(
   return {
     ...config,
     label: translateWithFallback(t, config.labelKey, config.labelFallback),
-    description: translateWithFallback(t, config.descriptionKey, config.descriptionFallback),
   };
 }
 

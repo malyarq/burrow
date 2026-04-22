@@ -84,7 +84,11 @@ function ToggleRow(props: {
   );
 }
 
-export const AppearanceTab: React.FC = () => {
+interface AppearanceTabProps {
+  embedded?: boolean;
+}
+
+export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }) => {
   const {
     accentColor, setAccentColor,
     theme, setTheme,
@@ -132,16 +136,6 @@ export const AppearanceTab: React.FC = () => {
   const accentLabel = t('settings.accent');
   const customColorLabel = t('settings.custom_color') || 'Custom Color';
   const hasCustomizations = themeRuntimeState.hasCustomizations;
-  const runtimeContractTitle = translateWithFallback(
-    t,
-    'settings.theme_runtime_title',
-    'Preset Runtime',
-  );
-  const runtimeContractDescription = translateWithFallback(
-    t,
-    'settings.theme_runtime_desc',
-    'Preset family, mode, and reset behavior stay visible here so appearance changes never feel hidden.',
-  );
   const runtimeModeState = translateWithFallback(
     t,
     themeRuntimeState.matchesPresetDefaultMode
@@ -206,6 +200,11 @@ export const AppearanceTab: React.FC = () => {
       'settings.reset_to_preset',
       'Reset to Preset',
     );
+  const appearanceHeading = selectedPresetSummary
+    || translateWithFallback(t, 'settings.theme_runtime_state_manual', 'Manual appearance');
+  const appearanceStateChips = selectedPreset
+    ? [runtimeModeState, runtimeStateLabel]
+    : [selectedModeLabel];
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);
@@ -305,40 +304,72 @@ export const AppearanceTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
-        <div className="surface-card min-w-0 space-y-4 p-5">
-          <div className="space-y-2">
-            <div className="kicker-label">{t('settings.tab_appearance')}</div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-lg font-bold text-foreground">
-                {selectedPresetSummary || themePresetsLabel}
-              </h3>
-              {selectedPreset && hasCustomizations && (
-                <span className="rounded-full border border-[rgb(var(--accent-main)/0.22)] bg-[rgb(var(--accent-main)/0.12)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground">
-                  {translateWithFallback(t, 'settings.theme_customized_state', 'Customized')}
-                </span>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)]">
+        <div className="settings-section-shell min-w-0 p-5">
+          <div className="space-y-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0 space-y-3">
+                {!embedded && (
+                  <div className="kicker-label">{t('settings.tab_appearance')}</div>
+                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    {appearanceHeading}
+                  </h3>
+                  {selectedPreset && hasCustomizations && (
+                    <span className="settings-status-chip">
+                      {translateWithFallback(t, 'settings.theme_customized_state', 'Customized')}
+                    </span>
+                  )}
+                </div>
+                {!embedded && (
+                  <p className="text-sm text-secondary">
+                    {selectedPreset ? runtimeDescription : themeDescription}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {appearanceStateChips.map((chip) => (
+                    <span key={chip} className="settings-status-chip">
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+                {selectedPreset && hasCustomizations && resetPresetDescription && (
+                  <p className="settings-embedded-copy">{resetPresetDescription}</p>
+                )}
+              </div>
+
+              {hasCustomizations && (
+                <Button
+                  variant="danger"
+                  onClick={resetCustomTheme}
+                  size="sm"
+                  aria-label={resetPresetA11yLabel}
+                  className="w-full shrink-0 sm:w-auto"
+                >
+                  {themePresetId
+                    ? resetPresetLabel
+                    : (t('settings.reset_custom_theme') || 'Reset Custom Theme')}
+                </Button>
               )}
             </div>
-            <p className="text-sm text-secondary">
-              {selectedPreset ? runtimeDescription : themeDescription}
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="surface-muted space-y-4 p-4">
+            <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-secondary" />
                 <label className="text-sm font-medium text-foreground">
                   {t('settings.theme')}
                 </label>
               </div>
-              <p className="text-sm text-secondary">
-                {translateWithFallback(
-                  t,
-                  'settings.theme_mode_scope_desc',
-                  'Light and dark only switch the active runtime variant of the selected preset.',
-                )}
-              </p>
+              {!embedded && (
+                <p className="text-sm text-secondary">
+                  {translateWithFallback(
+                    t,
+                    'settings.theme_mode_scope_desc',
+                    'Light and dark only switch the active runtime variant of the selected preset.',
+                  )}
+                </p>
+              )}
               <div className="settings-segmented-row">
                 {(['light', 'dark'] as const).map((m) => (
                   <button
@@ -353,179 +384,132 @@ export const AppearanceTab: React.FC = () => {
                   </button>
                 ))}
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  {themePresetsLabel}
-                </label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                {themePresetsLabel}
+              </label>
+              {!embedded && (
                 <p className="text-sm text-secondary">
                   {themePresetsDescription}
                 </p>
-                <Select
-                  value={themePresetId || ''}
-                  onChange={(e) => handlePresetChange(e.target.value)}
-                  className="w-full"
-                  aria-label={themePresetsLabel}
-                >
-                  <option value="" disabled>{themePresetsPlaceholder}</option>
-                  {THEME_PRESETS.map((preset) => (
-                    <option key={preset.id} value={preset.id}>{getThemePresetLabel(t, preset)}</option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Button variant="secondary" onClick={() => fileInputRef.current?.click()} className="gap-2 sm:flex-1">
-                  <Upload className="h-4 w-4" />
-                  {importThemeLabel}
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json"
-                  className="hidden"
-                  onChange={handleImportTheme}
-                />
-
-                <Button variant="secondary" onClick={handleExportTheme} className="gap-2 sm:flex-1">
-                  <Download className="h-4 w-4" />
-                  {exportThemeLabel}
-                </Button>
-              </div>
+              )}
+              <Select
+                value={themePresetId || ''}
+                onChange={(e) => handlePresetChange(e.target.value)}
+                className="w-full"
+                aria-label={themePresetsLabel}
+              >
+                <option value="" disabled>{themePresetsPlaceholder}</option>
+                {THEME_PRESETS.map((preset) => (
+                  <option key={preset.id} value={preset.id}>{getThemePresetLabel(t, preset)}</option>
+                ))}
+              </Select>
             </div>
 
-            <div className="surface-muted space-y-4 p-4">
-              <div className="settings-control-card space-y-3">
-                <div className="flex items-center gap-2">
-                  <Paintbrush2 className="h-4 w-4 text-secondary" />
-                  <label className="text-sm font-medium text-foreground">
-                    {accentLabel}
-                  </label>
-                </div>
-                <p className="settings-embedded-copy">
-                  {t('settings.appearance_branding_desc') || 'Accent colors personalize launch highlights and active controls without changing the FMCL mark, wordmark, or shell surfaces.'}
-                </p>
-                <div className="settings-accent-grid">
-                  {COLORS.map((c) => (
-                    <button
-                      type="button"
-                      key={c.id}
-                      onClick={() => setAccentColor(c.id)}
-                      aria-pressed={accentColor === c.id}
-                      aria-label={`${accentLabel}: ${c.id}`}
-                      data-state={accentColor === c.id ? 'active' : 'inactive'}
-                      className={cn(
-                        'settings-accent-chip',
-                        accentColor === c.id ? 'ring-2 scale-110' : '',
-                      )}
-                      title={c.id}
-                    >
-                      <span className={cn('settings-accent-swatch', c.class)} />
-                    </button>
-                  ))}
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button variant="secondary" onClick={() => fileInputRef.current?.click()} className="gap-2 sm:flex-1">
+                <Upload className="h-4 w-4" />
+                {importThemeLabel}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={handleImportTheme}
+              />
 
-                  <button
-                    type="button"
-                    onClick={() => customAccentInputRef.current?.click()}
-                    aria-pressed={isCustom}
-                    aria-label={`${accentLabel}: ${customColorLabel}`}
-                    data-state={isCustom ? 'active' : 'inactive'}
-                    className={cn(
-                      'settings-accent-chip',
-                      isCustom ? 'ring-2 scale-110' : '',
-                    )}
-                    title={customColorLabel}
-                  >
-                    {isCustom ? (
-                      <span className="settings-accent-swatch" style={{ backgroundColor: accentColor }} />
-                    ) : (
-                      <span className="settings-accent-chip-symbol">+</span>
-                    )}
-                  </button>
-                  <input
-                    ref={customAccentInputRef}
-                    type="color"
-                    value={isCustom ? accentColor : '#10b981'}
-                    onChange={(e) => setAccentColor(e.target.value)}
-                    className="sr-only"
-                    tabIndex={-1}
-                    aria-label={customColorLabel}
-                  />
-                </div>
-              </div>
-
-              <div className="settings-control-card space-y-3">
-                <label className="text-sm font-medium text-foreground">
-                  {t('settings.language')}
-                </label>
-                <div className="settings-segmented-row">
-                  {(['en', 'ru'] as const).map((lang) => (
-                    <button
-                      type="button"
-                      key={lang}
-                      onClick={() => setLanguage(lang)}
-                      aria-pressed={language === lang}
-                      data-state={language === lang ? 'active' : 'inactive'}
-                      className="settings-segmented-option"
-                    >
-                      {lang === 'en' ? 'English' : 'Русский'}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <Button variant="secondary" onClick={handleExportTheme} className="gap-2 sm:flex-1">
+                <Download className="h-4 w-4" />
+                {exportThemeLabel}
+              </Button>
             </div>
           </div>
         </div>
 
-        <div className="surface-card min-w-0 space-y-4 p-5">
-          <div className="space-y-2">
-            <div className="kicker-label">{runtimeContractTitle}</div>
-            <h4 className="text-lg font-semibold text-foreground">
-              {selectedPresetSummary || translateWithFallback(t, 'settings.theme_runtime_state_manual', 'Manual appearance')}
-            </h4>
-            <p className="text-sm text-secondary">
-              {runtimeContractDescription}
-            </p>
-          </div>
+        <div className="settings-section-shell min-w-0 p-5">
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Paintbrush2 className="h-4 w-4 text-secondary" />
+                <label className="text-sm font-medium text-foreground">
+                  {accentLabel}
+                </label>
+              </div>
+              {!embedded && (
+                <p className="settings-embedded-copy">
+                  {t('settings.appearance_branding_desc') || 'Accent colors personalize launch highlights and active controls without changing the FMCL mark, wordmark, or shell surfaces.'}
+                </p>
+              )}
+              <div className="settings-accent-grid">
+                {COLORS.map((c) => (
+                  <button
+                    type="button"
+                    key={c.id}
+                    onClick={() => setAccentColor(c.id)}
+                    aria-pressed={accentColor === c.id}
+                    aria-label={`${accentLabel}: ${c.id}`}
+                    data-state={accentColor === c.id ? 'active' : 'inactive'}
+                    className={cn(
+                      'settings-accent-chip',
+                      accentColor === c.id ? 'ring-2 scale-110' : '',
+                    )}
+                    title={c.id}
+                  >
+                    <span className={cn('settings-accent-swatch', c.class)} />
+                  </button>
+                ))}
 
-          <div className="space-y-3">
-            <div className="settings-control-card space-y-2">
-              <p className="settings-toggle-title">
-                {translateWithFallback(t, 'settings.theme_runtime_preset_label', 'Preset family')}
-              </p>
-              <p className="text-sm text-foreground">
-                {selectedPresetLabel ?? translateWithFallback(t, 'settings.theme_runtime_state_manual', 'Manual appearance')}
-              </p>
+                <button
+                  type="button"
+                  onClick={() => customAccentInputRef.current?.click()}
+                  aria-pressed={isCustom}
+                  aria-label={`${accentLabel}: ${customColorLabel}`}
+                  data-state={isCustom ? 'active' : 'inactive'}
+                  className={cn(
+                    'settings-accent-chip',
+                    isCustom ? 'ring-2 scale-110' : '',
+                  )}
+                  title={customColorLabel}
+                >
+                  {isCustom ? (
+                    <span className="settings-accent-swatch" style={{ backgroundColor: accentColor }} />
+                  ) : (
+                    <span className="settings-accent-chip-symbol">+</span>
+                  )}
+                </button>
+                <input
+                  ref={customAccentInputRef}
+                  type="color"
+                  value={isCustom ? accentColor : '#10b981'}
+                  onChange={(e) => setAccentColor(e.target.value)}
+                  className="sr-only"
+                  tabIndex={-1}
+                  aria-label={customColorLabel}
+                />
+              </div>
             </div>
-            <div className="settings-control-card space-y-2">
-              <p className="settings-toggle-title">
-                {translateWithFallback(t, 'settings.theme_runtime_mode_label', 'Current mode')}
-              </p>
-              <p className="text-sm text-foreground">{selectedModeLabel}</p>
-              {selectedPreset && (
-                <p className="settings-embedded-copy">{runtimeModeState}</p>
-              )}
-            </div>
-            <div className="settings-control-card space-y-2">
-              <p className="settings-toggle-title">
-                {translateWithFallback(t, 'settings.theme_runtime_state_label', 'Runtime state')}
-              </p>
-              <p className="text-sm text-foreground">{runtimeStateLabel}</p>
-              {selectedPreset && hasCustomizations && (
-                <p className="settings-embedded-copy">{resetPresetDescription}</p>
-              )}
-            </div>
-            <div className="settings-control-card space-y-2">
-              <p className="settings-toggle-title">
-                {translateWithFallback(t, 'settings.background_preview_title', 'Visible Background Scope')}
-              </p>
-              <p className="settings-embedded-copy">
-                {translateWithFallback(
-                  t,
-                  'settings.background_scope_desc',
-                  'Background controls only change the active backdrop layer. Layout density, motion, and launcher chrome live under Launcher.',
-                )}
-              </p>
+
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-foreground">
+                {t('settings.language')}
+              </label>
+              <div className="settings-segmented-row">
+                {(['en', 'ru'] as const).map((lang) => (
+                  <button
+                    type="button"
+                    key={lang}
+                    onClick={() => setLanguage(lang)}
+                    aria-pressed={language === lang}
+                    data-state={language === lang ? 'active' : 'inactive'}
+                    className="settings-segmented-option"
+                  >
+                    {lang === 'en' ? 'English' : 'Русский'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -824,16 +808,6 @@ export const AppearanceTab: React.FC = () => {
           </div>
         </div>
       </CollapsibleSection>
-
-      {hasCustomizations && (
-        <div className="flex justify-end">
-          <Button variant="danger" onClick={resetCustomTheme} size="sm" aria-label={resetPresetA11yLabel}>
-            {themePresetId
-              ? resetPresetLabel
-              : (t('settings.reset_custom_theme') || 'Reset Custom Theme')}
-          </Button>
-        </div>
-      )}
 
       {/* keep a harmless reference to getAccentStyles to avoid unused prop in some builds */}
       <span className="hidden" style={getAccentStyles('text').style} />

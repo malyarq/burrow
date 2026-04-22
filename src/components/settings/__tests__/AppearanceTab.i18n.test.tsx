@@ -147,12 +147,13 @@ describe('AppearanceTab i18n seams', () => {
     expect(screen.getAllByText('Theme Presets').length).toBeGreaterThan(0);
     expect(screen.getByRole('option', { name: 'Forest' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Advanced Appearance' })).toBeTruthy();
-    expect(screen.getByText('Preset Runtime')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Manual appearance' })).toBeTruthy();
-    expect(screen.getByText('Preset family')).toBeTruthy();
+    expect(screen.getAllByText('Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Background Type')).toBeTruthy();
     expect(screen.getByText('Particle Type')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Reset to Preset' })).toBeTruthy();
+    expect(screen.queryByText('Preset Runtime')).toBeNull();
+    expect(screen.queryByText('Preset family')).toBeNull();
 
     expect(container.textContent).not.toContain('settings.appearance_branding');
     expect(container.textContent).not.toContain('settings.theme_presets');
@@ -170,12 +171,13 @@ describe('AppearanceTab i18n seams', () => {
     expect(screen.getAllByText('Готовые темы').length).toBeGreaterThan(0);
     expect(screen.getByRole('option', { name: 'Лес' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Расширенный внешний вид' })).toBeTruthy();
-    expect(screen.getByText('Runtime пресета')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Ручной внешний вид' })).toBeTruthy();
-    expect(screen.getByText('Семейство пресета')).toBeTruthy();
+    expect(screen.getAllByText('Темная').length).toBeGreaterThan(0);
     expect(screen.getByText('Тип фона')).toBeTruthy();
     expect(screen.getByText('Тип частиц')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Сбросить до пресета' })).toBeTruthy();
+    expect(screen.queryByText('Runtime пресета')).toBeNull();
+    expect(screen.queryByText('Семейство пресета')).toBeNull();
 
     expect(container.textContent).not.toContain('settings.appearance_branding');
     expect(container.textContent).not.toContain('settings.theme_presets');

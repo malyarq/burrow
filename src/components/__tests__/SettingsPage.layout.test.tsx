@@ -16,19 +16,12 @@ vi.mock('../../contexts/SettingsContext', () => ({
       ({
         'settings.title': 'Launcher Settings',
         'settings.done': 'Done',
-        'settings.doneHint': 'Changes are saved automatically as you work.',
         'settings.tab_appearance': 'Appearance',
         'settings.tab_downloads': 'Downloads',
         'settings.tab_launcher': 'Launcher',
         'settings.tab_storage': 'Storage',
         'settings.tab_accounts': 'Accounts',
         'settings.tab_statistics': 'Statistics',
-        'settings.theme_presets_desc': 'Apply a ready-made visual profile, or import/export your own configuration.',
-        'settings.downloadsHint': 'Tune mirrors, concurrency, and connection limits for a stable download pipeline.',
-        'settings.launcherHint': 'Manage runtime behavior, update checks, and persistent launcher caches from one place.',
-        'settings.storage.description': 'Review shared content usage and run cleanup without digging through extra utility panels.',
-        'accounts.description': 'Keep your launch-ready accounts, provider access, and skin tools in one place.',
-        'stats.description': 'Keep the most useful launch and play-time trends visible without opening extra sections.',
       }[key] ?? key),
     minecraftPath: '/minecraft',
     setMinecraftPath: vi.fn(),
@@ -104,7 +97,7 @@ describe('SettingsPage layout', () => {
     })) as typeof window.matchMedia;
   });
 
-  it('uses one shell header before the panel and keeps tab summaries out of the segmented tab rail', () => {
+  it('keeps the settings shell focused on tabs and close actions before the active panel', () => {
     render(<SettingsPage onClose={onCloseMock} initialTab="downloads" />);
 
     const header = screen.getByTestId('settings-shell-header');
@@ -112,12 +105,10 @@ describe('SettingsPage layout', () => {
     const tablist = within(header).getByRole('tablist', { name: 'Launcher Settings' });
     const downloadsTab = within(tablist).getByRole('tab', { name: 'Downloads' });
 
-    expect(within(header).getByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeTruthy();
-    expect(within(header).getByText('Changes are saved automatically as you work.')).toBeTruthy();
     expect(within(header).getByRole('button', { name: 'Done' })).toBeTruthy();
     expect(Array.from(header.parentElement?.children ?? [])).toEqual([header, panel]);
     expect(panel.previousElementSibling).toBe(header);
-    expect(within(downloadsTab).queryByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeNull();
-    expect(screen.getAllByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toHaveLength(1);
+    expect(within(downloadsTab).getByText('Downloads')).toBeTruthy();
+    expect(screen.queryByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeNull();
   });
 });

@@ -16,18 +16,12 @@ vi.mock('../../../contexts/SettingsContext', () => ({
       ({
         'settings.title': 'Launcher Settings',
         'settings.done': 'Done',
-        'settings.doneHint': 'Changes are saved automatically as you work.',
         'settings.tab_appearance': 'Appearance',
         'settings.tab_downloads': 'Downloads',
         'settings.tab_launcher': 'Launcher',
         'settings.tab_storage': 'Storage',
         'settings.tab_accounts': 'Accounts',
         'settings.tab_statistics': 'Statistics',
-        'settings.downloadsHint': 'Tune mirrors, concurrency, and connection limits for a stable download pipeline.',
-        'settings.launcherHint': 'Manage runtime behavior, update checks, and persistent launcher caches from one place.',
-        'settings.storage.description': 'Track deduplicated content usage and clean up stored files that are no longer needed.',
-        'stats.description': 'Review launches, play time, and local usage trends before exporting the current snapshot.',
-        'accounts.description': 'Manage your Minecraft accounts and switch between them.',
       }[key] ?? key),
     minecraftPath: '/minecraft',
     setMinecraftPath: vi.fn(),
@@ -105,7 +99,7 @@ describe('SettingsPage secondary utility routes', () => {
     onCloseMock.mockReset();
   });
 
-  it('switches between lower-traffic settings utilities and updates the shared footer hint', () => {
+  it('switches between lower-traffic settings utilities without restoring route-level helper copy', () => {
     render(<SettingsPage onClose={onCloseMock} />);
     const header = screen.getByTestId('settings-shell-header');
 
@@ -113,25 +107,21 @@ describe('SettingsPage secondary utility routes', () => {
     expect(screen.getByRole('tab', { name: 'Downloads' }).getAttribute('aria-selected')).toBe('true');
     expect(screen.getByRole('tabpanel', { name: 'Downloads' })).toBeTruthy();
     expect(screen.getByText('Downloads utility surface')).toBeTruthy();
-    expect(within(header).getByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeTruthy();
-    expect(screen.getAllByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toHaveLength(1);
+    expect(within(header).queryByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeNull();
 
     fireEvent.click(screen.getByRole('tab', { name: 'Launcher' }));
     expect(screen.getByRole('tabpanel', { name: 'Launcher' })).toBeTruthy();
     expect(screen.getByText('Launcher utility surface')).toBeTruthy();
-    expect(within(header).getByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.')).toBeTruthy();
-    expect(screen.getAllByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.')).toHaveLength(1);
+    expect(within(header).queryByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.')).toBeNull();
 
     fireEvent.click(screen.getByRole('tab', { name: 'Storage' }));
     expect(screen.getByRole('tabpanel', { name: 'Storage' })).toBeTruthy();
     expect(screen.getByText('Storage utility surface')).toBeTruthy();
-    expect(within(header).getByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toBeTruthy();
-    expect(screen.getAllByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toHaveLength(1);
+    expect(within(header).queryByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toBeNull();
 
     fireEvent.click(screen.getByRole('tab', { name: 'Statistics' }));
     expect(screen.getByRole('tabpanel', { name: 'Statistics' })).toBeTruthy();
     expect(screen.getByText('Statistics utility surface')).toBeTruthy();
-    expect(within(header).getByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toBeTruthy();
-    expect(screen.getAllByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toHaveLength(1);
+    expect(within(header).queryByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toBeNull();
   });
 });

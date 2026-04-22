@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.7.0
 milestone_name: Direct Feedback Closure And Interface Cohesion
-status: Phase 36 UAT complete with diagnosed gaps; revised settings fix plans are ready and modpack spillover moved into inserted Phase 36.1
-last_updated: "2026-04-22T19:45:23Z"
+status: Phase 36 gap execution is in progress; 36-05 is complete, revised settings fix plans 36-06 through 36-09 remain, and modpack spillover stays in inserted Phase 36.1
+last_updated: "2026-04-22T20:24:00Z"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 27
-  completed_plans: 20
-  percent: 74
+  completed_plans: 21
+  percent: 78
 ---
 
 # Project State
@@ -26,9 +26,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 - Active milestone: `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 - Latest shipped milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Current phase: `36` — Settings Predictability And Shared Control Contract
-- Current plan: `36-05` - pending gap-only execution to flatten the settings shell, remove redundant runtime chrome, and recover launcher layout coherence
-- Status: Phase 36 UAT found 13 diagnosed gaps across settings shell nesting, preset visibility, shared control alignment, modpack workspace cohesion, and proof-route honesty. Settings-owned fixes now live in revised plans `36-05` through `36-09`, while modpack spillover moved into inserted follow-up Phase `36.1`.
-- Last activity: 2026-04-22 - split the post-UAT packet into settings-owned Phase 36 fixes and inserted Phase 36.1 modpack follow-up after checker review
+- Current plan: `36-06` - pending gap-only execution to make preset-owned accent defaults and live shell repaint truth visible
+- Status: Phase 36 UAT found 13 diagnosed gaps across settings shell nesting, preset visibility, shared control alignment, modpack workspace cohesion, and proof-route honesty. Settings-owned fixes now live in revised plans `36-05` through `36-09`, with `36-05` now complete and modpack spillover moved into inserted follow-up Phase `36.1`.
+- Last activity: 2026-04-22 - completed `36-05` by flattening the settings shell, embedding appearance ancestry, and merging launcher runtime into one grid
 
 Progress: [███████░░░] 74% of milestone `v0.7.0`
 
@@ -54,6 +54,7 @@ Progress: [███████░░░] 74% of milestone `v0.7.0`
 - Phase 36 closeout proof now names duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope explicitly instead of relying on preset-era shorthand.
 - Phase 36 UAT proved that the initial settings closure overfit to automated seams: the remaining direct-feedback gaps are now captured as diagnosed root causes in `.planning/phases/36-settings-predictability-and-shared-control-contract/36-UAT.md` and grouped into the follow-up plans `36-05..36-09`.
 - Checker review after UAT forced an ownership split: Phase 36 keeps only settings-owned fixes, while inserted Phase `36.1` holds modpack workspace and create-flow spillover so archived modpack/content requirements are not silently reopened inside the settings phase.
+- `36-05` removes route-level settings helper copy entirely, keeps preset ancestry inside one compact appearance section, and demotes inner settings surfaces so the modal shell stays dominant.
 
 ## Open Blockers
 
@@ -65,6 +66,7 @@ Progress: [███████░░░] 74% of milestone `v0.7.0`
 - Phase 34 closeout still carries manual-only signoff debt: tab reachability at live desktop width, first-read runtime/dependency authority feel, and one-session cross-tab cohesion were not rerun interactively in this turn.
 - Phase 35 closeout still carries manual-only signoff debt: live create/add feel, guided runtime clarity, and active-modpack switching calmness were not rerun interactively in this turn.
 - Phase 36 is no longer in signoff-only state: UAT found diagnosed settings and modpack cohesion gaps, and the milestone cannot close until revised settings plans `36-05..36-09` and inserted follow-up Phase `36.1` are executed and retested.
+- Phase 36 still has four settings-owned gap plans pending after `36-05`: preset repaint truth, palette-owned accent defaults, centered compact controls, visible advanced effects, and proof-route behavior coverage.
 
 ## Accumulated Context
 
@@ -77,4 +79,5 @@ Progress: [███████░░░] 74% of milestone `v0.7.0`
 ## Resume Point
 
 - Next command: `$gsd-execute-phase 36 --gaps-only`
+- Immediate next wave: execute `36-06` and `36-07` on top of the flattened shell from `36-05`
 - After Phase 36 settings gap execution: rerun `$gsd-verify-work` on the live settings surface, then execute inserted Phase `36.1` for the modpack spillover packet

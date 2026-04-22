@@ -82,13 +82,15 @@ describe('LauncherTab layout', () => {
 
     const root = container.firstElementChild as HTMLElement;
     const runtimeShell = screen.getByText('Launcher Runtime').closest('.settings-section-shell') as HTMLElement;
+    const runtimeGrid = screen.getByTestId('launcher-runtime-grid');
     const slider = screen.getAllByRole('slider')[0];
     const hideLauncherToggle = screen.getByRole('switch', { name: 'Hide launcher while playing' });
     const sidebarRow = screen.getByText('Sidebar Position').closest('.settings-control-card') as HTMLElement;
 
-    expect(root.className).toContain('xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)]');
+    expect(root.className).toContain('xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]');
     expect(screen.queryByRole('heading', { name: 'Launcher' })).toBeNull();
     expect(runtimeShell.className).toContain('min-w-0');
+    expect(runtimeGrid.className).toContain('xl:grid-cols-3');
     expect(hideLauncherToggle.className).toContain('settings-toggle-switch');
     expect(hideLauncherToggle.closest('.settings-toggle-row')).toBeTruthy();
     expect(slider.className).toContain('settings-slider');

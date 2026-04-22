@@ -182,9 +182,13 @@
     @apply space-y-4;
   }
 
+  .settings-route-panel {
+    @apply rounded-[26px] border border-border/65 bg-card/68 text-foreground;
+    box-shadow: var(--surface-shadow-soft);
+  }
+
   .settings-section-shell {
-    @apply rounded-2xl border border-border/75 bg-card/86 text-foreground backdrop-blur-lg;
-    box-shadow: var(--surface-shadow-card);
+    @apply rounded-[20px] border border-border/60 bg-background/58 text-foreground;
   }
 
   .settings-section-header {
@@ -204,12 +208,11 @@
   }
 
   .settings-control-card {
-    @apply rounded-[22px] border border-border/70 bg-background/84 p-4 text-foreground backdrop-blur-md;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    @apply rounded-[18px] border border-border/55 bg-card/52 p-4 text-foreground;
   }
 
   .settings-segmented-row {
-    @apply grid grid-cols-2 gap-1 rounded-[20px] border border-border/70 bg-background/80 p-1 shadow-inner backdrop-blur-md;
+    @apply grid grid-cols-2 gap-1 rounded-[18px] border border-border/60 bg-background/62 p-1;
   }
 
   .settings-segmented-option {
@@ -226,7 +229,7 @@
   }
 
   .settings-tab-row {
-    @apply gap-1.5 rounded-[22px] border-border/75 bg-card/74 p-1.5;
+    @apply gap-1 rounded-[20px] border-border/65 bg-background/56 p-1;
   }
 
   .settings-tab-option {
@@ -290,8 +293,7 @@
   }
 
   .settings-toggle-row {
-    @apply grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-[22px] border border-border/70 bg-background/84 p-4 text-foreground backdrop-blur-md;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    @apply grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-[18px] border border-border/60 bg-card/52 p-4 text-foreground;
   }
 
   .settings-toggle-copy {
@@ -333,6 +335,10 @@
 
   .settings-accent-grid {
     @apply flex flex-wrap items-center gap-3;
+  }
+
+  .settings-status-chip {
+    @apply inline-flex items-center justify-center rounded-full border border-border/60 bg-card/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-secondary;
   }
 
   .settings-accent-chip {

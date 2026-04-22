@@ -159,7 +159,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
   const accentRangeStyles = useMemo(() => ({ accentColor: 'rgb(var(--accent-main))' }), []);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,0.9fr)]">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
       <div className="min-w-0 space-y-4">
         {!embedded && (
           <div className="settings-section-shell settings-section-copy p-5">
@@ -183,7 +183,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div data-testid="launcher-runtime-grid" className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             <ToggleRow
               label={t('settings.performance')}
               description={t('settings.performance_desc')}
@@ -216,9 +216,6 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
               checked={compactMode}
               onToggle={() => setCompactMode(!compactMode)}
             />
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="settings-control-card space-y-3">
               <label className="flex justify-between text-sm font-medium text-foreground">
                 <span>{translateWithFallback(t, 'settings.ui_zoom', 'Interface Zoom')}</span>
