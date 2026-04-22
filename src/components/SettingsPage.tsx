@@ -59,7 +59,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
     }, [status]);
 
     const activeTabConfig = getTranslatedSettingsTabConfig(activeTab, t);
-    const showPanelHint = activeTabConfig.panelHint !== activeTabConfig.description;
 
     const renderActiveTab = () => {
         if (activeTab === 'appearance') {
@@ -134,34 +133,34 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             className="max-w-[min(72rem,calc(100vw-1rem))]"
         >
             <div className="min-h-0 space-y-4">
-                <SettingsTabsHeader
-                    activeTab={activeTab}
-                    onTabChange={setActiveTab}
-                    t={t}
-                    getAccentStyles={(type) => getAccentStyles(type)}
-                />
-
-                <div className="surface-inline flex flex-col gap-3 p-4 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="space-y-1">
-                        <div className="kicker-label">{activeTabConfig.label}</div>
-                        <p className="text-sm leading-6 text-secondary">
-                            {activeTabConfig.description}
-                        </p>
-                    </div>
-                    <div className="flex flex-col items-start gap-3 lg:max-w-sm lg:items-end">
-                        {showPanelHint && (
-                            <p className="text-sm leading-6 text-secondary lg:text-right">
-                                {activeTabConfig.panelHint}
+                <div data-testid="settings-shell-header" className="surface-inline flex flex-col gap-4 p-4 sm:p-5">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="space-y-1">
+                            <div className="kicker-label">{activeTabConfig.label}</div>
+                            <p className="max-w-3xl text-sm leading-6 text-secondary">
+                                {activeTabConfig.description}
                             </p>
-                        )}
-                        <Button
-                            onClick={onClose}
-                            className={cn("text-white sm:min-w-[10rem]", getAccentStyles('bg').className)}
-                            style={getAccentStyles('bg').style}
-                        >
-                            {t('settings.done')}
-                        </Button>
+                        </div>
+                        <div className="flex flex-col items-start gap-2 lg:max-w-sm lg:items-end">
+                            <p className="text-xs leading-5 text-muted lg:text-right">
+                                {t('settings.doneHint')}
+                            </p>
+                            <Button
+                                onClick={onClose}
+                                className={cn("text-white sm:min-w-[10rem]", getAccentStyles('bg').className)}
+                                style={getAccentStyles('bg').style}
+                            >
+                                {t('settings.done')}
+                            </Button>
+                        </div>
                     </div>
+
+                    <SettingsTabsHeader
+                        activeTab={activeTab}
+                        onTabChange={setActiveTab}
+                        t={t}
+                        getAccentStyles={(type) => getAccentStyles(type)}
+                    />
                 </div>
 
                 <div

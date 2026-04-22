@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SettingsPage from '../SettingsPage'
 
@@ -93,36 +93,37 @@ describe('SettingsPage navigation', () => {
 
   it('keeps tab semantics while exposing destination summaries for common settings tasks', async () => {
     const { container } = render(<SettingsPage onClose={onCloseMock} />)
+    const header = screen.getByTestId('settings-shell-header')
 
     expect(screen.getByRole('tablist', { name: 'Launcher Settings' })).toBeTruthy()
     expect(screen.getAllByRole('tab')).toHaveLength(6)
     expect(screen.getByRole('tabpanel', { name: 'Appearance' })).toBeTruthy()
-    expect(screen.getAllByText('Apply a ready-made visual profile, or import/export your own configuration.').length).toBeGreaterThan(0)
+    expect(within(header).getByText('Apply a ready-made visual profile, or import/export your own configuration.')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Downloads' }))
     expect(await screen.findByRole('tabpanel', { name: 'Downloads' })).toBeTruthy()
     expect(screen.getByText('Downloads tab')).toBeTruthy()
-    expect(screen.getAllByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.').length).toBeGreaterThan(0)
+    expect(within(header).getByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Launcher' }))
     expect(await screen.findByRole('tabpanel', { name: 'Launcher' })).toBeTruthy()
     expect(screen.getByText('Launcher tab')).toBeTruthy()
-    expect(screen.getAllByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.').length).toBeGreaterThan(0)
+    expect(within(header).getByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Storage' }))
     expect(await screen.findByRole('tabpanel', { name: 'Storage' })).toBeTruthy()
     expect(screen.getByText('Storage tab')).toBeTruthy()
-    expect(screen.getAllByText('Review shared content usage and run cleanup without digging through extra utility panels.').length).toBeGreaterThan(0)
+    expect(within(header).getByText('Review shared content usage and run cleanup without digging through extra utility panels.')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Accounts' }))
     expect(await screen.findByRole('tabpanel', { name: 'Accounts' })).toBeTruthy()
     expect(screen.getByText('Accounts tab')).toBeTruthy()
-    expect(screen.getAllByText('Keep your launch-ready accounts, provider access, and skin tools in one place.').length).toBeGreaterThan(0)
+    expect(within(header).getByText('Keep your launch-ready accounts, provider access, and skin tools in one place.')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Statistics' }))
     expect(await screen.findByRole('tabpanel', { name: 'Statistics' })).toBeTruthy()
     expect(screen.getByText('Statistics tab')).toBeTruthy()
-    expect(screen.getAllByText('Keep the most useful launch and play-time trends visible without opening extra sections.').length).toBeGreaterThan(0)
+    expect(within(header).getByText('Keep the most useful launch and play-time trends visible without opening extra sections.')).toBeTruthy()
 
     expect(container.textContent).not.toContain('settings.tab_storage')
     expect(container.textContent).not.toContain('settings.storage.description')
