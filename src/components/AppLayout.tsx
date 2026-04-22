@@ -95,11 +95,11 @@ export function AppLayout(props: AppLayoutProps) {
   return (
     <div className={theme === 'dark' ? 'dark h-full w-full' : 'h-full w-full'}>
       <BackgroundLayer />
-      <div className="relative h-full w-full overflow-hidden text-foreground">
-        <div className="flex h-full w-full bg-background text-foreground sm:p-2">
+      <div className="relative h-full w-full overflow-hidden bg-background/28 text-foreground backdrop-blur-[2px]">
+        <div className="flex h-full w-full bg-background/38 text-foreground backdrop-blur-[2px] sm:p-2">
           <div
             data-testid="app-shell-frame"
-            className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border shadow-2xl transition-colors duration-300 sm:rounded-[28px]"
+            className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border bg-background/26 shadow-2xl backdrop-blur-sm transition-colors duration-300 sm:rounded-[28px]"
           >
             <TitleBar />
             <div
@@ -141,7 +141,7 @@ export function AppLayout(props: AppLayoutProps) {
 
                 <div
                   data-testid="app-layout-main"
-                  className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background transition-all duration-300"
+                  className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background/56 backdrop-blur-sm transition-all duration-300"
                 >
                   <div key={uiMode} className="mode-switch-enter flex min-h-0 flex-1 flex-col">
                     {uiMode === 'modpacks' ? (

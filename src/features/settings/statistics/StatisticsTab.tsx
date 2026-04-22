@@ -9,6 +9,7 @@ import { dialogIPC } from '../../../services/ipc/dialogIPC';
 import { statisticsIPC } from '../../../services/ipc/statisticsIPC';
 import { DegradedStateView } from '../../../components/layout/DegradedStateView';
 import { toDisplayErrorMessage } from '../../../utils/displayError';
+import { cn } from '../../../utils/cn';
 
 interface StatisticsTabProps {
     embedded?: boolean;
@@ -141,10 +142,13 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
     const trendPoints = stats.usageTrend.slice(-7);
     const maxTrendLaunches = Math.max(1, ...trendPoints.map((point) => point.launches));
     const maxTrendPlayTime = Math.max(1, ...trendPoints.map((point) => point.playTime));
+    const sectionFrameClassName = embedded
+        ? 'surface-muted settings-section-stack min-w-0 p-5'
+        : 'settings-section-shell settings-section-stack min-w-0 p-5';
 
     return (
         <div className="space-y-4">
-            <div className="settings-section-shell settings-section-stack min-w-0 p-5">
+            <div className={sectionFrameClassName}>
                 <div className="settings-section-header">
                     <div className="settings-section-copy">
                         {!embedded && (
@@ -185,7 +189,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
             </div>
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-                <div className="settings-section-shell settings-section-stack min-w-0 p-5">
+                <div className="surface-muted settings-section-stack min-w-0 p-5">
                     <h4 className="text-sm font-semibold text-foreground">{t('stats.popular_modpacks')}</h4>
 
                     <div className="space-y-2" role="list" aria-label={t('stats.popular_modpacks')}>
@@ -193,7 +197,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                             <div
                                 key={modpack.instanceId}
                                 role="listitem"
-                                className="surface-muted flex items-center justify-between gap-4 p-3"
+                                className="surface-inline flex items-center justify-between gap-4 p-3"
                             >
                                 <div>
                                     <div className="font-medium text-foreground">
@@ -217,12 +221,12 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                     </div>
                 </div>
 
-                <div className="settings-section-shell settings-section-stack min-w-0 p-5">
+                <div className="surface-muted settings-section-stack min-w-0 p-5">
                     <h4 className="text-sm font-semibold text-foreground">{t('stats.usage_trend')}</h4>
 
                     <div className="space-y-3" role="list" aria-label={t('stats.usage_trend')}>
                         {trendPoints.map((point) => (
-                            <div key={point.date} role="listitem" className="surface-muted space-y-2 p-3">
+                            <div key={point.date} role="listitem" className="surface-inline space-y-2 p-3">
                                 <div className="flex items-center justify-between text-sm text-foreground">
                                     <span>{formatTrendDate(point.date, formatDate)}</span>
                                     <span>
@@ -270,19 +274,19 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                 </div>
             </div>
 
-            <div className="settings-section-shell settings-section-stack min-w-0 p-5">
+            <div className="surface-muted settings-section-stack min-w-0 p-5">
                 <h4 className="text-sm font-semibold text-foreground">{t('stats.instance_stats')}</h4>
 
                 <div className="space-y-2" role="list" aria-label={t('stats.instance_stats')}>
                     {Object.entries(stats.instances).map(([id, instance]) => (
-                        <div key={id} role="listitem" className="surface-muted flex items-center justify-between gap-4 p-3">
+                        <div key={id} role="listitem" className="surface-inline flex items-center justify-between gap-4 p-3">
                             <div>
                                 <div className="font-medium text-foreground">{instance.name || id}</div>
                                 <div className="text-xs text-secondary">
                                     {t('stats.launches')}: {formatNumber(instance.launches)}
                                 </div>
                             </div>
-                            <div className="font-mono text-foreground">
+                            <div className={cn('font-mono text-foreground', embedded && 'text-right')}>
                                 {formatTime(instance.playTime, formatNumber, durationLabels)}
                             </div>
                         </div>

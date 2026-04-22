@@ -26,6 +26,13 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
     const [loading, setLoading] = useState(false);
     const [cleanupResult, setCleanupResult] = useState<{ freedSize: number; deletedFiles: number } | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const cleanupSectionClassName = embedded
+        ? 'surface-muted settings-section-stack p-5'
+        : 'settings-section-shell settings-section-stack p-5';
+    const statsSectionClassName = embedded
+        ? 'surface-muted min-w-0 p-5'
+        : 'settings-section-shell min-w-0 p-5';
+    const storageStatClassName = 'rounded-[18px] border border-border/60 bg-card/56 p-4 text-foreground';
 
     const loadStats = useCallback(async () => {
         setLoading(true);
@@ -92,7 +99,7 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
                     </div>
                 )}
 
-                <div className="settings-section-shell settings-section-stack p-5">
+                <div className={cleanupSectionClassName}>
                     {error && (
                         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
                             {error}
@@ -129,9 +136,9 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
             </div>
 
             {stats && (
-                <div className="settings-section-shell min-w-0 p-5">
+                <div className={statsSectionClassName}>
                     <div className="settings-stat-grid">
-                        <div className="settings-stat-card">
+                        <div className={storageStatClassName}>
                             <div className="mb-1 text-sm text-secondary">
                                 {t('settings.storage.totalSize')}
                             </div>
@@ -140,7 +147,7 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
                             </div>
                         </div>
 
-                        <div className="settings-stat-card">
+                        <div className={storageStatClassName}>
                             <div className="mb-1 text-sm text-secondary">
                                 {t('settings.storage.savedSize')}
                             </div>
@@ -152,7 +159,7 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
                             </div>
                         </div>
 
-                        <div className="settings-stat-card">
+                        <div className={storageStatClassName}>
                             <div className="mb-1 text-sm text-secondary">
                                 {t('settings.storage.storedFiles')}
                             </div>
@@ -161,7 +168,7 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
                             </div>
                         </div>
 
-                        <div className="settings-stat-card">
+                        <div className={storageStatClassName}>
                             <div className="mb-1 text-sm text-secondary">
                                 {t('settings.storage.totalLogicalFiles')}
                             </div>

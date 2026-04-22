@@ -205,6 +205,21 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
   const appearanceStateChips = selectedPreset
     ? [runtimeModeState, runtimeStateLabel]
     : [selectedModeLabel];
+  const advancedAppearanceScopeDescription = translateWithFallback(
+    t,
+    'settings.advanced_appearance_scope_desc',
+    'These color overrides repaint visible shell surfaces and cards without leaving the active preset family.',
+  );
+  const backgroundPreviewTitle = translateWithFallback(
+    t,
+    'settings.background_preview_title',
+    'Visible Background Scope',
+  );
+  const backgroundScopeDescription = translateWithFallback(
+    t,
+    'settings.background_scope_desc',
+    'Background controls repaint the shell frame and backdrop around this modal while the settings panels stay readable on top.',
+  );
 
   // Preset palette is used to keep Tailwind classes static (prevents purging).
   const isPreset = (c: string) => COLORS.some((col) => col.id === c);
@@ -523,6 +538,9 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
 
       <CollapsibleSection title={t('settings.advanced_appearance') || 'Advanced Appearance'} defaultExpanded={false}>
         <div className="surface-muted space-y-4 p-4">
+          <p className="settings-embedded-copy">
+            {advancedAppearanceScopeDescription}
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-xs font-medium text-secondary uppercase">{t('settings.background_color') || 'Background Color'}</label>
@@ -590,6 +608,10 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
 
       <CollapsibleSection title={t('settings.background_effects') || 'Background Effects'} defaultExpanded={false}>
         <div className="surface-muted space-y-4 p-4">
+          <div className="surface-inline space-y-1 p-3" data-testid="appearance-background-scope">
+            <p className="kicker-label">{backgroundPreviewTitle}</p>
+            <p className="text-sm leading-6 text-secondary">{backgroundScopeDescription}</p>
+          </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">

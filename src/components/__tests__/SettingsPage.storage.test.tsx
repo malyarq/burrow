@@ -119,7 +119,7 @@ describe('SettingsPage storage route', () => {
   });
 
   it('renders storage cleanup and metrics inside the shared settings shell without a nested storage hero', async () => {
-    const { container } = render(<SettingsPage onClose={vi.fn()} initialTab="storage" />);
+    render(<SettingsPage onClose={vi.fn()} initialTab="storage" />);
 
     expect(screen.getByRole('tabpanel', { name: 'Storage' })).toBeTruthy();
     expect(screen.queryByRole('heading', { name: 'Storage' })).toBeNull();
@@ -129,13 +129,13 @@ describe('SettingsPage storage route', () => {
     });
 
     expect(await screen.findByText('Cleanup')).toBeTruthy();
-    expect(screen.getAllByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toHaveLength(1);
-    expect(screen.getByText('Cleanup').closest('.settings-section-shell')).toBeTruthy();
-    expect(screen.getByText('Total size').closest('.settings-section-shell')).toBeTruthy();
+    expect(screen.queryByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toBeNull();
+    expect(screen.getByText('Cleanup').closest('.surface-muted')).toBeTruthy();
+    expect(screen.getByText('Total size').closest('.surface-muted')).toBeTruthy();
     expect(screen.getByText('Total size')).toBeTruthy();
     expect(screen.getByText('Saved size')).toBeTruthy();
     expect(screen.getByText('Stored files')).toBeTruthy();
     expect(screen.getByText('Logical files')).toBeTruthy();
-    expect(container.querySelectorAll('.settings-section-shell')).toHaveLength(2);
+    expect(screen.queryByRole('heading', { name: 'Storage' })).toBeNull();
   });
 });

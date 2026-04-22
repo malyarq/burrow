@@ -84,6 +84,8 @@ describe('AppearanceTab background controls', () => {
     render(<AppearanceTab />);
     screen.getByRole('button', { name: 'Background Effects' }).click();
 
+    expect(screen.getByText('Visible Background Scope')).toBeTruthy();
+    expect(screen.getByText(/shell frame and backdrop around this modal/i)).toBeTruthy();
     expect(screen.getByText('Particle Type')).toBeTruthy();
     expect(screen.getByText('Intensity')).toBeTruthy();
     expect(screen.queryByText('Background Image URL')).toBeNull();
@@ -105,6 +107,7 @@ describe('AppearanceTab background controls', () => {
     render(<AppearanceTab />);
     screen.getByRole('button', { name: 'Background Effects' }).click();
 
+    expect(screen.getByText('Visible Background Scope')).toBeTruthy();
     expect(screen.getByText('Video URL (MP4/WebM)')).toBeTruthy();
     expect(screen.getByText('Auto-Pause (Inactive)')).toBeTruthy();
     expect(screen.queryByText('Particle Type')).toBeNull();
