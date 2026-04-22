@@ -5,7 +5,15 @@
 - Release: `v0.6.0`
 - Theme: Feedback-Driven Stabilization And Expansion
 - Status: shipped on `2026-04-21`
-- Current planning state: no active milestone; the next milestone starts from this shipped baseline
+- Current planning state: active milestone `v0.7.0` — Direct Feedback Closure And Interface Cohesion
+
+## Next Planned Release
+
+- Planned release: `v0.7.0`
+- Theme: Direct Feedback Closure And Interface Cohesion
+- Source of truth: the current direct user-feedback audit for the launcher
+- Goal: close the still-open direct feedback gaps around shell/sidebar drift, catalog and detail density, guided content reliability, settings predictability, and the lack of one shared control contract across the launcher
+- Current progress: Phases `32-35` are complete, covering sidebar readability, native macOS shell truth, calmer fallback surfaces, truthful classic runtime labels, compact catalog shells, minimal card facts, above-the-fold details tabs, first-read runtime truth, one shared details content workspace, fixed create/add action rails, actionable async recovery, and honest guided content runtime boundaries. Next planning step: Phase `36`.
 
 ## Why v0.6.0 Shipped
 
@@ -26,6 +34,7 @@
 | 29. Modpack Workflow Simplification And Runtime Truth | Shipped | Compact catalog controls, cleaner details hierarchy, config-first runtime truth, and stable async create/add recovery |
 | 30. Settings Truth And Honest Personalization | Shipped | Deterministic preset runtime, compact settings shell, honest control placement, and bounded preset-adjacent customization |
 | 31. Guided Content Browsers And Capability Expansion | Shipped | Canonical guided entry, explicit in-route local `.zip` fallback, honest shader capability guidance, named recoverable failure states, and bounded-scope closeout proof |
+| 35. Async Flow Reliability And Guided Content Honesty | Complete | Fixed create/add action rails, actionable mixed-success recovery, honest guided resource-pack and shader runtime guidance, and refreshed proof routes tied to the live async contract |
 
 ## Residual Notes
 

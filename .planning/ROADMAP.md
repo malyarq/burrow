@@ -4,7 +4,7 @@
 
 **Active milestone:** `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 **Latest shipped milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion (`2026-04-21`)  
-**Next step:** `$gsd-verify-work`
+**Next step:** `$gsd-execute-phase 36 --gaps-only`
 
 ## Latest Archive
 
@@ -20,7 +20,7 @@ Archive:
 
 ### v0.7.0 Direct Feedback Closure And Interface Cohesion
 
-`v0.7.0` is the active milestone and uses `docs/ru/product-feedback-2026-04-20.md` as the primary source of truth. The milestone is explicitly about closing the feedback gaps that still feel wrong in live use: leftover shell and sidebar drift, catalog and detail density, unreliable or underexplained content flows, settings unpredictability, and the lack of one shared control contract across the launcher.
+`v0.7.0` is the active milestone and uses the current direct-feedback audit as the primary source of truth. The milestone is explicitly about closing the feedback gaps that still feel wrong in live use: leftover shell and sidebar drift, catalog and detail density, unreliable or underexplained content flows, settings unpredictability, and the lack of one shared control contract across the launcher.
 
 ## Proposed Phases
 
@@ -83,8 +83,8 @@ Archive:
 
 **Goal:** Remove leftover settings weirdness and align the launcher under one visible button, toggle, slider, tab, and copy contract.
 **Owns requirements:** `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`, `SETTINGS-08`, `DESIGN-01`
-**Execution progress:** `4/4` plans complete
-**Status:** complete on `2026-04-22`
+**Execution progress:** `4/9` plans complete, `5` settings-owned gap-closure plans pending after UAT
+**Status:** initial closeout was invalidated by Phase 36 UAT on `2026-04-22`; revised settings gap packet `36-05` through `36-09` is ready
 
 **Observable success criteria:**
 
@@ -93,9 +93,22 @@ Archive:
 - Accent pickers, sliders, toggles, and tabs align cleanly with no label overlap or geometry drift.
 - Shared controls across shell, catalog, details, content, and settings now read as one design contract instead of unrelated component families.
 
+### Phase 36.1: Modpack UAT Follow-up And Workspace Cohesion (INSERTED)
+
+**Goal:** Close the direct-feedback spillover that Phase 36 UAT exposed in modpack content surfaces and create-modpack recovery without reopening the settings-owned phase contract.
+**Owns requirements:** none directly; follows up on UAT debt that escaped earlier `MODPACK-12`, `MODPACK-13`, and `CONTENT-07` closures
+**Execution progress:** `0/2` plans complete
+**Status:** inserted on `2026-04-22` after UAT diagnosis split settings-owned fixes from modpack spillover
+
+**Observable success criteria:**
+
+- Mods, resource packs, shaders, worlds, screenshots, and add-content flows share one coherent secondary workspace with a one-row search seam and a separate filters row.
+- Browser/home actions no longer duplicate generic import affordances, counters stay centered, and CTA sizing is coherent.
+- Create-modpack follow-up failures no longer overshadow the primary “modpack already created” success boundary with alarming recovery framing.
+
 ## Shipped Milestones
 
-- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` complete (`4/4` plans). Next: `$gsd-verify-work`.
+- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36.1`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` has UAT-diagnosed settings gaps with `4/9` plans complete and `36-05..36-09` pending, and inserted Phase `36.1` holds `2` modpack spillover plans. Next: `$gsd-execute-phase 36 --gaps-only`.
 - ✅ **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases `28-31`, shipped `2026-04-21`. Progress: `20/20` plans complete. Audit: `19/19` requirements satisfied.
 - ✅ **v0.5.0 Experience Reinvention And Brand Reset** — Phases `19-27`, shipped `2026-04-20`. Archive: `.planning/milestones/v0.5.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases `15-18`, shipped `2026-04-17`. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
@@ -133,9 +146,20 @@ Archive:
 
 | Milestone | Phases | Plans | Status | Shipped |
 | --- | --- | --- | --- | --- |
-| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36 | 20/20 | Active | — |
+| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36.1 | 20/27 | Active | — |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
 | v0.5.0 Experience Reinvention And Brand Reset | 19-27 | 36/36 | Shipped | 2026-04-20 |
 | v0.6.0 Feedback-Driven Stabilization And Expansion | 28-31 | 20/20 | Shipped | 2026-04-21 |
+
+### Phase 36.1: Modpack UAT Follow-up And Workspace Cohesion (INSERTED)
+
+**Goal:** Close the modpack/browser/create-flow gaps discovered during Phase 36 UAT without stretching the settings phase beyond its owned contract.
+**Requirements**: UAT follow-up only; does not reopen archived requirement ownership
+**Depends on:** Phase 36
+**Plans:** 2 plans
+
+Plans:
+- [ ] `36.1-01` — secondary modpack workspace, search/filter layout, degraded-state width, and CTA/counter coherence
+- [ ] `36.1-02` — calmer create-modpack post-create recovery and proof wording for the recovered flow

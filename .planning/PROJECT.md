@@ -3,10 +3,19 @@
 ## Current State
 
 **Latest shipped milestone:** `v0.6.0` — Feedback-Driven Stabilization And Expansion (`2026-04-21`)  
-**Active milestone:** none  
-**Audit status:** `v0.6.0` passed milestone audit with `19/19` requirements satisfied, Phases `28-31` verified, and Nyquist fully compliant.
+**Active milestone:** `v0.7.0` — Direct Feedback Closure And Interface Cohesion  
+**Planning status:** active milestone defined from direct user feedback; requirements and roadmap are ready, execution not started.
 
-FMCL is now a shipped desktop Minecraft launcher with restrained shell behavior, truthful runtime and dependency summaries, stable create/add modpack recovery, honest settings behavior, bounded preset-adjacent customization, and first-class guided resource-pack and shader management that stays scoped to the current modpack instead of expanding into a marketplace.
+FMCL is now a shipped desktop Minecraft launcher with restrained shell behavior, truthful runtime and dependency summaries, stable create/add modpack recovery, honest settings behavior, bounded preset-adjacent customization, and first-class guided resource-pack and shader management that stays scoped to the current modpack instead of expanding into a marketplace. The next milestone is not a broad expansion: it is a direct response to the still-open product feedback gaps around sidebar and shell drift, catalog and detail density, settings predictability, and visible UI inconsistency.
+
+## Current Milestone: v0.7.0 Direct Feedback Closure And Interface Cohesion
+
+**Goal:** Close the remaining direct user-feedback gaps by restoring one intentional UI contract across shell, modpacks, settings, and guided content flows.
+
+**Target features:**
+- Finish shell, sidebar, logo, and fallback restraint where the shipped app still feels visually wrong or non-native.
+- Compress and clarify catalog, detail, and content-management surfaces so they read as one coherent launcher instead of unrelated sub-products.
+- Make settings and shared controls visibly predictable, aligned, and truthful under real manual use instead of automated proof alone.
 
 ## What This Is
 
@@ -19,6 +28,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 ## Context
 
 - The codebase remains centered on `electron/`, `src/`, and `shared/`.
+- The source of truth for the next milestone is the current direct-feedback audit, plus live regressions that clearly match the same complaints.
 - Shipped milestone truth now lives in:
   - `.planning/milestones/v0.2.0-ROADMAP.md`
   - `.planning/milestones/v0.2.0-REQUIREMENTS.md`
@@ -35,7 +45,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
   - `.planning/milestones/v0.6.0-REQUIREMENTS.md`
   - `.planning/milestones/v0.6.0-MILESTONE-AUDIT.md`
 - The launcher now has one reusable manual verification seam on `manual-verification.html` plus milestone-owned proof routes for settings and guided content closeout.
-- There is no active milestone in progress. The next milestone should start from shipped `v0.6.0` truth rather than reopening archived shell, settings, or guided-content closeout work.
+- The next milestone starts from shipped `v0.6.0` truth, but it must not silently narrow the direct feedback file the way `v0.6.0` did.
 - Future scope should assume the current product baseline includes restrained shell identity, compact modpack workflows, bounded honest settings behavior, and guided resource-pack/shader flows as shipped capability.
 
 ## Constraints
@@ -46,6 +56,7 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 - Keep EN/RU user-facing strings synchronized when launcher behavior changes.
 - Treat public docs and closeout proof as part of shipped product truth, not post-release cleanup.
 - Start the next milestone with fresh requirements instead of extending archived `v0.6.0` scope by inertia.
+- Treat direct user feedback as the contract source for `v0.7.0`; roadmap phases should map back to explicit complaints, not reinterpret them away into narrower technical proxies.
 
 ## Key Decisions
 
@@ -76,6 +87,8 @@ Players should be able to install, manage, share, and launch Minecraft modpacks 
 | Keep modpack cleanup focused on shared runtime truth and explicit async recovery before any capability expansion | Core modpack flows still carried the most day-to-day user friction after shell cleanup | Validated in `v0.6.0` |
 | Restore settings truth before shipping even bounded personalization | Appearance controls had to become deterministic and honest before any `CUSTOM-01` slice could be defensible | Validated in `v0.6.0` |
 | Limit content expansion to guided resource-pack and shader flows, not a marketplace | FMCL needed first-class content management tied to the current modpack, not broad discovery sprawl | Validated in `v0.6.0` |
+| Make `v0.7.0` a direct-feedback closure milestone instead of another abstract polish wave | `v0.6.0` closed a narrowed scoped subset of feedback, but live product complaints remained broader and more visible than the audit suggested | — Pending |
+| Bias `v0.7.0` toward subtraction, cohesion, and manual product proof before any new capability growth | The remaining gap is not lack of features; it is leftover weirdness, inconsistency, and low-trust UI behavior in daily use | — Pending |
 
 ## Archived Milestone Definitions
 
@@ -138,4 +151,4 @@ Primary requirements that were active before archive:
 </details>
 
 ---
-*Last updated: 2026-04-21 after shipping milestone `v0.6.0`*
+*Last updated: 2026-04-22 after starting milestone `v0.7.0`*
