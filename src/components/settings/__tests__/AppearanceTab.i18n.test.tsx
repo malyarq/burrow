@@ -24,6 +24,12 @@ type MockSettings = {
   getAccentStyles: (type: AccentStyleType) => { className?: string; style?: CSSProperties };
   customTheme: CustomThemeConfig;
   activeThemeConfig: CustomThemeConfig;
+  themeRuntimeState: {
+    activePresetId: string | null;
+    customizationScopes: string[];
+    hasCustomizations: boolean;
+    matchesPresetDefaultMode: boolean;
+  };
   clearThemePreset: ReturnType<typeof vi.fn>;
   setCustomTheme: ReturnType<typeof vi.fn>;
   uiScale: number;
@@ -95,6 +101,12 @@ function buildSettings(language: Language): MockSettings {
         },
       },
     },
+    themeRuntimeState: {
+      activePresetId: null,
+      customizationScopes: ['colors', 'background'],
+      hasCustomizations: true,
+      matchesPresetDefaultMode: false,
+    },
     clearThemePreset: clearThemePresetMock,
     setCustomTheme: setCustomThemeMock,
     uiScale: 100,
@@ -135,8 +147,9 @@ describe('AppearanceTab i18n seams', () => {
     expect(screen.getAllByText('Theme Presets').length).toBeGreaterThan(0);
     expect(screen.getByRole('option', { name: 'Forest' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Advanced Appearance' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Visible Background Scope' })).toBeTruthy();
-    expect(screen.getByText('Active preset')).toBeTruthy();
+    expect(screen.getByText('Preset Runtime')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Manual appearance' })).toBeTruthy();
+    expect(screen.getByText('Preset family')).toBeTruthy();
     expect(screen.getByText('Background Type')).toBeTruthy();
     expect(screen.getByText('Particle Type')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Reset Custom Theme' })).toBeTruthy();
@@ -157,8 +170,9 @@ describe('AppearanceTab i18n seams', () => {
     expect(screen.getAllByText('Готовые темы').length).toBeGreaterThan(0);
     expect(screen.getByRole('option', { name: 'Лес' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Расширенный внешний вид' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Видимая область фона' })).toBeTruthy();
-    expect(screen.getByText('Активный пресет')).toBeTruthy();
+    expect(screen.getByText('Runtime пресета')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Ручной внешний вид' })).toBeTruthy();
+    expect(screen.getByText('Семейство пресета')).toBeTruthy();
     expect(screen.getByText('Тип фона')).toBeTruthy();
     expect(screen.getByText('Тип частиц')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Сбросить кастомную тему' })).toBeTruthy();

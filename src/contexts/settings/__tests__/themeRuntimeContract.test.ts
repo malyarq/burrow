@@ -53,6 +53,50 @@ describe('theme runtime contract', () => {
 
     expect(localStorage.getItem('settings_themePresetId')).toBe('forest');
     expect(localStorage.getItem('settings_customTheme')).toBe('{}');
+    expect(latestSettings?.themeRuntimeState.matchesPresetDefaultMode).toBe(true);
+    expect(latestSettings?.themeRuntimeState.hasCustomizations).toBe(false);
+  });
+
+  it('keeps the active mode when switching between preset families after a preset is already selected', async () => {
+    render(
+      React.createElement(
+        SettingsProvider,
+        null,
+        React.createElement(SettingsProbe, {
+          onChange: (settings: SettingsSnapshot) => {
+            latestSettings = settings;
+          },
+        }),
+      ),
+    );
+
+    act(() => {
+      latestSettings?.applyThemePreset('navy');
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.themePresetId).toBe('navy');
+    });
+
+    act(() => {
+      latestSettings?.setTheme('light');
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.theme).toBe('light');
+    });
+
+    act(() => {
+      latestSettings?.applyThemePreset('forest');
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.themePresetId).toBe('forest');
+    });
+
+    expect(latestSettings?.theme).toBe('light');
+    expect(latestSettings?.themeRuntimeState.matchesPresetDefaultMode).toBe(false);
+    expect(localStorage.getItem('settings_theme')).toBe('light');
   });
 
   it('binds date and number formatting to the active FMCL language locale', async () => {

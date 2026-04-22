@@ -20,6 +20,12 @@ type MockSettings = {
   getAccentStyles: (type: AccentStyleType) => { className?: string; style?: CSSProperties };
   customTheme: CustomThemeConfig;
   activeThemeConfig: CustomThemeConfig;
+  themeRuntimeState: {
+    activePresetId: string | null;
+    customizationScopes: string[];
+    hasCustomizations: boolean;
+    matchesPresetDefaultMode: boolean;
+  };
   clearThemePreset: ReturnType<typeof vi.fn>;
   setCustomTheme: ReturnType<typeof vi.fn>;
 };
@@ -47,6 +53,12 @@ function buildSettings(customTheme: CustomThemeConfig): MockSettings {
     getAccentStyles: () => ({ style: {} }),
     customTheme,
     activeThemeConfig: customTheme,
+    themeRuntimeState: {
+      activePresetId: 'forest',
+      customizationScopes: Object.keys(customTheme).filter((scope) => scope.length > 0),
+      hasCustomizations: Object.keys(customTheme).length > 0,
+      matchesPresetDefaultMode: true,
+    },
     clearThemePreset: vi.fn(),
     setCustomTheme: vi.fn(),
   };

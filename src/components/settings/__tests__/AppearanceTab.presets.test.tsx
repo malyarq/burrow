@@ -48,6 +48,8 @@ describe('AppearanceTab preset contract', () => {
     expect(getRootVar('--bg-card')).toBe('6 78 59');
     expect(getRootVar('--text-main')).toBe('236 253 245');
     expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
+    expect(screen.getByText('Preset default')).toBeTruthy();
+    expect(screen.getByText('Untouched preset')).toBeTruthy();
   });
 
   it('keeps the preset identity when switching theme mode and repaints to that preset variant', async () => {
@@ -66,6 +68,30 @@ describe('AppearanceTab preset contract', () => {
     expect(getRootVar('--bg-card')).toBe('209 250 229');
     expect(getRootVar('--text-main')).toBe('6 78 59');
     expect(screen.getAllByText('Forest · Light').length).toBeGreaterThan(0);
+    expect(screen.getByText('Preset variant')).toBeTruthy();
+  });
+
+  it('keeps an explicitly chosen mode when switching between preset families', async () => {
+    renderAppearanceTab();
+
+    fireEvent.change(getPresetSelect(), { target: { value: 'navy' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
+
+    await waitFor(() => {
+      expect(localStorage.getItem('settings_theme')).toBe('light');
+    });
+
+    fireEvent.change(getPresetSelect(), { target: { value: 'forest' } });
+
+    await waitFor(() => {
+      expect(localStorage.getItem('settings_themePresetId')).toBe('forest');
+    });
+
+    expect(localStorage.getItem('settings_theme')).toBe('light');
+    expect(getPresetSelect().value).toBe('forest');
+    expect(getRootVar('--bg-app')).toBe('236 253 245');
+    expect(screen.getAllByText('Forest · Light').length).toBeGreaterThan(0);
+    expect(screen.getByText('Preset variant')).toBeTruthy();
   });
 
   it('exports the localized preset summary while keeping the stable preset identity', async () => {
@@ -201,5 +227,7 @@ describe('AppearanceTab preset contract', () => {
       },
     });
     expect(container.textContent).toContain('Forest · Dark');
+    expect(screen.getByText('Customized preset')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Return to Forest · Dark' })).toBeTruthy();
   });
 });
