@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.7.0
 milestone_name: Direct Feedback Closure And Interface Cohesion
-status: Phase 36 plan 03 complete; plan 04 next
-last_updated: "2026-04-22T18:10:29Z"
+status: Phase 36 complete; milestone implementation complete and awaiting live manual signoff
+last_updated: "2026-04-22T18:20:26Z"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 20
-  completed_plans: 19
-  percent: 95
+  completed_plans: 20
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 - Active milestone: `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 - Latest shipped milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Current phase: `36` — Settings Predictability And Shared Control Contract
-- Current plan: `36-04` - refresh proof wording and close out the settings shared-control contract
-- Status: Phase 36 execution is in progress; `36-01` landed the lighter shell contract, `36-02` made preset ancestry and reset semantics product-readable, `36-03` aligned the shared settings control geometry, and `36-04` next updates proof wording for closeout
-- Last activity: 2026-04-22 - completed `36-03` with one settings control family for tabs/toggles/sliders/accent chips and dedicated appearance, downloads, and launcher layout seams
+- Current plan: `36-04` - completed the settings closeout proof and final embedded utility-surface cleanup
+- Status: Phase 36 is complete; `36-04` aligned storage and statistics with the shared settings shell and rewrote the proof harness around the direct-feedback settings checks.
+- Last activity: 2026-04-22 - completed `36-04` with shared-shell storage/statistics utilities and Phase 36 proof wording that names duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope
 
-Progress: [█████████▌] 95% of milestone `v0.7.0`
+Progress: [██████████] 100% of milestone `v0.7.0`
 
 ## Key Decisions
 
@@ -50,6 +50,8 @@ Progress: [█████████▌] 95% of milestone `v0.7.0`
 - Appearance now exposes one preset runtime summary with exact reset-target copy instead of scattering ancestry hints across badges and helper text.
 - Custom accent selection now uses the same chip contract as preset accents, with the native color input hidden behind the same visible button semantics instead of acting as an overlay exception.
 - Phase 36 now has dedicated layout seams for appearance, downloads, and launcher, so control-family drift is no longer proven only through broader SettingsPage route tests.
+- Embedded storage and statistics now share the same settings shell contract as downloads and launcher, so utility tabs no longer drift back into standalone dashboard framing.
+- Phase 36 closeout proof now names duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope explicitly instead of relying on preset-era shorthand.
 
 ## Open Blockers
 
@@ -60,7 +62,7 @@ Progress: [█████████▌] 95% of milestone `v0.7.0`
 - Phase 33 still carries manual-only signoff debt: classic cold-start feel, desktop-width catalog compactness, and CTA geometry/product-feel were not rerun interactively in this turn.
 - Phase 34 closeout still carries manual-only signoff debt: tab reachability at live desktop width, first-read runtime/dependency authority feel, and one-session cross-tab cohesion were not rerun interactively in this turn.
 - Phase 35 closeout still carries manual-only signoff debt: live create/add feel, guided runtime clarity, and active-modpack switching calmness were not rerun interactively in this turn.
-- Phase 36 live settings signoff is still pending: shell density, preset predictability, and shared control geometry are covered by targeted tests, but the updated settings surfaces were not rerun interactively because browser automation remains blocked by local Chromium/crashpad limitations.
+- Phase 36 implementation is complete, but live settings signoff is still pending: shell density, preset predictability, and shared control geometry are covered by targeted tests and updated proof routes, while an interactive walkthrough remains blocked by local Chromium/crashpad limitations.
 
 ## Accumulated Context
 
@@ -72,5 +74,5 @@ Progress: [█████████▌] 95% of milestone `v0.7.0`
 
 ## Resume Point
 
-- Next command: `$gsd-execute-phase 36`
-- Optional follow-up before that: rerun the live Phase 36 settings walkthrough once local browser automation is available, then continue with `36-04`.
+- Next command: `$gsd-verify-work`
+- Optional follow-up before that: rerun the live Phase 36 settings walkthrough once local browser automation is available, then use the updated proof routes to complete milestone closeout.
