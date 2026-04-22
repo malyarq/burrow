@@ -211,6 +211,40 @@ function useReadyByText(onReady: (message: string) => void, needles: string[], m
   }, [message, needles, onReady, readyKey]);
 }
 
+function useReadyByChecks(
+  onReady: (message: string) => void,
+  checks: Array<{ id: string; when: () => boolean }>,
+  message: string,
+) {
+  const readyKey = checks.map((check) => check.id).join('|');
+
+  useEffect(() => {
+    let cancelled = false;
+    const deadline = Date.now() + 4_000;
+
+    const tick = () => {
+      if (cancelled) {
+        return;
+      }
+
+      if (checks.every((check) => check.when())) {
+        onReady(message);
+        return;
+      }
+
+      if (Date.now() < deadline) {
+        window.setTimeout(tick, 50);
+      }
+    };
+
+    tick();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [checks, message, onReady, readyKey]);
+}
+
 function matchesAssetSource(source: string | null, expected: string) {
   return typeof source === 'string' && (source === expected || source.endsWith(expected));
 }
@@ -546,6 +580,22 @@ function Phase36ProofCallout(props: { title: string; detail: string }) {
   );
 }
 
+function Phase36ProofChecklist(props: { items: string[] }) {
+  return (
+    <div className="surface-inline rounded-3xl p-4 sm:p-5" data-testid="phase36-proof-checklist">
+      <div className="kicker-label mb-2">Observable review items</div>
+      <ul className="space-y-2 text-sm leading-6 text-secondary">
+        {props.items.map((item) => (
+          <li key={item} className="flex items-start gap-2">
+            <span className="mt-1 h-2 w-2 rounded-full bg-[rgb(var(--accent-main))]" aria-hidden="true" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function Phase19ShellChrome(props: {
   ownership: ModpackPrimaryActionOwnership;
   launch?: SidebarLaunchModel;
@@ -774,18 +824,57 @@ function Phase24HomeCloseoutScenario({ onReady }: ManualVerificationScenarioProp
 }
 
 function SettingsAppearanceScenario({ onReady }: ManualVerificationScenarioProps) {
-  useReadyByText(
+  useReadyByChecks(
     onReady,
-    ['FriendLauncher', 'Launcher Settings', 'Theme Presets', 'Visible Background Scope'],
-    'Phase 36 settings proof rendered above the real shell so reviewers can verify duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope without falling back to older preset-only wording.',
+    [
+      {
+        id: 'settings-shell-header',
+        when: () => Boolean(document.querySelector('[data-testid="settings-shell-header"] [role="tablist"]')),
+      },
+      {
+        id: 'appearance-panel',
+        when: () => Boolean(document.querySelector('#settings-panel-appearance[role="tabpanel"]')),
+      },
+      {
+        id: 'preset-select',
+        when: () => Boolean(document.querySelector('select[aria-label="Theme Presets"]')),
+      },
+      {
+        id: 'accent-chip',
+        when: () => Boolean(document.querySelector('.settings-accent-chip')),
+      },
+      {
+        id: 'background-scope',
+        when: () => Boolean(document.querySelector('[data-testid="appearance-background-scope"]')),
+      },
+      {
+        id: 'phase36-proof-checklist',
+        when: () => Boolean(document.querySelector('[data-testid="phase36-proof-checklist"]')),
+      },
+      {
+        id: 'duplicate-shell-copy-removed',
+        when: () => !(document.body.textContent ?? '').includes(
+          'Apply a ready-made shell and surface profile, or import/export your own configuration.',
+        ),
+      },
+    ],
+    'Phase 36 settings proof rendered above the real shell with observable checks for duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope.',
   );
 
   return (
     <Phase19ShellFrame mode="simple" ownership="shell">
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6">
         <Phase36ProofCallout
-          title="Settings closeout must prove predictability, not just preset state"
-          detail="Use this route to confirm duplicate shell copy is gone, preset changes stay predictable, tabs and controls share aligned geometry, and every appearance control either changes a visible surface or clearly states its scope."
+          title="Settings closeout must prove observable behavior, not just reassuring copy"
+          detail="Use this route to review the live appearance surface and the concrete checks below. The route is only ready when the actual settings shell, preset controls, and visible-effect seams are mounted together."
+        />
+        <Phase36ProofChecklist
+          items={[
+            'No duplicated settings-shell intro copy sits above the active tab content.',
+            'Preset family, mode, accent, and reset behavior stay predictable on the live appearance surface.',
+            'Accent chips, segmented controls, and utility actions keep centered geometry and readable labels.',
+            'Background and advanced appearance controls visibly affect the shell frame or backdrop around the modal, or clearly state their limited scope.',
+          ]}
         />
         <SettingsPage onClose={() => undefined} initialTab="appearance" />
       </div>

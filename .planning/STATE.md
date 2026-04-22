@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.7.0
 milestone_name: Direct Feedback Closure And Interface Cohesion
-status: Phase 36 gap execution is in progress; 36-05 through 36-08 are complete, the final settings proof plan 36-09 remains, and modpack spillover stays in inserted Phase 36.1
-last_updated: "2026-04-22T21:24:00Z"
+status: Phase 36 settings gap packet is complete; fresh settings UAT can rerun, and inserted Phase 36.1 now holds the remaining modpack spillover work
+last_updated: "2026-04-22T22:10:00Z"
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 27
-  completed_plans: 24
-  percent: 89
+  completed_plans: 25
+  percent: 93
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 - Active milestone: `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 - Latest shipped milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
-- Current phase: `36` — Settings Predictability And Shared Control Contract
-- Current plan: `36-09` - pending gap-only execution to refresh manual proof routes and close the remaining settings honesty seam
-- Status: Phase 36 UAT found 13 diagnosed gaps across settings shell nesting, preset visibility, shared control alignment, modpack workspace cohesion, and proof-route honesty. Settings-owned fixes now live in revised plans `36-05` through `36-09`, with `36-05` through `36-08` now complete and modpack spillover moved into inserted follow-up Phase `36.1`.
-- Last activity: 2026-04-22 - completed `36-08` by flattening embedded utility tabs and opening a visible background/application seam around the settings modal
+- Current phase: `36.1` — Modpack UAT Follow-up And Workspace Cohesion
+- Current plan: `36.1-01` - pending execution to repair secondary modpack workspaces, search/filter layout, and CTA/counter coherence
+- Status: Phase 36 UAT found 13 diagnosed gaps across settings shell nesting, preset visibility, shared control alignment, modpack workspace cohesion, and proof-route honesty. Settings-owned fixes are now closed through `36-05` through `36-09`, and the remaining spillover is isolated in inserted follow-up Phase `36.1`.
+- Last activity: 2026-04-22 - completed `36-09` by replacing text-only settings proof readiness with observable behavior checks and behavior-driven manual-proof framing
 
-Progress: [█████████░] 89% of milestone `v0.7.0`
+Progress: [█████████░] 93% of milestone `v0.7.0`
 
 ## Key Decisions
 
@@ -58,18 +58,19 @@ Progress: [█████████░] 89% of milestone `v0.7.0`
 - `36-06` makes presets own mode-specific accent defaults, preserves explicit accent overrides across preset changes, and repaints dashboard/sidebar shell surfaces with theme tokens.
 - `36-07` puts the collapsed sidebar burger on the shared compact-control seam and adds utility-button geometry for long localized settings actions.
 - `36-08` flattens embedded utility tabs into muted sections and exposes backdrop changes through a lighter shell/modal visibility seam with scoped appearance copy.
+- `36-09` hardens the settings proof harness so readiness depends on observable route checks instead of milestone-flavored wording alone.
 
 ## Open Blockers
 
-- No implementation blockers are recorded in planning state, but the original Phase 36 closure was invalidated by UAT and now requires the revised settings gap packet `36-05..36-09`.
+- No implementation blockers are recorded in planning state, and the settings-owned Phase 36 gap packet `36-05..36-09` is now complete.
 - The direct feedback file is broader than the archived `v0.6.0` scoped requirements, so future closeout must prove against the feedback gaps themselves, not only internal requirement coverage.
 - The current worktree is still dirty, so future milestone commits should isolate planning changes from unrelated local edits.
 - Phase 32 still carries manual-only signoff debt: live sidebar readability, macOS traffic-light clearance and drag feel, and the fallback calmness walkthrough were not rerun interactively in this turn.
 - Phase 33 still carries manual-only signoff debt: classic cold-start feel, desktop-width catalog compactness, and CTA geometry/product-feel were not rerun interactively in this turn.
 - Phase 34 closeout still carries manual-only signoff debt: tab reachability at live desktop width, first-read runtime/dependency authority feel, and one-session cross-tab cohesion were not rerun interactively in this turn.
 - Phase 35 closeout still carries manual-only signoff debt: live create/add feel, guided runtime clarity, and active-modpack switching calmness were not rerun interactively in this turn.
-- Phase 36 is no longer in signoff-only state: UAT found diagnosed settings and modpack cohesion gaps, and the milestone cannot close until revised settings plans `36-05..36-09` and inserted follow-up Phase `36.1` are executed and retested.
-- Phase 36 still has one settings-owned gap plan pending after `36-08`: proof-route behavior coverage.
+- Phase 36 settings-owned gaps are closed, but a fresh `$gsd-verify-work` pass should confirm the recovered settings surface before milestone closeout continues.
+- Inserted Phase `36.1` still remains, so the milestone cannot close until the modpack spillover packet is executed and retested.
 
 ## Accumulated Context
 
@@ -81,6 +82,6 @@ Progress: [█████████░] 89% of milestone `v0.7.0`
 
 ## Resume Point
 
-- Next command: `$gsd-execute-phase 36 --gaps-only`
-- Immediate next wave: execute `36-09` on top of the flattened shell, preset-runtime truth, centered controls, and visible background seam established by `36-05` through `36-08`
-- After Phase 36 settings gap execution: rerun `$gsd-verify-work` on the live settings surface, then execute inserted Phase `36.1` for the modpack spillover packet
+- Next command: `$gsd-verify-work`
+- Immediate next wave: rerun live settings UAT against the recovered Phase 36 shell, preset, control, and proof-route contract
+- After refreshed settings verification: execute inserted Phase `36.1` for the remaining modpack workspace and create-flow spillover packet

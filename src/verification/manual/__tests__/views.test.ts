@@ -59,13 +59,15 @@ describe('manual verification views', () => {
     const utilities = CORE_VIEWS.find((view) => view.id === 'utilities');
 
     expect(settingsAppearance).toBeTruthy();
+    expect(settingsAppearance?.description).toContain('behavior-driven');
     expect(settingsAppearance?.description).toContain('duplicate-copy removal');
     expect(settingsAppearance?.description).toContain('preset predictability');
     expect(settingsAppearance?.description).toContain('aligned control geometry');
     expect(settingsAppearance?.description).toContain('visible-effect scope');
+    expect(settingsAppearance?.description.toLowerCase()).not.toContain('closeout proof');
     expect(settingsAppearance?.description.toLowerCase()).not.toContain('bounded customization');
     expect(utilities).toBeTruthy();
-    expect(utilities?.description).toContain('task-focused mirrors and statistics surfaces');
+    expect(utilities?.description).toContain('embedded mirrors and statistics surfaces');
     expect(utilities?.description.toLowerCase()).not.toContain('preset ancestry');
   });
 

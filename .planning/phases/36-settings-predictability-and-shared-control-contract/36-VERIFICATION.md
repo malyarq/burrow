@@ -21,11 +21,11 @@ That goal is satisfied in the current codebase:
 - The settings shell now owns one compact summary surface and a lighter tab rail instead of stacking repeated intro copy above utility tabs.
 - Appearance now exposes preset family, mode, customization state, and reset target as visible product state instead of leaving them implicit in storage details or internal logic.
 - Tabs, toggles, sliders, accent chips, and embedded utility panels now sit on one shared control contract instead of reading like separate leftover component systems.
-- The manual proof harness now points reviewers at the real Phase 36 closure checks: duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope.
+- The manual proof harness now points reviewers at the real Phase 36 closure checks and only marks the route ready after observable settings-proof seams mount together: duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope.
 
 ## Evidence Basis
 
-- Execution evidence comes from `36-01-SUMMARY.md` through `36-04-SUMMARY.md`.
+- Execution evidence comes from `36-01-SUMMARY.md` through `36-09-SUMMARY.md`, with `.planning/phases/36-settings-predictability-and-shared-control-contract/36-UAT.md` capturing the false-closeout diagnosis that drove the recovery packet `36-05..36-09`.
 - Validation contract comes from `36-VALIDATION.md`, including the Wave 0 seams for shell density, preset predictability, dedicated control-contract coverage, and refreshed proof-route wording.
 - Requirement ownership still matches roadmap and milestone requirement truth:
   - `.planning/ROADMAP.md` assigns `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`, `SETTINGS-08`, and `DESIGN-01` to Phase 36.
@@ -99,4 +99,4 @@ npx tsc --noEmit
 
 - Phase 36 requirements `SETTINGS-05`, `SETTINGS-06`, `SETTINGS-07`, `SETTINGS-08`, and `DESIGN-01` are covered by landed code, updated proof routes, dedicated regression seams, and a rerun of the full automated phase suite on the current baseline.
 - No implementation gaps remain inside the scoped Phase 36 contract.
-- Phase 36 passes verification. The workflow can move to milestone/manual verification next.
+- Phase 36 passes verification. The workflow can move to refreshed `$gsd-verify-work` on the live settings surface and then inserted Phase `36.1`, not another internal-only settings recloseout.

@@ -154,7 +154,7 @@ export const GENERAL_VIEWS: ManualVerificationViewMeta[] = [
   {
     id: 'settings-appearance',
     label: 'Settings -> Appearance',
-    description: 'Phase 36 settings closeout proof for duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope on the live appearance surface.',
+    description: 'Phase 36 behavior-driven settings proof for duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope on the live appearance surface.',
     group: 'general',
   },
   { id: 'settings-accounts', label: 'Settings -> Accounts', description: 'Settings shell with accounts continuity.', group: 'general' },
@@ -213,7 +213,7 @@ export const GENERAL_VIEWS: ManualVerificationViewMeta[] = [
   {
     id: 'utilities',
     label: 'Utilities',
-    description: 'Phase 36 utility proof for task-focused mirrors and statistics surfaces after duplicate settings copy is removed from the shared shell.',
+    description: 'Phase 36 utility proof for embedded mirrors and statistics surfaces after duplicate settings copy is removed from the shared shell.',
     group: 'general',
   },
   { id: 'content', label: 'Content', description: 'Representative world datapack management flow.', group: 'general' },
