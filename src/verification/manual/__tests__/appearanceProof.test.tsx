@@ -28,14 +28,14 @@ vi.mock('../../../components/SettingsPage', () => ({
 }));
 
 describe('manual appearance proof', () => {
-  it('marks the appearance scenario ready from the shipped preset-truth copy instead of stale brand-card text', async () => {
+  it('marks the appearance scenario ready from the current preset-truth copy instead of stale milestone wording', async () => {
     const onReady = vi.fn();
 
     render(<ManualVerificationScenarios view="settings-appearance" onReady={onReady} />);
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalledWith(
-        'Phase 30 appearance proof rendered above the real shell so reviewers can verify preset ancestry, bounded customization, and honest launcher-runtime control boundaries without leaving live composition.',
+        'Phase 36 settings proof rendered above the real shell so reviewers can verify duplicate-copy removal, preset predictability, aligned control geometry, and visible-effect scope without falling back to older preset-only wording.',
       );
     });
   });
