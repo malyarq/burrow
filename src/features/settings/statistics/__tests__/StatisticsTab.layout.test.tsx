@@ -69,5 +69,6 @@ describe('StatisticsTab layout', () => {
     expect(screen.queryByRole('heading', { name: 'Statistics' })).toBeNull();
     expect(await screen.findByRole('heading', { name: 'Global Stats' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Export' })).toBeTruthy();
+    expect(screen.queryByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toBeNull();
   });
 });

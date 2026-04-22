@@ -152,7 +152,9 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                     <h3 className={embedded ? 'settings-embedded-title' : 'text-lg font-bold text-foreground'}>
                         {t('stats.global_stats')}
                     </h3>
-                    <p className="settings-embedded-copy">{t('stats.description')}</p>
+                    {!embedded && (
+                        <p className="settings-embedded-copy">{t('stats.description')}</p>
+                    )}
                 </div>
                 <Button
                     onClick={() => void handleExport()}
@@ -182,10 +184,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
 
             <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
                 <div className="surface-card space-y-3 p-4">
-                    <div className="space-y-1">
-                        <h4 className="text-sm font-semibold text-foreground">{t('stats.popular_modpacks')}</h4>
-                        <p className="text-sm text-secondary">{t('stats.description')}</p>
-                    </div>
+                    <h4 className="text-sm font-semibold text-foreground">{t('stats.popular_modpacks')}</h4>
 
                     <div className="space-y-2" role="list" aria-label={t('stats.popular_modpacks')}>
                         {stats.popularModpacks.slice(0, 5).map((modpack, index) => (
@@ -217,10 +216,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                 </div>
 
                 <div className="surface-card space-y-3 p-4">
-                    <div className="space-y-1">
-                        <h4 className="text-sm font-semibold text-foreground">{t('stats.usage_trend')}</h4>
-                        <p className="text-sm text-secondary">{t('stats.description')}</p>
-                    </div>
+                    <h4 className="text-sm font-semibold text-foreground">{t('stats.usage_trend')}</h4>
 
                     <div className="space-y-3" role="list" aria-label={t('stats.usage_trend')}>
                         {trendPoints.map((point) => (
@@ -273,10 +269,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
             </div>
 
             <div className="surface-card space-y-3 p-4">
-                <div className="space-y-1">
-                    <h4 className="text-sm font-semibold text-foreground">{t('stats.instance_stats')}</h4>
-                    <p className="text-sm text-secondary">{t('stats.description')}</p>
-                </div>
+                <h4 className="text-sm font-semibold text-foreground">{t('stats.instance_stats')}</h4>
 
                 <div className="space-y-2" role="list" aria-label={t('stats.instance_stats')}>
                     {Object.entries(stats.instances).map(([id, instance]) => (

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import SettingsPage from '../../SettingsPage';
 
@@ -107,26 +107,31 @@ describe('SettingsPage secondary utility routes', () => {
 
   it('switches between lower-traffic settings utilities and updates the shared footer hint', () => {
     render(<SettingsPage onClose={onCloseMock} />);
+    const header = screen.getByTestId('settings-shell-header');
 
     fireEvent.click(screen.getByRole('tab', { name: 'Downloads' }));
     expect(screen.getByRole('tab', { name: 'Downloads' }).getAttribute('aria-selected')).toBe('true');
     expect(screen.getByRole('tabpanel', { name: 'Downloads' })).toBeTruthy();
     expect(screen.getByText('Downloads utility surface')).toBeTruthy();
-    expect(screen.getAllByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.').length).toBeGreaterThan(0);
+    expect(within(header).getByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeTruthy();
+    expect(screen.getAllByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toHaveLength(1);
 
     fireEvent.click(screen.getByRole('tab', { name: 'Launcher' }));
     expect(screen.getByRole('tabpanel', { name: 'Launcher' })).toBeTruthy();
     expect(screen.getByText('Launcher utility surface')).toBeTruthy();
-    expect(screen.getAllByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.').length).toBeGreaterThan(0);
+    expect(within(header).getByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.')).toBeTruthy();
+    expect(screen.getAllByText('Manage runtime behavior, update checks, and persistent launcher caches from one place.')).toHaveLength(1);
 
     fireEvent.click(screen.getByRole('tab', { name: 'Storage' }));
     expect(screen.getByRole('tabpanel', { name: 'Storage' })).toBeTruthy();
     expect(screen.getByText('Storage utility surface')).toBeTruthy();
-    expect(screen.getAllByText('Track deduplicated content usage and clean up stored files that are no longer needed.').length).toBeGreaterThan(0);
+    expect(within(header).getByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toBeTruthy();
+    expect(screen.getAllByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toHaveLength(1);
 
     fireEvent.click(screen.getByRole('tab', { name: 'Statistics' }));
     expect(screen.getByRole('tabpanel', { name: 'Statistics' })).toBeTruthy();
     expect(screen.getByText('Statistics utility surface')).toBeTruthy();
-    expect(screen.getAllByText('Review launches, play time, and local usage trends before exporting the current snapshot.').length).toBeGreaterThan(0);
+    expect(within(header).getByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toBeTruthy();
+    expect(screen.getAllByText('Review launches, play time, and local usage trends before exporting the current snapshot.')).toHaveLength(1);
   });
 });
