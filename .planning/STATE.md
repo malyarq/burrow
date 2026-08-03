@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v0.7.0
 milestone_name: Direct Feedback Closure And Interface Cohesion
-status: Phase 36 settings gap packet is complete; fresh settings UAT can rerun, and inserted Phase 36.1 now holds the remaining modpack spillover work
-last_updated: "2026-04-22T22:10:00Z"
+status: Phase 36.1 implementation is complete; the v0.7.0 milestone is ready for verification and audit
+last_updated: "2026-08-03T09:15:00Z"
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 27
-  completed_plans: 25
-  percent: 93
+  completed_plans: 27
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 - Active milestone: `v0.7.0` — Direct Feedback Closure And Interface Cohesion
 - Latest shipped milestone: `v0.6.0` — Feedback-Driven Stabilization And Expansion
 - Current phase: `36.1` — Modpack UAT Follow-up And Workspace Cohesion
-- Current plan: `36.1-01` - pending execution to repair secondary modpack workspaces, search/filter layout, and CTA/counter coherence
-- Status: Phase 36 UAT found 13 diagnosed gaps across settings shell nesting, preset visibility, shared control alignment, modpack workspace cohesion, and proof-route honesty. Settings-owned fixes are now closed through `36-05` through `36-09`, and the remaining spillover is isolated in inserted follow-up Phase `36.1`.
-- Last activity: 2026-04-22 - completed `36-09` by replacing text-only settings proof readiness with observable behavior checks and behavior-driven manual-proof framing
+- Current plan: none - `36.1-01` and `36.1-02` are complete
+- Status: the modpack workspace and create-flow spillover from Phase 36 UAT is implemented, tested and visually baselined; milestone verification remains.
+- Last activity: 2026-08-03 - completed Phase 36.1 and recorded the wider repository revival/security programme
 
-Progress: [█████████░] 93% of milestone `v0.7.0`
+Progress: [██████████] 100% of milestone implementation for `v0.7.0`
 
 ## Key Decisions
 
@@ -70,7 +70,7 @@ Progress: [█████████░] 93% of milestone `v0.7.0`
 - Phase 34 closeout still carries manual-only signoff debt: tab reachability at live desktop width, first-read runtime/dependency authority feel, and one-session cross-tab cohesion were not rerun interactively in this turn.
 - Phase 35 closeout still carries manual-only signoff debt: live create/add feel, guided runtime clarity, and active-modpack switching calmness were not rerun interactively in this turn.
 - Phase 36 settings-owned gaps are closed, but a fresh `$gsd-verify-work` pass should confirm the recovered settings surface before milestone closeout continues.
-- Inserted Phase `36.1` still remains, so the milestone cannot close until the modpack spillover packet is executed and retested.
+- Phase `36.1` is implemented; milestone closure now depends on verification, audit and the release gates in `docs/ru/revival-plan-2026-08-03.md`.
 
 ## Accumulated Context
 
@@ -83,5 +83,5 @@ Progress: [█████████░] 93% of milestone `v0.7.0`
 ## Resume Point
 
 - Next command: `$gsd-verify-work`
-- Immediate next wave: rerun live settings UAT against the recovered Phase 36 shell, preset, control, and proof-route contract
-- After refreshed settings verification: execute inserted Phase `36.1` for the remaining modpack workspace and create-flow spillover packet
+- Immediate next wave: run milestone verification against all Phase 32-36.1 success criteria
+- After verification: audit the milestone and complete only the release gates that can be proven on signed platform artifacts

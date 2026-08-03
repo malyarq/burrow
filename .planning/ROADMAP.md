@@ -97,8 +97,8 @@ Archive:
 
 **Goal:** Close the direct-feedback spillover that Phase 36 UAT exposed in modpack content surfaces and create-modpack recovery without reopening the settings-owned phase contract.
 **Owns requirements:** none directly; follows up on UAT debt that escaped earlier `MODPACK-12`, `MODPACK-13`, and `CONTENT-07` closures
-**Execution progress:** `0/2` plans complete
-**Status:** inserted on `2026-04-22` after UAT diagnosis split settings-owned fixes from modpack spillover
+**Execution progress:** `2/2` plans complete
+**Status:** completed on `2026-08-03`; targeted tests and current Chromium closeout baselines pass
 
 **Observable success criteria:**
 
@@ -108,7 +108,7 @@ Archive:
 
 ## Shipped Milestones
 
-- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36.1`, roadmap created `2026-04-22`. Progress: Phase `32` complete (`4/4` plans), Phase `33` complete (`4/4` plans), Phase `34` complete (`4/4` plans), Phase `35` complete (`4/4` plans), Phase `36` complete (`9/9` plans) after the settings UAT recovery packet, and inserted Phase `36.1` still holds `2` modpack spillover plans. Next: `$gsd-verify-work`.
+- 🟡 **v0.7.0 Direct Feedback Closure And Interface Cohesion** — Phases `32-36.1`, roadmap created `2026-04-22`. Progress: all `27/27` plans complete, including inserted Phase `36.1`. Next: milestone verification and audit before stable release.
 - ✅ **v0.6.0 Feedback-Driven Stabilization And Expansion** — Phases `28-31`, shipped `2026-04-21`. Progress: `20/20` plans complete. Audit: `19/19` requirements satisfied.
 - ✅ **v0.5.0 Experience Reinvention And Brand Reset** — Phases `19-27`, shipped `2026-04-20`. Archive: `.planning/milestones/v0.5.0-ROADMAP.md`
 - ✅ **v0.4.0 Launcher Truth And Product Polish** — Phases `15-18`, shipped `2026-04-17`. Archive: `.planning/milestones/v0.4.0-ROADMAP.md`
@@ -146,7 +146,7 @@ Archive:
 
 | Milestone | Phases | Plans | Status | Shipped |
 | --- | --- | --- | --- | --- |
-| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36.1 | 25/27 | Active | — |
+| v0.7.0 Direct Feedback Closure And Interface Cohesion | 32-36.1 | 27/27 | Verification | — |
 | v0.2.0 UI System And Experience Rework | 7-10 | 17/17 | Shipped | 2026-04-13 |
 | v0.3.0 Adaptive UX Hardening And Launcher Ergonomics | 11-14 | 17/17 | Shipped | 2026-04-14 |
 | v0.4.0 Launcher Truth And Product Polish | 15-18 | 16/16 | Shipped | 2026-04-17 |
@@ -161,5 +161,5 @@ Archive:
 **Plans:** 2 plans
 
 Plans:
-- [ ] `36.1-01` — secondary modpack workspace, search/filter layout, degraded-state width, and CTA/counter coherence
-- [ ] `36.1-02` — calmer create-modpack post-create recovery and proof wording for the recovered flow
+- [x] `36.1-01` — secondary modpack workspace, search/filter layout, degraded-state width, and CTA/counter coherence
+- [x] `36.1-02` — calmer create-modpack post-create recovery and proof wording for the recovered flow
