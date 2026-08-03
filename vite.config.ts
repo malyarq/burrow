@@ -7,6 +7,7 @@ import pkg from './package.json';
 const sharedAlias = {
   '@shared': path.resolve(__dirname, 'shared')
 };
+const rendererOnly = process.env.FMCL_RENDERER_ONLY === '1';
 
 const strictProductionCspPlugin: Plugin = {
   name: 'fmcl-strict-production-csp',
@@ -55,7 +56,7 @@ export default defineConfig({
       ignored: ['**/release/**', '**/dist/**', '**/dist-electron/**']
     }
   },
-  plugins: [strictProductionCspPlugin, react(), electron({
+  plugins: [strictProductionCspPlugin, react(), ...(rendererOnly ? [] : [electron({
     main: {
       entry: 'electron/main.ts',
       // Keep Electron deps external to the renderer bundle.
@@ -88,5 +89,5 @@ export default defineConfig({
       }
     },
     renderer: {}
-  })]
+  })])]
 });

@@ -35,6 +35,9 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run dev -- --host 127.0.0.1 --port ${port}`,
+    env: {
+      FMCL_RENDERER_ONLY: '1',
+    },
     url: `${baseURL}/manual-verification.html?view=overview`,
     reuseExistingServer: true,
     stdout: 'pipe',
