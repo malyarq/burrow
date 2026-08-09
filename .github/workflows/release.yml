@@ -353,7 +353,5 @@ jobs:
           else
             gh release create "$TAG" release-assets/* --repo "$GITHUB_REPOSITORY" --verify-tag --title "${TAG#v}" --notes-file release-notes.md --draft
             gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
-            git tag -f latest "$COMMIT"
-            git push --force origin refs/tags/latest
           fi
           trap - ERR
