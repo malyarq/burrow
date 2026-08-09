@@ -51,7 +51,7 @@ Official release builds also require these GitHub repository variables:
 - `POSTHOG_PROJECT_TOKEN` — the public project token from the PostHog EU project;
 - `POSTHOG_HOST` — optional; leave empty to use `https://eu.i.posthog.com`.
 
-Before the first release, open PostHog **Settings → Project → General**, disable IP data capture, keep person profiles unused, and confirm retention does not exceed 12 months. The workflow refuses to package without the project token, but hosted privacy settings require a manual owner check.
+Before every public release, open PostHog **Settings → Project → General** and confirm that IP capture remains disabled, person profiles remain unused, and retention does not exceed 12 months. The workflow refuses to package without the project token, but hosted privacy settings require a manual owner check.
 
 Repository code cannot create or guarantee those protection rules. A maintainer starts **Build and Release** manually through `workflow_dispatch` and supplies the committed version plus the exact 40-character `main` commit. The workflow independently checks out that commit, downloads the previous published package on each native runner, verifies an in-place upgrade with preserved user data and the rendered candidate version, then validates artifacts, checksums, smoke, and schema-valid evidence. It waits for the protected `release-publication` Environment before creating anything public. Only that job creates the annotated SemVer tag and GitHub Release; no separate mutable `latest` tag is used. Release notes come from every `CHANGELOG.md` entry since the previous published stable release, so an abandoned tag cannot hide shipped changes.
 

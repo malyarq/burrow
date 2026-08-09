@@ -2,6 +2,13 @@ import { Profiler, type ProfilerOnRenderCallback, useCallback, useMemo, useState
 import { ManualVerificationNavigation, ManualVerificationScenarios } from './scenarios';
 import { type ManualVerificationView, getManualVerificationView } from './views';
 import { manualPerformanceProfilerRecorder } from './performanceProfiler';
+import { SettingsProvider } from '../../contexts/SettingsContext';
+import { AnalyticsProvider } from '../../features/analytics/AnalyticsProvider';
+import type { AnalyticsClient } from '../../features/analytics/analyticsClient';
+
+const MANUAL_ANALYTICS_CLIENT: AnalyticsClient = {
+  configured: true, host: '', capture: async () => 'disabled', clearLocalData: () => undefined, flush: async () => undefined,
+};
 
 type VerificationStatus = {
   view: ManualVerificationView;
@@ -45,6 +52,8 @@ export function ManualVerificationApp() {
   const statusJson = useMemo(() => JSON.stringify(status), [status]);
 
   return (
+    <SettingsProvider>
+    <AnalyticsProvider client={MANUAL_ANALYTICS_CLIENT}>
     <div className={isViewportBoundProof ? 'h-screen overflow-hidden bg-background text-foreground' : 'min-h-screen bg-background text-foreground'}>
       <div className={isViewportBoundProof ? 'mx-auto flex h-full min-h-0 max-w-7xl flex-col gap-6 px-6 py-6' : 'mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-6 py-6'}>
         <header className="surface-panel rounded-3xl p-5">
@@ -77,5 +86,7 @@ export function ManualVerificationApp() {
         </pre>
       </div>
     </div>
+    </AnalyticsProvider>
+    </SettingsProvider>
   );
 }

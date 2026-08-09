@@ -63,13 +63,16 @@ export function bridgeLocalSocketToMuxer(params: {
   socket: Socket;
   muxer: Muxer;
   onLog: (msg: string) => void;
+  onGameConnectionOpened?: () => void;
+  onGameConnectionClosed?: (transferredBytes: number) => void;
 }) {
-  const { socket, muxer, onLog } = params;
+  const { socket, muxer, onLog, onGameConnectionClosed, onGameConnectionOpened } = params;
 
   const stream = muxer.createStream();
+  onGameConnectionOpened?.();
 
   pump(socket, stream, socket, (_err?: Error) => {
-    // Connection closed
+    onGameConnectionClosed?.(socket.bytesRead + socket.bytesWritten);
   });
 
   onLog(`[Network] Opened stream session ${stream.sessionId}`);

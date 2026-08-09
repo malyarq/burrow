@@ -36,7 +36,7 @@ export function MultiplayerConnectionControls({ multiplayer }: { multiplayer: Re
         <span className="block break-all font-mono text-xs">{formatBurrowLinkCode(multiplayer.roomCode)}</span>
       </div>
       <p className="text-xs text-secondary">{t('multiplayer.invite_help')}</p>
-      <Button type="button" variant="secondary" className="w-full" onClick={() => multiplayer.copyToClipboard(multiplayer.invitation)}>{t('multiplayer.copy_invite')}</Button>
+      <Button type="button" variant="secondary" className="w-full" onClick={() => multiplayer.copyToClipboard(multiplayer.invitation, 'invite')}>{t('multiplayer.copy_invite')}</Button>
       <p className="text-xs text-secondary">{t('multiplayer.peers_connected', { count: multiplayer.tunnel.peerCount })}</p>
     </div>}
     {active && isLan && <StateCard title={t('multiplayer.lan_broadcast_active')} detail={`UDP · ${multiplayer.port}`} />}
@@ -48,7 +48,7 @@ export function MultiplayerConnectionControls({ multiplayer }: { multiplayer: Re
     if (isTunnel) return multiplayer.mappedPort ? <div className="space-y-4">
       <StateCard title={t('multiplayer.tunnel_established')} detail={multiplayer.directAddress} />
       <p className="text-center text-sm text-secondary">{t('multiplayer.direct_connect_help')}</p>
-      <Button variant="secondary" className="w-full" onClick={() => multiplayer.copyToClipboard(multiplayer.directAddress)}>{t('multiplayer.copy_address')}</Button>
+      <Button variant="secondary" className="w-full" onClick={() => multiplayer.copyToClipboard(multiplayer.directAddress, 'address')}>{t('multiplayer.copy_address')}</Button>
       <p className="text-center text-xs text-secondary">{t('multiplayer.peers_connected', { count: multiplayer.tunnel.peerCount })}</p>
       <StopButton onStop={multiplayer.stop} label={t('multiplayer.stop')} />
     </div> : <div className="space-y-4">

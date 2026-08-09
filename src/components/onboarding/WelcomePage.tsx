@@ -1,11 +1,11 @@
-import React from 'react';
-import { Box, Gamepad2, Globe2, Languages, Settings2, Waypoints } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, BarChart3, Box, Gamepad2, Globe2, Languages, Settings2, ShieldCheck, Waypoints } from 'lucide-react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { BrandLockup } from '../branding/BrandLockup';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { cn } from '../../utils/cn';
-import { analyticsClient } from '../../features/analytics/analyticsClient';
+import { useAnalytics } from '../../features/analytics/AnalyticsProvider';
 import { FirstRunReadiness } from './FirstRunReadiness';
 
 interface WelcomePageProps {
@@ -22,25 +22,43 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
   onShowSettings,
 }) => {
   const { language, setLanguage, setUIMode, t, getAccentStyles, getAccentHex } = useSettings();
+  const { capture, configured, consent, setEnabled } = useAnalytics();
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
+  const continueWithConsent = (action: () => void) => {
+    if (configured && consent === 'unknown') {
+      setPendingAction(() => action);
+      return;
+    }
+    action();
+  };
+
+  const finishConsent = (enabled: boolean) => {
+    setEnabled(enabled, 'onboarding');
+    if (enabled) void capture('onboarding_shown', {});
+    const action = pendingAction;
+    setPendingAction(null);
+    action?.();
+  };
 
   const openModpacks = () => {
-    void analyticsClient.capture('onboarding_action', { action: 'modpacks' });
+    void capture('onboarding_action', { action: 'modpacks' });
     setUIMode('modpacks');
     onComplete();
   };
 
   const openLauncher = () => {
-    void analyticsClient.capture('onboarding_action', { action: 'play_now' });
+    void capture('onboarding_action', { action: 'play_now' });
     onComplete();
   };
 
   const openMultiplayer = () => {
-    void analyticsClient.capture('onboarding_action', { action: 'burrow_link' });
+    void capture('onboarding_action', { action: 'burrow_link' });
     onShowMultiplayer();
   };
 
   const openSettings = () => {
-    void analyticsClient.capture('onboarding_action', { action: 'settings' });
+    void capture('onboarding_action', { action: 'settings' });
     onShowSettings();
   };
 
@@ -81,6 +99,51 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
       bodyClassName="!p-0"
     >
       <div className="relative bg-card text-foreground">
+      {pendingAction ? (
+        <div className="relative flex min-h-[34rem] flex-col overflow-hidden">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-80"
+            style={{ background: `radial-gradient(circle at top, ${getAccentHex()}28 0%, transparent 46%), radial-gradient(circle at bottom left, ${getAccentHex()}18 0%, transparent 30%)` }}
+          />
+          <div className="relative flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+            <BrandLockup
+              direction="horizontal"
+              markFrame="none"
+              markRole="product-mark"
+              markSize="lg"
+              className="mb-8"
+              wordmarkTone="default"
+              wordmarkClassName="text-[1.75rem]"
+            />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ backgroundColor: `${getAccentHex()}18`, color: getAccentHex() }}>
+              <BarChart3 className="h-7 w-7" aria-hidden="true" />
+            </div>
+            <h1 id="welcome-title" className="mt-5 text-2xl font-bold tracking-tight text-foreground">
+              {t('onboarding.analytics.title')}
+            </h1>
+            <p className="mt-3 max-w-2xl text-base leading-6 text-secondary">
+              {t('onboarding.analytics.description')}
+            </p>
+            <div className="mt-5 flex items-center gap-2 text-sm text-secondary">
+              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+              <span>{t('onboarding.analytics.local_control')}</span>
+            </div>
+            <div className="mt-8 grid w-full max-w-lg grid-cols-2 gap-3">
+              <Button variant="secondary" onClick={() => finishConsent(true)}>
+                {t('onboarding.analytics.accept')}
+              </Button>
+              <Button variant="secondary" onClick={() => finishConsent(false)}>
+                {t('onboarding.analytics.decline')}
+              </Button>
+            </div>
+            <Button variant="ghost" size="sm" className="mt-4" onClick={() => setPendingAction(null)}>
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              {t('general.back')}
+            </Button>
+          </div>
+        </div>
+      ) : (
+      <>
       <div
         className="pointer-events-none absolute inset-0 opacity-80"
         style={{ background: `radial-gradient(circle at top, ${getAccentHex()}28 0%, transparent 38%), radial-gradient(circle at bottom left, ${getAccentHex()}18 0%, transparent 26%)` }}
@@ -146,7 +209,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
               <p className="mb-4 flex-1 text-sm leading-6 text-secondary">{description}</p>
               <Button
                 variant={index === 0 ? 'primary' : 'secondary'}
-                onClick={action}
+                onClick={() => continueWithConsent(action)}
                 className="w-full"
               >
                 {button}
@@ -160,17 +223,19 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
             {t('onboarding.welcome.account_note')}
           </p>
           <div className="flex shrink-0 flex-wrap gap-2">
-            <Button variant="ghost" size="sm" onClick={onStartTour}>
+            <Button variant="ghost" size="sm" onClick={() => continueWithConsent(onStartTour)}>
               <Waypoints className="h-4 w-4" aria-hidden="true" />
               {t('onboarding.welcome.tour')}
             </Button>
-            <Button variant="ghost" size="sm" onClick={openSettings}>
+            <Button variant="ghost" size="sm" onClick={() => continueWithConsent(openSettings)}>
               <Settings2 className="h-4 w-4" aria-hidden="true" />
               {t('general.settings')}
             </Button>
           </div>
         </div>
       </div>
+      </>
+      )}
       </div>
     </Modal>
   );

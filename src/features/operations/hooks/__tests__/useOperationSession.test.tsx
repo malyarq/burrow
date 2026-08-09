@@ -13,7 +13,10 @@ const ipc = vi.hoisted(() => ({
 const analytics = vi.hoisted(() => ({ capture: vi.fn() }));
 
 vi.mock('../../../../services/ipc/operationsIPC', () => ({ operationsIPC: ipc }));
-vi.mock('../../../analytics/analyticsClient', () => ({ analyticsClient: analytics }));
+vi.mock('../../../analytics/analyticsClient', () => ({
+  analyticsClient: analytics,
+  durationBucket: () => 'under_250ms',
+}));
 
 function operation(status: OperationStatus): OperationSnapshot {
   return {
@@ -71,6 +74,7 @@ describe('useOperationSession', () => {
     expect(analytics.capture).toHaveBeenCalledWith('operation_finished', {
       kind: 'import',
       result: 'succeeded',
+      duration: 'under_250ms',
     });
   });
 

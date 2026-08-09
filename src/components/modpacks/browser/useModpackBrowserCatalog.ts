@@ -4,7 +4,7 @@ import type {
   ProviderCatalogVersionDescriptor,
 } from '@shared/contracts';
 import { useDebounce } from '../../../hooks/useDebounce';
-import { providerCatalogIPC } from '../../../services/ipc/providerCatalogIPC';
+import { loadCatalogVersions, searchCatalog } from './catalogAnalytics';
 import {
   DEFAULT_MODPACK_BROWSER_STATE,
   normalizeModpackBrowserState,
@@ -160,7 +160,7 @@ export function useModpackBrowserCatalog({
     setLoading(true);
     setSearchError(null);
     try {
-      const response = await providerCatalogIPC.search({
+      const response = await searchCatalog({
         platform,
         query: debouncedQuery.trim().slice(0, MAX_QUERY_LENGTH),
         ...(filterMCVersion === 'all' ? {} : { minecraftVersion: filterMCVersion }),
@@ -266,7 +266,7 @@ export function useModpackBrowserCatalog({
     setOpeningIdentity(identity);
     addToHistory(modpack);
     try {
-      const versions = (await providerCatalogIPC.versions({
+      const versions = (await loadCatalogVersions({
         platform: modpack.platform,
         projectId: modpack.projectId,
       })).map(cloneVersion);

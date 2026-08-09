@@ -67,7 +67,7 @@ describe('PrivacyFeedbackCard', () => {
     const toggle = screen.getByRole('switch', { name: 'Отправлять анонимную статистику использования' });
     expect(toggle.getAttribute('aria-checked')).toBe('false');
     fireEvent.click(toggle);
-    expect(mocks.setEnabled).toHaveBeenCalledWith(true);
+    expect(mocks.setEnabled).toHaveBeenCalledWith(true, 'settings');
 
     fireEvent.click(screen.getByText('Посмотреть безопасную диагностику'));
     expect(screen.getByText(new RegExp(`Burrow: ${pkg.version.replaceAll('.', '\\.')}`))).toBeTruthy();

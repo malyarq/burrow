@@ -15,6 +15,11 @@ class FakeSwarm extends EventEmitter {
   public leave = vi.fn(async () => undefined);
 }
 
+class FakeConnection extends EventEmitter {
+  public write = vi.fn();
+  public destroy = vi.fn();
+}
+
 function serviceWith(...swarms: FakeSwarm[]) {
   let index = 0;
   return new BurrowLinkService({
@@ -34,6 +39,41 @@ describe('BurrowLinkService', () => {
     await expect(service.stop()).resolves.toMatchObject({ state: 'idle', role: null });
     expect(swarm.discovery.destroy).toHaveBeenCalledOnce();
     expect(swarm.destroy).toHaveBeenCalledOnce();
+  });
+
+  it('publishes only coarse-safe source metrics for a direct peer session', async () => {
+    const swarm = new FakeSwarm();
+    let now = 1_000;
+    const service = new BurrowLinkService({
+      createSwarm: (() => swarm) as never,
+      now: () => now,
+      randomBytes: (() => Buffer.alloc(32, 7)) as never,
+    });
+    const snapshots: ReturnType<typeof service.getState>[] = [];
+    service.subscribe((snapshot) => snapshots.push(snapshot));
+
+    await service.host(25_565);
+    now = 1_500;
+    const connection = new FakeConnection();
+    swarm.emit('connection', connection);
+
+    expect(service.getState()).toMatchObject({
+      peerCount: 1,
+      metrics: {
+        connectionMode: 'direct',
+        connectDurationMs: 500,
+        peakPeerCount: 1,
+        gameConnectionCount: 0,
+        transferredBytes: 0,
+      },
+    });
+
+    now = 62_000;
+    await service.stop();
+    expect(snapshots.filter((snapshot) => snapshot.state === 'stopping').at(-1)?.metrics).toMatchObject({
+      sessionDurationMs: 61_000,
+      peakPeerCount: 1,
+    });
   });
 
   it('rejects malformed room codes before discovery', async () => {
@@ -79,4 +119,3 @@ describe('BurrowLinkService', () => {
     await service.stop();
   });
 });
-

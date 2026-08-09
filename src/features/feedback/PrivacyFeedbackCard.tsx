@@ -54,7 +54,7 @@ export function PrivacyFeedbackCard() {
           aria-checked={enabled}
           aria-label={t('privacy.analytics_title')}
           data-state={enabled ? 'checked' : 'unchecked'}
-          onClick={() => setEnabled(!enabled)}
+          onClick={() => setEnabled(!enabled, 'settings')}
           className="settings-toggle-switch"
         >
           <span className="settings-toggle-thumb" data-state={enabled ? 'checked' : 'unchecked'} />

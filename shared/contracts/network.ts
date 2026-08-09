@@ -54,6 +54,16 @@ export interface BurrowLinkSnapshot extends NetworkSnapshotBase {
   roomCode?: string;
   localPort?: number;
   peerCount: number;
+  metrics?: BurrowLinkMetrics;
+}
+
+export interface BurrowLinkMetrics {
+  connectionMode: 'direct' | 'relayed' | 'unknown';
+  connectDurationMs?: number;
+  sessionDurationMs: number;
+  transferredBytes: number;
+  peakPeerCount: number;
+  gameConnectionCount: number;
 }
 
 export interface LanDiscoverySnapshot extends NetworkSnapshotBase {

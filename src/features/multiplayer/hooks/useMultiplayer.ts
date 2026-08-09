@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type {
   BurrowLinkSnapshot,
   LanDiscoverEvent,
@@ -8,7 +8,6 @@ import type {
 import { useSettings } from '../../../contexts/SettingsContext';
 import { networkIPC } from '../../../services/ipc/networkIPC';
 import { useEffectiveInstance } from '../../instances/hooks/useEffectiveInstance';
-import { analyticsClient } from '../../analytics/analyticsClient';
 import { dispatchInstanceConfigCommand, useInstanceConfigCommands } from '../../instances/hooks/useInstanceConfigCommands';
 import {
   clearLegacySessionTruth, loadHostPort, loadJoinCode, loadMode, saveHostPort, saveJoinCode, saveMode, type Mode,
@@ -17,8 +16,7 @@ import {
   createBurrowLinkInvite,
   normalizeBurrowLinkInvite,
 } from '../services/burrowLinkInvite';
-
-type NetworkMode = 'hyperswarm' | 'xmcl_lan' | 'xmcl_upnp_host';
+import { useBurrowLinkAnalytics, type NetworkMode } from './useBurrowLinkAnalytics';
 
 const TUNNEL_IDLE: BurrowLinkSnapshot = { revision: 0, state: 'idle', role: null, peerCount: 0 };
 const LAN_IDLE: LanDiscoverySnapshot = { revision: 0, state: 'idle', family: null, discoveredCount: 0 };
@@ -38,8 +36,8 @@ export function useMultiplayer() {
   const [discovered, setDiscovered] = useState<LanDiscoverEvent[]>([]);
   const [status, setStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const connectedSession = useRef<string | null>(null);
   const networkMode = (instance?.networkMode || 'hyperswarm') as NetworkMode;
+  const linkAnalytics = useBurrowLinkAnalytics(tunnel, networkMode);
 
   useEffect(() => { clearLegacySessionTruth(); }, []);
   useEffect(() => { saveMode(mode); }, [mode]);
@@ -78,17 +76,6 @@ export function useMultiplayer() {
   const invitation = roomCode ? createBurrowLinkInvite(roomCode) : '';
   const directAddress = mappedPort ? `localhost:${mappedPort}` : '';
 
-  useEffect(() => {
-    if (tunnel.state !== 'active' || !tunnel.role || tunnel.peerCount < 1) {
-      if (tunnel.state === 'idle') connectedSession.current = null;
-      return;
-    }
-    const session = `${tunnel.role}:${tunnel.roomCode ?? ''}`;
-    if (connectedSession.current === session) return;
-    connectedSession.current = session;
-    void analyticsClient.capture('burrow_link_peer_connected', { role: tunnel.role });
-  }, [tunnel]);
-
   const persistServer = async (host: string, serverPort: number) => await commands.patchConfig({ server: { host, port: serverPort } });
   const run = async (work: () => Promise<void>) => {
     if (!networkIPC.isAvailable()) { setStatus(t('multiplayer.network_unavailable')); return; }
@@ -102,12 +89,16 @@ export function useMultiplayer() {
     const hostPort = Number.parseInt(port, 10) || 25_565;
     await persistServer('localhost', hostPort);
     if (networkMode === 'hyperswarm') {
+      await linkAnalytics.beginAttempt('host');
       try {
         const result = await networkIPC.tunnel.host({ port: hostPort });
-        if (result.state === 'active') void analyticsClient.capture('burrow_link_started', { role: 'host' });
-        else void analyticsClient.capture('burrow_link_failed', { role: 'host', failure_stage: 'start' });
+        if (result.state === 'active' && result.roomCode) {
+          await linkAnalytics.discoveryReady(result.roomCode);
+        } else {
+          linkAnalytics.failed(result.diagnostic?.code ?? 'NETWORK_UNAVAILABLE');
+        }
       } catch (error) {
-        void analyticsClient.capture('burrow_link_failed', { role: 'host', failure_stage: 'start' });
+        linkAnalytics.failed('NETWORK_UNAVAILABLE');
         throw error;
       }
     }
@@ -120,18 +111,22 @@ export function useMultiplayer() {
   const join = async () => await run(async () => {
     if (networkMode === 'hyperswarm') {
       const normalizedCode = normalizeBurrowLinkInvite(joinCode);
-      if (!normalizedCode) throw new Error(t('multiplayer.room_code_invalid'));
+      if (!normalizedCode) {
+        linkAnalytics.validationFailed('join');
+        throw new Error(t('multiplayer.room_code_invalid'));
+      }
+      await linkAnalytics.beginAttempt('join', normalizedCode);
       try {
         const result = await networkIPC.tunnel.join({ roomCode: normalizedCode });
         if (result.state === 'active' && result.localPort) {
           setJoinCode(normalizedCode);
           await persistServer('localhost', result.localPort);
-          void analyticsClient.capture('burrow_link_started', { role: 'join' });
+          await linkAnalytics.discoveryReady(normalizedCode);
         } else {
-          void analyticsClient.capture('burrow_link_failed', { role: 'join', failure_stage: 'start' });
+          linkAnalytics.failed(result.diagnostic?.code ?? 'NETWORK_UNAVAILABLE');
         }
       } catch (error) {
-        void analyticsClient.capture('burrow_link_failed', { role: 'join', failure_stage: 'start' });
+        linkAnalytics.failed('NETWORK_UNAVAILABLE');
         throw error;
       }
     } else if (networkMode === 'xmcl_lan') {
@@ -151,10 +146,14 @@ export function useMultiplayer() {
     else if (networkMode === 'xmcl_lan') { await networkIPC.lan.stop(); setDiscovered([]); }
     else await networkIPC.upnp.stop();
   });
-  const setNetworkMode = (next: NetworkMode) => dispatchInstanceConfigCommand(commands.setNetworkMode(next));
-  const copyToClipboard = async (text: string) => {
+  const setNetworkMode = (next: NetworkMode) => {
+    linkAnalytics.modeSelected(next);
+    dispatchInstanceConfigCommand(commands.setNetworkMode(next));
+  };
+  const copyToClipboard = async (text: string, kind: 'invite' | 'address' = 'address') => {
     try {
       await navigator.clipboard.writeText(text);
+      if (kind === 'invite') linkAnalytics.inviteCopied();
       setStatus(t('general.copied'));
     } catch {
       setStatus(t('multiplayer.copy_failed'));

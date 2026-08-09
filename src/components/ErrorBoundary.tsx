@@ -1,6 +1,7 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { formatTechnicalErrorDetails } from '../utils/displayError';
 import { FatalErrorView } from './error/FatalErrorView';
+import { analyticsClient } from '../features/analytics/analyticsClient';
 
 interface Props {
     children: ReactNode;
@@ -40,6 +41,12 @@ class ErrorBoundary extends Component<Props, State> {
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error('Uncaught error:', error, errorInfo);
+        const mode = this.props.mode ?? 'recover';
+        const recoveryAvailable = mode === 'restart' ? Boolean(this.props.onRestart) : Boolean(this.props.onRecover);
+        void analyticsClient.capture('fatal_error', {
+            surface: mode === 'restart' ? 'bootstrap' : 'app',
+            recovery: recoveryAvailable ? mode : 'unavailable',
+        });
         this.setState({
             technicalDetails: buildTechnicalDetails(error, errorInfo)
         });
@@ -53,6 +60,9 @@ class ErrorBoundary extends Component<Props, State> {
         this.setState({ actionPending: true, actionError: null });
         try {
             await action();
+            void analyticsClient.capture('fatal_recovery', {
+                surface: mode === 'restart' ? 'bootstrap' : 'app', outcome: 'succeeded',
+            });
             if (mode === 'recover') {
                 this.setState({
                     hasError: false,
@@ -65,6 +75,9 @@ class ErrorBoundary extends Component<Props, State> {
                 this.setState({ actionPending: false });
             }
         } catch (error) {
+            void analyticsClient.capture('fatal_recovery', {
+                surface: mode === 'restart' ? 'bootstrap' : 'app', outcome: 'failed',
+            });
             const actionError = toError(error);
             this.setState((current) => ({
                 actionPending: false,

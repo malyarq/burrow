@@ -5,7 +5,7 @@ import {
   classifyOperationTerminal,
   type OperationTerminalClassification,
 } from '../operationTerminalPolicy';
-import { analyticsClient, type AnalyticsEventMap } from '../../analytics/analyticsClient';
+import { analyticsClient, durationBucket, type AnalyticsEventMap } from '../../analytics/analyticsClient';
 
 export type OperationTerminalEvent = {
   snapshot: OperationSnapshot;
@@ -25,6 +25,7 @@ type SessionRun = {
   releaseRequested: boolean;
   released: boolean;
   terminalHandled: boolean;
+  startedAt: number;
 };
 
 function toAnalyticsResult(status: OperationSnapshot['status']): 'succeeded' | 'recovered' | 'degraded' | 'cancelled' | 'failed' | 'recovery_required' | null {
@@ -128,7 +129,11 @@ export function useOperationSession({
     releaseRun(run);
     const analyticsResult = toAnalyticsResult(nextSnapshot.status);
     const analyticsKind = analyticsOperationKinds[nextSnapshot.kind];
-    if (analyticsResult) void analyticsClient.capture('operation_finished', { kind: analyticsKind, result: analyticsResult });
+    if (analyticsResult) {
+      void analyticsClient.capture('operation_finished', {
+        kind: analyticsKind, result: analyticsResult, duration: durationBucket(Date.now() - run.startedAt),
+      });
+    }
     const event = { snapshot: nextSnapshot, classification: nextClassification };
     if (nextClassification.didCommit) {
       const committedCallback = onCommittedRef.current;
@@ -160,6 +165,7 @@ export function useOperationSession({
       releaseRequested: false,
       released: false,
       terminalHandled: false,
+      startedAt: Date.now(),
     };
     activeRunRef.current = run;
     lastRequestRef.current = request;

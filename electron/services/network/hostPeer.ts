@@ -7,8 +7,10 @@ export function handleHostPeerConnection(params: {
   connection: Connection;
   lanPort: number;
   onLog: (msg: string) => void;
+  onGameConnectionOpened?: () => void;
+  onGameConnectionClosed?: (transferredBytes: number) => void;
 }) {
-  const { connection, lanPort, onLog } = params;
+  const { connection, lanPort, onLog, onGameConnectionClosed, onGameConnectionOpened } = params;
 
   onLog('[Network] Peer connected! Multiplexer ready.');
   const muxer = new Muxer(connection, (error) => onLog(`[Network] Tunnel protocol rejected: ${error.message}`));
@@ -18,8 +20,14 @@ export function handleHostPeerConnection(params: {
     onLog(`[Network] Incoming connection Stream ${stream.sessionId}`);
 
     const socket = net.connect(lanPort, 'localhost');
+    let opened = false;
+    socket.once('connect', () => {
+      opened = true;
+      onGameConnectionOpened?.();
+    });
     pump(stream, socket, stream, (_err?: Error) => {
       // Silence stream errors; disconnects are expected
+      if (opened) onGameConnectionClosed?.(socket.bytesRead + socket.bytesWritten);
       socket.destroy();
     });
   });

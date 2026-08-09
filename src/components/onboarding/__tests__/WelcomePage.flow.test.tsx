@@ -10,6 +10,19 @@ const multiplayerMock = vi.fn()
 const settingsMock = vi.fn()
 const setLanguageMock = vi.fn()
 const setUIModeMock = vi.fn()
+const analyticsCaptureMock = vi.fn().mockResolvedValue('sent')
+const setAnalyticsEnabledMock = vi.fn()
+let analyticsConsent: 'unknown' | 'granted' | 'denied' = 'unknown'
+
+vi.mock('../../../features/analytics/AnalyticsProvider', () => ({
+  useAnalytics: () => ({
+    capture: analyticsCaptureMock,
+    configured: true,
+    consent: analyticsConsent,
+    enabled: analyticsConsent === 'granted',
+    setEnabled: setAnalyticsEnabledMock,
+  }),
+}))
 
 vi.mock('../../../contexts/SettingsContext', () => ({
   useSettings: () => ({
@@ -31,6 +44,12 @@ vi.mock('../../../contexts/SettingsContext', () => ({
       'onboarding.welcome.modpacks_action': 'Open modpacks',
       'onboarding.welcome.account_note': 'Offline works immediately.',
       'onboarding.welcome.tour': 'Show a short tour',
+      'onboarding.analytics.title': 'Help make Burrow more reliable?',
+      'onboarding.analytics.description': 'Share safe anonymous outcomes.',
+      'onboarding.analytics.accept': 'Share analytics',
+      'onboarding.analytics.decline': 'No thanks',
+      'onboarding.analytics.local_control': 'Off until you choose.',
+      'general.back': 'Back',
       'general.settings': 'Settings',
     }[key] ?? key),
     getAccentStyles: () => ({ className: '', style: undefined }),
@@ -41,6 +60,7 @@ vi.mock('../../../contexts/SettingsContext', () => ({
 describe('WelcomePage flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    analyticsConsent = 'unknown'
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockReturnValue({
@@ -78,6 +98,7 @@ describe('WelcomePage flow', () => {
   })
 
   it('routes directly to the selected first outcome', () => {
+    analyticsConsent = 'granted'
     render(
       <WelcomePage
         onComplete={completeMock}
@@ -99,6 +120,7 @@ describe('WelcomePage flow', () => {
   })
 
   it('lets the user switch language or explicitly ask for help', () => {
+    analyticsConsent = 'granted'
     render(
       <WelcomePage
         onComplete={completeMock}
@@ -116,5 +138,41 @@ describe('WelcomePage flow', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
     expect(settingsMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks for analytics consent with two explicit choices', () => {
+    render(
+      <WelcomePage
+        onComplete={completeMock}
+        onStartTour={tourMock}
+        onShowMultiplayer={multiplayerMock}
+        onShowSettings={settingsMock}
+      />,
+    )
+
+    expect(screen.queryByRole('heading', { name: 'Help make Burrow more reliable?' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Open launcher' }))
+    expect(completeMock).not.toHaveBeenCalled()
+    expect(screen.getByRole('heading', { name: 'Help make Burrow more reliable?' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Share analytics' }))
+    expect(setAnalyticsEnabledMock).toHaveBeenCalledWith(true, 'onboarding')
+    expect(analyticsCaptureMock).toHaveBeenCalledWith('onboarding_shown', {})
+    expect(completeMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('continues the selected action after declining analytics', () => {
+    render(
+      <WelcomePage
+        onComplete={completeMock}
+        onStartTour={tourMock}
+        onShowMultiplayer={multiplayerMock}
+        onShowSettings={settingsMock}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open Burrow Link' }))
+    fireEvent.click(screen.getByRole('button', { name: 'No thanks' }))
+    expect(setAnalyticsEnabledMock).toHaveBeenCalledWith(false, 'onboarding')
+    expect(multiplayerMock).toHaveBeenCalledTimes(1)
   })
 })

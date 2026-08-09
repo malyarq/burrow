@@ -1,5 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { appUpdaterIPC } from '../../../services/ipc/appUpdaterIPC';
+import { analyticsClient, durationBucket } from '../../analytics/analyticsClient';
+
+const capturedUpdaterEvents = new Set<string>();
+let downloadStartedAt = 0;
+
+function safeVersion(value: string | undefined): string {
+  return value && /^[A-Za-z0-9_.:+-]{1,64}$/.test(value) ? value : 'unknown';
+}
+
+function captureUpdaterEventOnce(key: string, capture: () => void): void {
+  if (capturedUpdaterEvents.has(key)) return;
+  capturedUpdaterEvents.add(key);
+  capture();
+}
 
 export interface UpdateInfo {
   version: string;
@@ -35,9 +49,11 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
   // Check if appUpdater API is available
   const isAvailable = appUpdaterIPC.isAvailable();
 
-  const checkForUpdates = useCallback(async () => {
+  const performCheck = useCallback(async (source: 'automatic' | 'manual') => {
+    void analyticsClient.capture('app_update_checked', { source });
     if (!isAvailable) {
       setError('Update system not available');
+      void analyticsClient.capture('app_update_failed', { failure_stage: 'check' });
       return;
     }
 
@@ -61,17 +77,30 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
       } else {
         setStatus('error');
         setError(errorMsg || 'Failed to check for updates');
+        void analyticsClient.capture('app_update_failed', { failure_stage: 'check' });
       }
     }
   }, [isAvailable]);
 
+  const checkForUpdates = useCallback(async () => {
+    await performCheck('manual');
+  }, [performCheck]);
+
   const installUpdate = useCallback(() => {
     if (!isAvailable) return;
-    appUpdaterIPC.quitAndInstall();
-  }, [isAvailable]);
+    void analyticsClient.capture('app_update_install_requested', { target_version: safeVersion(updateInfo?.version) });
+    try {
+      appUpdaterIPC.quitAndInstall();
+    } catch (error) {
+      void analyticsClient.capture('app_update_failed', { failure_stage: 'install' });
+      throw error;
+    }
+  }, [isAvailable, updateInfo?.version]);
 
   const downloadUpdate = useCallback(async () => {
     if (!isAvailable) return;
+    downloadStartedAt = Date.now();
+    void analyticsClient.capture('app_update_download_started', { target_version: safeVersion(updateInfo?.version) });
     setStatus('downloading');
     setError(null);
     try {
@@ -79,8 +108,9 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
     } catch (err) {
       setStatus('error');
       setError(err instanceof Error ? err.message : String(err));
+      void analyticsClient.capture('app_update_failed', { failure_stage: 'download' });
     }
-  }, [isAvailable]);
+  }, [isAvailable, updateInfo?.version]);
 
   useEffect(() => {
     if (!isAvailable) return;
@@ -92,6 +122,10 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
     });
 
     const availableUnsub = appUpdaterIPC.onAvailable((info) => {
+      const version = safeVersion(info.version || info.tag);
+      captureUpdaterEventOnce(`available:${version}`, () => {
+        void analyticsClient.capture('app_update_available', { target_version: version });
+      });
       setStatus('available');
       setUpdateInfo({
         version: info.version || info.tag || 'Unknown',
@@ -107,6 +141,9 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
     });
 
     const errorUnsub = appUpdaterIPC.onError((err: string) => {
+      captureUpdaterEventOnce('event-error', () => {
+        void analyticsClient.capture('app_update_failed', { failure_stage: 'event' });
+      });
       setStatus('error');
       setError(err);
     });
@@ -121,6 +158,13 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
     });
 
     const downloadedUnsub = appUpdaterIPC.onDownloaded((info) => {
+      const version = safeVersion(info.version);
+      captureUpdaterEventOnce(`downloaded:${version}`, () => {
+        void analyticsClient.capture('app_update_downloaded', {
+          target_version: version,
+          duration: durationBucket(downloadStartedAt ? Date.now() - downloadStartedAt : 0),
+        });
+      });
       setStatus('downloaded');
       setProgress(null);
       setUpdateInfo((prev) => ({
@@ -133,7 +177,7 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
     if (autoCheck) {
       // Delay auto-check slightly to avoid blocking initial render
       const timer = setTimeout(() => {
-        checkForUpdates();
+        void performCheck('automatic');
       }, 2000);
       return () => {
         clearTimeout(timer);
@@ -154,7 +198,7 @@ export function useAppUpdater(autoCheck: boolean = true): UseAppUpdaterReturn {
       progressUnsub();
       downloadedUnsub();
     };
-  }, [isAvailable, autoCheck, checkForUpdates]);
+  }, [isAvailable, autoCheck, performCheck]);
 
   return {
     status,

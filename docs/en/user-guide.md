@@ -84,7 +84,7 @@ Export important modpacks separately. For a complete manual backup, save both th
 
 ## Privacy and feedback
 
-Anonymous product analytics is disabled by default. The **Privacy and Feedback** card in Launcher settings shows the exact scope and lets you opt in or out. The GitHub report action previews a safe diagnostic draft and never submits it automatically. See [Privacy and analytics](privacy.md) for the complete event allowlist and data controls.
+Anonymous product analytics is disabled by default. First run presents two explicit choices, and the **Privacy and Feedback** card lets you change that choice later. The GitHub report action previews a safe diagnostic draft and never submits it automatically. See [Privacy and analytics](privacy.md) for the complete event allowlist and data controls.
 
 ## Get help
 

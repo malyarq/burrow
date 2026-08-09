@@ -60,8 +60,8 @@ On Linux, a supported desktop keyring must be available for third-party accounts
 
 - Analytics is consent-gated, disabled by default, and uses a compile-time PostHog project token that grants event ingestion only.
 - The renderer sends events directly to the documented HTTPS capture endpoint; there is no SDK autocapture, session replay, identify call, or remote analytics configuration.
-- Event names and properties are a TypeScript allowlist. Raw exceptions, logs, paths, account data, nicknames, server addresses, and form contents are outside the contract.
-- Events set `$process_person_profile` to `false`; disabling analytics deletes the local random installation identifier.
+- Names and properties are constrained by both a TypeScript contract and a separate runtime allowlist. Raw exceptions, logs, paths, accounts, nicknames, addresses, and form contents cannot pass the filter.
+- No identifier or queue exists before consent. Failed delivery retains at most 100 sanitized events for 7 days; disabling analytics deletes both the queue and random identifier.
 - Release owners must keep PostHog IP capture disabled and use the EU ingestion region. See [Privacy](privacy.md).
 - GitHub feedback is locally previewed, editable, and submitted only by the user.
 

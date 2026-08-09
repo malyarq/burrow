@@ -17,12 +17,19 @@ type TunnelResources = {
   sockets: Set<net.Socket>;
   abortController: AbortController;
   peerCount: number;
+  startedAt: number;
+  connectedAt?: number;
+  connectionMode: 'direct' | 'relayed' | 'unknown';
+  transferredBytes: number;
+  peakPeerCount: number;
+  gameConnectionCount: number;
 };
 
 export type BurrowLinkServiceOptions = {
   createSwarm?: () => Swarm;
   createServer?: typeof net.createServer;
   randomBytes?: typeof crypto.randomBytes;
+  now?: () => number;
   onLog?: (message: string) => void;
 };
 
@@ -39,6 +46,7 @@ export class BurrowLinkService {
   private readonly createSwarm: () => Swarm;
   private readonly createServer: typeof net.createServer;
   private readonly randomBytes: typeof crypto.randomBytes;
+  private readonly now: () => number;
   private readonly onLog: (message: string) => void;
   private resources?: TunnelResources;
 
@@ -46,6 +54,7 @@ export class BurrowLinkService {
     this.createSwarm = options.createSwarm ?? (() => new Hyperswarm());
     this.createServer = options.createServer ?? net.createServer;
     this.randomBytes = options.randomBytes ?? crypto.randomBytes;
+    this.now = options.now ?? Date.now;
     this.onLog = options.onLog ?? (() => undefined);
   }
 
@@ -64,13 +73,23 @@ export class BurrowLinkService {
           const connection = rawConnection as Connection;
           this.publishPeerCount(resources, 1);
           connection.on('close', () => this.publishPeerCount(resources, -1));
-          try { handleHostPeerConnection({ connection, lanPort: port, onLog: this.onLog }); }
+          try {
+            handleHostPeerConnection({
+              connection,
+              lanPort: port,
+              onLog: this.onLog,
+              onGameConnectionOpened: () => this.publishGameConnectionOpened(resources),
+              onGameConnectionClosed: (bytes) => this.publishGameConnectionClosed(resources, bytes),
+            });
+          }
           catch { connection.destroy(); }
         });
         resources.discovery = resources.swarm.join(topic, { server: true, client: false });
         await resources.discovery.flushed();
         this.onLog('[Network] Burrow Link host is active.');
-        return this.state.publish({ state: 'active', role: 'host', roomCode, peerCount: resources.peerCount });
+        return this.state.publish({
+          state: 'active', role: 'host', roomCode, peerCount: resources.peerCount, metrics: this.metricsSnapshot(resources),
+        });
       } catch (error) {
         await this.cleanup(resources);
         return this.state.publish({
@@ -107,7 +126,13 @@ export class BurrowLinkService {
           socket.once('close', () => resources.sockets.delete(socket));
           try {
             const connection = await getOrWaitPeerConnection({ swarm: resources.swarm, signal: resources.abortController.signal });
-            bridgeLocalSocketToMuxer({ socket, muxer: ensureMuxerOnConnection(connection, this.onLog), onLog: this.onLog });
+            bridgeLocalSocketToMuxer({
+              socket,
+              muxer: ensureMuxerOnConnection(connection, this.onLog),
+              onLog: this.onLog,
+              onGameConnectionOpened: () => this.publishGameConnectionOpened(resources),
+              onGameConnectionClosed: (bytes) => this.publishGameConnectionClosed(resources, bytes),
+            });
           } catch {
             socket.destroy();
           }
@@ -115,7 +140,9 @@ export class BurrowLinkService {
         resources.server = server;
         const localPort = await listen(server);
         this.onLog(`[Network] Burrow Link join endpoint is active on localhost:${localPort}.`);
-        return this.state.publish({ state: 'active', role: 'join', roomCode, localPort, peerCount: resources.peerCount });
+        return this.state.publish({
+          state: 'active', role: 'join', roomCode, localPort, peerCount: resources.peerCount, metrics: this.metricsSnapshot(resources),
+        });
       } catch (error) {
         await this.cleanup(resources);
         return this.state.publish({
@@ -131,16 +158,58 @@ export class BurrowLinkService {
   }
 
   private createResources(): TunnelResources {
-    const resources = { swarm: this.createSwarm(), sockets: new Set<net.Socket>(), abortController: new AbortController(), peerCount: 0 };
+    const resources = {
+      swarm: this.createSwarm(),
+      sockets: new Set<net.Socket>(),
+      abortController: new AbortController(),
+      peerCount: 0,
+      startedAt: this.now(),
+      connectionMode: 'unknown' as const,
+      transferredBytes: 0,
+      peakPeerCount: 0,
+      gameConnectionCount: 0,
+    };
     this.resources = resources;
     return resources;
   }
 
   private publishPeerCount(resources: TunnelResources, delta: number): void {
     resources.peerCount = Math.max(0, resources.peerCount + delta);
+    resources.peakPeerCount = Math.max(resources.peakPeerCount, resources.peerCount);
+    if (delta > 0 && !resources.connectedAt) {
+      resources.connectedAt = this.now();
+      // Burrow does not configure a relay today. Keep the explicit value in the contract for a future relay transport.
+      resources.connectionMode = 'direct';
+    }
     if (this.resources !== resources || this.state.get().state !== 'active') return;
     const current = this.state.get();
-    this.state.publish({ ...current, peerCount: resources.peerCount });
+    this.state.publish({ ...current, peerCount: resources.peerCount, metrics: this.metricsSnapshot(resources) });
+  }
+
+  private publishGameConnectionOpened(resources: TunnelResources): void {
+    resources.gameConnectionCount += 1;
+    this.publishMetrics(resources);
+  }
+
+  private publishGameConnectionClosed(resources: TunnelResources, transferredBytes: number): void {
+    if (Number.isFinite(transferredBytes) && transferredBytes > 0) resources.transferredBytes += transferredBytes;
+    this.publishMetrics(resources);
+  }
+
+  private publishMetrics(resources: TunnelResources): void {
+    if (this.resources !== resources || this.state.get().state !== 'active') return;
+    this.state.publish({ ...this.state.get(), metrics: this.metricsSnapshot(resources) });
+  }
+
+  private metricsSnapshot(resources: TunnelResources): NonNullable<BurrowLinkSnapshot['metrics']> {
+    return {
+      connectionMode: resources.connectionMode,
+      connectDurationMs: resources.connectedAt ? resources.connectedAt - resources.startedAt : undefined,
+      sessionDurationMs: Math.max(0, this.now() - resources.startedAt),
+      transferredBytes: resources.transferredBytes,
+      peakPeerCount: resources.peakPeerCount,
+      gameConnectionCount: resources.gameConnectionCount,
+    };
   }
 
   private async stopUnlocked(): Promise<BurrowLinkSnapshot> {
@@ -150,10 +219,20 @@ export class BurrowLinkService {
       return current.state === 'idle' ? current : this.state.publish({ state: 'idle', role: null, peerCount: 0 });
     }
     const current = this.state.get();
-    this.state.publish({ ...current, state: 'stopping', diagnostic: undefined });
+    this.state.publish({ ...current, state: 'stopping', diagnostic: undefined, metrics: this.metricsSnapshot(resources) });
     const errors = await this.cleanup(resources);
+    this.state.publish({
+      ...current,
+      state: 'stopping',
+      peerCount: 0,
+      diagnostic: undefined,
+      metrics: this.metricsSnapshot(resources),
+    });
     return errors.length
-      ? this.state.publish({ state: 'failed', role: null, peerCount: 0, diagnostic: diagnostic('TUNNEL_CLEANUP_FAILED', 'Burrow Link cleanup was incomplete') })
+      ? this.state.publish({
+        state: 'failed', role: current.role, peerCount: 0, metrics: this.metricsSnapshot(resources),
+        diagnostic: diagnostic('TUNNEL_CLEANUP_FAILED', 'Burrow Link cleanup was incomplete'),
+      })
       : this.state.publish({ state: 'idle', role: null, peerCount: 0 });
   }
 

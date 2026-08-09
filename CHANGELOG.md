@@ -6,7 +6,43 @@ This file summarizes the current public release. Git history remains the detaile
 
 ## Не выпущено / Unreleased
 
-После v0.12.0 изменений нет. / No changes after v0.12.0.
+После v0.13.0 изменений нет. / No changes after v0.13.0.
+
+## [0.13.0] — 2026-08-09
+
+### Русский
+
+#### Добавлено
+
+- Явный выбор аналитики при первом запуске с равноправным отказом и последующим управлением в настройках.
+- Приватные продуктовые метрики запуска приложения и Minecraft, знакомства с интерфейсом, каталога модпаков, обновлений, операций, ошибок и сессий Burrow Link.
+
+#### Изменено
+
+- События аналитики ограничены версионированным контрактом, безопасными категориями и крупными диапазонами времени, количества и трафика.
+- Неотправленные события хранятся не более семи дней, повторяются с устойчивым идентификатором и полностью удаляются при отказе от аналитики.
+
+#### Приватность
+
+- Аналитика не создаёт профили пользователей и не отправляет IP-географию, аккаунты, пути, поисковые запросы, журналы, тексты ошибок или секреты приглашений.
+- Связь событий одной попытки Burrow Link использует необратимый идентификатор, полученный из случайного секрета комнаты, без передачи самого секрета.
+
+### English
+
+#### Added
+
+- An explicit first-run analytics choice with an equally prominent decline path and later control in settings.
+- Privacy-preserving product metrics for application and Minecraft startup, onboarding, modpack catalog use, updates, operations, failures, and Burrow Link sessions.
+
+#### Changed
+
+- Analytics events are constrained by a versioned contract, safe categorical values, and coarse duration, count, and traffic buckets.
+- Unsent events expire after seven days, retry with stable insertion identifiers, and are removed immediately when analytics is disabled.
+
+#### Privacy
+
+- Analytics creates no person profiles and sends no IP-derived location, accounts, paths, search queries, logs, error text, or invitation secrets.
+- Burrow Link attempt correlation uses a one-way identifier derived from the random room secret without transmitting that secret.
 
 ## [0.12.0] — 2026-08-08
 

@@ -35,6 +35,7 @@ export { NETWORK_CHANNELS } from './network';
 export type {
   BurrowLinkAPI,
   BurrowLinkSnapshot,
+  BurrowLinkMetrics,
   LanDiscoverEvent,
   LanDiscoveryAPI,
   LanDiscoverySnapshot,
