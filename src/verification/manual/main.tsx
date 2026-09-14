@@ -1,4 +1,5 @@
 import React from 'react';
+import '@fontsource-variable/inter';
 import { createRoot } from 'react-dom/profiling';
 import '../../index.css';
 import { installManualVerificationEnvironment, seedManualVerificationStorage } from './mockEnvironment';

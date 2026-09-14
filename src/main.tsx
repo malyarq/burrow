@@ -1,4 +1,5 @@
 import React from 'react'
+import '@fontsource-variable/inter'
 import ReactDOM from 'react-dom/client'
 import { AppProviders } from './app/providers'
 import App from './App.tsx'
