@@ -16,9 +16,7 @@ describe('AppearanceTab brand contract', () => {
     expect(screen.queryByTestId('appearance-brand-system-card')).toBeNull()
     expect(screen.getByTestId('appearance-branding').getAttribute('data-appearance-owner')).toBe('branding')
     expect(screen.getByLabelText('Theme Presets')).toBeTruthy()
-    expect(
-      screen.getByText(/The theme sets the background and surfaces. Choose an accent separately/i),
-    ).toBeTruthy()
+    expect((screen.getByLabelText('Theme Presets') as HTMLSelectElement).value).toBe('default')
     expect(
       screen.getByText(/The accent highlights buttons, selections and focus. It does not change the background/i),
     ).toBeTruthy()

@@ -23,6 +23,17 @@ describe('AuthServer lifecycle', () => {
     await expect(follower.start()).resolves.toEqual({ url: owner.url, owned: false });
   });
 
+  it('keeps an ephemeral Next server usable after another launcher exits', async () => {
+    const stable = new AuthServer(0); servers.push(stable);
+    const next = new AuthServer(0); servers.push(next);
+    await stable.start();
+    const started = await next.start();
+    expect(started.owned).toBe(true);
+    expect(started.url).not.toBe(stable.url);
+    await stable.stop();
+    await expect(fetch(started.url)).resolves.toMatchObject({ status: 200 });
+  });
+
   it('falls back to an ephemeral loopback port when a different service occupies the requested port', async () => {
     const occupied = http.createServer((_req, res) => res.end('not the auth mock'));
     await new Promise<void>((resolve) => occupied.listen(0, '127.0.0.1', resolve));

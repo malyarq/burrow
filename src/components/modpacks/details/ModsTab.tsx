@@ -12,6 +12,7 @@ import { AddModModal } from '../AddModModal';
 import { Button } from '../../ui/Button';
 import { LoadingSpinner } from '../../ui/LoadingSpinner';
 import { DegradedStateView } from '../../layout/DegradedStateView';
+import { toDisplayErrorMessage } from '../../../utils/displayError';
 
 export interface ModsTabProps {
     instanceId: string;
@@ -43,18 +44,21 @@ export function ModsTab({
     const [mods, setMods] = useState<ModEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [hasLoaded, setHasLoaded] = useState(false);
+    const [loadError, setLoadError] = useState<unknown | null>(null);
     const [showAddModModal, setShowAddModModal] = useState(false);
     const confirm = useConfirm();
     const toast = useToast();
 
     const loadMods = useCallback(async () => {
         setLoading(true);
+        setLoadError(null);
         try {
             const list = await instanceModsIPC.list(instanceId);
             setMods(normalizeMods(list ?? []));
             onUpdate?.();
         } catch (err) {
             console.error('Failed to load mods:', err);
+            setLoadError(err);
         } finally {
             setHasLoaded(true);
             setLoading(false);
@@ -116,8 +120,8 @@ export function ModsTab({
     const enabledCount = useMemo(() => mods.filter((mod) => mod.enabled).length, [mods]);
 
     return (
-        <div className={cn('space-y-4', className)}>
-            <div className="surface-card space-y-5 rounded-xl p-5">
+        <div className={cn('space-y-5', className)}>
+            <div className="space-y-4 border-b border-border/65 pb-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_mods')}</div>
@@ -130,12 +134,12 @@ export function ModsTab({
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {showAddButton && (
-                            <Button variant="primary" size="sm" onClick={() => setShowAddModModal(true)} disabled={loading}>
+                            <Button variant="primary" size="sm" geometry="catalog-primary" onClick={() => setShowAddModModal(true)} disabled={loading}>
                                 <PackagePlus className="h-4 w-4" />
                                 {t('modpacks.add_mod_btn')}
                             </Button>
                         )}
-                        <Button onClick={() => void loadMods()} variant="secondary" size="sm" disabled={loading} isLoading={loading}>
+                        <Button onClick={() => void loadMods()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
                         </Button>
@@ -157,10 +161,21 @@ export function ModsTab({
                     <LoadingSpinner size="sm" variant="accent" />
                     {t('modpacks.loading')}
                 </div>
+            ) : loadError && mods.length === 0 ? (
+                <DegradedStateView
+                    variant="unavailable"
+                    layout="inline"
+                    className="[&>div]:rounded-xl"
+                    label={t('degraded.unavailable_label')}
+                    title={t('error.inline_fallback')}
+                    description={toDisplayErrorMessage(loadError, t('error.inline_fallback'))}
+                    footer={<Button variant="secondary" size="sm" geometry="catalog-primary" onClick={() => void loadMods()}>{t('modpacks.update')}</Button>}
+                />
             ) : mods.length === 0 ? (
                 <DegradedStateView
                     variant="empty"
                     layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.empty_label')}
                     title={t('modpacks.no_mods_installed')}
                     description={t('modpacks.mods_empty_hint')}
@@ -177,8 +192,8 @@ export function ModsTab({
                         <div
                             key={mod.id}
                             role="listitem"
-                            className={cn(
-                                'surface-card flex flex-col gap-4 rounded-xl p-5 lg:flex-row lg:items-start lg:justify-between',
+                        className={cn(
+                                'surface-card flex flex-col gap-4 rounded-xl p-4 lg:flex-row lg:items-start lg:justify-between',
                                 !mod.enabled && 'opacity-75'
                             )}
                         >

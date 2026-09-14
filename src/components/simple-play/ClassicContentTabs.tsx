@@ -15,6 +15,7 @@ export interface ClassicContentTabsProps {
   showMods: boolean;
   runtimeSummary: ModpackRuntimeSummary;
   onOpenGuidedContent: (contentType: 'resourcepack' | 'shader') => void;
+  presentation?: 'disclosure' | 'inline';
 }
 
 export function ClassicContentTabs({
@@ -22,6 +23,7 @@ export function ClassicContentTabs({
   showMods,
   runtimeSummary,
   onOpenGuidedContent,
+  presentation = 'disclosure',
 }: ClassicContentTabsProps) {
   const { t } = useSettings();
   const [activeTab, setActiveTab] = useState<ContentTab>(showMods ? 'mods' : 'resourcepacks');
@@ -42,13 +44,7 @@ export function ClassicContentTabs({
     window.requestAnimationFrame(() => document.getElementById(`${idPrefix}-tab-${next.key}`)?.focus());
   };
 
-  return (
-    <CollapsibleSection
-      title={title}
-      defaultExpanded={false}
-      storageKey="classic_content_expanded"
-      className="mt-4 min-w-0 w-full"
-    >
+  const content = (
       <div className="min-w-0 space-y-4">
         <div
           className="flex min-w-0 gap-2 overflow-x-auto overflow-y-hidden border-b border-border [&::-webkit-scrollbar]:hidden"
@@ -129,6 +125,10 @@ export function ClassicContentTabs({
           ) : null}
         </div>
       </div>
+  );
+  return presentation === 'inline' ? content : (
+    <CollapsibleSection title={title} defaultExpanded={false} storageKey="classic_content_expanded" className="mt-4 min-w-0 w-full">
+      {content}
     </CollapsibleSection>
   );
 }

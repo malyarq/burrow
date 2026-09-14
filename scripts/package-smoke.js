@@ -45,13 +45,11 @@ const UPGRADE_CONTROL_PLANE = Object.freeze({
   _burrowSchemaVersion: 1,
 });
 
+const CURRENT_PRODUCT_NAME = 'Burrow Next';
+const STABLE_PRODUCT_NAME = 'Burrow';
+
 function expectedArtifactName(version, platform) {
-  switch (platform) {
-    case 'darwin': return `Burrow-Mac-${version}-Installer.dmg`;
-    case 'win32': return `Burrow-Windows-${version}-Setup.exe`;
-    case 'linux': return `Burrow-Linux-${version}.AppImage`;
-    default: throw new Error(`unsupported platform: ${platform}`);
-  }
+  return artifactNameForProduct(CURRENT_PRODUCT_NAME, version, platform);
 }
 
 function artifactNameForProduct(productName, version, platform) {
@@ -65,7 +63,7 @@ function artifactNameForProduct(productName, version, platform) {
 
 export function productNameForArtifact(artifactPath, version, platform) {
   const artifactName = basename(artifactPath);
-  if (artifactName === artifactNameForProduct('Burrow', version, platform)) return 'Burrow';
+  if (artifactName === artifactNameForProduct(STABLE_PRODUCT_NAME, version, platform)) return STABLE_PRODUCT_NAME;
   throw new Error(`unexpected previous release artifact: ${artifactName}`);
 }
 
@@ -296,7 +294,7 @@ function findSingleApp(root) {
   return join(root, apps[0].name);
 }
 
-function macAdapter({ artifactPath, workspace, ports, productName = 'Burrow' }) {
+function macAdapter({ artifactPath, workspace, ports, productName = CURRENT_PRODUCT_NAME }) {
   const mountPath = join(workspace, 'mounted-dmg');
   const copiedApp = join(workspace, `${productName}.app`);
   ports.mkdir(mountPath);
@@ -319,7 +317,7 @@ function macAdapter({ artifactPath, workspace, ports, productName = 'Burrow' }) 
   };
 }
 
-function windowsAdapter({ artifactPath, workspace, ports, productName = 'Burrow' }) {
+function windowsAdapter({ artifactPath, workspace, ports, productName = CURRENT_PRODUCT_NAME }) {
   const installDir = join(workspace, 'installed');
   const escapedInstallDir = installDir.replaceAll("'", "''");
   const escapedWorkspace = workspace.replaceAll("'", "''");
@@ -330,7 +328,8 @@ function windowsAdapter({ artifactPath, workspace, ports, productName = 'Burrow'
   return {
     command: executable,
     args: [],
-    cleanup: () => ports.execFile('powershell.exe', [
+    cleanup: () => {
+      ports.execFile('powershell.exe', [
       '-NoLogo',
       '-NoProfile',
       '-NonInteractive',
@@ -340,7 +339,10 @@ function windowsAdapter({ artifactPath, workspace, ports, productName = 'Burrow'
         `$workspace = [IO.Path]::GetFullPath('${escapedWorkspace}')`,
         'Get-CimInstance Win32_Process | Where-Object { $_.ProcessId -ne $PID -and (($_.ExecutablePath -and [IO.Path]::GetFullPath($_.ExecutablePath).StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) -or ($_.CommandLine -and $_.CommandLine.IndexOf($workspace, [StringComparison]::OrdinalIgnoreCase) -ge 0)) } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }',
       ].join('; '),
-    ]),
+      ]);
+      const uninstaller = join(installDir, `Uninstall ${productName}.exe`);
+      if (ports.exists(uninstaller)) ports.execFile(uninstaller, ['/S', `_?=${installDir}`]);
+    },
   };
 }
 

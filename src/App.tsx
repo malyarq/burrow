@@ -23,12 +23,9 @@ import { useOperationRecovery } from './features/operations/recovery/OperationRe
 
 import { ConsoleWindow } from './components/ConsoleWindow';
 
-export const APP_STARTUP_PENDING_TEST_ID = 'app-startup-pending';
-
 function MainApp() {
   const effectiveInstance = useEffectiveInstance();
   const modpackConfig = effectiveInstance.status === 'ready' ? effectiveInstance.data.snapshot : null;
-  const modpackReady = modpackConfig !== null;
   const { showSettings, showMultiplayer, openSettings, closeSettings, openMultiplayer, closeMultiplayer } = useAppOverlays();
   const { iconPath } = useAppIcon();
   const {
@@ -134,10 +131,6 @@ function MainApp() {
       position: 'bottom',
     },
   ], [t]);
-
-  if (!modpackReady) {
-    return <div data-testid={APP_STARTUP_PENDING_TEST_ID} className="h-full w-full" />;
-  }
 
   return (
     <>

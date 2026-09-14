@@ -32,10 +32,6 @@ vi.mock('../../contexts/SettingsContext', () => ({
         'settings.animations_scope_desc': 'Controls launcher motion and background effects without changing preset colors or surfaces.',
         'settings.compact_mode': 'Compact Mode',
         'settings.compact_mode_desc': 'Tightens launcher spacing and list density; it does not change the active preset.',
-        'settings.sidebar_position': 'Sidebar Position',
-        'settings.sidebar_position_left': 'Left',
-        'settings.sidebar_position_right': 'Right',
-        'settings.sidebar_position_desc': 'Moves launcher navigation only; preset visuals stay unchanged.',
         'settings.launcher_runtime_title': 'Launcher Runtime',
         'settings.launcher_runtime_desc': 'Tune how the launcher behaves while you play, debug issues, and navigate the shell.',
         'settings.updatesTitle': 'Updates',
@@ -54,8 +50,6 @@ vi.mock('../../contexts/SettingsContext', () => ({
     setUiScale: vi.fn(),
     disableAnimations: false,
     setDisableAnimations: vi.fn(),
-    sidebarPosition: 'left',
-    setSidebarPosition: vi.fn(),
     compactMode: true,
     setCompactMode: vi.fn(),
     getAccentStyles: () => ({ className: '', style: undefined }),
@@ -141,7 +135,7 @@ describe('SettingsPage launcher route', () => {
     })) as typeof window.matchMedia;
   });
 
-  it('surfaces runtime, layout, and motion controls from Launcher instead of Appearance', async () => {
+  it('surfaces runtime and motion controls from Launcher instead of Appearance', async () => {
     render(<SettingsPage onClose={onCloseMock} initialTab="launcher" />);
 
     expect(screen.getByRole('tabpanel', { name: 'Launcher' })).toBeTruthy();
@@ -150,7 +144,7 @@ describe('SettingsPage launcher route', () => {
     expect(screen.getByRole('switch', { name: 'Developer console' })).toBeTruthy();
     expect(screen.getByRole('switch', { name: 'Enable Animations' })).toBeTruthy();
     expect(screen.getByRole('switch', { name: 'Compact Mode' })).toBeTruthy();
-    expect(screen.getByText('Sidebar Position')).toBeTruthy();
+    expect(screen.queryByText('Sidebar Position')).toBeNull();
     expect(screen.getByTestId('launcher-runtime-grid')).toBeTruthy();
     expect(screen.getByDisplayValue('110')).toBeTruthy();
     expect(screen.getByText('Minecraft path surface')).toBeTruthy();

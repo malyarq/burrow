@@ -15,8 +15,9 @@ export function SettingsTabsHeader(props: {
   onTabChange: (tab: SettingsTabId) => void;
   t: (key: string) => string;
   getAccentStyles: (type: AccentStyleType) => { className?: string; style?: React.CSSProperties };
+  layout?: 'row' | 'sidebar';
 }) {
-  const { activeTab, onTabChange, t, getAccentStyles } = props;
+  const { activeTab, onTabChange, t, getAccentStyles, layout = 'row' } = props;
   const tabRefs = useRef<Record<SettingsTabId, HTMLButtonElement | null>>({
     appearance: null,
     downloads: null,
@@ -76,10 +77,13 @@ export function SettingsTabsHeader(props: {
 
   return (
     <div
-      className="settings-tab-row grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6"
+      className={cn(
+        'settings-tab-row',
+        layout === 'sidebar' ? 'flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible' : 'grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6',
+      )}
       role="tablist"
       aria-label={t('settings.title')}
-      aria-orientation="horizontal"
+      aria-orientation={layout === 'sidebar' ? 'vertical' : 'horizontal'}
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
@@ -102,8 +106,12 @@ export function SettingsTabsHeader(props: {
             tabIndex={isActive ? 0 : -1}
             data-state={isActive ? 'active' : 'inactive'}
             className={cn(
-              'settings-tab-option w-full text-center',
-              isActive ? 'text-foreground' : 'text-secondary'
+              layout === 'sidebar'
+                ? 'min-h-10 shrink-0 rounded-lg px-3 text-left transition-colors lg:w-full'
+                : 'settings-tab-option w-full text-center',
+              isActive
+                ? 'bg-[rgb(var(--accent-main)/0.1)] text-foreground'
+                : 'text-secondary hover:bg-card/70 hover:text-foreground',
             )}
           >
             <span

@@ -121,8 +121,8 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
         || 'An active shader file only means Burrow stored the selection. It is not proof that the pack will render correctly.';
 
     return (
-        <div className="space-y-4">
-            <div className="surface-card space-y-5 rounded-xl p-5">
+        <div className="space-y-5">
+            <div className="space-y-4 border-b border-border/65 pb-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_shaders')}</div>
@@ -133,12 +133,12 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {onAddShader && (
-                            <Button onClick={onAddShader} variant="primary" size="sm" disabled={loading}>
+                            <Button onClick={onAddShader} variant="primary" size="sm" geometry="catalog-primary" disabled={loading}>
                                 <Sparkles className="h-4 w-4" />
                                 {t('modpacks.add_shader_btn')}
                             </Button>
                         )}
-                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" disabled={loading} isLoading={loading}>
+                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
                         </Button>
@@ -174,7 +174,7 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
                             className={cn(
                                 'rounded-full border px-2 py-0.5 text-xs font-medium',
                                 shaderCapabilityTone === 'positive' && 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
-                                shaderCapabilityTone === 'warning' && 'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200',
+                                shaderCapabilityTone === 'warning' && 'border-amber-500/35 bg-background text-amber-800 dark:text-amber-200',
                                 shaderCapabilityTone === 'error' && 'border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-200',
                                 shaderCapabilityTone === 'neutral' && 'border-border/70 bg-background/70 text-secondary',
                             )}
@@ -196,6 +196,7 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
                 <DegradedStateView
                     variant="unavailable"
                     layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.unavailable_label')}
                     title={t('modpacks.shader_load_error')}
                     description={shaderLoadDescription}
@@ -218,6 +219,7 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
                 <DegradedStateView
                     variant="empty"
                     layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.empty_label')}
                     title={t('modpacks.no_shaders_installed')}
                     description={t('modpacks.shaders_empty_hint')}
@@ -235,7 +237,7 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
                             key={pack.fileName}
                             role="listitem"
                             className={cn(
-                                'surface-card flex flex-col gap-4 rounded-xl p-5 lg:flex-row lg:items-center lg:justify-between',
+                                'surface-card flex flex-col gap-4 rounded-xl p-4 lg:flex-row lg:items-center lg:justify-between',
                                 pack.isActive && 'border-emerald-500/40 bg-emerald-500/6'
                             )}
                         >

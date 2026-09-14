@@ -53,7 +53,7 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
 }) => {
   return (
     <div
-      className={cn('surface-muted mb-4 space-y-2.5 p-4', className)}
+      className={cn('mb-7 space-y-4 border-b border-border/65 pb-6', className)}
       role="search"
       aria-label={searchLabel}
       data-testid={rootTestId}
@@ -62,16 +62,16 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
       {header && <div data-testid={headerTestId}>{header}</div>}
 
       <div
-        className="flex flex-col gap-3 lg:flex-row lg:items-end"
+        className="grid gap-3 md:grid-cols-[minmax(0,1.45fr)_minmax(28rem,1fr)] md:items-end"
         data-testid={controlsTestId}
-        data-catalog-controls-layout="compact-shared"
+        data-catalog-controls-layout="library-toolbar"
       >
         <div className="min-w-0 flex-1 space-y-1">
           <div className="text-xs font-medium text-secondary">{searchLabel}</div>
           {searchControl}
         </div>
         {controls.length > 0 && (
-          <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-3">
+          <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3">
             {controls.map((item) => (
               <div key={item.key} className="space-y-1">
                 <div className="text-xs font-medium text-secondary">{item.label}</div>
@@ -81,7 +81,7 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
           </div>
         )}
         {onReset && activeFilterTokens.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={onReset} className="shrink-0">
+          <Button variant="ghost" size="sm" onClick={onReset} className="justify-self-start md:col-start-2">
             {resetLabel}
           </Button>
         )}
@@ -94,7 +94,7 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
       )}
 
       {activeFilterTokens.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-secondary">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-secondary" data-testid="catalog-active-filters">
           {activeFilterTokens.map((token) => (
             <span key={token} className="rounded-full border border-border/70 bg-background/72 px-2.5 py-1">
               {token}

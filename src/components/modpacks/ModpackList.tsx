@@ -94,7 +94,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
     <>
       <div
         className={cn(
-          'flex flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-7 sm:py-8 xl:px-10 transition-all',
+          'flex flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-7 sm:py-8 lg:px-10',
           catalog.isDragging && 'border-2 border-dashed border-border-active bg-background/60',
         )}
         onDragOver={catalog.handleDragOver}
@@ -131,6 +131,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
           </div>
         )}
 
+        <div className="mx-auto w-full max-w-[67rem]">
         <InstalledModpackContextMenu
           items={catalog.items}
           selectedId={selectedId}
@@ -169,6 +170,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
             onBrowse={browse}
           />
         </InstalledModpackContextMenu>
+        </div>
       </div>
 
       {shareModpackId && (

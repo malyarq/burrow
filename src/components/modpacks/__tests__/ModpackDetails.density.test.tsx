@@ -149,8 +149,8 @@ describe('Modpack details density', () => {
 
     const hero = screen.getByTestId('modpack-details-hero');
     const routeTop = screen.getByTestId('modpack-details-route-top');
-    expect(hero.className).toContain('surface-card');
-    expect(hero.className).toContain('lg:grid-cols-[minmax(0,1fr)_15rem]');
+    expect(hero.className).not.toContain('surface-card');
+    expect(hero.className).toContain('space-y-5');
     expect(routeTop.className).not.toContain('flex-col');
     expect(routeTop.textContent).not.toContain('Modpack details');
 

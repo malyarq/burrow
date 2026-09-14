@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import path from 'node:path';
 
 const electron = vi.hoisted(() => ({
   getPath: vi.fn(() => '/tmp/Burrow'),
@@ -12,6 +13,11 @@ vi.mock('electron', () => ({ app: electron }));
 import { acquireApplicationInstance, focusExistingWindow, getCurrentExecutablePath, handleSecondApplicationInstance, isNewerApplicationVersion, resolveIncomingUpgrade } from '../singleInstance';
 
 describe('single application instance', () => {
+  it.each(['Burrow Next.exe', 'Burrow Next', 'Burrow Next-Linux-1.0.0-next.2.AppImage'])('accepts the exact Next executable %s', (name) => {
+    const incoming = { version: '1.0.0-next.2', executablePath: path.resolve('/opt', name) };
+    expect(resolveIncomingUpgrade('1.0.0-next.1', incoming)).toEqual(incoming);
+    expect(resolveIncomingUpgrade('1.0.0-next.1', { ...incoming, executablePath: path.resolve('/opt', 'Burrow Next injected.exe') })).toBeUndefined();
+  });
   beforeEach(() => {
     electron.getPath.mockClear();
     electron.setPath.mockClear();

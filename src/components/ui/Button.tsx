@@ -23,7 +23,7 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
     const isBusy = Boolean(isLoading);
     const baseStyles =
-        'motion-safe-transform flex min-w-0 items-center justify-center gap-2 rounded-lg border font-medium leading-none shadow-none disabled:hover:shadow-none motion-safe:transform motion-safe:transition-all motion-safe:duration-150 motion-safe:ease-out motion-safe:active:scale-[0.98]  focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-100 disabled:shadow-none disabled:active:scale-100 disabled:hover:scale-100';
+        'flex min-w-0 items-center justify-center gap-2 rounded-lg border font-medium leading-none shadow-none motion-safe:transition-colors motion-safe:duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-100 disabled:shadow-none';
 
     const variants = {
         primary:

@@ -144,24 +144,24 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
   };
 
   return (
-    <div className="min-w-0 space-y-5">
+    <div className="min-w-0 space-y-5 border-b border-border/65 pb-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <LazyImage
           src={metadata?.iconUrl}
           alt={modpackName}
           fallbackKind="content-artwork"
-          className="h-20 w-16 shrink-0 self-start rounded-2xl border border-border/70 object-cover sm:h-24 sm:w-20"
+          className="h-20 w-20 shrink-0 self-start rounded-2xl border border-border/70 object-cover shadow-sm sm:h-24 sm:w-24"
         />
         <div className="min-w-0 flex-1 space-y-4">
           <div className="space-y-1">
-            <h2 className="text-3xl font-bold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-4xl">{modpackName}</h2>
+            <h2 className="text-3xl font-bold leading-[1.05] tracking-[-0.045em] text-foreground sm:text-5xl">{modpackName}</h2>
           </div>
           {metadataEntries.length > 0 && (
-            <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2" data-testid="modpack-details-metadata">
+            <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2" data-testid="modpack-details-metadata">
               {metadataEntries.map((entry) => (
-                <div key={entry.label} className="flex min-w-0 items-baseline justify-between gap-3 border-b border-border/55 py-1.5">
-                  <span className="text-xs text-muted">{entry.label}</span>
-                  <span className="break-words text-right text-sm font-medium leading-5 text-foreground">{entry.value}</span>
+                <div key={entry.label} className="min-w-0 border-l-2 border-border/65 pl-3 py-0.5">
+                  <span className="block text-[11px] font-medium uppercase tracking-[0.08em] text-muted">{entry.label}</span>
+                  <span className="mt-0.5 block break-words text-sm font-medium leading-5 text-foreground">{entry.value}</span>
                 </div>
               ))}
             </div>
@@ -170,7 +170,7 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
       </div>
 
       <div
-        className="flex flex-wrap gap-1 border-b border-border/60 pb-px"
+        className="flex flex-wrap gap-1"
         role="tablist"
         aria-label={t('modpacks.details_title') || 'Modpack details'}
         aria-orientation="horizontal"

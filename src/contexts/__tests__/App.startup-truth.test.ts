@@ -3,7 +3,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import App, { APP_STARTUP_PENDING_TEST_ID } from '../../App';
+import App from '../../App';
 import { AppProviders } from '../../app/providers';
 import type { AppLayoutProps } from '../../components/AppLayout';
 import { CLASSIC_MODPACK_ID } from '../../../shared/constants';
@@ -157,7 +157,7 @@ describe('App canonical instance startup truth', () => {
     prepareMock.mockResolvedValue({ ok: true, value: { status: 'ready' } });
   });
 
-  it('keeps the app startup-pending until the canonical classic snapshot resolves', async () => {
+  it('keeps the product shell visible while the canonical classic snapshot resolves', async () => {
     const selected = snapshot('default', 'Default', '1.12.2', 'vanilla');
     const classic = snapshot(CLASSIC_MODPACK_ID, 'Classic', '1.20.1', 'fabric');
     let resolveClassic: ((value: ReturnType<typeof readySnapshot>) => void) | undefined;
@@ -168,12 +168,12 @@ describe('App canonical instance startup truth', () => {
 
     render(React.createElement(AppProviders, null, React.createElement(App)));
 
-    expect(screen.getByTestId(APP_STARTUP_PENDING_TEST_ID)).toBeTruthy();
+    expect(screen.getByTestId('app-layout')).toBeTruthy();
     await waitFor(() => {
       expect(snapshotMock).toHaveBeenCalledWith({ id: 'default' });
       expect(snapshotMock).toHaveBeenCalledWith({ id: CLASSIC_MODPACK_ID });
     });
-    expect(screen.queryByTestId('app-layout')).toBeNull();
+    expect(screen.getByTestId('app-layout').textContent).not.toBe('1.20.1|fabric');
 
     resolveClassic?.(readySnapshot(classic));
     await waitFor(() => expect(screen.getByTestId('app-layout').textContent).toBe('1.20.1|fabric'));
@@ -202,7 +202,6 @@ describe('App canonical instance startup truth', () => {
 
     await waitFor(() => expect(listMock).toHaveBeenCalledWith());
     expect(snapshotMock).not.toHaveBeenCalled();
-    expect(screen.getByTestId(APP_STARTUP_PENDING_TEST_ID)).toBeTruthy();
-    expect(screen.queryByTestId('app-layout')).toBeNull();
+    expect(screen.getByTestId('app-layout')).toBeTruthy();
   });
 });

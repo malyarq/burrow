@@ -13,16 +13,15 @@ import { APP_ICON_PATH } from '../../app/assets/branding';
 
 const t = createTranslator('en');
 const uiModeState = { value: 'simple' as 'simple' | 'modpacks' };
-const settingsState = { sidebarPosition: 'left' as 'left' | 'right' };
 const titleBarState = { platform: 'default' as 'default' | 'macos' };
 const shellContractState = { value: 'renderer-controls' as 'renderer-controls' | 'native-macos' };
 
 vi.mock('../../contexts/SettingsContext', () => ({
   useUIMode: () => ({
     uiMode: uiModeState.value,
+    setMode: vi.fn(),
   }),
   useSettings: () => ({
-    sidebarPosition: settingsState.sidebarPosition,
     t,
   }),
 }));
@@ -46,24 +45,34 @@ vi.mock('../TitleBar', () => ({
   ),
 }));
 
-vi.mock('../Sidebar', () => ({
-  default: () => <aside>Sidebar</aside>,
+vi.mock('../../product/PlayWorkspace', () => ({
+  PlayWorkspace: () => <div>Play workspace</div>,
 }));
 
 vi.mock('../modpacks/ModpackRouter', () => ({
   ModpackRouter: () => <div>Modpack router</div>,
 }));
 
-vi.mock('../SimplePlayDashboard', () => ({
-  SimplePlayDashboard: () => <div>Simple play dashboard</div>,
+vi.mock('../../product/SettingsWorkspace', () => ({
+  SettingsWorkspace: () => <div>Settings workspace</div>,
 }));
 
-vi.mock('../SettingsPage', () => ({
-  default: () => <div>Settings page</div>,
+vi.mock('../../product/FriendsWorkspace', () => ({
+  FriendsWorkspace: () => <div>Together workspace</div>,
 }));
 
-vi.mock('../MultiplayerPage', () => ({
-  default: () => <div>Multiplayer page</div>,
+vi.mock('../modpacks/primaryActionOwnership', () => ({
+  useModpackPrimaryActionOwnership: () => 'shell',
+}));
+
+vi.mock('../../features/instances/hooks/useInstanceSelectors', () => ({
+  useInstanceList: () => ({ status: 'ready', data: [] }),
+  useSelectedInstanceId: () => ({ status: 'ready', data: null }),
+  useSelectedInstance: () => ({ status: 'uninitialized' }),
+}));
+
+vi.mock('../../features/launcher/services/launcherService', () => ({
+  getLaunchActionLabel: () => 'Play',
 }));
 
 function createProps(): AppLayoutProps {
@@ -132,7 +141,6 @@ function createProps(): AppLayoutProps {
 describe('UpdateNotification shell layout', () => {
   beforeEach(() => {
     uiModeState.value = 'simple';
-    settingsState.sidebarPosition = 'left';
     titleBarState.platform = 'default';
     shellContractState.value = 'renderer-controls';
   });
@@ -151,7 +159,7 @@ describe('UpdateNotification shell layout', () => {
     expect(safeArea.getAttribute('data-shell-safe-area')).toBe('shell-chrome');
     expect(notifications.getAttribute('data-shell-platform')).toBe('renderer-controls');
     expect(safeArea.getAttribute('data-shell-platform')).toBe('renderer-controls');
-    expect(safeArea.className).toContain('pt-0');
+    expect(safeArea.className).toContain('next-safe-area');
     expect(banner.getAttribute('data-update-scope')).toBe('app-shell');
     expect(banner.className).toContain('relative');
     expect(banner.className).not.toContain('fixed');
@@ -176,7 +184,7 @@ describe('UpdateNotification shell layout', () => {
     expect(titleBar.nextElementSibling).toBe(notifications);
     expect(notifications.getAttribute('data-shell-platform')).toBe('native-macos');
     expect(safeArea.getAttribute('data-shell-platform')).toBe('native-macos');
-    expect(safeArea.className).toContain('pt-1');
+    expect(safeArea.className).toContain('next-safe-area');
     expect(banner.getAttribute('data-update-scope')).toBe('app-shell');
     expect(banner.className).toContain('relative');
     expect(banner.className).not.toContain('fixed');

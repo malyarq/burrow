@@ -62,7 +62,7 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} closeLabel={t('general.close_dialog')} title={t('accounts.addAccount')}>
-            <div className="surface-muted mb-4 space-y-2 p-4">
+            <div className="mb-5 space-y-2 border-b border-border/70 pb-5">
                 <p className="kicker-label">{t('accounts.addAccount')}</p>
                 <p className="text-sm leading-6 text-secondary">
                     {authType === 'offline'
@@ -72,14 +72,14 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
             </div>
 
             <div
-                className="mb-6 flex gap-2 rounded-[20px] border border-border/60 bg-background/84 p-1 shadow-inner"
+                className="mb-6 flex gap-2 rounded-xl border border-border/60 bg-background/84 p-1"
                 role="group"
                 aria-label={t('accounts.authMode') || 'Account type'}
             >
                 <button
                     type="button"
                     className={clsx(
-                        'flex flex-1 items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium transition-colors',
+                        'flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium transition-colors',
                         authType === 'offline' ? 'bg-card text-foreground shadow-sm' : 'text-secondary hover:text-foreground'
                     )}
                     aria-pressed={authType === 'offline'}
@@ -91,7 +91,7 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
                 <button
                     type="button"
                     className={clsx(
-                        'flex flex-1 items-center justify-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium transition-colors',
+                        'flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium transition-colors',
                         authType === 'third-party' ? 'bg-card text-foreground shadow-sm' : 'text-secondary hover:text-foreground'
                     )}
                     aria-pressed={authType === 'third-party'}
@@ -104,7 +104,7 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {authType === 'offline' ? (
-                    <div className="surface-card space-y-4 p-4">
+                    <div className="space-y-4">
                         <Input
                             label={t('accounts.nickname')}
                             value={nickname}
@@ -115,7 +115,7 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
                         />
                     </div>
                 ) : (
-                    <div className="surface-card space-y-4 p-4">
+                    <div className="space-y-4">
                         <div>
                             <Input
                                 label={t('accounts.serverUrl')}
@@ -147,7 +147,7 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
                 )}
 
                 {error && (
-                    <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-200">
+                    <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-200">
                         {error}
                     </div>
                 )}

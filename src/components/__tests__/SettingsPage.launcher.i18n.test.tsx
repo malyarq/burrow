@@ -30,10 +30,6 @@ vi.mock('../../contexts/SettingsContext', () => ({
         'settings.animations_scope_desc': 'Управляет анимацией лаунчера и фоновыми эффектами, не меняя цвета или поверхности выбранной темы.',
         'settings.compact_mode': 'Компактный режим',
         'settings.compact_mode_desc': 'Уплотняет отступы и списки лаунчера; на активную тему это не влияет.',
-        'settings.sidebar_position': 'Положение сайдбара',
-        'settings.sidebar_position_left': 'Слева',
-        'settings.sidebar_position_right': 'Справа',
-        'settings.sidebar_position_desc': 'Перемещает только навигацию лаунчера, не меняя визуальный пресет.',
         'settings.launcher_runtime_title': 'Поведение лаунчера',
         'settings.launcher_runtime_desc': 'Настройте, как лаунчер ведет себя во время игры, диагностики и навигации по оболочке.',
         'settings.updatesTitle': 'Обновления',
@@ -52,8 +48,6 @@ vi.mock('../../contexts/SettingsContext', () => ({
     setUiScale: vi.fn(),
     disableAnimations: false,
     setDisableAnimations: vi.fn(),
-    sidebarPosition: 'left',
-    setSidebarPosition: vi.fn(),
     compactMode: true,
     setCompactMode: vi.fn(),
     getAccentStyles: () => ({ className: '', style: undefined }),
@@ -144,13 +138,12 @@ describe('SettingsPage launcher i18n', () => {
     expect(await screen.findByText('Поведение лаунчера')).toBeTruthy();
     expect(screen.getByRole('switch', { name: 'Включить анимации' })).toBeTruthy();
     expect(screen.getByRole('switch', { name: 'Компактный режим' })).toBeTruthy();
-    expect(screen.getByText('Положение сайдбара')).toBeTruthy();
+    expect(screen.queryByText('Положение сайдбара')).toBeNull();
     expect(screen.getByText('Путь к Minecraft')).toBeTruthy();
     expect(screen.getByText('Приватность и обратная связь')).toBeTruthy();
 
     expect(container.textContent).not.toContain('settings.launcher_runtime_title');
     expect(container.textContent).not.toContain('settings.animations_scope_desc');
     expect(container.textContent).not.toContain('settings.compact_mode_desc');
-    expect(container.textContent).not.toContain('settings.sidebar_position_desc');
   });
 });

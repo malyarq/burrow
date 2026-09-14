@@ -141,11 +141,12 @@ describe('ModpackList ergonomics', () => {
     expect(searchRegion.getAttribute('data-catalog-controls')).toBe('shared');
     expect(searchHeader).toBeTruthy();
     expect(within(searchRegion).getByTestId('installed-modpack-primary-actions').className).toContain('flex-wrap');
-    expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('compact-shared');
-    expect(controlsGrid.className).toContain('lg:flex-row');
+    expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
+    expect(controlsGrid.className).toContain('md:grid-cols-');
     expect(within(searchRegion).getByText('Search modpacks')).toBeTruthy();
     expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
     expect(within(searchRegion).getByText('Modloader')).toBeTruthy();
+    expect(within(searchRegion).getByText('Library')).toBeTruthy();
     expect(screen.queryByText(/Showing\s+\d/i)).toBeNull();
     expect(screen.queryByText(/^Active:/i)).toBeNull();
     expect(screen.getByTestId('installed-modpack-actions-alpha').className).toContain('grid');
@@ -158,6 +159,7 @@ describe('ModpackList ergonomics', () => {
     expect(cardScope.queryByText('Modrinth')).toBeNull();
     expect(cardScope.queryByText('Version')).toBeNull();
     expect(cardScope.queryByText('Modloader')).toBeNull();
+    expect(card?.className).toContain('min-h-[25rem]');
 
     await waitFor(() => {
       expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);

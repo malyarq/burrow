@@ -92,15 +92,18 @@ export function ModpackBrowserFilters({
       headerTestId="remote-modpack-catalog-header"
       controlsTestId="remote-modpack-filter-controls"
       header={(
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <h2 className="text-base font-semibold text-foreground">{t('modpacks.browser')}</h2>
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-2xl font-semibold tracking-[-0.035em] text-foreground">{translateWithFallback(t, 'library.discover_title', 'Discover modpacks')}</h2>
+            <p className="mt-1 text-sm text-secondary">{translateWithFallback(t, 'library.discover_description', 'Browse curated packs and open one when it fits your next session.')}</p>
+            <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
             <span className={cn('rounded-full px-3 py-1 text-xs font-semibold text-white', accent.className)} style={accent.style}>
               {translateWithFallback(t, 'modpacks.platform_modrinth', 'Modrinth')}
             </span>
             <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">
               {translateWithFallback(t, 'modpacks.provider_curseforge_unavailable', 'CurseForge browse unavailable')}
             </span>
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2" data-testid="remote-modpack-primary-actions">
             <Button
@@ -108,7 +111,7 @@ export function ModpackBrowserFilters({
               size="sm"
               geometry="catalog-primary"
               onClick={onOpenHistory}
-              className="min-h-10 flex-1 justify-center gap-2 px-4 sm:flex-none"
+              className="min-h-10 justify-center gap-2 px-4"
               title={t('modpacks.history_tooltip') || 'История просмотров'}
             >
               <History className="h-4 w-4 shrink-0" />

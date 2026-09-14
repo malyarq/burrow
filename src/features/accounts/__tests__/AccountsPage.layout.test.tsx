@@ -17,6 +17,7 @@ vi.mock('../../../contexts/SettingsContext', () => ({
         'accounts.active': 'Active',
         'accounts.savedCountLabel': 'Saved accounts',
         'accounts.activeAccount': 'Current account',
+        'accounts.noAccounts': 'No accounts yet',
         'accounts.typeOffline': 'Offline',
         'accounts.providerSupportHint': 'Blessing Skin and LittleSkin are supported for provider-aware skin management.',
       }[key] ?? key),
@@ -68,5 +69,16 @@ describe('AccountsPage layout', () => {
     expect((await screen.findAllByText('Saved accounts')).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: 'Add Account' })).toBeTruthy();
     expect(screen.getByText('Current account')).toBeTruthy();
+  });
+
+  it('keeps an actionable empty state when the settings route has no saved accounts', async () => {
+    getAccountsMock.mockResolvedValue([]);
+    getSelectedAccountMock.mockResolvedValue(null);
+
+    render(<AccountsPage embedded />);
+
+    expect(await screen.findByText('No accounts yet')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Add Account' })).toBeTruthy();
+    expect(screen.queryByText('Current account')).toBeNull();
   });
 });

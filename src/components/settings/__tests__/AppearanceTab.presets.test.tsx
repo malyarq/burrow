@@ -129,6 +129,26 @@ describe('AppearanceTab preset contract', () => {
     expect(screen.getByText('Alternate variant')).toBeTruthy();
   });
 
+  it('keeps custom surface colors when switching between light and dark variants', async () => {
+    renderAppearanceTab();
+
+    fireEvent.change(getPresetSelect(), { target: { value: 'forest' } });
+    await waitFor(() => expect(localStorage.getItem('settings_themePresetId')).toBe('forest'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Custom colors' }));
+    fireEvent.change(screen.getByLabelText('Window background'), { target: { value: '#112233' } });
+
+    await waitFor(() => expect(localStorage.getItem('settings_customTheme')).toContain('#112233'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
+    await waitFor(() => expect(localStorage.getItem('settings_theme')).toBe('light'));
+    expect(JSON.parse(localStorage.getItem('settings_customTheme') ?? '{}')).toEqual({ colors: { background: '#112233' } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Dark' }));
+    await waitFor(() => expect(localStorage.getItem('settings_theme')).toBe('dark'));
+    expect(JSON.parse(localStorage.getItem('settings_customTheme') ?? '{}')).toEqual({ colors: { background: '#112233' } });
+  });
+
   it('exports the localized preset summary while keeping the stable preset identity', async () => {
     let exportBlob: Blob | null = null;
     const createObjectUrlSpy = vi.spyOn(URL, 'createObjectURL').mockImplementation((blob) => {

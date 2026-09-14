@@ -79,7 +79,7 @@ const DEFAULT_APPEARANCE_STATE: AppearanceSettingsState = {
     accentColorSource: 'preset',
     customTheme: {},
     theme: 'dark',
-    themePresetId: null,
+    themePresetId: 'default',
 };
 
 function parseStoredTheme(raw: string | null): Theme {
@@ -173,7 +173,8 @@ function deserializeAppearanceState(raw: string | null): AppearanceSettingsState
     const legacyAccentColor = parseStoredAccentColor(legacyAccentRaw);
     const explicitPresetId = parseStoredThemePresetId(localStorage.getItem('settings_themePresetId'));
     const legacyCustomTheme = parseStoredCustomTheme(localStorage.getItem('settings_customTheme'));
-    const inferredPresetId = explicitPresetId ?? inferThemePresetId(legacyTheme, legacyCustomTheme);
+    const inferredPresetId = explicitPresetId ?? inferThemePresetId(legacyTheme, legacyCustomTheme)
+        ?? (Object.keys(legacyCustomTheme).length === 0 ? 'default' : null);
 
     return normalizeAppearanceState({
         accentColor: legacyAccentColor,

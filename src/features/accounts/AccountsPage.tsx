@@ -160,7 +160,7 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                 </div>
             )}
 
-            <div className={clsx("grid gap-6", selectedAccount && "xl:grid-cols-[1.05fr_0.95fr]")}>
+            <div className={clsx("grid gap-6", selectedAccount && !embedded && "xl:grid-cols-[1.05fr_0.95fr]")}>
                 <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                         <div className="min-w-0">
@@ -183,7 +183,7 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                                 key={account.id}
                                 role="listitem"
                                 className={clsx(
-                                    "group flex items-center justify-between gap-4 rounded-lg border border-border p-4 transition-colors",
+                                    "group flex items-center justify-between gap-4 rounded-xl border border-border p-4 transition-colors",
                                     account.isDisabled
                                         ? "bg-amber-500/10 border-amber-500/30"
                                         : selectedId === account.id
@@ -276,7 +276,7 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                         ))}
 
                         {accounts.length === 0 && (
-                            <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border px-6 py-10 text-center text-secondary">
+                            <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border px-6 py-10 text-center text-secondary">
                                 <User size={32} className="opacity-60" />
                                 <p>{t('accounts.noAccounts')}</p>
                             </div>
@@ -284,7 +284,7 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                     </div>
                 </div>
 
-                {selectedAccount && <div className="space-y-6 border-border xl:border-l xl:pl-6">
+                {selectedAccount && <div className={clsx("space-y-6 border-border", embedded ? "border-t pt-6" : "xl:border-l xl:pl-8")}>
                     <div className="space-y-3">
                         <div className="kicker-label">{t('accounts.activeAccount')}</div>
                         {selectedAccount ? (

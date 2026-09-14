@@ -1,0 +1,159 @@
+import { expect, test, type Page } from '@playwright/test';
+
+const productNext = '/manual-verification.html?view=product-next&lang=en';
+const runtimeErrors = new WeakMap<Page, string[]>();
+
+test.beforeEach(async ({ page }) => {
+  const errors: string[] = [];
+  runtimeErrors.set(page, errors);
+  page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(`console.error: ${message.text()}`);
+  });
+});
+
+test.afterEach(async ({ page }) => {
+  await page.evaluate(() => new Promise<void>(requestAnimationFrame));
+  expect(runtimeErrors.get(page) ?? []).toEqual([]);
+});
+
+async function openProduct(page: Page, width = 1280, height = 900) {
+  await page.setViewportSize({ width, height });
+  await page.goto(productNext);
+  await expect(page.getByTestId('next-nav-play')).toBeVisible();
+  await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
+}
+
+async function assertNoHorizontalOverflow(page: Page) {
+  const overflow = await page.evaluate(() => ({
+    document: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+    body: document.body.scrollWidth <= document.body.clientWidth + 1,
+    shell: (() => {
+      const shell = document.querySelector<HTMLElement>('[data-testid="app-shell-frame"]');
+      return Boolean(shell && shell.scrollWidth <= shell.clientWidth + 1);
+    })(),
+  }));
+  expect(overflow).toEqual({ document: true, body: true, shell: true });
+}
+
+async function openGuidedContent(page: Page, tab: 'Resource packs' | 'Shaders', action: RegExp, title: RegExp) {
+  await page.getByRole('tab', { name: tab, exact: true }).click();
+  await page.getByRole('button', { name: action }).first().click();
+  await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+}
+
+test('Product Next exposes the four top-level destinations and preserves a settings tab after navigation', async ({ page }) => {
+  await openProduct(page);
+
+  for (const id of ['play', 'library', 'friends', 'settings'] as const) {
+    await expect(page.getByTestId(`next-nav-${id}`)).toBeVisible();
+  }
+
+  await page.getByTestId('next-nav-settings').click();
+  await expect(page.getByTestId('settings-workspace')).toBeVisible();
+  await page.locator('#settings-tab-downloads').click();
+  await expect(page.locator('#settings-panel-downloads')).toBeVisible();
+
+  await page.getByTestId('next-nav-library').click();
+  await expect(page.getByTestId('library-launch-dock')).toBeVisible();
+  await page.getByTestId('next-nav-settings').click();
+  await expect(page.locator('#settings-tab-downloads')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#settings-panel-downloads')).toBeVisible();
+});
+
+test('Product Next applies visibly distinct light and dark backgrounds without desktop overflow', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-settings').click();
+  await expect(page.getByTestId('settings-workspace')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Light', exact: true }).click();
+  const lightBackground = await page.locator('.next-window').evaluate((element) => getComputedStyle(element).backgroundColor);
+  await page.getByRole('button', { name: 'Dark', exact: true }).click();
+  const darkBackground = await page.locator('.next-window').evaluate((element) => getComputedStyle(element).backgroundColor);
+  expect(lightBackground).not.toBe(darkBackground);
+  await assertNoHorizontalOverflow(page);
+
+  await openProduct(page, 760, 900);
+  await page.getByTestId('next-nav-settings').click();
+  await expect(page.getByTestId('settings-workspace')).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+});
+
+test('Product Next keeps dark preset surfaces separate from accents and restores a named saved theme', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-settings').click();
+  const presets = page.getByRole('combobox', { name: 'Theme Presets', exact: true });
+
+  await presets.selectOption('default');
+  const neutralBackground = await page.locator('.next-window').evaluate((element) => getComputedStyle(element).backgroundColor);
+  await presets.selectOption('navy');
+  const ocean = await page.locator('.next-window').evaluate((element) => ({
+    background: getComputedStyle(element).backgroundColor,
+    accent: getComputedStyle(element).getPropertyValue('--accent-main').trim(),
+  }));
+  expect(ocean.background).not.toBe(neutralBackground);
+  await presets.selectOption('forest');
+  expect(await page.locator('.next-window').evaluate((element) => getComputedStyle(element).backgroundColor)).not.toBe(ocean.background);
+
+  await presets.selectOption('navy');
+  await page.getByRole('button', { name: 'Accent Color: blue', exact: true }).click();
+  await expect.poll(() => page.locator('.next-window').evaluate((element) => getComputedStyle(element).getPropertyValue('--accent-main').trim())).not.toBe(ocean.accent);
+  expect(await page.locator('.next-window').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe(ocean.background);
+
+  await page.getByRole('button', { name: 'Custom colors', exact: true }).click();
+  await page.getByRole('button', { name: 'Custom colors', exact: true }).locator('..').getByLabel('Window background', { exact: true }).fill('#102030');
+  const savedSurface = await page.locator('.next-window').evaluate((element) => ({
+    background: getComputedStyle(element).backgroundColor,
+    accent: getComputedStyle(element).getPropertyValue('--accent-main').trim(),
+  }));
+  const savedThemes = page.getByTestId('saved-themes');
+  await savedThemes.getByRole('textbox', { name: 'Theme name', exact: true }).fill('Ocean violet');
+  await savedThemes.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(savedThemes.getByRole('button', { name: 'Ocean violet', exact: true })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Accent Color: purple', exact: true }).click();
+  await page.getByRole('button', { name: 'Custom colors', exact: true }).locator('..').getByLabel('Window background', { exact: true }).fill('#405060');
+  await savedThemes.getByRole('button', { name: 'Ocean violet', exact: true }).click();
+  await expect.poll(() => page.locator('.next-window').evaluate((element) => ({
+    background: getComputedStyle(element).backgroundColor,
+    accent: getComputedStyle(element).getPropertyValue('--accent-main').trim(),
+  }))).toEqual(savedSurface);
+});
+
+test('Product Next keeps the main Play controls stable after returning from the library', async ({ page }) => {
+  await openProduct(page);
+  const before = await page.getByTestId('play-workspace-launch').boundingBox();
+  expect(before).not.toBeNull();
+
+  await page.getByTestId('next-nav-library').click();
+  await expect(page.getByTestId('library-launch-dock')).toBeVisible();
+  await page.getByTestId('next-nav-play').click();
+  await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
+  const after = await page.getByTestId('play-workspace-launch').boundingBox();
+  expect(after).not.toBeNull();
+  expect(after!.x).toBeCloseTo(before!.x, 0);
+  expect(after!.y).toBeCloseTo(before!.y, 0);
+  expect(after!.width).toBeCloseTo(before!.width, 0);
+  expect(after!.height).toBeCloseTo(before!.height, 0);
+});
+
+test('Product Next exposes the memory slider label and reaches 8 GB from the keyboard', async ({ page }) => {
+  await openProduct(page);
+  await page.locator('summary').filter({ hasText: 'Advanced settings' }).click();
+  const memory = page.getByRole('slider', { name: 'Allocated Memory (RAM)', exact: true });
+  await expect(memory).toBeVisible();
+  await memory.focus();
+  await page.keyboard.press('Home');
+  for (let step = 0; step < 14; step += 1) await page.keyboard.press('ArrowRight');
+  await expect(memory).toHaveValue('8');
+  await expect(page.getByTestId('memory-tick-eight')).toHaveText('8 GB');
+});
+
+test('Product Next sends resource-pack and shader actions through their guided library routes', async ({ page }) => {
+  await openProduct(page);
+  await openGuidedContent(page, 'Resource packs', /Add Resource Pack/i, /Add Resource Pack/i);
+
+  await page.goto(productNext);
+  await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
+  await openGuidedContent(page, 'Shaders', /Add Shader/i, /Add Shader/i);
+});

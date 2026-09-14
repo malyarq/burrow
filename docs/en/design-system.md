@@ -1,6 +1,6 @@
 # Design system
 
-This document describes the maintained UI contract. The canonical implementation is `src/index.css`, `tailwind.config.js`, `src/contexts/settings/`, and `src/components/ui/`.
+This document describes the maintained Burrow Next (`1.0.0-next.1`) UI contract. The canonical implementation is `src/index.css`, `src/product/`, `src/contexts/settings/`, and `src/components/ui/`.
 
 Do not copy long Tailwind class lists from this page into new components. Reuse semantic tokens and shared primitives so themes and accessibility behavior stay consistent.
 
@@ -8,16 +8,15 @@ Do not copy long Tailwind class lists from this page into new components. Reuse 
 
 ### Brand identity
 
-The public product name is **Burrow** and the multiplayer feature is **Burrow Link**. The English tagline is **Play local. Bring a friend.** The product mark is a compact voxel hillside opened around a warm torch-lit cave. The cave remains the focal point; grass, dirt, stone, and the small ore detail establish the Minecraft-launcher context without adding characters or a competing tool motif.
+The public product name is **Burrow** and the multiplayer feature is **Burrow Link**. The English tagline is **Play local. Bring a friend.** The Next shell uses new artwork and icons. They support page navigation and content rather than becoming another interactive surface.
 
 | Role | Value |
 | --- | --- |
-| Graphite | `#151816` |
-| Burrow mint | `#73C6A1` |
-| Warm white | `#F5F2E9` |
-| Torch amber | `#FFB45C` |
+| Dark mark field | `#252529` |
+| Light doorway | `#f4f1e9` |
+| Warm doorway detail | `#d5a66b` |
 
-`docs/assets/brand/burrow-app-icon.png` is the canonical artwork. It generates `public/launcher-mark.png`, `public/icon.png`, `public/icon-macos.png`, and `public/icon.ico`; do not crop the cave, flatten its directional lighting, recolor the terrain, or place the mark inside another brand frame. The master has a transparent background and safe space on every side, including below the foreground blocks. Keep the voxel silhouette and alpha edge clean: no grey bands, generated backdrop, or rounded-square mask. `docs/assets/brand/burrow-social-preview.svg` and `.png` are repository/social artwork. The primary lockup may be horizontal or vertical, but the wordmark must remain visually separate from the detailed icon. User-selected accents may customize controls, but they do not recolor the product mark or wordmark.
+`public/burrow-symbol.svg` is the canonical file mark: a geometric doorway on a dark rounded field. `src/product/BurrowSymbol.tsx` is its inline UI variant; it uses `currentColor` and therefore takes its color from the surrounding element. `public/burrow-next-landscape.png` is generated artwork for the Next shell. Files under `docs/assets/brand/` are historical material and are not the source for the current mark or icons. Do not add a separate decorative card around the mark; the wordmark and mark remain independent navigation elements.
 
 ### Semantic colors
 
@@ -28,7 +27,6 @@ Tailwind names map to runtime CSS variables:
 | `background` | `--bg-app` |
 | `card` | `--bg-card` |
 | `overlay` | `--bg-overlay` |
-| `sidebar` | `--bg-sidebar` |
 | `foreground` | `--text-main` |
 | `secondary` | `--text-secondary` |
 | `muted` | `--text-muted` |
@@ -42,7 +40,7 @@ Accent actions use `--accent-main`, `--accent-hover`, and `--accent-content`. Pr
 
 ### Themes and presets
 
-The application supports light and dark modes. Presets are defined in `src/contexts/settings/theme-presets.ts`:
+The application supports neutral light and dark modes. The user chooses an accent independently of the mode and can save custom colors. Presets are defined in `src/contexts/settings/theme-presets.ts`:
 
 - `default`
 - `midnight`
@@ -50,7 +48,11 @@ The application supports light and dark modes. Presets are defined in `src/conte
 - `light-plus`
 - `navy`
 
-Preset changes must preserve explicit user overrides and expose a clear reset target. Do not add a local theme state to a component.
+Preset changes must preserve explicit user overrides and expose a clear reset target. Do not add a local theme state to a component. Motion should be restrained and respects `prefers-reduced-motion` and the `disable-animations` class.
+
+### Next shell
+
+The product has four top-level pages: Play, Library, Together, and Settings. Top navigation chooses one page instead of opening competing panels. Settings is a full page; after its first visit it stays mounted while navigating away so form input and scroll position are retained.
 
 ### Shared surface classes
 
@@ -64,7 +66,7 @@ Use the classes owned by `src/index.css`:
 - `kicker-label` and `helper-text` — supporting hierarchy
 - `settings-*` classes — the shared settings layout contract
 
-These classes own radius, border, opacity, backdrop, and shadows. Avoid rebuilding the same surface with route-local classes.
+These classes own radius, border, opacity, backdrop, and shadows. Avoid rebuilding the same surface with route-local classes. In the Next shell, use plain page sections and do not nest decorative cards without independent content or an action.
 
 ## Shared components
 

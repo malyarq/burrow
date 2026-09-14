@@ -49,6 +49,26 @@ describe('manual verification readiness', () => {
     },
   );
 
+  it('installs deterministic launcher versions and a preview-only launch session', async () => {
+    seedManualVerificationStorage('dashboard');
+    installManualVerificationEnvironment();
+    const logs: string[] = [];
+    const close = vi.fn();
+    const unsubscribeLog = window.api.launcher.onLog((log) => logs.push(log));
+    const unsubscribeClose = window.api.launcher.onClose(close);
+
+    await window.api.launcher.launch({ nickname: 'Steve', version: '1.20.1', ram: 4096 });
+    await Promise.resolve();
+
+    expect((await window.api.launcher.getVersionList()).versions.map((version) => version.id)).toEqual(['1.21.1', '1.20.1']);
+    expect(await window.api.launcher.getFabricSupportedVersions()).toEqual(['1.20.1', '1.21.1']);
+    expect(localStorage.getItem('mc_versions')).toContain('1.20.1');
+    expect(logs).toContain('Manual preview accepted the launch request; no game process is started.');
+    expect(close).toHaveBeenCalledWith(0);
+    unsubscribeLog();
+    unsubscribeClose();
+  });
+
   it('publishes degraded closeout readiness from the current visible error copy', async () => {
     window.history.replaceState({}, '', '?view=phase-24-degraded-closeout');
     seedManualVerificationStorage('phase-24-degraded-closeout');

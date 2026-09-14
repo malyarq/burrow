@@ -1,5 +1,6 @@
 import { app, type BrowserWindow } from 'electron';
 import path from 'node:path';
+import { BURROW_NEXT_APP_NAME } from './identity';
 
 export type ApplicationInstanceData = Readonly<{
   version: string;
@@ -24,8 +25,9 @@ export function isNewerApplicationVersion(current: string, incoming: string): bo
   return right.prerelease.localeCompare(left.prerelease, 'en', { numeric: true }) > 0;
 }
 
-function isTrustedLauncherExecutable(executablePath: string): boolean {
+function isTrustedLauncherExecutable(executablePath: string, version: string): boolean {
   if (!path.isAbsolute(executablePath) || executablePath.includes('\0')) return false;
+  if ([BURROW_NEXT_APP_NAME, `${BURROW_NEXT_APP_NAME}.exe`, `${BURROW_NEXT_APP_NAME}-Linux-${version}.AppImage`].includes(path.basename(executablePath))) return true;
   return /^Burrow(?:-[A-Za-z0-9._-]+)?(?:\.exe|\.AppImage)?$/i.test(path.basename(executablePath));
 }
 
@@ -33,7 +35,7 @@ export function resolveIncomingUpgrade(currentVersion: string, additionalData: u
   if (!additionalData || typeof additionalData !== 'object') return undefined;
   const candidate = additionalData as Partial<ApplicationInstanceData>;
   if (typeof candidate.version !== 'string' || typeof candidate.executablePath !== 'string') return undefined;
-  if (!isNewerApplicationVersion(currentVersion, candidate.version) || !isTrustedLauncherExecutable(candidate.executablePath)) return undefined;
+  if (!isNewerApplicationVersion(currentVersion, candidate.version) || !isTrustedLauncherExecutable(candidate.executablePath, candidate.version)) return undefined;
   return { version: candidate.version, executablePath: candidate.executablePath };
 }
 

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import { AuthServer } from '../auth/server';
-import { SelfUpdater } from '../services/updater/appUpdater';
+import { SelfUpdater, setAppUpdatesEnabled } from '../services/updater/appUpdater';
 import { IPCManager } from '../ipc/ipcManager';
 import { createMainWindow, getNativeWindowIconCandidates } from '../window/windowManager';
 import { createTray } from '../tray/trayManager';
@@ -14,6 +14,7 @@ import { ApplicationLifecycle } from './applicationLifecycle';
 import { acquireApplicationInstance, registerApplicationInstanceHandoff } from './singleInstance';
 import { registerConsoleWindowHandlers } from './consoleWindowHandlers';
 import { runConfiguredFullTest } from './runConfiguredFullTest';
+import { BURROW_NEXT_APP_ID, BURROW_NEXT_APP_NAME, getBurrowNextUserDataPath } from './identity';
 
 function configureAppRoot() {
   const __filename = fileURLToPath(import.meta.url);
@@ -40,6 +41,12 @@ function configureIsolatedTestUserData(): boolean {
   return true;
 }
 
+function configureBurrowNextIdentity() {
+  app.setName(BURROW_NEXT_APP_NAME);
+  app.setAppUserModelId(BURROW_NEXT_APP_ID);
+  app.setPath('userData', getBurrowNextUserDataPath(app.getPath('appData')));
+}
+
 function resolveRuntimePaths() {
   // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
   const rendererDevUrl = process.env['VITE_DEV_SERVER_URL'];
@@ -57,18 +64,9 @@ function resolveRuntimePaths() {
   };
 }
 
-function resolveAuthServerPort() {
-  // If multiple instances are allowed, avoid port collision by giving each slot its own port.
-  // Default instance: 25530, second instance: 25531, etc.
-  const userData = app.getPath('userData');
-  const match = /_(\d+)$/.exec(userData);
-  const slot = match ? Math.max(1, Number(match[1])) : 1;
-  return 25530 + (slot - 1);
-}
-
 function createAuthServer(): AuthServer {
-  const port = resolveAuthServerPort();
-  return new AuthServer(port);
+  // Each Next process owns its server and remains independent of stable Burrow.
+  return new AuthServer(0);
 }
 
 function resolveNativeIconPath(vitePublicPath: string): string {
@@ -94,9 +92,9 @@ function applyNativeAppIcon(vitePublicPath: string): string {
 }
 
 export function bootstrapMain() {
-  app.setName('Burrow');
-  app.setAppUserModelId('com.malyarq.burrow');
+  configureBurrowNextIdentity();
   configureIsolatedTestUserData();
+  setAppUpdatesEnabled(false);
 
   configureAppRoot();
   const paths = resolveRuntimePaths();
@@ -130,7 +128,7 @@ export function bootstrapMain() {
       });
     }
     // Initialize auto-updater once the window exists.
-    new SelfUpdater(win);
+    new SelfUpdater(win, { enabled: false });
     return win;
   };
 

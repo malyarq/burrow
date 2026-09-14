@@ -1,9 +1,9 @@
 {
-  "name": "burrow-launcher",
+  "name": "burrow-next",
   "private": true,
-  "version": "0.15.0",
+  "version": "1.0.0-next.1",
   "description": "Privacy-first desktop Minecraft launcher for local play, modpacks, and Burrow Link multiplayer.",
-  "desktopName": "com.malyarq.burrow",
+  "desktopName": "com.malyarq.burrow.next",
   "author": "Burrow Contributors",
   "license": "MIT",
   "type": "module",

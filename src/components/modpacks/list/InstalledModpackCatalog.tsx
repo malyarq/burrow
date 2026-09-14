@@ -115,11 +115,11 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
   return (
     <div
       className={cn(
-        'surface-card relative flex min-h-[22rem] cursor-pointer flex-col overflow-hidden p-5 transition-all duration-300 ease-out',
+        'surface-card relative flex min-h-[25rem] cursor-pointer flex-col overflow-hidden p-5 transition-all duration-300 ease-out',
         'motion-safe-transform animate-fade-in-up motion-safe:hover:-translate-y-0.5',
         'focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background',
         selected
-          ? cn('bg-card', activeBorder.className)
+          ? cn('bg-card shadow-[0_0_0_1px_rgb(var(--accent-main)/0.35)]', activeBorder.className)
           : 'hover:border-border-active hover:bg-card/95',
       )}
       data-state={selected ? 'active' : 'inactive'}
@@ -146,7 +146,7 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
 
       <div className="pointer-events-none relative z-20 flex h-full flex-col gap-4">
         <div className="relative -mx-5 -mt-5 overflow-hidden border-b border-border/55 bg-background/35">
-          <div className="h-32 w-full sm:h-36">
+          <div className="h-40 w-full sm:h-44">
             <LazyImage
               src={item.metadata.iconUrl}
               alt={item.name}
@@ -155,7 +155,7 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
               placeholder={<SkeletonLoader variant="rounded" width={80} height={80} />}
             />
           </div>
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent px-5 pb-4 pt-10">
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent px-5 pb-4 pt-16">
             <h3 className="line-clamp-2 text-xl font-bold leading-tight tracking-[-0.02em] text-white drop-shadow-sm">{item.name}</h3>
             {selected && (
               <div className={cn('mt-1 text-xs font-medium text-white', activeLabel.className)} style={activeLabel.style}>
@@ -331,10 +331,11 @@ export function InstalledModpackCatalog({
         headerTestId="installed-modpack-catalog-header"
         controlsTestId="installed-modpack-filter-controls"
         header={(
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-[-0.03em] text-foreground">{t('modpacks.title')}</h1>
-              <p className="mt-1 text-sm text-secondary">{t('modpacks.desc')}</p>
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="max-w-2xl">
+              <p className="kicker-label">{translateWithFallback(t, 'library.kicker', 'Your Minecraft')}</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{translateWithFallback(t, 'library.title', 'Library')}</h1>
+              <p className="mt-3 text-base leading-6 text-secondary">{translateWithFallback(t, 'library.description', 'Choose a pack to play, create a new world, or discover something different.')}</p>
             </div>
             <InstalledModpackActions onImportCode={onImportCode} onCreate={onCreate} onBrowse={onBrowse} />
           </div>

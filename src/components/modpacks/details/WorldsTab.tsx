@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Archive, Copy, FolderOpen, Globe2, Package, RefreshCw, Trash2 } from 'lucide-react';
 import type { WorldInfo } from '@shared/contracts/worlds';
 import { useConfirm } from '../../../contexts/ConfirmContext';
@@ -36,24 +36,33 @@ export function WorldsTab({ instanceId, mcVersion, onUpdate }: WorldsTabProps) {
     const confirm = useConfirm();
     const [worlds, setWorlds] = useState<WorldInfo[]>([]);
     const [loading, setLoading] = useState(true);
+    const [hasLoaded, setHasLoaded] = useState(false);
     const [loadError, setLoadError] = useState<unknown | null>(null);
     const [datapacksModalWorld, setDatapacksModalWorld] = useState<WorldInfo | null>(null);
     const toast = useToast();
+    const toastRef = useRef(toast);
+    const translateRef = useRef(t);
+    toastRef.current = toast;
+    translateRef.current = t;
 
     const loadWorlds = useCallback(async () => {
         setLoading(true);
         setLoadError(null);
         try {
             const list = await worldsIPC.listByInstanceId(instanceId);
+            if (!Array.isArray(list)) {
+                throw new Error('Saved worlds response is invalid');
+            }
             setWorlds(list);
         } catch (err) {
             console.error(err);
             setLoadError(err);
-            toast.error(t('modpacks.world_load_error'));
+            toastRef.current.error(translateRef.current('modpacks.world_load_error'));
         } finally {
+            setHasLoaded(true);
             setLoading(false);
         }
-    }, [instanceId, t, toast]);
+    }, [instanceId]);
     const worldsLoadDescription = loadError
         ? toDisplayErrorMessage(loadError, t('error.inline_fallback'))
         : t('error.inline_fallback');
@@ -115,8 +124,8 @@ export function WorldsTab({ instanceId, mcVersion, onUpdate }: WorldsTabProps) {
     );
 
     return (
-        <div className="space-y-4">
-            <div className="surface-card space-y-4 p-4">
+        <div className="space-y-5">
+            <div className="space-y-4 border-b border-border/65 pb-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_worlds')}</div>
@@ -125,26 +134,28 @@ export function WorldsTab({ instanceId, mcVersion, onUpdate }: WorldsTabProps) {
                             <p className="text-sm text-secondary">{t('modpacks.worlds_description')}</p>
                         </div>
                     </div>
-                    <Button onClick={() => void loadWorlds()} variant="secondary" size="sm">
+                    <Button onClick={() => void loadWorlds()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
                         <RefreshCw className="h-4 w-4" />
                         {t('modpacks.update')}
                     </Button>
                 </div>
 
-                <div className="surface-inline flex flex-wrap items-center gap-3 p-3 text-sm text-secondary" data-testid="worlds-summary">
+                <div className="flex flex-wrap items-center gap-3 border-t border-border/70 pt-4 text-sm text-secondary" data-testid="worlds-summary">
                     <span>{t('modpacks.worlds_manage_hint')}</span>
                     <span className="text-foreground">{loadError ? t('degraded.unavailable_label') : formatNumber(worlds.length)}</span>
                 </div>
             </div>
 
-            {loading ? (
-                <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
+            {loading && !hasLoaded ? (
+                <div className="flex min-h-40 items-center justify-center gap-3 rounded-xl border border-border/70 p-5 text-sm text-secondary" role="status">
                     <LoadingSpinner size="sm" variant="accent" />
                     {t('modpacks.loading')}
                 </div>
             ) : loadError ? (
                 <DegradedStateView
                     variant="unavailable"
+                    layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.unavailable_label')}
                     title={t('modpacks.world_load_error')}
                     description={worldsLoadDescription}
@@ -158,6 +169,8 @@ export function WorldsTab({ instanceId, mcVersion, onUpdate }: WorldsTabProps) {
             ) : worlds.length === 0 ? (
                 <DegradedStateView
                     variant="empty"
+                    layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.empty_label')}
                     title={t('modpacks.no_worlds_found')}
                     description={t('modpacks.play_to_create_world')}
@@ -168,10 +181,10 @@ export function WorldsTab({ instanceId, mcVersion, onUpdate }: WorldsTabProps) {
                         <div
                             key={world.folderName}
                             role="listitem"
-                            className="surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between"
+                            className="surface-card flex flex-col gap-4 rounded-xl p-4 lg:flex-row lg:items-center lg:justify-between"
                         >
                             <div className="flex min-w-0 flex-1 items-center gap-4">
-                                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-background/70 text-[rgb(var(--accent-main))]">
+                                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl border border-border/70 bg-background/70 text-[rgb(var(--accent-main))]">
                                     <Globe2 className="h-6 w-6" />
                                 </div>
                                 <div className="min-w-0 space-y-1">

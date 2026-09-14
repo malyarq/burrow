@@ -19,6 +19,7 @@ export function OptifineToggle(props: {
     <Button
       onClick={() => setUseOptiFine(!useOptiFine)}
       disabled={disabled}
+      aria-pressed={useOptiFine}
       variant={useOptiFine ? 'primary' : 'secondary'}
       className={cn('w-full justify-center', useOptiFine && getAccentStyles('bg').className)}
       style={useOptiFine ? getAccentStyles('bg').style : undefined}

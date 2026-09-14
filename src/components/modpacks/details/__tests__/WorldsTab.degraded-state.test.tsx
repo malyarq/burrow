@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTranslator } from '../../../../contexts/settings/i18n';
+import type { WorldInfo } from '@shared/contracts/worlds';
 import { WorldsTab } from '../WorldsTab';
 
 const listMock = vi.fn();
@@ -58,5 +59,32 @@ describe('WorldsTab degraded states', () => {
     expect(errorState.textContent).toContain(t('degraded.unavailable_label'));
     expect(errorState.textContent).not.toContain(t('modpacks.no_worlds_found'));
     expect(within(errorState).getByRole('button', { name: t('modpacks.update') })).toBeTruthy();
+  });
+
+  it('keeps saved worlds visible while a refresh is pending', async () => {
+    let completeRefresh: ((value: WorldInfo[]) => void) | undefined;
+    listMock
+      .mockResolvedValueOnce([{
+        folderName: 'alpha-world',
+        name: 'Alpha World',
+        sizeBytes: 1024,
+        lastPlayed: Date.now(),
+      }])
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        completeRefresh = resolve;
+      }));
+
+    render(<WorldsTab instanceId="alpha" mcVersion="1.20.1" />);
+
+    expect(await screen.findByText('Alpha World')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: t('modpacks.update') }));
+
+    await waitFor(() => expect(listMock).toHaveBeenCalledTimes(2));
+
+    expect(screen.getByText('Alpha World')).toBeTruthy();
+    expect(screen.queryByText(t('modpacks.loading'))).toBeNull();
+
+    completeRefresh!([]);
+    await waitFor(() => expect(screen.getByText(t('modpacks.no_worlds_found'))).toBeTruthy());
   });
 });

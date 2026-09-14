@@ -99,7 +99,7 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
   const canOpenProvider = Boolean(isSupported && skinState?.manageUrl)
 
   return (
-    <div className="space-y-4 border-t border-border pt-5">
+    <section className="space-y-4 border-t border-border/70 pt-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">{t('accounts.skinTitle') || 'Skin Management'}</h3>
@@ -120,15 +120,13 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
         </div>
       )}
 
-      <div className="grid grid-cols-[6rem_minmax(0,1fr)] items-start gap-4">
-        <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-border/60 bg-background/75 p-1">
-          <div className="h-full w-full overflow-hidden rounded-xl bg-card/82">
-            <LazyImage
-              src={avatarUrl}
-              alt={t('accounts.skinPreviewAlt') || 'Skin preview'}
-              className="h-full w-full object-cover"
-            />
-          </div>
+      <div className="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-4">
+        <div className="h-20 w-20 overflow-hidden rounded-xl border border-border/60 bg-background/75">
+          <LazyImage
+            src={avatarUrl}
+            alt={t('accounts.skinPreviewAlt') || 'Skin preview'}
+            className="h-full w-full object-cover"
+          />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -148,7 +146,7 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
           </p>
         </div>
 
-        <div className="col-span-2 flex flex-wrap gap-2">
+        <div className="col-span-2 flex flex-wrap gap-2 pt-1">
           <Button
             type="button"
             variant="secondary"
@@ -168,6 +166,6 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
           </Button>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

@@ -20,7 +20,7 @@ export function InstalledModpackActions({ onImportCode, onCreate, onBrowse }: In
         size="sm"
         geometry="catalog-primary"
         onClick={onImportCode}
-        className="min-h-10 flex-1 justify-center gap-2 px-4 sm:flex-none"
+        className="min-h-10 justify-center gap-2 px-4"
         title={t('share.import_title')}
       >
         <Download className="h-4 w-4 shrink-0" />
@@ -31,7 +31,7 @@ export function InstalledModpackActions({ onImportCode, onCreate, onBrowse }: In
         size="sm"
         geometry="catalog-primary"
         onClick={onCreate}
-        className="min-h-10 flex-1 justify-center gap-2 px-4 sm:flex-none"
+        className="min-h-10 justify-center gap-2 px-4"
       >
         <PackagePlus className="h-4 w-4 shrink-0" />
         {t('modpacks.create')}
@@ -41,7 +41,7 @@ export function InstalledModpackActions({ onImportCode, onCreate, onBrowse }: In
         size="sm"
         geometry="catalog-primary"
         onClick={onBrowse}
-        className={cn('min-h-10 flex-1 justify-center gap-2 px-4 sm:flex-none', accent.className)}
+        className={cn('min-h-10 justify-center gap-2 px-4', accent.className)}
         style={accent.style}
       >
         <Compass className="h-4 w-4 shrink-0" />

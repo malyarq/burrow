@@ -45,4 +45,23 @@ describe('SelfUpdater download policy', () => {
     expect(sendFirst).toHaveBeenCalledWith('app-updater:available', { version: '0.7.0' });
     expect(sendSecond).toHaveBeenCalledWith('app-updater:available', { version: '0.7.0' });
   });
+
+  it('keeps the Next preview outside the stable updater channel', async () => {
+    const send = vi.fn();
+    const window = {
+      on: vi.fn(),
+      isDestroyed: () => false,
+      webContents: { send },
+    };
+    const { SelfUpdater, areAppUpdatesEnabled } = await import('../appUpdater');
+
+    new SelfUpdater(window as never, { enabled: false });
+    autoUpdater.emit('update-available', { version: '1.0.0' });
+
+    expect(autoUpdater.autoDownload).toBe(false);
+    expect(autoUpdater.autoInstallOnAppQuit).toBe(false);
+    expect(autoUpdater.listenerCount('update-available')).toBe(0);
+    expect(send).not.toHaveBeenCalled();
+    expect(areAppUpdatesEnabled()).toBe(false);
+  });
 });

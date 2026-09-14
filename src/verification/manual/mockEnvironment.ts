@@ -7,6 +7,10 @@ import type {
   InstanceResult,
   InstanceSnapshotDto,
   InstancesAPI,
+  ModsAPI,
+  ExternalLinksAPI,
+  OperationSnapshot,
+  OperationsAPI,
   ProviderCatalogSearchResultItem,
   ProviderCatalogVersionDescriptor,
 } from '@shared/contracts';
@@ -1158,6 +1162,32 @@ export function seedManualVerificationStorage(view: string) {
     localStorage.removeItem('modpack-history');
   }
   localStorage.removeItem('modpack-favorites');
+
+  // Keep the real App preview deterministic: its version hooks use these fresh
+  // launcher-owned fixtures and therefore never request a live version manifest.
+  const supportedVersions = [
+    {
+      id: '1.21.1',
+      type: 'release',
+      url: 'manual://minecraft/1.21.1',
+      time: '2026-04-19T00:00:00.000Z',
+      releaseTime: '2024-08-08T12:00:00.000Z',
+    },
+    {
+      id: '1.20.1',
+      type: 'release',
+      url: 'manual://minecraft/1.20.1',
+      time: '2026-04-19T00:00:00.000Z',
+      releaseTime: '2023-06-12T12:00:00.000Z',
+    },
+  ];
+  localStorage.setItem('mc_versions', JSON.stringify(supportedVersions));
+  localStorage.setItem('mc_versions_timestamp', String(Date.now()));
+  localStorage.setItem('forge_versions', JSON.stringify(['1.20.1']));
+  localStorage.setItem('fabric_versions', JSON.stringify(['1.20.1', '1.21.1']));
+  localStorage.setItem('optifine_versions', JSON.stringify(['1.20.1']));
+  localStorage.setItem('neoforge_versions', JSON.stringify(['1.20.1', '1.21.1']));
+  localStorage.setItem('mod_versions_timestamp', String(Date.now()));
 }
 
 export function installManualVerificationEnvironment() {
@@ -1311,7 +1341,7 @@ export function installManualVerificationEnvironment() {
     },
   };
 
-  const externalLinksApi = {
+  const externalLinksApi: ExternalLinksAPI = {
     open: async (request: { url: string }) => ({ status: 'opened', url: request.url }),
   };
 
@@ -1343,7 +1373,7 @@ export function installManualVerificationEnvironment() {
     add: async () => createShaderAcquisitionResult(),
   };
 
-  const modsApi = {
+  const modsApi: ModsAPI = {
     searchMods: async (query: unknown) => {
       if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
         throw new Error('[modsIPC] searchMods failed: ${file.jarVersion}');
@@ -1511,7 +1541,7 @@ export function installManualVerificationEnvironment() {
       return { status: 'selected' as const, archiveRef, format: 'modrinth' as const, manifest: structuredClone(sharedManifest) };
     },
   };
-  const operationSnapshots = new Map<string, Record<string, unknown>>();
+  const operationSnapshots = new Map<string, OperationSnapshot>();
   if (RECOVERY_PROOF_VIEWS.has(view)) {
     operationSnapshots.set('manual-recovered-install', {
       id: 'manual-recovered-install',
@@ -1537,8 +1567,8 @@ export function installManualVerificationEnvironment() {
       },
     });
   }
-  const operations = {
-    start: async (request: { kind: string; instanceId?: string; archiveRef?: string }) => {
+  const operations: OperationsAPI = {
+    start: async (request) => {
       if (request.kind === 'import') {
         const expiresAt = request.archiveRef ? archiveReferences.get(request.archiveRef) : undefined;
         if (!request.archiveRef || !expiresAt || expiresAt <= Date.now()) {
@@ -1554,7 +1584,7 @@ export function installManualVerificationEnvironment() {
           state.selectedModpackId = state.modpacks[0]?.id ?? 'classic';
         }
       }
-      const snapshot = {
+      const snapshot: OperationSnapshot = {
         id,
         kind: request.kind,
         status: request.kind === 'delete' ? 'succeeded' : 'queued',
@@ -1574,7 +1604,7 @@ export function installManualVerificationEnvironment() {
       snapshot.status === 'recovered' || snapshot.status === 'recovery-required'
     )),
     cancel: async () => ({ cancelled: false }),
-    subscribe: async (operationId: string, listener: (snapshot: unknown) => void) => {
+    subscribe: async (operationId, listener) => {
       const snapshot = operationSnapshots.get(operationId);
       if (snapshot) listener(snapshot);
       return () => undefined;
@@ -1630,7 +1660,50 @@ export function installManualVerificationEnvironment() {
     },
   };
 
-  const api = {
+  const launchLogListeners = new Set<(log: string) => void>();
+  const launchProgressListeners = new Set<(progress: { type: string; task: number; total: number }) => void>();
+  const launchCloseListeners = new Set<(code: number) => void>();
+  const launcher: BurrowApi['launcher'] = {
+    launch: async () => {
+      // This is a renderer fixture only. It exercises the launch state machine
+      // without claiming that a Minecraft process was created.
+      for (const listener of launchLogListeners) listener('Manual preview accepted the launch request; no game process is started.');
+      for (const listener of launchProgressListeners) listener({ type: 'launch', task: 1, total: 1 });
+      queueMicrotask(() => {
+        for (const listener of launchCloseListeners) listener(0);
+      });
+    },
+    killAndRestart: async () => {
+      for (const listener of launchLogListeners) listener('Manual preview reset the simulated launcher session.');
+      for (const listener of launchCloseListeners) listener(0);
+    },
+    getVersionList: async () => ({
+      versions: [
+        { id: '1.21.1', type: 'release', url: 'manual://minecraft/1.21.1', time: '2026-04-19T00:00:00.000Z', releaseTime: '2024-08-08T12:00:00.000Z' },
+        { id: '1.20.1', type: 'release', url: 'manual://minecraft/1.20.1', time: '2026-04-19T00:00:00.000Z', releaseTime: '2023-06-12T12:00:00.000Z' },
+      ],
+    }),
+    getForgeSupportedVersions: async () => ['1.20.1'],
+    getFabricSupportedVersions: async () => ['1.20.1', '1.21.1'],
+    getOptiFineSupportedVersions: async () => ['1.20.1'],
+    getNeoForgeSupportedVersions: async () => ['1.20.1', '1.21.1'],
+    sendStdin: async () => undefined,
+    onLog: (listener) => {
+      launchLogListeners.add(listener);
+      return () => launchLogListeners.delete(listener);
+    },
+    onProgress: (listener) => {
+      launchProgressListeners.add(listener);
+      return () => launchProgressListeners.delete(listener);
+    },
+    onClose: (listener) => {
+      launchCloseListeners.add(listener);
+      return () => launchCloseListeners.delete(listener);
+    },
+  };
+
+  const api: BurrowApi = {
+    launcher,
     instances: instancesApi,
     instanceMods: instanceModsApi,
     providerCatalog: providerCatalogApi,
@@ -1657,6 +1730,37 @@ export function installManualVerificationEnvironment() {
     dialogs: dialogsApi,
     worlds: worldsApi,
     datapacks: datapacksApi,
+    storageMaintenance: {
+      getStats: async () => ({ totalSize: 0, dedupedSize: 0, totalFiles: 0, storedFiles: 0 }),
+      cleanup: async () => ({ freedSize: 0, deletedFiles: 0 }),
+    },
+    cache: {
+      clear: async () => ({ success: true }),
+      reload: async () => undefined,
+      getImageCacheState: async () => ({ entryCount: 0, totalSizeBytes: 0, maxSizeBytes: 0, usageRatio: 0 }),
+      setImageCacheLimit: async (maxSizeBytes: number) => ({ entryCount: 0, totalSizeBytes: 0, maxSizeBytes, usageRatio: 0 }),
+      cleanupImageCache: async () => ({ entryCount: 0, totalSizeBytes: 0, maxSizeBytes: 0, usageRatio: 0, deletedEntries: 0, freedBytes: 0 }),
+      resolveImage: async (sourceUrl: string) => ({ localUrl: sourceUrl, sourceUrl, cacheHit: false, stale: false }),
+    },
+    settings: {
+      selectMinecraftPath: async () => ({ success: true, path: '/mock/.minecraft' }),
+      openMinecraftPath: async () => ({ success: true }),
+      getDefaultMinecraftPath: async () => '/mock/.minecraft',
+      exportBackup: async () => ({ canceled: true }),
+      importBackup: async () => ({ canceled: true }),
+    },
+    assets: { getIconPath: async () => ICON_PATH },
+    appUpdater: {
+      check: async () => ({ cancelled: true }),
+      download: async () => undefined,
+      quitAndInstall: () => undefined,
+      onStatus: () => () => undefined,
+      onAvailable: () => () => undefined,
+      onNotAvailable: () => () => undefined,
+      onError: () => () => undefined,
+      onProgress: () => () => undefined,
+      onDownloaded: () => () => undefined,
+    },
     screenshots: {
       list: async (_instanceId: string) => {
         if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
@@ -1668,7 +1772,7 @@ export function installManualVerificationEnvironment() {
       rename: async (_oldName: string, _newName: string, _instanceId: string) => ({ ok: true }),
       openFolder: async (_instanceId: string) => ({ ok: true }),
     },
-  } as unknown as BurrowApi;
+  };
 
   window.api = api;
 }

@@ -188,12 +188,13 @@ describe('ModpackBrowser ergonomics', () => {
     expect(within(searchRegion).getByTestId('remote-modpack-catalog-header')).toBeTruthy();
     expect(within(searchRegion).getByTestId('remote-modpack-primary-actions').className).toContain('flex-wrap');
     expect(within(searchRegion).getByText('CurseForge browse unavailable')).toBeTruthy();
-    expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('compact-shared');
-    expect(controlsGrid.className).toContain('lg:flex-row');
+    expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
+    expect(controlsGrid.className).toContain('md:grid-cols-');
     expect(within(searchRegion).getByText('Search modpacks')).toBeTruthy();
     expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
     expect(within(searchRegion).getByText('Modloader')).toBeTruthy();
     expect(within(searchRegion).getByText('Items per page')).toBeTruthy();
+    expect(within(searchRegion).getByText('Discover modpacks')).toBeTruthy();
     expect(screen.queryByText(/Showing\s+\d/i)).toBeNull();
     const card = screen.getByRole('button', { name: 'Open details: Alpha Pack' }).closest('[role="listitem"]');
     expect(card).not.toBeNull();
@@ -202,6 +203,7 @@ describe('ModpackBrowser ergonomics', () => {
     expect(within(card as HTMLElement).getByText('Updated')).toBeTruthy();
     expect(within(card as HTMLElement).queryByText('Modrinth')).toBeNull();
     expect(screen.queryByText('Downloads')).toBeNull();
+    expect(card?.className).toContain('min-h-[24rem]');
 
     await waitFor(() => {
       expect(screen.getByRole('img', { name: 'Alpha Pack' }).getAttribute('src')).toBe(MEDIA_FALLBACK_PATH);

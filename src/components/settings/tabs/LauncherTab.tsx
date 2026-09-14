@@ -51,8 +51,6 @@ export interface LauncherTabProps {
   setUiScale: (val: number) => void;
   disableAnimations: boolean;
   setDisableAnimations: (val: boolean) => void;
-  sidebarPosition: 'left' | 'right';
-  setSidebarPosition: (val: 'left' | 'right') => void;
   compactMode: boolean;
   setCompactMode: (val: boolean) => void;
   privacyFeedback: React.ReactNode;
@@ -76,8 +74,6 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
   setUiScale,
   disableAnimations,
   setDisableAnimations,
-  sidebarPosition,
-  setSidebarPosition,
   compactMode, setCompactMode,
   privacyFeedback,
   status,
@@ -215,7 +211,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-1 border-t border-border/60 lg:grid-cols-2">
+          <div className="border-t border-border/60">
             <div className="space-y-3 p-4">
               <label className="flex justify-between text-sm font-medium text-foreground">
                 <span>{translateWithFallback(t, 'settings.ui_zoom', 'Interface Zoom')}</span>
@@ -238,32 +234,6 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
               </div>
             </div>
 
-            <div className="space-y-3 border-t border-border/60 p-4 lg:border-l lg:border-t-0">
-              <p className="settings-toggle-title">{translateWithFallback(t, 'settings.sidebar_position', 'Sidebar Position')}</p>
-              <div className="settings-segmented-row">
-                {(['left', 'right'] as const).map((position) => (
-                  <button
-                    key={position}
-                    type="button"
-                    onClick={() => setSidebarPosition(position)}
-                    aria-pressed={sidebarPosition === position}
-                    data-state={sidebarPosition === position ? 'active' : 'inactive'}
-                    className="settings-segmented-option"
-                  >
-                    {position === 'left'
-                      ? translateWithFallback(t, 'settings.sidebar_position_left', 'Left')
-                      : translateWithFallback(t, 'settings.sidebar_position_right', 'Right')}
-                  </button>
-                ))}
-              </div>
-              <p className="settings-embedded-copy">
-                {translateWithFallback(
-                  t,
-                  'settings.sidebar_position_desc',
-                  'Moves launcher navigation only; preset visuals stay unchanged.',
-                )}
-              </p>
-            </div>
           </div>
         </div>
 

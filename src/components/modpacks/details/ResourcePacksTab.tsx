@@ -128,8 +128,8 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
     );
 
     return (
-        <div className="space-y-4">
-            <div className="surface-card space-y-5 rounded-xl p-5">
+        <div className="space-y-5">
+            <div className="space-y-4 border-b border-border/65 pb-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_resourcepacks')}</div>
@@ -140,12 +140,12 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {onAddResourcePack && (
-                            <Button onClick={onAddResourcePack} variant="primary" size="sm" disabled={loading}>
+                            <Button onClick={onAddResourcePack} variant="primary" size="sm" geometry="catalog-primary" disabled={loading}>
                                 <ImagePlus className="h-4 w-4" />
                                 {t('modpacks.add_resourcepack_btn')}
                             </Button>
                         )}
-                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" disabled={loading} isLoading={loading}>
+                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
                         </Button>
@@ -171,6 +171,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                 <DegradedStateView
                     variant="unavailable"
                     layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.unavailable_label')}
                     title={t('modpacks.resourcepack_load_error')}
                     description={resourcePackLoadDescription}
@@ -193,6 +194,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                 <DegradedStateView
                     variant="empty"
                     layout="inline"
+                    className="[&>div]:rounded-xl"
                     label={t('degraded.empty_label')}
                     title={t('modpacks.no_resourcepacks_installed')}
                     description={t('modpacks.resourcepacks_empty_hint')}
@@ -214,7 +216,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                             <div
                                 key={pack.fileName}
                                 role="listitem"
-                                className={cn('surface-card flex flex-col gap-4 rounded-xl p-5 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
+                                className={cn('surface-card flex flex-col gap-4 rounded-xl p-4 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
                             >
                                 <div className="flex min-w-0 flex-1 items-center gap-4">
                                     <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-background/70">

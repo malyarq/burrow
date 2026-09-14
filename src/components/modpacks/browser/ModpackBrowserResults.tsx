@@ -79,7 +79,7 @@ const ModpackBrowserCard = memo(function ModpackBrowserCard({
       role="listitem"
       aria-busy={opening}
       data-opening={opening ? 'true' : 'false'}
-      className="surface-card relative flex min-h-[16rem] cursor-pointer flex-col p-4 transition-colors hover:border-border-active hover:bg-card focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background"
+      className="surface-card relative flex min-h-[24rem] cursor-pointer flex-col overflow-hidden p-5 transition-all hover:border-border-active hover:bg-card focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background motion-safe:hover:-translate-y-0.5"
     >
       <button
         type="button"
@@ -111,14 +111,15 @@ const ModpackBrowserCard = memo(function ModpackBrowserCard({
         />
       </button>
       <div className="pointer-events-none relative z-20 flex h-full flex-col gap-4">
-        <div className="flex gap-4">
+        <div className="relative -mx-5 -mt-5 overflow-hidden border-b border-border/55 bg-background/35">
           <LazyImage
             src={modpack.iconUrl ?? undefined}
             alt={modpack.title}
-            className="h-16 w-16 rounded-2xl border border-border/70 object-cover"
+            fallbackKind="content-artwork"
+            className="h-40 w-full object-cover opacity-90"
           />
-          <div className="min-w-0 flex-1">
-            <h4 className="truncate pr-8 font-semibold text-foreground">{modpack.title}</h4>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent px-5 pb-4 pt-16">
+            <h4 className="line-clamp-2 pr-8 text-xl font-bold leading-tight tracking-[-0.02em] text-white drop-shadow-sm">{modpack.title}</h4>
           </div>
         </div>
 
@@ -300,7 +301,7 @@ export function ModpackBrowserResults({
 
   return (
     <div>
-      <div className="mb-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,19rem),22rem))] justify-center gap-4" role="list" aria-label={t('modpacks.browser') || 'Modpack results'}>
+      <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3" role="list" aria-label={t('modpacks.browser') || 'Modpack results'}>
         {results.map(renderCard)}
       </div>
       {totalPages > 1 && (

@@ -1,9 +1,9 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "com.malyarq.burrow",
+  "appId": "com.malyarq.burrow.next",
   "asar": true,
-  "productName": "Burrow",
+  "productName": "Burrow Next",
   "compression": "maximum",
   "electronFuses": {
     "runAsNode": false,
@@ -68,7 +68,7 @@
     "oneClick": true,
     "deleteAppDataOnUninstall": false,
     "differentialPackage": true,
-    "shortcutName": "Burrow",
+    "shortcutName": "Burrow Next",
   },
   "linux": {
     "target": [

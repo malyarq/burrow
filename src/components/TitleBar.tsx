@@ -19,7 +19,7 @@ const TitleBar = () => {
             <div
                 data-testid={TITLE_BAR_TEST_ID}
                 data-platform="macos"
-                className="app-drag-region relative z-[100] h-7 shrink-0 select-none border-b border-border/30 bg-background/52 backdrop-blur-md"
+                className="app-drag-region relative z-[100] h-7 shrink-0 select-none border-b border-border/30 bg-background"
             />
         );
     }
@@ -28,7 +28,7 @@ const TitleBar = () => {
         <div
             data-testid={TITLE_BAR_TEST_ID}
             data-platform="default"
-            className="app-drag-region relative z-[100] flex h-9 select-none items-center justify-between border-b border-border/70 bg-card/82 px-2 shadow-[0_6px_18px_rgba(0,0,0,0.1)] backdrop-blur-xl"
+            className="app-drag-region relative z-[100] flex h-9 select-none items-center justify-between border-b border-border/70 bg-card px-2"
         >
             <div className="flex items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary">
                 <BrandMark

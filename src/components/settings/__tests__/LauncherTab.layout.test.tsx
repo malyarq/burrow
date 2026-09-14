@@ -78,8 +78,6 @@ describe('LauncherTab layout', () => {
         setUiScale={vi.fn()}
         disableAnimations={false}
         setDisableAnimations={vi.fn()}
-        sidebarPosition="left"
-        setSidebarPosition={vi.fn()}
         compactMode
         setCompactMode={vi.fn()}
         privacyFeedback={<div>Privacy and feedback surface</div>}
@@ -95,7 +93,6 @@ describe('LauncherTab layout', () => {
     const runtimeGrid = screen.getByTestId('launcher-runtime-grid');
     const slider = screen.getAllByRole('slider')[0];
     const hideLauncherToggle = screen.getByRole('switch', { name: 'Hide launcher while playing' });
-    const sidebarRow = screen.getByText('Sidebar Position').closest('.border-t') as HTMLElement;
     const updatesButton = screen.getByRole('button', { name: 'Check for updates and keep the launcher shell aligned' });
     const clearCacheButton = screen.getByRole('button', { name: 'Clear cache and reload the launcher shell cleanly' });
 
@@ -107,8 +104,7 @@ describe('LauncherTab layout', () => {
     expect(hideLauncherToggle.className).toContain('settings-toggle-switch');
     expect(hideLauncherToggle.closest('.settings-toggle-row')).toBeTruthy();
     expect(slider.className).toContain('settings-slider');
-    expect(sidebarRow.className).toContain('border-t');
-    expect(screen.getByRole('button', { name: 'Left' }).className).toContain('settings-segmented-option');
+    expect(screen.queryByText('Sidebar Position')).toBeNull();
     expect(updatesButton.getAttribute('data-button-geometry')).toBe('utility');
     expect(updatesButton.className).toContain('whitespace-normal');
     expect(updatesButton.className).toContain('leading-tight');

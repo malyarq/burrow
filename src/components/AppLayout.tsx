@@ -1,35 +1,9 @@
-import { lazy, Suspense, type RefObject } from 'react';
-import TitleBar from './TitleBar';
-import Sidebar from './Sidebar';
-import { UpdateNotification } from './UpdateNotification';
-
+import type { RefObject } from 'react';
 import type { UpdateInfo, UpdateStatus } from '../features/updater/hooks/useAppUpdater';
-import { useUIMode } from '../contexts/SettingsContext';
-import { SimplePlayDashboard } from './SimplePlayDashboard';
 import type { MCVersion } from '../services/versions/types';
 import type { VersionHint } from '../utils/minecraftVersions';
-
-import { cn } from '../utils/cn';
-import { useSettings } from '../contexts/SettingsContext';
 import type { LaunchStage } from '../features/launcher/services/launcherService';
-import { windowControlsIPC } from '../services/ipc/windowControlsIPC';
-
-import SettingsPage from './SettingsPage';
-const MultiplayerPage = lazy(() => import('./MultiplayerPage'));
-const ModpackRouter = lazy(() =>
-  import('./modpacks/ModpackRouter').then((module) => ({ default: module.ModpackRouter })),
-);
-
-function RouteLoadingState() {
-  return (
-    <div
-      role="status"
-      aria-label="Loading"
-      aria-live="polite"
-      className="min-h-12 w-full animate-pulse bg-background/30"
-    />
-  );
-}
+import { ProductShell } from '../product/ProductShell';
 
 export type AppLayoutProps = {
   theme: 'light' | 'dark';
@@ -93,86 +67,10 @@ export type AppLayoutProps = {
   };
 };
 
-import { BackgroundLayer } from './layout/BackgroundLayer';
 
 export const APP_LAYOUT_SAFE_AREA_TEST_ID = 'app-layout-safe-area';
 export const APP_LAYOUT_NOTIFICATIONS_TEST_ID = 'app-layout-notifications';
 
 export function AppLayout(props: AppLayoutProps) {
-  const { theme, updates, modpackOnLaunch, overlays, actions, launch, runtime } = props;
-  const { uiMode } = useUIMode();
-  const { sidebarPosition } = useSettings();
-  const shellContract = windowControlsIPC.shellContract();
-
-  // ... global hotkeys ...
-
-  return (
-    <div className={theme === 'dark' ? 'dark h-full w-full' : 'h-full w-full'}>
-      <BackgroundLayer />
-      <div className="relative h-full w-full overflow-hidden bg-background/28 text-foreground backdrop-blur-[2px]">
-        <div className="flex h-full w-full bg-background/38 text-foreground backdrop-blur-[2px] sm:p-0">
-          <div
-            data-testid="app-shell-frame"
-            className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border bg-background/90 transition-colors duration-300 sm:rounded-none"
-          >
-            <TitleBar />
-            <div
-              data-testid={APP_LAYOUT_NOTIFICATIONS_TEST_ID}
-              data-shell-platform={shellContract}
-              className="relative z-[90] flex shrink-0 flex-col"
-            >
-              <UpdateNotification status={updates.status} updateInfo={updates.info} onInstall={updates.onInstall} onDownload={updates.onDownload} />
-            </div>
-
-            <div
-              data-testid={APP_LAYOUT_SAFE_AREA_TEST_ID}
-              data-shell-safe-area="shell-chrome"
-              data-shell-platform={shellContract}
-              className={cn(
-                'relative flex min-h-0 flex-1 flex-col overflow-hidden',
-                shellContract === 'native-macos' ? 'pt-1' : 'pt-0',
-              )}
-            >
-              <Suspense fallback={<RouteLoadingState />}>
-                {overlays.showSettings ? (
-                  <SettingsPage onClose={overlays.onCloseSettings} />
-                ) : overlays.showMultiplayer ? (
-                  <MultiplayerPage onBack={overlays.onBackFromMultiplayer} />
-                ) : null}
-              </Suspense>
-
-              <div
-                data-testid="app-layout-split"
-                className={cn(
-                  'relative flex min-h-0 flex-1 overflow-hidden',
-                  sidebarPosition === 'right' ? 'flex-row-reverse' : 'flex-row',
-                )}
-              >
-                <Sidebar
-                  launch={launch}
-                  runtime={runtime}
-                  actions={actions}
-                />
-
-                <div
-                  data-testid="app-layout-main"
-                  className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background/70 transition-colors duration-150"
-                >
-                  <div key={uiMode} className="flex min-h-0 flex-1 flex-col">
-                    <Suspense fallback={<RouteLoadingState />}>
-                      {uiMode === 'modpacks' ? (
-                        <ModpackRouter onLaunch={modpackOnLaunch ?? runtime.onLaunch} />
-                      ) : (
-                        <SimplePlayDashboard launch={launch} runtime={runtime} actions={actions} />
-                      )}
-                    </Suspense>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <ProductShell {...props} />;
 }

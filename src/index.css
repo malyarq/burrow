@@ -36,14 +36,11 @@
     --color-error: 220 38 38;
     /* red-600 */
 
-    /* Default Accent (Emerald) */
-    --accent-main: 16 185 129;
-    /* emerald-500 */
-    --accent-hover: 5 150 105;
-    /* emerald-600 */
+    /* Match the persisted-theme fallback before React mounts. */
+    --accent-main: 59 130 246;
+    --accent-hover: 37 99 235;
     --accent-content: 24 24 27;
     --accent-hover-content: 255 255 255;
-    /* zinc-900: readable on the default emerald accent */
 
     --brand-shell-glow: 161 161 170;
     --brand-mark-frame: 244 244 245;

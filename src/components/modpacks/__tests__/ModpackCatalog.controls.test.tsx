@@ -149,7 +149,7 @@ describe('ModpackCatalogControls shared contract', () => {
     ]);
   });
 
-  it('marks the installed catalog as using the shared compact controls shell', async () => {
+  it('marks the installed catalog as using the shared library toolbar', async () => {
     render(<ModpackList />);
 
     await screen.findByText('Alpha Pack');
@@ -159,14 +159,14 @@ describe('ModpackCatalogControls shared contract', () => {
     expect(screen.getByTestId('installed-modpack-filters').getAttribute('data-catalog-controls')).toBe('shared');
     expect(within(searchRegion).getByTestId('installed-modpack-catalog-header')).toBeTruthy();
     expect(within(searchRegion).getByTestId('installed-modpack-primary-actions')).toBeTruthy();
-    expect(controls.getAttribute('data-catalog-controls-layout')).toBe('compact-shared');
-    expect(controls.className).toContain('lg:flex-row');
+    expect(controls.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
+    expect(controls.className).toContain('md:grid-cols-');
     expect(screen.queryByTestId('installed-modpack-summary')).toBeNull();
     expect(screen.queryByText(/Showing\s+\d/i)).toBeNull();
     expect(screen.queryByText(/^Active:/i)).toBeNull();
   });
 
-  it('marks the remote catalog as using the shared compact controls shell', async () => {
+  it('marks the remote catalog as using the shared library toolbar', async () => {
     renderBrowser({
       initialState: {
         ...DEFAULT_MODPACK_BROWSER_STATE,
@@ -184,8 +184,8 @@ describe('ModpackCatalogControls shared contract', () => {
     expect(within(searchRegion).getByTestId('remote-modpack-catalog-header')).toBeTruthy();
     expect(within(searchRegion).getByTestId('remote-modpack-primary-actions')).toBeTruthy();
     expect(within(searchRegion).getByText('CurseForge browse unavailable')).toBeTruthy();
-    expect(controls.getAttribute('data-catalog-controls-layout')).toBe('compact-shared');
-    expect(controls.className).toContain('lg:flex-row');
+    expect(controls.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
+    expect(controls.className).toContain('md:grid-cols-');
     expect(screen.queryByTestId('remote-modpack-summary')).toBeNull();
     expect(screen.queryByText(/Showing\s+\d/i)).toBeNull();
     expect(screen.getByRole('button', { name: 'Clear filters' })).toBeTruthy();

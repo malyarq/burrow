@@ -8,11 +8,28 @@ import { OperationRunner } from '../operationRunner';
 describe('OperationRootRegistry', () => {
   const dirs: string[] = [];
   afterEach(() => dirs.splice(0).forEach((dir) => fs.rmSync(dir, { recursive: true, force: true })));
+  it('never reads or repairs the stable Burrow registry during Next startup', async () => {
+    const base = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-next-isolation-'));
+    dirs.push(base);
+    const stableDirectory = path.join(base, 'Burrow', 'operation-roots');
+    fs.mkdirSync(stableDirectory, { recursive: true });
+    const stableDescriptor = path.join(stableDirectory, `${'a'.repeat(64)}.json`);
+    fs.writeFileSync(stableDescriptor, 'stable sentinel');
+    const defaultRoot = path.join(base, 'Burrow Next', 'minecraft_data');
+    const runner = new OperationRunner([], { registryPath: base });
+
+    await runner.recoverRegistered(defaultRoot);
+
+    expect(runner.listRecovered()).toEqual([]);
+    expect(new OperationRootRegistry(base).list().roots).toEqual([fs.realpathSync.native(defaultRoot)]);
+    expect(fs.readFileSync(stableDescriptor, 'utf8')).toBe('stable sentinel');
+    expect(fs.readdirSync(stableDirectory)).toEqual([`${'a'.repeat(64)}.json`]);
+  });
   it('keeps valid roots available when a descriptor primary and backup are corrupt', () => {
     const base = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-registry-')); dirs.push(base);
     const first = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-root-one-')); const second = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-root-two-')); dirs.push(first, second);
     const registry = new OperationRootRegistry(base); registry.register(first); registry.register(second);
-    const directory = path.join(base, 'Burrow', 'operation-roots');
+    const directory = path.join(base, 'Burrow Next', 'operation-roots');
     const corrupt = fs.readdirSync(directory).find((name) => name.endsWith('.json'))!;
     fs.writeFileSync(path.join(directory, corrupt), '{bad'); fs.writeFileSync(`${path.join(directory, corrupt)}.bak`, '{bad');
     const listed = registry.list();
@@ -38,7 +55,7 @@ describe('OperationRootRegistry', () => {
     const defaultRoot = path.join(base, 'user-data', 'minecraft_data');
     const registry = new OperationRootRegistry(base);
     registry.register(brokenRoot);
-    const directory = path.join(base, 'Burrow', 'operation-roots');
+    const directory = path.join(base, 'Burrow Next', 'operation-roots');
     const descriptor = path.join(directory, fs.readdirSync(directory).find((name) => name.endsWith('.json'))!);
     fs.writeFileSync(descriptor, '{bad');
     fs.writeFileSync(`${descriptor}.bak`, '{bad');

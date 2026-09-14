@@ -1180,7 +1180,7 @@ function AccountsScenario({ onReady }: ManualVerificationScenarioProps) {
 function ModpackListScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByText(
     onReady,
-    ['Modpacks', 'Alpha Pack', 'Modpack Browser'],
+    ['Library', 'Alpha Pack', 'Modpack Browser'],
     'Installed catalog proof rendered with a compact header, minimal card facts, and coherent primary actions.',
   );
 
@@ -1214,7 +1214,7 @@ function ModpackCreateScenario({ onReady }: ManualVerificationScenarioProps) {
 function ModpackBrowserScenario({ onReady }: ManualVerificationScenarioProps) {
   useReadyByTextAndImageSource(
     onReady,
-    ['Modpack Browser', 'History', 'Alpha Pack'],
+    ['Discover modpacks', 'History', 'Alpha Pack'],
     MEDIA_FALLBACK_PATH,
     1,
     'Remote catalog proof rendered inside the real shell with compact controls, minimal card facts, coherent primary actions, and neutral fallback art.',

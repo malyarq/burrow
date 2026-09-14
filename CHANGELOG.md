@@ -1,8 +1,28 @@
 # История изменений / Changelog
 
-Здесь кратко описан текущий публичный релиз. Подробная история разработки остаётся в Git, а [GitHub Releases](https://github.com/malyarq/burrow/releases) служит основным источником установочных файлов.
+Здесь кратко описаны текущие версии продукта. Подробная история разработки остаётся в Git, а [GitHub Releases](https://github.com/malyarq/burrow/releases) служит основным источником установочных файлов.
 
-This file summarizes the current public release. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
+This file summarizes current product versions. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
+
+## [1.0.0-next.1] — 2026-09-14
+
+### Русский
+
+- Burrow Next переводит лаунчер на оболочку из четырёх страниц: «Играть», «Библиотека», «Вместе» и «Настройки». Настройки открываются как отдельная страница и не теряют введённые данные или прокрутку при переходе в другой раздел.
+- Интерфейс использует нейтральные светлую и тёмную темы, отдельный пользовательский акцент, ограниченное движение, новый знак, иллюстрации и иконки.
+- На Windows пилот двух одинаковых модельных сцен оставил Electron + React: медиана готовности 392,7 мс и 301,2 МиБ private bytes против 991,4 мс и 325,2 МиБ у Tauri + Node. Это не проверка полного продукта, сети или запуска Minecraft.
+- Next использует отдельный каталог userData; встроенный updater выключен.
+
+Эта предварительная версия не является заявлением о готовом публичном релизе. Полный выпускной прогон Windows, macOS и Linux, Microsoft Auth, подпись пакетов, проверка PostHog и условия CurseForge остаются открытыми ограничениями.
+
+### English
+
+- Burrow Next moves the launcher to a four-page shell: Play, Library, Together, and Settings. Settings opens as a page and retains entered data and scroll position while moving to another area.
+- The interface uses neutral light and dark themes, a separate user accent, restrained motion, and new artwork and icons.
+- A Windows pilot of two identical model scenes kept Electron + React: median ready time was 392.7 ms and private bytes were 301.2 MiB, compared with 991.4 ms and 325.2 MiB for Tauri + Node. This is not a full-product, network, or Minecraft-launch test.
+- Next uses an isolated userData directory; its built-in updater is disabled.
+
+This prerelease is not a claim of public-release readiness. A release-level Windows/macOS/Linux pass, Microsoft Auth, package signing, PostHog confirmation, and CurseForge conditions remain open limits.
 
 ## [0.15.0] — 2026-09-14
 
