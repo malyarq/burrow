@@ -23,6 +23,8 @@ type Subscription = {
 
 type ArchiveReferenceConsumer = (ownerId: number, reference: string) => string;
 
+let disposeActiveRegistration: (() => void) | undefined;
+
 type OperationsHandlerDependencies = Readonly<{
   runner: OperationRunner;
   consumeArchiveReference?: ArchiveReferenceConsumer;
@@ -36,6 +38,7 @@ export function registerOperationsHandlers({
   runner,
   consumeArchiveReference = consumeMainArchiveReference,
 }: OperationsHandlerDependencies): void {
+  disposeActiveRegistration?.();
   const owners = new Map<string, number>();
   const subscriptions = new Map<string, Subscription>();
 
@@ -45,6 +48,11 @@ export function registerOperationsHandlers({
     if (!subscription) return;
     subscription.unsubscribe();
     subscriptions.delete(key);
+  };
+  disposeActiveRegistration = () => {
+    for (const subscription of subscriptions.values()) subscription.unsubscribe();
+    subscriptions.clear();
+    owners.clear();
   };
 
   ipcMain.removeHandler('operations:start');

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" fill="none">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="520" gradientUnits="userSpaceOnUse"><stop stop-color="#769886"/><stop offset="1" stop-color="#c6cfa1"/></linearGradient>
+    <linearGradient id="water" x1="880" y1="280" x2="720" y2="520" gradientUnits="userSpaceOnUse"><stop stop-color="#b7cdaf"/><stop offset="1" stop-color="#557b70"/></linearGradient>
+    <linearGradient id="shade" x2="1100" gradientUnits="userSpaceOnUse"><stop stop-color="#16251f"/><stop offset=".6" stop-color="#16251f" stop-opacity=".25"/><stop offset="1" stop-color="#16251f" stop-opacity="0"/></linearGradient>
+    <g id="pine"><path d="M-4 0h8v-75h-8z" fill="#374b38"/><path d="M0-122l-28 38h13l-26 38h19l-32 39H54L22-46h19L15-84h13z" fill="#284d3e"/><path d="M0-122v115h54L22-46h19L15-84h13z" fill="#345c46"/></g>
+    <g id="blocktree"><path d="M-5-9H5v-63H-5z" fill="#46513a"/><path d="M-31-54h62v-43H15v-18h-44v19h-16v28h14z" fill="#447050"/><path d="M-31-96h46v-19h-44v19h-16v28h14z" fill="#61845a"/><path d="M0-54h31v-43H15v-18H0z" fill="#365c43"/></g>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1200v520H0z"/>
+  <circle cx="973" cy="112" r="44" fill="#e2d9ac"/>
+  <path d="M400 248h50v-44h58v-39h42v-40h50v47h37v35h47v-62h44v-44h55v43h39v49h61v-33h39v-52h45v41h38v37h53v-33h44v-53h55v57h51v39h42v194H400z" fill="#789888"/>
+  <path d="M575 292h38v-59h61v-31h52v54h53v-53h35v-43h41v47h36v40h35v-22h61v-32h31v44h55v-20h62v-49h58v66h55v45h52v241H575z" fill="#567c68"/>
+  <path d="M711 315l108-34h138l-64 44-15 38-56 43-30 35 61 79H484l146-83 58-44 61-32z" fill="url(#water)"/>
+  <path d="M0 257h134v-31h118v22h120v-35h76v24h96v46h66v28h127v38h-47v40h-95v47h-46v84H0z" fill="#355c49"/>
+  <path d="M1200 244h-92v35h-74v20h-71v36h-63v41h-68v37h40v39h60v68h268z" fill="#39614a"/>
+  <path d="M1200 339h-101v25h-91v41h-72v37h42v78h222z" fill="#274936"/>
+  <path d="M0 361h200v-36h93v24h140v25h89v44h-58v33h-73v69H0z" fill="#234733"/>
+  <g opacity=".65"><use href="#pine" transform="translate(780 287) scale(.38)"/><use href="#pine" transform="translate(806 282) scale(.49)"/><use href="#pine" transform="translate(851 278) scale(.3)"/><use href="#pine" transform="translate(989 306) scale(.5)"/><use href="#pine" transform="translate(1040 281) scale(.64)"/></g>
+  <use href="#pine" transform="translate(623 345) scale(.85)"/><use href="#pine" transform="translate(565 333) scale(1.05)"/><use href="#blocktree" transform="translate(684 344) scale(.62)"/>
+  <use href="#pine" transform="translate(1125 370) scale(1.38)"/><use href="#pine" transform="translate(1190 345) scale(1.6)"/><use href="#blocktree" transform="translate(1009 383) scale(.8)"/><use href="#blocktree" transform="translate(944 416) scale(.64)"/>
+  <use href="#blocktree" transform="translate(515 405) scale(1.2)"/><use href="#pine" transform="translate(410 409) scale(1.65)"/><use href="#pine" transform="translate(260 413) scale(1.85)"/>
+  <path d="M854 310h61M812 347h46M737 404h45M619 457h73M711 484h68" stroke="#c7d6b7" stroke-opacity=".4" stroke-width="3"/>
+  <path d="M1009 434h30v13h-30zM975 461h15v9h-15zM529 453h21v10h-21zM1090 410h19v10h-19z" fill="#6a8652"/>
+  <path fill="url(#shade)" d="M0 0h1200v520H0z"/>
+</svg>

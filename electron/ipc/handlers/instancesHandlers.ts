@@ -156,7 +156,7 @@ function findRecord(read: InstanceControlPlaneRead, id: string): CanonicalInstan
   return read.status === 'ready' ? read.snapshot.records.find((record) => record.id === id) : undefined;
 }
 
-function toDomainConfig(config: InstanceConfigDto): InstanceEditableConfig {
+function toDomainConfig(config: InstanceConfigDto, mainOwnedJava?: InstanceEditableConfig['java']): InstanceEditableConfig {
   return {
     runtime: {
       minecraftVersion: config.runtime.minecraftVersion,
@@ -171,6 +171,7 @@ function toDomainConfig(config: InstanceConfigDto): InstanceEditableConfig {
     },
     server: config.server === undefined ? undefined : { ...config.server },
     networkMode: config.networkMode,
+    ...(mainOwnedJava === undefined ? {} : { java: { ...mainOwnedJava } }),
   };
 }
 
@@ -238,7 +239,11 @@ export function createInstancesHandlers(deps: InstancesHandlerDependencies): Ins
         });
       }
       return await safe(async () => {
-        const result = await execute({ version: 1, type: 'save-config', id: parsed.id, config: toDomainConfig(parsed.config) });
+        const state = await read();
+        if (state.status === 'uninitialized') throw uninitialized();
+        const record = findRecord(state, parsed.id);
+        if (!record) throw missing();
+        const result = await execute({ version: 1, type: 'save-config', id: parsed.id, config: toDomainConfig(parsed.config, record.config.java) });
         return toMutation(result.snapshot, result.status);
       });
     },

@@ -204,6 +204,9 @@ export type OperationContext = {
   recordCanonicalCommand(command: InstanceCommand): void;
   /** Uses the runner's already-held root scope; adapters never lock or journal this commit themselves. */
   commitControlPlane(command: InstanceCommand): Promise<RootMutationCommandResult>;
+  /** True once the canonical store accepted this operation's command. */
+  isControlPlaneCommitted(): boolean;
+  currentControlPlane(): InstanceControlPlaneRead | undefined;
   /** Replays the operation's previously recorded command through the runner-owned scope. */
   replayCanonicalCommand(): Promise<OperationResult>;
 };

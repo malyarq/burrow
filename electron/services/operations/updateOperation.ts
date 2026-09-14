@@ -66,6 +66,10 @@ export function createUpdateOperationAdapter(options: UpdateOperationOptions = {
         workspace.cleanupBackups();
         return { status: 'succeeded', instanceId: destinationId };
       } catch (error) {
+        if (context.isControlPlaneCommitted()) {
+          workspace.cleanupStaging();
+          throw error;
+        }
         if (backupCreated && !workspace.restoreDestination(destinationPath, destinationId)) return { status: 'recovery-required', message: 'Update rollback destination is ambiguous' };
         workspace.cleanupStaging();
         if (backupCreated) workspace.cleanupBackups();

@@ -43,7 +43,7 @@ export function ClassicAdvancedSettings({
 
   if (readOnly) {
     return (
-      <section className="mt-6 w-full max-w-2xl" aria-label={title}>
+      <section className="mt-3 w-full" aria-label={title}>
         <div className="space-y-2">
           <div className="flex w-full items-center justify-between rounded-xl border border-border/60 bg-card/68 px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-secondary">
             <span>{title}</span>
@@ -59,7 +59,7 @@ export function ClassicAdvancedSettings({
       title={title}
       defaultExpanded={false}
       storageKey="classic_game_settings_expanded"
-      className="mt-6 w-full max-w-2xl"
+      className="mt-3 w-full"
     >
       {editor}
     </CollapsibleSection>

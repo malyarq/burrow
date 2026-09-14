@@ -31,7 +31,7 @@ describe('shared scrolling surface styles', () => {
       const rule = getClassRule(className);
 
       expect(rule).not.toMatch(/backdrop-(?:blur|filter)/);
-      expect(rule).toMatch(/bg-(?:card|background)\/(?:9[0-9])/);
+      expect(rule).toMatch(/bg-(?:card|background)(?:\/(?:9[0-9]|100))?(?=\s)/);
     }
   });
 });

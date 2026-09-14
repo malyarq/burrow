@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import type { CSSProperties } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTranslator } from '../../../contexts/settings/i18n';
 import type {
@@ -146,8 +146,10 @@ describe('AppearanceTab i18n seams', () => {
     expect(screen.getByText('Accent Color')).toBeTruthy();
     expect(screen.getAllByText('Theme Presets').length).toBeGreaterThan(0);
     expect(screen.getByRole('option', { name: 'Forest' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Advanced Appearance' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Manual appearance' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Custom colors' })).toBeTruthy();
+    expect(screen.getAllByText('Sample heading')).toHaveLength(2);
+    expect(screen.getByText('Example error')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Custom theme' })).toBeTruthy();
     expect(screen.getAllByText('Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Background Type')).toBeTruthy();
     expect(screen.getByText('Particle Type')).toBeTruthy();
@@ -170,8 +172,10 @@ describe('AppearanceTab i18n seams', () => {
     expect(screen.getByText('Цвет акцента')).toBeTruthy();
     expect(screen.getAllByText('Готовые темы').length).toBeGreaterThan(0);
     expect(screen.getByRole('option', { name: 'Лес' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Расширенный внешний вид' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Ручной внешний вид' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Свои цвета' })).toBeTruthy();
+    expect(screen.getAllByText('Заголовок')).toHaveLength(2);
+    expect(screen.getByText('Пример ошибки')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Своя тема' })).toBeTruthy();
     expect(screen.getAllByText('Темная').length).toBeGreaterThan(0);
     expect(screen.getByText('Тип фона')).toBeTruthy();
     expect(screen.getByText('Тип частиц')).toBeTruthy();
@@ -188,5 +192,21 @@ describe('AppearanceTab i18n seams', () => {
     expect(container.textContent).not.toContain('Forest');
     expect(container.textContent).not.toContain('Background Type');
     expect(container.textContent).not.toContain('Reset Custom Theme');
+  });
+
+  it('keeps surface overrides optional and can clear only their color values', () => {
+    currentSettings = buildSettings('en');
+
+    render(<AppearanceTab />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Custom colors' }));
+    expect(screen.getByTestId('appearance-surface-preview')).toBeTruthy();
+    expect(screen.getByLabelText('Window background')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reset Custom Theme' }));
+    expect(setCustomThemeMock).toHaveBeenCalledWith({
+      background: currentSettings.customTheme.background,
+      colors: undefined,
+    });
   });
 });

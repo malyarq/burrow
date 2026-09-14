@@ -198,7 +198,8 @@ function isInstanceConfig(value: unknown): value is Record<string, unknown> {
 }
 
 function isGameConfig(value: unknown): boolean {
-  if (!isRecord(value) || !hasOnlyKeys(value, ['resolution', 'extraArgs'])) return false;
+  if (!isRecord(value) || !hasOnlyKeys(value, ['resolution', 'extraArgs', 'useOptiFine'])) return false;
+  if (value.useOptiFine !== undefined && typeof value.useOptiFine !== 'boolean') return false;
   if (value.resolution !== undefined && (!isRecord(value.resolution) || !hasOnlyKeys(value.resolution, ['width', 'height', 'fullscreen'])
     || (value.resolution.width !== undefined && !isPositiveInteger(value.resolution.width))
     || (value.resolution.height !== undefined && !isPositiveInteger(value.resolution.height))

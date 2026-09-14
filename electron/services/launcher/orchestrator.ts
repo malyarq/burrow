@@ -136,7 +136,7 @@ export class LauncherManager {
       minRamGb,
     } = effective;
 
-    const { isNeoForge, isForge, isFabric, mcVersion } = parseRequestedVersion(requestedVersion);
+    const { isNeoForge, isForge, isFabric, isQuilt, mcVersion } = parseRequestedVersion(requestedVersion);
 
     onLog('═══════════════════════════════════════════════════════════');
     onLog(`[VERSION INFO] Launching version: ${requestedVersion}`);
@@ -183,6 +183,7 @@ export class LauncherManager {
       isForge,
       isNeoForge,
       isFabric,
+      isQuilt,
       useOptiFine: options.useOptiFine,
       downloadProvider,
       maxSockets,

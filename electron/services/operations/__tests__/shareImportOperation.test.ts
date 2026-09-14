@@ -54,6 +54,28 @@ describe('share import operation', () => {
     expect(fs.existsSync(path.join(rootPath, 'modpacks', 'shared-pack'))).toBe(false);
   });
 
+  it('keeps published bytes recoverable when the post-commit journal transition fails', async () => {
+    const rootPath = seedRoot();
+    const originalSave = OperationJournal.prototype.save;
+    let failOnce = true;
+    const save = vi.spyOn(OperationJournal.prototype, 'save').mockImplementation(function (this: OperationJournal, snapshot) {
+      if (failOnce && snapshot.phase === 'control-plane-committed') {
+        failOnce = false;
+        throw new Error('post-commit journal failure');
+      }
+      return originalSave.call(this, snapshot);
+    });
+    try {
+      const { runner } = createRunner({ resolveShareCode: async () => manifest(), stageManifest: writeStagedContent });
+      const started = runner.start({ kind: 'import-share', rootPath, shareCode: 'H4s=' });
+      await expect(runner.waitFor(started.id)).resolves.toMatchObject({ status: 'recovery-required' });
+      expect(fs.existsSync(path.join(rootPath, 'modpacks', 'shared-pack'))).toBe(true);
+      expect(new OperationJournal(rootPath).get(started.id)).toMatchObject({ phase: 'published' });
+    } finally {
+      save.mockRestore();
+    }
+  });
+
   it('fails before publish when a required shared file cannot be staged', async () => {
     const rootPath = seedRoot();
     const { runner, execute } = createRunner({

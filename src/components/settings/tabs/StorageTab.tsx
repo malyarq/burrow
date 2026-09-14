@@ -24,13 +24,9 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
     const [cleanupResult, setCleanupResult] = useState<{ freedSize: number; deletedFiles: number } | null>(null);
     const [backupMessage, setBackupMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const cleanupSectionClassName = embedded
-        ? 'surface-muted settings-section-stack p-5'
-        : 'settings-section-shell settings-section-stack p-5';
-    const statsSectionClassName = embedded
-        ? 'surface-muted min-w-0 p-5'
-        : 'settings-section-shell min-w-0 p-5';
-    const storageStatClassName = 'rounded-[18px] border border-border/60 bg-card/56 p-4 text-foreground';
+    const cleanupSectionClassName = 'settings-section-shell settings-section-stack p-5';
+    const statsSectionClassName = 'settings-section-shell min-w-0 p-5';
+    const storageStatClassName = 'border-t border-border/60 pt-4 text-foreground';
 
     const loadStats = useCallback(async () => {
         setLoading(true);
@@ -122,7 +118,7 @@ export const StorageSettings: React.FC<StorageSettingsProps> = ({ t, getAccentSt
 
     if (loading && !stats) {
         return (
-            <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
+            <div className="flex items-center justify-center gap-3 py-6 text-sm text-secondary" role="status">
                 <LoadingSpinner size="sm" variant="accent" />
                 {t('settings.storage.loading')}
             </div>

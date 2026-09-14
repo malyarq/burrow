@@ -95,18 +95,19 @@ describe('LauncherTab layout', () => {
     const runtimeGrid = screen.getByTestId('launcher-runtime-grid');
     const slider = screen.getAllByRole('slider')[0];
     const hideLauncherToggle = screen.getByRole('switch', { name: 'Hide launcher while playing' });
-    const sidebarRow = screen.getByText('Sidebar Position').closest('.settings-control-card') as HTMLElement;
+    const sidebarRow = screen.getByText('Sidebar Position').closest('.border-t') as HTMLElement;
     const updatesButton = screen.getByRole('button', { name: 'Check for updates and keep the launcher shell aligned' });
     const clearCacheButton = screen.getByRole('button', { name: 'Clear cache and reload the launcher shell cleanly' });
 
     expect(root.className).toContain('xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]');
     expect(screen.queryByRole('heading', { name: 'Launcher' })).toBeNull();
     expect(runtimeShell.className).toContain('min-w-0');
-    expect(runtimeGrid.className).toContain('xl:grid-cols-3');
+    expect(runtimeGrid.className).not.toContain('grid-cols-3');
+    expect(runtimeGrid.className).not.toContain('grid-cols-2');
     expect(hideLauncherToggle.className).toContain('settings-toggle-switch');
     expect(hideLauncherToggle.closest('.settings-toggle-row')).toBeTruthy();
     expect(slider.className).toContain('settings-slider');
-    expect(sidebarRow.className).toContain('settings-control-card');
+    expect(sidebarRow.className).toContain('border-t');
     expect(screen.getByRole('button', { name: 'Left' }).className).toContain('settings-segmented-option');
     expect(updatesButton.getAttribute('data-button-geometry')).toBe('utility');
     expect(updatesButton.className).toContain('whitespace-normal');

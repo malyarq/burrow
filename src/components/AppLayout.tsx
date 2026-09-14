@@ -110,10 +110,10 @@ export function AppLayout(props: AppLayoutProps) {
     <div className={theme === 'dark' ? 'dark h-full w-full' : 'h-full w-full'}>
       <BackgroundLayer />
       <div className="relative h-full w-full overflow-hidden bg-background/28 text-foreground backdrop-blur-[2px]">
-        <div className="flex h-full w-full bg-background/38 text-foreground backdrop-blur-[2px] sm:p-2">
+        <div className="flex h-full w-full bg-background/38 text-foreground backdrop-blur-[2px] sm:p-0">
           <div
             data-testid="app-shell-frame"
-            className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border bg-background/26 shadow-2xl backdrop-blur-sm transition-colors duration-300 sm:rounded-[28px]"
+            className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-border bg-background/90 transition-colors duration-300 sm:rounded-none"
           >
             <TitleBar />
             <div
@@ -130,7 +130,7 @@ export function AppLayout(props: AppLayoutProps) {
               data-shell-platform={shellContract}
               className={cn(
                 'relative flex min-h-0 flex-1 flex-col overflow-hidden',
-                shellContract === 'native-macos' ? 'pt-1' : 'pt-2',
+                shellContract === 'native-macos' ? 'pt-1' : 'pt-0',
               )}
             >
               <Suspense fallback={<RouteLoadingState />}>
@@ -156,9 +156,9 @@ export function AppLayout(props: AppLayoutProps) {
 
                 <div
                   data-testid="app-layout-main"
-                  className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background/56 backdrop-blur-sm transition-all duration-300"
+                  className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background/70 transition-colors duration-150"
                 >
-                  <div key={uiMode} className="mode-switch-enter flex min-h-0 flex-1 flex-col">
+                  <div key={uiMode} className="flex min-h-0 flex-1 flex-col">
                     <Suspense fallback={<RouteLoadingState />}>
                       {uiMode === 'modpacks' ? (
                         <ModpackRouter onLaunch={modpackOnLaunch ?? runtime.onLaunch} />

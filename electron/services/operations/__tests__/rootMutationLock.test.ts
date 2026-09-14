@@ -94,7 +94,9 @@ describe('RootMutationLock', () => {
     const directory = path.join(rootPath, '.burrow-operations', 'locks');
     fs.mkdirSync(directory, { recursive: true });
     const forgedPath = path.join(directory, 'mutation.lock.ticket-1-forged');
-    fs.writeFileSync(forgedPath, JSON.stringify({ protocol: 3, pid: process.pid, token: 'forged', endpoint: { path: path.join(os.tmpdir(), `burrow-lock-${randomBytes(16).toString('hex')}.sock`) }, ticket: 1 }));
+    const suffix = randomBytes(16).toString('hex');
+    const endpointPath = process.platform === 'win32' ? `\\\\.\\pipe\\burrow-lock-${suffix}` : path.join(os.tmpdir(), `burrow-lock-${suffix}.sock`);
+    fs.writeFileSync(forgedPath, JSON.stringify({ protocol: 3, pid: process.pid, token: 'forged', endpoint: { path: endpointPath }, ticket: 1 }));
 
     let completed = false;
     await new RootMutationLock().run(rootPath, async () => { completed = true; });

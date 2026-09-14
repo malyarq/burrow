@@ -155,7 +155,7 @@ On the first registration for a newly created instance, main derives the manifes
 - `javaRuntime:scan`
 - `javaRuntime:select`
 
-`window.api.javaRuntime` returns opaque, short-lived installation IDs with runtime metadata and accepts only an ID when selecting Java for the canonical selected instance. Java executable details and launcher roots remain in the main process.
+`window.api.javaRuntime` returns opaque, short-lived installation IDs with runtime metadata. Selection accepts `{ instanceId, installationId }` and saves Java to the explicitly identified instance being edited. Java executable details and launcher roots remain in the main process. Subsequent public configuration saves preserve the main-owned Java selection.
 
 ### 3.4.3 Archive inspection
 
@@ -198,6 +198,8 @@ On the first registration for a newly created instance, main derives the manifes
 
 `window.api.network` contains three focused capabilities. Burrow Link, LAN discovery and UPnP expose independent typed lifecycle snapshots and subscriptions; there is no mutable main-process network mode. Native errors, gateway details and peer identities do not cross the preload boundary.
 
+In Burrow Link, `active` means the local service is running, not a confirmed game session. `peerCount` reports available peers; `metrics.activeGameConnectionCount` reports open local game streams while `gameConnectionCount` remains cumulative. A game connection timeout publishes the safe `TUNNEL_PEER_UNAVAILABLE` diagnostic and retains the local address for retry. The renderer does not apply older revisions over newer events.
+
 ### 3.6 Settings and dialogs
 
 - `settings:selectMinecraftPath`
@@ -208,6 +210,8 @@ On the first registration for a newly created instance, main derives the manifes
 - `dialog:showSaveDialog`
 - `dialog:showOpenDialog`
 - `dialog:getDesktopPath`
+
+`settings:openMinecraftPath` does not accept a renderer path. Main opens only a persisted directory previously chosen through the native dialog, or its default directory. It requires a local path to an existing directory and rejects UNC and device paths.
 
 Settings backup accepts only an explicit, size-bounded allowlist of launcher preferences and recent launch choices. Main owns the native file dialogs, atomic write, schema validation, and import size limit. Accounts, tokens, analytics identity, Burrow Link invitations, local filesystem paths, and game content are excluded.
 

@@ -5,7 +5,6 @@ import { randomUUID } from 'node:crypto'
 import { isSettingsBackupKey, type SettingsBackupValues } from '@shared/contracts/settings'
 import {
   validateOpenDialogOptions,
-  validateOptionalRootPath,
   validateSaveDialogOptions,
 } from '../validation/privilegedPayloads'
 import { authorizeSavePath } from '../../security/savePathAuthorizations'
@@ -14,6 +13,49 @@ import { replaceFileAtomically } from '../../security/zipWriter'
 const SETTINGS_BACKUP_MAX_BYTES = 512 * 1024
 const SETTINGS_BACKUP_MAX_KEYS = 96
 const SETTINGS_BACKUP_FIELDS = new Set(['schemaVersion', 'product', 'createdAt', 'values'])
+const MINECRAFT_DIRECTORY_FILE = 'minecraft-directory.json'
+
+function isUnsafeNativePath(value: string): boolean {
+  return /^(?:[\\/]{2}|[\\/]{2}[?.][\\/])/.test(value)
+}
+
+function resolveNativeMinecraftDirectory(value: unknown): string {
+  if (typeof value !== 'string' || !value.trim()) throw new Error('Minecraft directory path is required')
+  const candidate = value.trim()
+  if (isUnsafeNativePath(candidate) || !path.isAbsolute(candidate)) {
+    throw new Error('Minecraft directory must be a local absolute path')
+  }
+  const resolved = path.resolve(candidate)
+  if (isUnsafeNativePath(resolved)) throw new Error('Minecraft directory must be a local absolute path')
+  return resolved
+}
+
+function minecraftDirectoryPreferencePath(): string {
+  return path.join(app.getPath('userData'), MINECRAFT_DIRECTORY_FILE)
+}
+
+async function getPersistedMinecraftDirectory(): Promise<string | undefined> {
+  try {
+    const raw = await fs.readFile(minecraftDirectoryPreferencePath(), 'utf8')
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('invalid preference')
+    return resolveNativeMinecraftDirectory((parsed as Record<string, unknown>).directory)
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined
+    throw new Error('Stored Minecraft directory is invalid')
+  }
+}
+
+async function requireMinecraftDirectory(candidate: unknown): Promise<string> {
+  const directory = resolveNativeMinecraftDirectory(candidate)
+  const stats = await fs.stat(directory)
+  if (!stats.isDirectory()) throw new Error('Minecraft directory is not a directory')
+  return directory
+}
+
+async function persistMinecraftDirectory(directory: string): Promise<void> {
+  await fs.writeFile(minecraftDirectoryPreferencePath(), `${JSON.stringify({ directory })}\n`, { encoding: 'utf8', mode: 0o600 })
+}
 
 function isCanonicalIsoTimestamp(value: unknown): value is string {
   if (typeof value !== 'string') return false
@@ -69,7 +111,9 @@ export function registerSettingsHandlers(deps: { window: BrowserWindow }) {
         title: 'Select Minecraft Directory',
       })
       if (!result.canceled && result.filePaths.length > 0) {
-        return { success: true, path: result.filePaths[0] }
+        const directory = await requireMinecraftDirectory(result.filePaths[0])
+        await persistMinecraftDirectory(directory)
+        return { success: true, path: directory }
       }
       return { success: false, path: null }
     } catch (error: unknown) {
@@ -79,11 +123,13 @@ export function registerSettingsHandlers(deps: { window: BrowserWindow }) {
   })
 
   ipcMain.removeHandler('settings:openMinecraftPath')
-  ipcMain.handle('settings:openMinecraftPath', async (_evt, targetPath?: unknown) => {
+  ipcMain.handle('settings:openMinecraftPath', async () => {
     try {
-      const pathToOpen = validateOptionalRootPath(targetPath, 'Minecraft directory path')
-        ?? path.join(app.getPath('userData'), 'minecraft_data')
-      await shell.openPath(pathToOpen)
+      const pathToOpen = await requireMinecraftDirectory(
+        await getPersistedMinecraftDirectory() ?? path.join(app.getPath('userData'), 'minecraft_data'),
+      )
+      const shellError = await shell.openPath(pathToOpen)
+      if (shellError) throw new Error(shellError)
       return { success: true }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
@@ -93,7 +139,7 @@ export function registerSettingsHandlers(deps: { window: BrowserWindow }) {
 
   ipcMain.removeHandler('settings:getDefaultMinecraftPath')
   ipcMain.handle('settings:getDefaultMinecraftPath', async () => {
-    return path.join(app.getPath('userData'), 'minecraft_data')
+    return await getPersistedMinecraftDirectory() ?? path.join(app.getPath('userData'), 'minecraft_data')
   })
 
   ipcMain.removeHandler('settings:exportBackup')

@@ -144,24 +144,24 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
   };
 
   return (
-    <div className="min-w-0 space-y-2.5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+    <div className="min-w-0 space-y-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <LazyImage
           src={metadata?.iconUrl}
           alt={modpackName}
           fallbackKind="content-artwork"
-          className="h-14 w-14 shrink-0 self-start rounded-2xl border border-border/70 object-cover sm:h-16 sm:w-16"
+          className="h-20 w-16 shrink-0 self-start rounded-2xl border border-border/70 object-cover sm:h-24 sm:w-20"
         />
-        <div className="min-w-0 flex-1 space-y-2.5">
+        <div className="min-w-0 flex-1 space-y-4">
           <div className="space-y-1">
-            <h2 className="text-xl font-bold leading-tight text-foreground sm:text-2xl">{modpackName}</h2>
+            <h2 className="text-3xl font-bold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-4xl">{modpackName}</h2>
           </div>
           {metadataEntries.length > 0 && (
-            <div className="flex flex-wrap gap-1.5" data-testid="modpack-details-metadata">
+            <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2" data-testid="modpack-details-metadata">
               {metadataEntries.map((entry) => (
-                <div key={entry.label} className="surface-inline min-w-0 rounded-full px-3 py-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">{entry.label}</span>
-                  <span className="ml-2 break-words text-sm font-medium leading-5 text-foreground">{entry.value}</span>
+                <div key={entry.label} className="flex min-w-0 items-baseline justify-between gap-3 border-b border-border/55 py-1.5">
+                  <span className="text-xs text-muted">{entry.label}</span>
+                  <span className="break-words text-right text-sm font-medium leading-5 text-foreground">{entry.value}</span>
                 </div>
               ))}
             </div>
@@ -170,7 +170,7 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
       </div>
 
       <div
-        className="flex flex-wrap gap-2"
+        className="flex flex-wrap gap-1 border-b border-border/60 pb-px"
         role="tablist"
         aria-label={t('modpacks.details_title') || 'Modpack details'}
         aria-orientation="horizontal"
@@ -195,21 +195,21 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
               tabIndex={isActive ? 0 : -1}
               data-state={isActive ? 'active' : 'inactive'}
               className={cn(
-                'min-w-[8.75rem] flex-1 rounded-xl border px-3 py-2 text-left text-sm font-medium leading-5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:flex-none',
+                'min-w-max shrink-0 border-b-2 border-transparent px-3 py-2.5 text-left text-sm font-medium leading-5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 isActive
                   ? cn(
-                      'text-foreground shadow-sm',
+                      'text-foreground',
                       activeTabBackground.className,
                       activeTabBorder.className,
                       activeTabText.className,
                     )
-                  : 'border-border/60 bg-background/68 text-secondary hover:border-[rgb(var(--accent-main)/0.18)] hover:bg-card/78 hover:text-foreground',
+                  : 'text-secondary hover:border-border hover:text-foreground',
               )}
               style={isActive ? {
                 ...activeTabBackground.style,
                 ...activeTabBorder.style,
                 ...activeTabText.style,
-                boxShadow: `0 0 0 1px ${getAccentHex()}20`,
+                boxShadow: `inset 0 -2px 0 ${getAccentHex()}`,
               } : undefined}
             >
               {t(tab.labelKey) || tab.fallback}

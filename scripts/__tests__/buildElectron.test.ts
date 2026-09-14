@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { hasDeveloperIdIdentity, resolveBuilderArgs } from '../build-electron.js';
+import { createRequire } from 'node:module';
+const { hasDeveloperIdIdentity, resolveBuilderArgs } = createRequire(import.meta.url)('../build-electron.js') as typeof import('../build-electron.js');
 
 describe('Electron build signing selection', () => {
   it('uses ad-hoc signing only for a local macOS build without Developer ID', () => {

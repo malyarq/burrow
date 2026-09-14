@@ -177,6 +177,10 @@ async function runManifestExport(
     workspace.cleanupBackups();
     return { status: 'succeeded', instanceId };
   } catch (error) {
+    if (context.isControlPlaneCommitted()) {
+      workspace.cleanupStaging();
+      throw error;
+    }
     if (backupCreated && !workspace.restoreDestination(destinationPath, instanceId)) return { status: 'recovery-required', message: 'Manifest rollback destination is ambiguous' };
     workspace.cleanupStaging();
     if (backupCreated) workspace.cleanupBackups();

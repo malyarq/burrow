@@ -13,6 +13,7 @@ import {
     resolvePathWithinRoot,
 } from '../../security/pathGuards';
 import { resolveApprovedInstancePath, resolveResourcePacksDir } from '../instances/paths';
+import { mutateOptionsFile } from '../instances/optionsFileMutation';
 import { openValidatedZip } from '../../security/archivePolicy';
 
 export class ResourcePacksService {
@@ -128,25 +129,14 @@ export class ResourcePacksService {
      */
     private async setEnabledPacks(instancePath: string, packs: string[]): Promise<void> {
         const optionsPath = this.getOptionsPath(instancePath);
-        // If options.txt doesn't exist, create it? Usually MC creates it. 
-        // If we create it partial, MC might accept it.
-
-        let content = '';
-        if (await fs.pathExists(optionsPath)) {
-            content = await fs.readFile(optionsPath, 'utf8');
-        }
-
         const newVal = JSON.stringify(packs);
-        const lines = content.split(/\r?\n/);
-        const idx = lines.findIndex(l => l.startsWith('resourcePacks:'));
-
-        if (idx !== -1) {
-            lines[idx] = `resourcePacks:${newVal}`;
-        } else {
-            lines.push(`resourcePacks:${newVal}`);
-        }
-
-        await fs.writeFile(optionsPath, lines.join('\n'));
+        await mutateOptionsFile(optionsPath, (content) => {
+            const lines = content.split(/\r?\n/);
+            const idx = lines.findIndex(l => l.startsWith('resourcePacks:'));
+            if (idx !== -1) lines[idx] = `resourcePacks:${newVal}`;
+            else lines.push(`resourcePacks:${newVal}`);
+            return lines.join('\n');
+        });
     }
 
     async list(instancePath: string): Promise<ResourcePack[]> {

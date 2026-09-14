@@ -16,6 +16,7 @@ export async function installModLoaderIfNeeded(params: {
   isForge: boolean;
   isNeoForge: boolean;
   isFabric: boolean;
+  isQuilt?: boolean;
   useOptiFine: boolean | undefined;
   downloadProvider: DownloadProvider;
   maxSockets: number;
@@ -34,6 +35,7 @@ export async function installModLoaderIfNeeded(params: {
     isForge,
     isNeoForge,
     isFabric,
+    isQuilt = false,
     useOptiFine,
     downloadProvider,
     maxSockets,
@@ -44,6 +46,10 @@ export async function installModLoaderIfNeeded(params: {
   } = params;
 
   let launchVersion = mcVersion;
+
+  if (isQuilt) {
+    throw new Error('Quilt is not supported for launch.');
+  }
 
   if (isFabric) {
     launchVersion = await installFabricClient({ rootPath, mcVersion, downloadOptions, onLog, onProgress });

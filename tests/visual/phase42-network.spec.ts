@@ -29,3 +29,23 @@ for (const route of routes) {
     }))).toEqual({ room: null, mapped: null });
   });
 }
+
+for (const width of [420, 1280]) {
+  for (const [state, label] of [
+    ['waiting', 'Waiting for a friend. Local address ready'],
+    ['peer', 'Peer found. Connect from Minecraft'],
+    ['game', 'Game stream open'],
+    ['timeout', 'Could not connect the game to a peer.'],
+  ]) {
+    test(`join ${state} at ${width}px`, async ({ page }, testInfo) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/manual-verification.html?view=phase-42-tunnel-en&joinState=${state}`);
+      await expect(page.getByRole('status')).toContainText(label);
+      await expect(page.getByText('localhost:30000')).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Stop Session', exact: true })).toBeVisible();
+      await expect(page.locator('body')).not.toContainText('Tunnel Established!');
+      await expect.poll(() => page.evaluate(() => document.body.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: testInfo.outputPath('join-state.png'), fullPage: true });
+    });
+  }
+}

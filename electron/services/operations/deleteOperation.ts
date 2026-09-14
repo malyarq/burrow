@@ -53,6 +53,10 @@ export function createDeleteOperationAdapter(options: DeleteOperationOptions = {
         }
         return { status: 'succeeded', instanceId: destinationId };
       } catch (error) {
+        if (context.isControlPlaneCommitted()) {
+          workspace.cleanupStaging();
+          throw error;
+        }
         if (quarantined && !workspace.restoreDestination(destinationPath, destinationId)) return { status: 'recovery-required', message: 'Delete rollback destination is ambiguous' };
         workspace.cleanupStaging();
         if (quarantined) workspace.cleanupBackups();

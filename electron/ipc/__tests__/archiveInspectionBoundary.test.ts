@@ -15,12 +15,13 @@ describe('archive inspection IPC boundary wiring', () => {
       readFile(new URL('../../preload.ts', import.meta.url), 'utf8'),
       readFile(new URL('../../../shared/contracts/windowApi.ts', import.meta.url), 'utf8'),
     ]);
+    const normalizedPreload = preload.replace(/\r\n/g, '\n');
 
     expect(bridge).toContain('ArchiveInspectionAPI');
     expect(bridge).toContain('ARCHIVE_INSPECTION_CHANNELS');
     expect(bridge).not.toMatch(/dialogs|filePath|path|archiveReferenceAuthorizations/);
     expect(windowApi).toContain('archiveInspection: ArchiveInspectionAPI');
-    expect(preload).toContain("import { archiveInspection } from './preload/bridges/ArchiveInspectionBridge'");
-    expect(preload).toMatch(/\barchiveInspection,\n}\n\ncontextBridge\.exposeInMainWorld\('api', api\)/);
+    expect(normalizedPreload).toContain("import { archiveInspection } from './preload/bridges/ArchiveInspectionBridge'");
+    expect(normalizedPreload).toMatch(/\barchiveInspection,\n}\n\ncontextBridge\.exposeInMainWorld\('api', api\)/);
   });
 });

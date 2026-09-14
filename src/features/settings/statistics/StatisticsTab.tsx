@@ -109,7 +109,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
 
     if (loading) {
         return (
-            <div role="status" className="surface-inline flex items-center justify-center gap-3 p-4 text-center text-secondary">
+            <div role="status" className="flex items-center justify-center gap-3 py-4 text-center text-secondary">
                 <LoadingSpinner size="sm" variant="accent" />
                 {t('stats.loading')}
             </div>
@@ -142,9 +142,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
     const trendPoints = stats.usageTrend.slice(-7);
     const maxTrendLaunches = Math.max(1, ...trendPoints.map((point) => point.launches));
     const maxTrendPlayTime = Math.max(1, ...trendPoints.map((point) => point.playTime));
-    const sectionFrameClassName = embedded
-        ? 'surface-muted settings-section-stack min-w-0 p-5'
-        : 'settings-section-shell settings-section-stack min-w-0 p-5';
+    const sectionFrameClassName = 'settings-section-shell settings-section-stack min-w-0 p-5';
 
     return (
         <div className="space-y-4">
@@ -173,15 +171,15 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="settings-stat-card">
+                    <div className="border-t border-border/60 pt-4">
                         <div className="text-sm text-secondary">{t('stats.total_play_time')}</div>
                         <div className="text-2xl font-bold text-foreground">{formatTime(stats.global.totalPlayTime, formatNumber, durationLabels)}</div>
                     </div>
-                    <div className="settings-stat-card">
+                    <div className="border-t border-border/60 pt-4">
                         <div className="text-sm text-secondary">{t('stats.total_launches')}</div>
                         <div className="text-2xl font-bold text-foreground">{formatNumber(stats.global.totalLaunches)}</div>
                     </div>
-                    <div className="settings-stat-card">
+                    <div className="border-t border-border/60 pt-4">
                         <div className="text-sm text-secondary">{t('stats.average_session')}</div>
                         <div className="text-2xl font-bold text-foreground">{formatTime(averageSessionTime, formatNumber, durationLabels)}</div>
                     </div>
@@ -189,7 +187,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
             </div>
 
             <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-                <div className="surface-muted settings-section-stack min-w-0 p-5">
+                <div className="settings-section-shell settings-section-stack min-w-0 p-5">
                     <h4 className="text-sm font-semibold text-foreground">{t('stats.popular_modpacks')}</h4>
 
                     <div className="space-y-2" role="list" aria-label={t('stats.popular_modpacks')}>
@@ -197,7 +195,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                             <div
                                 key={modpack.instanceId}
                                 role="listitem"
-                                className="surface-inline flex items-center justify-between gap-4 p-3"
+                                className="flex items-center justify-between gap-4 border-t border-border/60 py-3"
                             >
                                 <div>
                                     <div className="font-medium text-foreground">
@@ -216,17 +214,17 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                             </div>
                         ))}
                         {stats.popularModpacks.length === 0 && (
-                            <div className="surface-inline py-4 text-center text-secondary">{t('stats.no_popular_modpacks')}</div>
+                            <div className="border-t border-border/60 py-4 text-center text-secondary">{t('stats.no_popular_modpacks')}</div>
                         )}
                     </div>
                 </div>
 
-                <div className="surface-muted settings-section-stack min-w-0 p-5">
+                <div className="settings-section-shell settings-section-stack min-w-0 p-5">
                     <h4 className="text-sm font-semibold text-foreground">{t('stats.usage_trend')}</h4>
 
                     <div className="space-y-3" role="list" aria-label={t('stats.usage_trend')}>
                         {trendPoints.map((point) => (
-                            <div key={point.date} role="listitem" className="surface-inline space-y-2 p-3">
+                            <div key={point.date} role="listitem" className="space-y-2 border-t border-border/60 py-3">
                                 <div className="flex items-center justify-between text-sm text-foreground">
                                     <span>{formatTrendDate(point.date, formatDate)}</span>
                                     <span>
@@ -268,18 +266,18 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                             </div>
                         ))}
                         {trendPoints.length === 0 && (
-                            <div className="surface-inline py-4 text-center text-secondary">{t('stats.no_usage_trend')}</div>
+                            <div className="border-t border-border/60 py-4 text-center text-secondary">{t('stats.no_usage_trend')}</div>
                         )}
                     </div>
                 </div>
             </div>
 
-            <div className="surface-muted settings-section-stack min-w-0 p-5">
+            <div className="settings-section-shell settings-section-stack min-w-0 p-5">
                 <h4 className="text-sm font-semibold text-foreground">{t('stats.instance_stats')}</h4>
 
                 <div className="space-y-2" role="list" aria-label={t('stats.instance_stats')}>
                     {Object.entries(stats.instances).map(([id, instance]) => (
-                        <div key={id} role="listitem" className="surface-inline flex items-center justify-between gap-4 p-3">
+                        <div key={id} role="listitem" className="flex items-center justify-between gap-4 border-t border-border/60 py-3">
                             <div>
                                 <div className="font-medium text-foreground">{instance.name || id}</div>
                                 <div className="text-xs text-secondary">
@@ -292,7 +290,7 @@ export const StatisticsTab: React.FC<StatisticsTabProps> = ({ embedded = false }
                         </div>
                     ))}
                     {Object.keys(stats.instances).length === 0 && (
-                        <div className="surface-inline py-4 text-center text-secondary">{t('stats.no_instance_stats')}</div>
+                        <div className="border-t border-border/60 py-4 text-center text-secondary">{t('stats.no_instance_stats')}</div>
                     )}
                 </div>
             </div>

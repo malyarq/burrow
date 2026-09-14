@@ -67,6 +67,7 @@ const readySnapshot = {
     },
     config: {
       runtime: { minecraftVersion: '1.21.1' },
+      java: { executable: '/private/java/bin/java' },
       memory: { maxMb: 4096 },
       game: { useOptiFine: true },
     },
@@ -104,7 +105,7 @@ describe('instances control-plane handler factory', () => {
     await handlers[INSTANCE_CHANNELS.metadata]({ id: 'alpha' });
     await handlers[INSTANCE_CHANNELS.prepare]({});
 
-    expect(read).toHaveBeenCalledTimes(5);
+    expect(read).toHaveBeenCalledTimes(6);
     expect(execute).toHaveBeenCalledWith(root, expect.objectContaining({ type: 'select', id: 'alpha' }));
     expect(execute).toHaveBeenCalledWith(root, expect.objectContaining({
       type: 'create',
@@ -112,7 +113,11 @@ describe('instances control-plane handler factory', () => {
       config: expect.objectContaining({ game: { useOptiFine: true } }),
     }));
     expect(execute).toHaveBeenCalledWith(root, expect.objectContaining({ type: 'rename', name: 'Renamed' }));
-    expect(execute).toHaveBeenCalledWith(root, expect.objectContaining({ type: 'save-config', id: 'alpha' }));
+    expect(execute).toHaveBeenCalledWith(root, expect.objectContaining({
+      type: 'save-config',
+      id: 'alpha',
+      config: expect.objectContaining({ java: { executable: '/private/java/bin/java' } }),
+    }));
   });
 
   it('rejects invalid input before an application call and maps native failures safely', async () => {

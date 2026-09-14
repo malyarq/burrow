@@ -64,6 +64,8 @@ export interface BurrowLinkMetrics {
   transferredBytes: number;
   peakPeerCount: number;
   gameConnectionCount: number;
+  /** Currently open local game streams; gameConnectionCount remains cumulative. */
+  activeGameConnectionCount?: number;
 }
 
 export interface LanDiscoverySnapshot extends NetworkSnapshotBase {

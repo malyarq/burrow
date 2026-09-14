@@ -22,8 +22,8 @@ function translateWithFallback(t: (key: string) => string, key: string, fallback
 
 function InfoCard({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className={cn('surface-card min-w-0 p-3', highlight && 'border-amber-500/30 bg-amber-500/10')}>
-      <p className="truncate text-[10px] font-medium uppercase tracking-wider text-secondary">{label}</p>
+    <div className={cn('min-w-0 border-l border-border px-4 py-1 first:border-l-0 first:pl-0', highlight && 'border-amber-500/30 bg-amber-500/10')}>
+      <p className="truncate text-xs font-medium text-muted">{label}</p>
       <p className={cn('mt-0.5 truncate text-sm font-semibold text-foreground', highlight && 'text-amber-700 dark:text-amber-300')}>
         {value}
       </p>
@@ -60,7 +60,7 @@ export function ClassicLaunchRail({
     <>
       {showStatus ? (
         <section
-          className={cn('surface-panel mb-6 w-full max-w-2xl border p-5', statusTone)}
+          className={cn('surface-panel mb-5 w-full border p-5', statusTone)}
           aria-label={launchStatusLabel}
           aria-busy={isLaunching}
         >
@@ -82,11 +82,11 @@ export function ClassicLaunchRail({
         </section>
       ) : null}
 
-      <section className="mb-6 w-full max-w-2xl" aria-label={t('dashboard.info_panel') || 'Current settings'}>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-secondary">
+      <section className="mb-6 w-full" aria-label={t('dashboard.info_panel') || 'Current settings'}>
+        <h2 className="sr-only">
           {t('dashboard.current_settings') || 'Current settings'}
         </h2>
-        <div className="grid min-w-0 grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid min-w-0 grid-cols-2 gap-y-5 border-b border-border pb-6 sm:grid-cols-4">
           <InfoCard label={t('modpacks.minecraft_version') || 'Minecraft version'} value={minecraftVersion} />
           <InfoCard label={t('general.modloader') || 'Modloader'} value={loaderLabel} />
           <InfoCard label={t('dashboard.ram') || 'RAM'} value={`${ramGb} GB`} />

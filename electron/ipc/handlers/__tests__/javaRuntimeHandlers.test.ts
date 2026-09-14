@@ -68,7 +68,7 @@ describe('java runtime IPC handlers', () => {
     expect(installations).toEqual([{ id: 'installation-1', version: '21.0.6', majorVersion: 21, arch: 'x64' }]);
     expect(JSON.stringify(installations)).not.toContain('/private/java');
 
-    await expect(select?.({}, { installationId: 'installation-1' })).resolves.toEqual({ status: 'selected' });
+    await expect(select?.({}, { instanceId: 'alpha', installationId: 'installation-1' })).resolves.toEqual({ status: 'selected' });
     expect(deps.application.execute).toHaveBeenCalledWith(rootA, {
       version: 1,
       type: 'save-config',
@@ -108,16 +108,38 @@ describe('java runtime IPC handlers', () => {
     const scan = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.scan);
     const select = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.select);
 
-    await expect(select?.({}, { installationId: 'forged', rootPath: '/private/root' })).rejects.toThrow(/Java runtime selection/i);
+    await expect(select?.({}, { instanceId: 'alpha', installationId: 'forged', rootPath: '/private/root' })).rejects.toThrow(/Java runtime selection/i);
     await expect(scan?.({}, {})).resolves.toEqual(expect.any(Array));
     await expect(scan?.({}, {})).resolves.toEqual(expect.any(Array));
-    await expect(select?.({}, { installationId: 'first' })).rejects.toThrow(/scan again/i);
+    await expect(select?.({}, { instanceId: 'alpha', installationId: 'first' })).rejects.toThrow(/scan again/i);
 
     deps.getDefaultInstanceRoot.mockResolvedValueOnce(rootB);
     await expect(scan?.({}, {})).resolves.toEqual(expect.any(Array));
     deps.getDefaultInstanceRoot.mockResolvedValueOnce(rootA);
-    await expect(select?.({}, { installationId: 'cross-root' })).rejects.toThrow(/scan again/i);
+    await expect(select?.({}, { instanceId: 'alpha', installationId: 'cross-root' })).rejects.toThrow(/scan again/i);
     expect(deps.application.read).not.toHaveBeenCalled();
     expect(deps.application.execute).not.toHaveBeenCalled();
+  });
+
+  it('saves a scanned Java on the requested instance rather than the selected instance', async () => {
+    const deps = createDependencies();
+    deps.application.read.mockResolvedValue({
+      status: 'ready',
+      snapshot: {
+        selectedId: 'alpha',
+        records: [
+          ...selectedState().snapshot.records,
+          { ...selectedState().snapshot.records[0], id: 'beta', name: 'Beta' },
+        ],
+      },
+    });
+    registerJavaRuntimeHandlers(deps as never);
+    const scan = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.scan);
+    const select = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.select);
+    await scan?.({}, {});
+
+    await select?.({}, { instanceId: 'beta', installationId: 'installation-1' });
+
+    expect(deps.application.execute).toHaveBeenCalledWith(rootA, expect.objectContaining({ id: 'beta' }));
   });
 });

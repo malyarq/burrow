@@ -46,8 +46,8 @@ export const settingsIPC = {
   selectMinecraftPath(): ReturnType<SettingsApi['selectMinecraftPath']> {
     return call('selectMinecraftPath', () => requireSettings('selectMinecraftPath').selectMinecraftPath());
   },
-  openMinecraftPath(path?: Parameters<SettingsApi['openMinecraftPath']>[0]): ReturnType<SettingsApi['openMinecraftPath']> {
-    return call('openMinecraftPath', () => requireSettings('openMinecraftPath').openMinecraftPath(path));
+  openMinecraftPath(): ReturnType<SettingsApi['openMinecraftPath']> {
+    return call('openMinecraftPath', () => requireSettings('openMinecraftPath').openMinecraftPath());
   },
   getDefaultMinecraftPath(): ReturnType<SettingsApi['getDefaultMinecraftPath']> {
     return call('getDefaultMinecraftPath', () => requireSettings('getDefaultMinecraftPath').getDefaultMinecraftPath());

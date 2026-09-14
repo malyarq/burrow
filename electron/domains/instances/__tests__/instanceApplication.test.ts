@@ -240,4 +240,26 @@ describe('InstanceApplication', () => {
     await expect(write).resolves.toMatchObject({ status: 'committed' });
     await drain;
   });
+
+  it('reads the committed snapshot after an already admitted write', async () => {
+    let release: (() => void) | undefined;
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const ports = createPorts(ready({ selectedId: 'pack-one', records: [createRecord()] }));
+    let committed = false;
+    vi.mocked(ports.controlPlane.read).mockImplementation(async () => committed
+      ? ready({ selectedId: 'pack-one', records: [{ ...createRecord(), name: 'Saved name' }] })
+      : ready({ selectedId: 'pack-one', records: [createRecord()] }));
+    vi.mocked(ports.controlPlane.commit).mockImplementationOnce(async () => { await gate; committed = true; });
+    const application = new InstanceApplication(ports);
+    const root = createRoot();
+
+    const write = application.execute(root, { version: 1, type: 'rename', id: 'pack-one', name: 'Saved name' });
+    await vi.waitFor(() => expect(ports.controlPlane.commit).toHaveBeenCalledOnce());
+    const read = application.read(root);
+    expect(ports.controlPlane.read).toHaveBeenCalledTimes(1);
+
+    release?.();
+    await write;
+    await expect(read).resolves.toMatchObject({ snapshot: { records: [{ name: 'Saved name' }] } });
+  });
 });

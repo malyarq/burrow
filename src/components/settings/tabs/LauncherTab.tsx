@@ -19,8 +19,8 @@ function ToggleRow(props: {
   const { label, description, checked, onToggle } = props;
 
   return (
-    <div className="settings-toggle-row">
-      <div className="settings-toggle-copy">
+    <div className="settings-toggle-row border-t border-border/60 first:border-t-0">
+      <div className="settings-toggle-copy max-w-[50ch]">
         <p className="settings-toggle-title">{label}</p>
         <p className="settings-toggle-description">{description}</p>
       </div>
@@ -180,7 +180,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
             </p>
           </div>
 
-          <div data-testid="launcher-runtime-grid" className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div data-testid="launcher-runtime-grid" className="border-t border-border/60">
             <ToggleRow
               label={t('settings.performance')}
               description={t('settings.performance_desc')}
@@ -213,7 +213,10 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
               checked={compactMode}
               onToggle={() => setCompactMode(!compactMode)}
             />
-            <div className="settings-control-card space-y-3">
+          </div>
+
+          <div className="grid grid-cols-1 border-t border-border/60 lg:grid-cols-2">
+            <div className="space-y-3 p-4">
               <label className="flex justify-between text-sm font-medium text-foreground">
                 <span>{translateWithFallback(t, 'settings.ui_zoom', 'Interface Zoom')}</span>
                 <span>{uiScale}%</span>
@@ -235,7 +238,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
               </div>
             </div>
 
-            <div className="settings-control-card space-y-3">
+            <div className="space-y-3 border-t border-border/60 p-4 lg:border-l lg:border-t-0">
               <p className="settings-toggle-title">{translateWithFallback(t, 'settings.sidebar_position', 'Sidebar Position')}</p>
               <div className="settings-segmented-row">
                 {(['left', 'right'] as const).map((position) => (
@@ -275,7 +278,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
               <p className="settings-embedded-copy">{t('settings.updatesDesc')}</p>
             </div>
             {(status === 'checking' || status === 'available' || status === 'up-to-date' || status === 'error') && (
-              <div className="surface-inline px-3 py-2 text-xs">
+              <div className="text-xs text-secondary">
                 {status === 'checking' && <span className="text-secondary">{t('updater.checking')}</span>}
                 {status === 'available' && updateInfo && (
                   <span className="text-secondary">
@@ -307,7 +310,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
         {privacyFeedback}
 
         {imageCacheState && (
-          <div className="surface-card space-y-4 p-5">
+          <div className="settings-section-shell settings-section-stack p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold text-foreground">
@@ -371,7 +374,7 @@ export const LauncherTab: React.FC<LauncherTabProps> = ({
           </div>
         )}
 
-        <div className="surface-card flex flex-col gap-3 p-5">
+        <div className="settings-section-shell flex flex-col gap-3 p-5">
           <div className="space-y-1">
             <p className="text-sm font-semibold text-foreground">{t('settings.clear_cache')}</p>
             <p className="text-sm text-secondary">{t('settings.clear_cache_desc')}</p>

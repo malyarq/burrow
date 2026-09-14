@@ -1,6 +1,23 @@
 import { EventEmitter } from 'node:events';
-import { describe, expect, it, vi } from 'vitest';
+import { PassThrough } from 'node:stream';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BurrowLinkService } from '../burrowLinkService';
+import * as joinPeer from '../joinPeer';
+
+function joinHarness(swarm: FakeSwarm) {
+  let accept: (socket: PassThrough) => Promise<void>;
+  const server = Object.assign(new EventEmitter(), {
+    listening: false,
+    listen: vi.fn((_port: number, _host: string, ready: () => void) => { server.listening = true; ready(); }),
+    address: () => ({ port: 30000 }),
+    close: vi.fn((done: () => void) => { server.listening = false; done(); }),
+  });
+  const service = new BurrowLinkService({
+    createSwarm: (() => swarm) as never,
+    createServer: ((callback: typeof accept) => { accept = callback; return server; }) as never,
+  });
+  return { service, connect: (socket: PassThrough) => accept(socket) };
+}
 
 class FakeDiscovery {
   public flushed = vi.fn(async () => undefined);
@@ -29,6 +46,53 @@ function serviceWith(...swarms: FakeSwarm[]) {
 }
 
 describe('BurrowLinkService', () => {
+  afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
+
+  it('exposes a timeout while keeping the endpoint usable for retry', async () => {
+    vi.useFakeTimers();
+    const swarm = new FakeSwarm();
+    const { service, connect } = joinHarness(swarm);
+    await expect(service.join('ab'.repeat(32))).resolves.toMatchObject({ state: 'active', peerCount: 0, metrics: { activeGameConnectionCount: 0, gameConnectionCount: 0 } });
+    const socket = new PassThrough();
+    const attempt = connect(socket);
+    await vi.advanceTimersByTimeAsync(5000);
+    await attempt;
+    expect(socket.destroyed).toBe(true);
+    expect(service.getState()).toMatchObject({ state: 'active', localPort: 30000, diagnostic: { code: 'TUNNEL_PEER_UNAVAILABLE' }, metrics: { gameConnectionCount: 0 } });
+    expect(swarm.listenerCount('connection')).toBe(1);
+    const peer = new FakeConnection();
+    swarm.connections.add(peer);
+    swarm.emit('connection', peer);
+    let finish: (() => void) | undefined;
+    vi.spyOn(joinPeer, 'bridgeLocalSocketToMuxer').mockImplementation(({ onGameConnectionOpened, onGameConnectionClosed }) => {
+      onGameConnectionOpened?.();
+      finish = () => onGameConnectionClosed?.(12);
+    });
+    const retry = new PassThrough();
+    await connect(retry);
+    expect(service.getState()).toMatchObject({ peerCount: 1, metrics: { gameConnectionCount: 1, activeGameConnectionCount: 1 } });
+    expect(service.getState().diagnostic).toBeUndefined();
+    finish?.();
+    expect(service.getState().metrics).toMatchObject({ gameConnectionCount: 1, activeGameConnectionCount: 0, transferredBytes: 12 });
+    await service.stop();
+    expect(retry.destroyed).toBe(true);
+  });
+
+  it.each(['socket', 'stop'] as const)('cancels peer waiting on %s close without a false failure', async (reason) => {
+    const swarm = new FakeSwarm();
+    const { service, connect } = joinHarness(swarm);
+    await service.join('ab'.repeat(32));
+    const socket = new PassThrough();
+    const attempt = connect(socket);
+    expect(swarm.listenerCount('connection')).toBe(2);
+    if (reason === 'socket') socket.destroy();
+    else await service.stop();
+    await attempt;
+    expect(swarm.listenerCount('connection')).toBe(1);
+    expect(service.getState().diagnostic).toBeUndefined();
+    expect(service.getState().metrics?.gameConnectionCount ?? 0).toBe(0);
+    await service.stop();
+  });
   it('owns and destroys a complete host session', async () => {
     const swarm = new FakeSwarm();
     const service = serviceWith(swarm);

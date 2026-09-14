@@ -25,8 +25,7 @@ export class YggdrasilClient {
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Authentication failed: ${response.status} ${response.statusText} - ${errorText}`);
+            throw new Error('Authentication failed. Check your credentials and server, then try again.');
         }
 
         return (await response.json()) as YggdrasilAuthResponse;
@@ -44,8 +43,7 @@ export class YggdrasilClient {
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Refresh failed: ${response.status} ${response.statusText} - ${errorText}`);
+            throw new Error('Authentication refresh failed. Sign in again and try once more.');
         }
 
         return (await response.json()) as YggdrasilAuthResponse;

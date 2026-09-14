@@ -178,6 +178,93 @@ describe('theme runtime contract', () => {
     expect(latestSettings?.themeRuntimeState.customizationScopes).toContain('accent');
   });
 
+  it('keeps a stored user accent through mode, preset, custom override, and reload changes', async () => {
+    localStorage.setItem('settings_appearanceState', JSON.stringify({
+      accentColor: 'purple',
+      accentColorSource: 'user',
+      customTheme: {},
+      theme: 'dark',
+      themePresetId: 'default',
+    }));
+
+    const firstRender = render(
+      React.createElement(
+        SettingsProvider,
+        null,
+        React.createElement(SettingsProbe, {
+          onChange: (settings: SettingsSnapshot) => {
+            latestSettings = settings;
+          },
+        }),
+      ),
+    );
+
+    await waitFor(() => {
+      expect(latestSettings?.accentColor).toBe('purple');
+      expect(latestSettings?.themePresetId).toBe('default');
+    });
+
+    act(() => {
+      latestSettings?.setTheme('light');
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.theme).toBe('light');
+    });
+
+    act(() => {
+      latestSettings?.applyThemePreset('navy');
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.themePresetId).toBe('navy');
+      expect(latestSettings?.accentColor).toBe('purple');
+    });
+
+    act(() => {
+      latestSettings?.setCustomTheme(resolveThemeConfig('light', 'navy', {
+        colors: { card: '#ffffff' },
+      }));
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.customTheme).toEqual({ colors: { card: '#ffffff' } });
+    });
+
+    act(() => {
+      latestSettings?.setTheme('dark');
+    });
+
+    await waitFor(() => {
+      expect(latestSettings?.theme).toBe('dark');
+    });
+
+    firstRender.unmount();
+    latestSettings = null;
+
+    render(
+      React.createElement(
+        SettingsProvider,
+        null,
+        React.createElement(SettingsProbe, {
+          onChange: (settings: SettingsSnapshot) => {
+            latestSettings = settings;
+          },
+        }),
+      ),
+    );
+
+    await waitFor(() => {
+      expect(latestSettings?.theme).toBe('dark');
+      expect(latestSettings?.themePresetId).toBe('navy');
+      expect(latestSettings?.accentColor).toBe('purple');
+      expect(latestSettings?.customTheme).toEqual({ colors: { card: '#ffffff' } });
+    });
+
+    const restoredSettings = latestSettings as SettingsSnapshot | null;
+    expect(restoredSettings?.themeRuntimeState.customizationScopes).toEqual(['colors']);
+  });
+
   it('re-inferrs legacy stored accent overrides when appearance state predates accent source metadata', async () => {
     localStorage.setItem('settings_appearanceState', JSON.stringify({
       accentColor: 'rose',

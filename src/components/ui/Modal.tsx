@@ -28,7 +28,15 @@ const FOCUSABLE_SELECTOR = [
 ].join(', ');
 
 function isFocusableElement(element: HTMLElement): boolean {
-    return !element.hasAttribute('disabled') && element.getAttribute('aria-hidden') !== 'true';
+    if (element.hasAttribute('disabled') || element.tabIndex < 0) return false;
+    // A closed disclosure can contain inputs; neither it nor a hidden file picker
+    // belongs in the dialog's keyboard loop.
+    for (let ancestor: HTMLElement | null = element; ancestor; ancestor = ancestor.parentElement) {
+        if (ancestor.hidden || ancestor.hasAttribute('inert') || ancestor.getAttribute('aria-hidden') === 'true') return false;
+        const style = getComputedStyle(ancestor);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+    }
+    return true;
 }
 
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
@@ -139,9 +147,9 @@ export const Modal: React.FC<ModalProps> = ({
     }, [closeDisabled, onClose]);
 
     const animationClasses = useMemo(() => ({
-        overlay: prefersReducedMotion ? '' : 'animate-in fade-in duration-200',
-        frame: prefersReducedMotion ? '' : 'animate-in fade-in duration-200',
-        dialog: prefersReducedMotion ? '' : 'animate-in zoom-in-95 duration-200',
+        overlay: prefersReducedMotion ? '' : 'burrow-overlay',
+        frame: '',
+        dialog: prefersReducedMotion ? '' : 'burrow-dialog',
     }), [prefersReducedMotion]);
 
     useEffect(() => {
@@ -233,7 +241,7 @@ export const Modal: React.FC<ModalProps> = ({
         <>
             <div
                 className={cn(
-                    'fixed inset-0 z-[200] bg-background/36 backdrop-blur-[2px] pointer-events-auto',
+                    'fixed inset-0 z-[200] bg-black/40 backdrop-blur-[3px] pointer-events-auto',
                     animationClasses.overlay,
                     overlayClassName
                 )}
@@ -251,7 +259,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <div
                     ref={dialogRef}
                     className={cn(
-                        'surface-panel pointer-events-auto flex w-full max-w-lg flex-col overflow-hidden rounded-[28px] border-border/70 bg-card',
+                        'surface-panel pointer-events-auto flex w-full max-w-lg flex-col overflow-hidden rounded-2xl border-border/70 bg-card',
                         'max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] md:max-h-[calc(100dvh-3rem)]',
                         animationClasses.dialog,
                         className

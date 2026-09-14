@@ -17,13 +17,15 @@ Checksums detect corruption or asset replacement only when users compare them wi
 - The recovery inbox does not expose a generic retry for hidden or already-consumed input. A recovery-required import or export may need a fresh archive selection or save destination from the user.
 - Archive export recovery deliberately stops at `recovery-required` after a restart. The launcher preserves the external output and private staging artifacts, but does not rename or delete them after the one-time native save authorization has expired; manual verification is required.
 - Real Microsoft authentication is not implemented; supported profiles are offline or compatible third-party Yggdrasil providers.
+- Quilt is unsupported: importing or launching a Quilt pack is rejected instead of silently launching vanilla without its mods.
+- Updating a legacy CurseForge pack without a provider ownership record stops before replacing data: its manifest cannot reliably distinguish obsolete provider mods from user additions. Install the new version as a separate copy and transfer worlds and desired local content. Existing user configuration files are preserved during updates; a new pack version may require manual configuration changes.
 - LAN discovery and UPnP depend on the local network and router and cannot be guaranteed by the launcher.
 - Electron documents that normal quit events may not fire during Windows shutdown, restart, or user logout. The ordered drain applies to ordinary launcher quit paths; crash/journal recovery remains the protection for forced termination.
 
 ## Verification and maintenance limits
 
 - The XMCL bytebuffer compatibility correction is applied by a validated postinstall script. It should be replaced by an upstream fix or a managed package patch.
-- Deterministic renderer proof and visual regression baselines run on macOS Chromium only; they do not establish native-dialog, window-manager, or graphics-driver behavior on other platforms.
+- Visual regression baselines are defined for macOS Chromium. Behavioral browser checks also run on Windows, but do not establish native-dialog, window-manager, or graphics-driver behavior on other platforms.
 - Full Minecraft installation, real routers, installed updates, and OS signing/notarization still require manual platform smoke tests.
 
 ## Not bugs

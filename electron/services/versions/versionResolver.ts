@@ -4,6 +4,7 @@ export type RequestedVersionInfo = {
   isNeoForge: boolean;
   isForge: boolean;
   isFabric: boolean;
+  isQuilt: boolean;
 };
 
 /**
@@ -15,15 +16,18 @@ export function parseRequestedVersion(requestedVersionRaw: string): RequestedVer
   const isNeoForge = requestedVersion.toLowerCase().includes('neoforge');
   const isForge = requestedVersion.toLowerCase().includes('forge') && !isNeoForge;
   const isFabric = requestedVersion.toLowerCase().includes('fabric');
+  const isQuilt = requestedVersion.toLowerCase().includes('quilt');
   const mcVersion = isNeoForge
     ? requestedVersion.replace(/-?neoforge/i, '').trim()
     : isForge
       ? requestedVersion.replace(/-?forge/i, '').trim()
       : isFabric
         ? requestedVersion.replace(/-?fabric/i, '').trim()
-        : requestedVersion.trim();
+        : isQuilt
+          ? requestedVersion.replace(/-?quilt/i, '').trim()
+          : requestedVersion.trim();
 
-  return { requestedVersion, mcVersion, isNeoForge, isForge, isFabric };
+  return { requestedVersion, mcVersion, isNeoForge, isForge, isFabric, isQuilt };
 }
 
 export async function getFabricLoaderVersion(mcVersion: string, onLog: (data: string) => void): Promise<string | null> {

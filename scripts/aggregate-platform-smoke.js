@@ -37,7 +37,12 @@ export function aggregatePlatformSmoke({ inputDir, requireUpgrade = false }) {
     if (records.has(evidence.platform)) throw new Error(`duplicate package smoke evidence for ${evidence.platform}`);
     if (!['passed', 'unsupported-runner'].includes(evidence.status)) throw new Error(`package smoke did not pass for ${evidence.platform}`);
     if (!sha256.test(evidence.artifact.sha256)) throw new Error(`package smoke artifact hash is invalid for ${evidence.platform}`);
-    if (requireUpgrade && (!evidence.upgrade || evidence.upgrade.previousLaunchVerified !== true || evidence.upgrade.userDataPreserved !== true)) {
+    if (requireUpgrade && (!evidence.upgrade
+      || evidence.upgrade.previousLaunchVerified !== true
+      || evidence.upgrade.userDataPreserved !== true
+      || evidence.upgrade.statePreserved?.rendererSettings !== true
+      || evidence.upgrade.statePreserved?.statistics !== true
+      || evidence.upgrade.statePreserved?.controlPlane !== true)) {
       throw new Error(`package upgrade smoke did not pass for ${evidence.platform}`);
     }
     const signing = evidence.signing.status === 'not-checked' ? 'unavailable' : evidence.signing.status;

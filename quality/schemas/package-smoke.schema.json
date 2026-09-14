@@ -70,13 +70,23 @@
     "upgrade": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["attempted", "previousVersion", "previousArtifactSha256", "previousLaunchVerified", "userDataPreserved"],
+      "required": ["attempted", "previousVersion", "previousArtifactSha256", "previousLaunchVerified", "userDataPreserved", "statePreserved"],
       "properties": {
         "attempted": { "const": true },
         "previousVersion": { "type": "string", "minLength": 1 },
         "previousArtifactSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "previousLaunchVerified": { "type": "boolean" },
-        "userDataPreserved": { "type": "boolean" }
+        "userDataPreserved": { "type": "boolean" },
+        "statePreserved": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rendererSettings", "statistics", "controlPlane"],
+          "properties": {
+            "rendererSettings": { "type": "boolean" },
+            "statistics": { "type": "boolean" },
+            "controlPlane": { "type": "boolean" }
+          }
+        }
       }
     },
     "error": { "type": "string" }

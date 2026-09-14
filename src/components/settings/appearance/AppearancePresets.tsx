@@ -156,6 +156,9 @@ export function AppearancePresets({
   const appearanceStateChips = selectedPreset
     ? [runtimeModeState, runtimeStateLabel]
     : [selectedModeLabel];
+  const appearanceStatusText = selectedPreset
+    ? appearanceStateChips.join(' · ')
+    : runtimeDescription;
 
   const handleExportTheme = () => {
     const themeData = {
@@ -235,28 +238,27 @@ export function AppearancePresets({
 
   return (
     <section
-      className="settings-section-shell min-w-0 p-5"
+      className={embedded ? 'min-w-0' : 'settings-section-shell min-w-0 p-5'}
       data-appearance-owner="presets"
       data-testid="appearance-presets"
     >
-      <div className="space-y-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="settings-section-stack">
+        {!embedded && <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0 space-y-3">
             {!embedded && <div className="kicker-label">{t('settings.tab_appearance')}</div>}
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-lg font-semibold text-foreground">{appearanceHeading}</h3>
-              {selectedPreset && hasCustomizations && (
-                <span className="settings-status-chip">
-                  {translateWithFallback(t, 'settings.theme_customized_state', 'Customized')}
-                </span>
-              )}
             </div>
-            {!embedded && <p className="text-sm text-secondary">{runtimeDescription}</p>}
-            <div className="flex flex-wrap gap-2">
-              {appearanceStateChips.map((chip) => (
-                <span key={chip} className="settings-status-chip">{chip}</span>
-              ))}
-            </div>
+            <p className="text-sm text-secondary">
+              {selectedPreset
+                ? appearanceStateChips.map((chip, index) => (
+                  <React.Fragment key={chip}>
+                    {index > 0 && <span aria-hidden="true"> · </span>}
+                    <span>{chip}</span>
+                  </React.Fragment>
+                ))
+                : appearanceStatusText}
+            </p>
             {selectedPreset && hasCustomizations && resetPresetDescription && (
               <p className="settings-embedded-copy">{resetPresetDescription}</p>
             )}
@@ -264,7 +266,7 @@ export function AppearancePresets({
 
           {hasCustomizations && (
             <Button
-              variant="danger"
+              variant="secondary"
               onClick={resetAppearanceCustomizations}
               size="sm"
               aria-label={resetPresetA11yLabel}
@@ -273,9 +275,9 @@ export function AppearancePresets({
               {resetPresetLabel}
             </Button>
           )}
-        </div>
+        </div>}
 
-        <div className="space-y-3">
+        <div className={embedded ? 'space-y-3' : 'space-y-3 border-t border-border/60 pt-4'}>
           <div className="flex items-center gap-2">
             <Sparkles aria-hidden="true" className="h-4 w-4 text-secondary" />
             <span className="text-sm font-medium text-foreground">{t('settings.theme')}</span>
@@ -305,7 +307,7 @@ export function AppearancePresets({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 border-t border-border/60 pt-4">
           <label className="text-sm font-medium text-foreground">{themePresetsLabel}</label>
           {!embedded && <p className="text-sm text-secondary">{themePresetsDescription}</p>}
           <Select
@@ -325,6 +327,21 @@ export function AppearancePresets({
               <option key={preset.id} value={preset.id}>{getThemePresetLabel(t, preset)}</option>
             ))}
           </Select>
+          <div
+            className="flex items-center gap-2"
+            data-testid="appearance-preset-preview"
+            aria-label={`${selectedPresetSummary || customThemeExportName} preview`}
+          >
+            {[activeThemeConfig.colors?.background, activeThemeConfig.colors?.card, activeThemeConfig.colors?.textMain].map((color, index) => (
+              <span
+                key={`${color ?? 'default'}-${index}`}
+                aria-hidden="true"
+                className="h-6 w-6 rounded-md border border-border/70"
+                style={{ backgroundColor: color || 'rgb(var(--bg-card))' }}
+              />
+            ))}
+            <span className="text-xs text-secondary">{selectedPresetSummary || customThemeExportName}</span>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -347,6 +364,17 @@ export function AppearancePresets({
             <Download aria-hidden="true" className="h-4 w-4" />
             {translateWithFallback(t, 'settings.export_theme', 'Export')}
           </Button>
+          {embedded && hasCustomizations && (
+            <Button
+              variant="ghost"
+              onClick={resetAppearanceCustomizations}
+              size="sm"
+              aria-label={resetPresetA11yLabel}
+              className="sm:w-auto"
+            >
+              {resetPresetLabel}
+            </Button>
+          )}
         </div>
       </div>
     </section>

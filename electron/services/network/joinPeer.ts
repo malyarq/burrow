@@ -14,6 +14,8 @@ export async function getOrWaitPeerConnection(params: {
 }): Promise<unknown> {
   const { swarm, timeoutMs = DEFAULT_CONNECT_TIMEOUT_MS, signal } = params;
 
+  if (signal?.aborted) throw new Error('Connection attempt was stopped');
+
   const existingConn = swarm.connections.values().next().value;
   if (existingConn) return existingConn;
 
@@ -67,6 +69,8 @@ export function bridgeLocalSocketToMuxer(params: {
   onGameConnectionClosed?: (transferredBytes: number) => void;
 }) {
   const { socket, muxer, onLog, onGameConnectionClosed, onGameConnectionOpened } = params;
+
+  if (socket.destroyed) return;
 
   const stream = muxer.createStream();
   onGameConnectionOpened?.();

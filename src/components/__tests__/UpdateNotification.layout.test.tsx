@@ -151,7 +151,7 @@ describe('UpdateNotification shell layout', () => {
     expect(safeArea.getAttribute('data-shell-safe-area')).toBe('shell-chrome');
     expect(notifications.getAttribute('data-shell-platform')).toBe('renderer-controls');
     expect(safeArea.getAttribute('data-shell-platform')).toBe('renderer-controls');
-    expect(safeArea.className).toContain('pt-2');
+    expect(safeArea.className).toContain('pt-0');
     expect(banner.getAttribute('data-update-scope')).toBe('app-shell');
     expect(banner.className).toContain('relative');
     expect(banner.className).not.toContain('fixed');

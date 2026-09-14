@@ -19,7 +19,7 @@ function getAccentStyles(type: AccentStyleType) {
 }
 
 describe('SettingsTabsHeader state fidelity', () => {
-  it('renders active tabs with accent-backed styles and keeps inactive tabs readable', () => {
+  it('renders active tabs as a flat underline navigation and keeps inactive tabs readable', () => {
     render(
       <SettingsTabsHeader
         activeTab="downloads"
@@ -37,19 +37,17 @@ describe('SettingsTabsHeader state fidelity', () => {
     expect(tabList.className).toContain('settings-tab-row');
     expect(downloadsTab.getAttribute('data-state')).toBe('active');
     expect(downloadsTab.getAttribute('aria-selected')).toBe('true');
-    expect(downloadsTab.className).toContain('settings-segmented-option');
     expect(downloadsTab.className).toContain('settings-tab-option');
-    expect(downloadsTab.className).toContain('bg-card/92');
-    expect(downloadsTab.style.backgroundColor).toContain('18, 52, 86');
-    expect(downloadsTab.style.borderColor).toContain('18, 52, 86');
+    expect(downloadsTab.className).not.toContain('settings-segmented-option');
+    expect(downloadsTab.style.backgroundColor).toBe('');
+    expect(downloadsTab.style.borderColor).toBe('');
     expect(downloadsLabel.style.color).toBe('rgb(18, 52, 86)');
     expect(downloadsTab.textContent).toBe('Downloads');
 
     expect(appearanceTab.getAttribute('data-state')).toBe('inactive');
     expect(appearanceTab.getAttribute('aria-selected')).toBe('false');
-    expect(appearanceTab.className).toContain('settings-segmented-option');
     expect(appearanceTab.className).toContain('settings-tab-option');
-    expect(appearanceTab.className).toContain('bg-transparent');
+    expect(appearanceTab.className).not.toContain('settings-segmented-option');
     expect(appearanceTab.textContent).toBe('Appearance');
   });
 });

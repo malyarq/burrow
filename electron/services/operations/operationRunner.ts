@@ -333,6 +333,13 @@ export class OperationRunner {
       const result = await adapter.run(context);
       this.complete(snapshot, result);
     } catch (error) {
+      if (context.isControlPlaneCommitted()) {
+        // The canonical store is the durable truth once it accepted the
+        // command. Keep the last durable journal phase recoverable instead of
+        // overwriting it with a terminal result after a later journal failure.
+        this.complete(snapshot, { status: 'recovery-required', message: 'Control-plane commit succeeded but operation finalization was interrupted' }, false);
+        return clone(snapshot);
+      }
       this.complete(snapshot, isCancelled(snapshot)
         ? { status: 'cancelled' }
         : { status: 'failed', code: 'OPERATION_FAILED', message: toSafeMessage(error) });
@@ -341,6 +348,7 @@ export class OperationRunner {
   }
 
   private createContext(snapshot: OperationSnapshot, journal: OperationJournal, scope?: RootMutationScope): OperationContext {
+    let controlPlaneCommitted = false;
     return {
       snapshot,
       isCancelled: () => isCancelled(snapshot),
@@ -386,8 +394,12 @@ export class OperationRunner {
         if (recorded && !sameJson(recorded.command, command)) {
           throw new Error('Canonical control-plane command differs from durable recovery command');
         }
-        return await scope.commit(command);
+        const result = await scope.commit(command);
+        if (!('code' in result)) controlPlaneCommitted = true;
+        return result;
       },
+      isControlPlaneCommitted: () => controlPlaneCommitted,
+      currentControlPlane: () => scope?.current,
       replayCanonicalCommand: async () => {
         const command = snapshot.recovery?.canonicalCommand;
         if (!command) return { status: 'recovery-required', message: 'Canonical recovery command is missing' };

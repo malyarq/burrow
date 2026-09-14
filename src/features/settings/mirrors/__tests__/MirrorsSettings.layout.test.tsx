@@ -61,7 +61,13 @@ describe('MirrorsSettings layout', () => {
     render(<MirrorsSettings embedded />);
 
     expect(screen.queryByRole('heading', { name: 'mirrors.sectionTitle' })).toBeNull();
-    expect(await screen.findByRole('switch', { name: 'mirrors.autoSelect' })).toBeTruthy();
-    expect(screen.getByRole('list', { name: 'mirrors.description' })).toBeTruthy();
+    const autoSelectSwitch = await screen.findByRole('switch', { name: 'mirrors.autoSelect' });
+    const mirrorList = screen.getByRole('list', { name: 'mirrors.description' });
+    const addMirrorButton = screen.getByRole('button', { name: 'mirrors.addCustom' });
+
+    expect(autoSelectSwitch.closest('.settings-toggle-row')).toBeTruthy();
+    expect(autoSelectSwitch.closest('.settings-toggle-row')?.className).not.toContain('grid-cols');
+    expect(addMirrorButton.parentElement?.className).toContain('flex-wrap');
+    expect(mirrorList.className).toContain('rounded-xl');
   });
 });

@@ -202,7 +202,7 @@ describe('Modpack route theme state', () => {
     const inactiveCard = screen.getByRole('button', { name: 'Beta Pack' }).closest('[data-state="inactive"]');
 
     expect(activeCard).toBeTruthy();
-    expect(activeCard?.className).toContain('state-soft-bg-token');
+    expect(activeCard?.className).not.toContain('state-soft-bg-token');
     expect(activeCard?.className).toContain('state-soft-border-token');
     expect(activeCard?.querySelector('.state-title-token')?.textContent).toBe('Active');
     expect(inactiveCard).toBeTruthy();

@@ -83,6 +83,24 @@ describe('Modal accessibility', () => {
     });
   });
 
+  it('skips closed disclosures, hidden pickers and negative tab indices in its focus loop', async () => {
+    render(<Modal isOpen onClose={vi.fn()} title="Appearance">
+      <div hidden><input aria-label="Closed surface color" /></div>
+      <input type="file" style={{ display: 'none' }} aria-label="Import file" />
+      <input tabIndex={-1} aria-label="Programmatic picker" />
+      <button type="button">Theme</button>
+      <button type="button">Done</button>
+    </Modal>);
+    const theme = screen.getByRole('button', { name: 'Theme' });
+    await waitFor(() => expect(document.activeElement).toBe(theme));
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Done' }));
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close dialog' }));
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(document.activeElement).toBe(theme);
+  });
+
   it('forwards modal body props and refs for flow-owned scroll handling', async () => {
     const onScroll = vi.fn();
     const bodyRef = createRef<HTMLDivElement>();

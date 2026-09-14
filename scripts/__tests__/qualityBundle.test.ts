@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module';
+import path from 'node:path';
 import packageJson from '../../package.json';
 import { describe, expect, it } from 'vitest';
 
@@ -30,7 +31,7 @@ describe('atomic quality bundle entrypoint', () => {
     expect(plan.preflight).toMatchObject({ args: ['scripts/assert-node24.cjs'] });
     expect(plan.cleanOutput).toBe('dist');
     expect(plan.build.args).toContain('--manifest');
-    expect(plan.manifestPath).toBe('dist/burrow-bundle-manifest.json');
-    expect(plan.check.args).toEqual(expect.arrayContaining(['scripts/check-bundle.cjs', '--manifest', 'dist/burrow-bundle-manifest.json']));
+    expect(plan.manifestPath).toBe(path.join('dist', 'burrow-bundle-manifest.json'));
+    expect(plan.check.args).toEqual(expect.arrayContaining(['scripts/check-bundle.cjs', '--manifest', path.join('dist', 'burrow-bundle-manifest.json')]));
   });
 });

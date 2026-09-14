@@ -57,24 +57,24 @@ export function SidebarHeader(props: {
       )}
 
       {/* Header content - скрывается при сворачивании */}
-      <div className={cn(
-        "transition-all duration-300 ease-out",
+      <div hidden={isCollapsed} className={cn(
+        "transition-colors duration-150",
         isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
       )}>
-        <div className="mb-2 flex items-start justify-between gap-3">
+        <div className="mb-5 flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 space-y-1.5">
             <BrandWordmark
               as="p"
               tone="default"
               data-testid="sidebar-app-title"
-              className="text-[15px] leading-none text-foreground sm:text-base"
+              className="text-xl leading-none text-foreground"
             />
             <p className="text-[11px] leading-4 text-secondary" data-app-version={appVersion}>
               {currentModeLabel} • v{appVersion}
             </p>
           </div>
           <div className={cn(
-            "flex shrink-0 gap-1 transition-all duration-500 ease-out",
+            "flex shrink-0 gap-1 transition-colors duration-150",
             isCollapsed 
               ? "opacity-0 pointer-events-none scale-95" 
               : "opacity-100 pointer-events-auto scale-100"
@@ -84,7 +84,7 @@ export function SidebarHeader(props: {
               size="sm" 
               data-tour="multiplayer"
               onClick={onShowMultiplayer} 
-              className="h-8 w-8 px-0 transition-all duration-500 ease-out"
+              className="h-8 w-8 px-0 transition-colors duration-150"
               title={t('multiplayer.title') || 'Multiplayer'}
             >
               <Globe2 className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function SidebarHeader(props: {
               size="sm" 
               data-tour="settings"
               onClick={onShowSettings} 
-              className="h-8 w-8 px-0 transition-all duration-500 ease-out"
+              className="h-8 w-8 px-0 transition-colors duration-150"
               title={t('general.settings') || 'Settings'}
             >
               <Settings2 className="h-4 w-4" />
@@ -107,7 +107,7 @@ export function SidebarHeader(props: {
                 aria-label={t('sidebar.collapse') || 'Collapse sidebar'}
                 aria-controls={contentId}
                 aria-expanded={!isCollapsed}
-                className="h-8 w-8 px-0 transition-all duration-500 ease-out"
+                className="h-8 w-8 px-0 transition-colors duration-150"
                 title={t('sidebar.collapse') || 'Collapse sidebar'}
               >
                 <PanelLeftClose className="h-4 w-4" />
@@ -119,11 +119,11 @@ export function SidebarHeader(props: {
 
       {/* Mode switcher - трансформируется */}
       <div className={cn(
-        'mt-3 rounded-[18px] border border-border/60 bg-background/84 shadow-inner transition-all duration-500 ease-out',
+        'sidebar-navigation mt-3 rounded-xl bg-background/50 transition-colors duration-200',
         isCollapsed 
           ? "flex w-full flex-col gap-1 p-1"
-          : "flex w-full p-1"
-      )} data-testid="sidebar-mode-switcher">
+          : "flex w-full flex-col gap-1 p-1"
+      )} data-testid="sidebar-mode-switcher" data-mode={uiMode} data-collapsed={isCollapsed ? 'true' : 'false'}>
         <button
           type="button"
           data-tour="classic"
@@ -131,12 +131,12 @@ export function SidebarHeader(props: {
           aria-label={isCollapsed ? simpleLabel : undefined}
           aria-pressed={uiMode === 'simple'}
           className={cn(
-            'flex items-center justify-center font-medium transition-all duration-500 ease-out',
+            'flex items-center justify-center font-medium transition-colors duration-150',
             isCollapsed 
               ? 'min-h-10 rounded-2xl px-2 py-1.5 flex-none'
-              : 'flex-1 rounded-full px-3 py-1',
+              : 'flex-1 justify-start gap-3 rounded-lg px-3 py-3',
             uiMode === 'simple'
-              ? 'bg-card text-foreground shadow-sm'
+              ? 'bg-[rgb(var(--accent-main)/0.12)] text-foreground'
               : 'text-secondary hover:text-foreground'
           )}
           title={isCollapsed ? simpleLabel : undefined}
@@ -144,7 +144,8 @@ export function SidebarHeader(props: {
           {isCollapsed ? (
             <PanelsTopLeft className="h-3.5 w-3.5" data-testid="sidebar-mode-simple-glyph" aria-hidden="true" />
           ) : (
-            <span className="inline-block text-[11px] transition-all duration-500 ease-out">
+            <span className="inline-flex items-center gap-3 text-sm">
+              <PanelsTopLeft className="h-4 w-4" aria-hidden="true" />
               {simpleLabel}
             </span>
           )}
@@ -156,12 +157,12 @@ export function SidebarHeader(props: {
           aria-label={isCollapsed ? modpacksLabel : undefined}
           aria-pressed={uiMode === 'modpacks'}
           className={cn(
-            'flex items-center justify-center font-medium transition-all duration-500 ease-out',
+            'flex items-center justify-center font-medium transition-colors duration-150',
             isCollapsed 
               ? 'min-h-10 rounded-2xl px-2 py-1.5 flex-none'
-              : 'flex-1 rounded-full px-3 py-1',
+              : 'flex-1 justify-start gap-3 rounded-lg px-3 py-3',
             uiMode === 'modpacks'
-              ? 'bg-card text-foreground shadow-sm'
+              ? 'bg-[rgb(var(--accent-main)/0.12)] text-foreground'
               : 'text-secondary hover:text-foreground'
           )}
           title={isCollapsed ? modpacksLabel : undefined}
@@ -169,11 +170,8 @@ export function SidebarHeader(props: {
           {isCollapsed ? (
             <LayoutGrid className="h-3.5 w-3.5" data-testid="sidebar-mode-modpacks-glyph" aria-hidden="true" />
           ) : (
-            <span
-              className={cn(
-                'transition-all duration-500 ease-out inline-block text-[11px] opacity-100',
-              )}
-            >
+            <span className="inline-flex items-center gap-3 text-sm">
+              <LayoutGrid className="h-4 w-4" aria-hidden="true" />
               {modpacksLabel}
             </span>
           )}

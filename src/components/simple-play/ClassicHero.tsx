@@ -164,7 +164,7 @@ export function ClassicHero({
       {showWelcome ? (
         <section
           className={cn(
-            'surface-panel mb-6 w-full max-w-3xl overflow-hidden',
+            'surface-panel mb-6 w-full overflow-hidden',
             !reducedMotion && 'animate-in fade-in slide-in-from-top-4',
           )}
           aria-label={t('dashboard.welcome') || 'Welcome'}
@@ -209,8 +209,8 @@ export function ClassicHero({
         </section>
       ) : null}
 
-      <div className="relative mb-6 w-full max-w-2xl overflow-visible">
-        <section className="surface-panel relative overflow-visible border border-border/70 bg-card/82 p-5">
+      <div className="relative mb-6 w-full overflow-visible">
+        <section className="classic-hero relative">
           <div className="flex flex-col gap-5 text-left sm:flex-row sm:items-start">
             <div className="relative shrink-0 overflow-visible">
               <button
@@ -224,7 +224,7 @@ export function ClassicHero({
                 style={{
                   filter: showEasterEgg
                     ? `drop-shadow(0 0 18px ${accentHex}45) drop-shadow(0 0 32px ${accentHex}30)`
-                    : 'drop-shadow(0 0 18px rgb(var(--brand-mark-glow) / 0.16)) drop-shadow(0 0 32px rgb(var(--brand-mark-glow) / 0.1))',
+                    : 'none',
                 }}
               >
                 <div
@@ -232,7 +232,7 @@ export function ClassicHero({
                   style={{
                     background: !reducedMotion && showEasterEgg
                       ? `radial-gradient(circle, ${accentHex}20 0%, transparent 70%)`
-                      : 'radial-gradient(circle, rgb(var(--brand-shell-glow) / 0.14) 0%, transparent 70%)',
+                      : 'none',
                     animation: !reducedMotion && showEasterEgg ? 'easter-egg-glow 0.5s ease-in-out infinite' : undefined,
                   }}
                 />
@@ -240,7 +240,7 @@ export function ClassicHero({
                   role="app-icon"
                   alt="Burrow app icon"
                   data-testid="dashboard-launcher-mark"
-                  className="h-20 w-20 transition-transform duration-300"
+                  className="h-14 w-14 transition-transform duration-300"
                   style={{
                     transform: !reducedMotion && showEasterEgg ? 'rotate(360deg) scale(1.12)' : 'none',
                     filter: !reducedMotion && showEasterEgg ? `drop-shadow(0 0 10px ${accentHex})` : undefined,
@@ -280,17 +280,17 @@ export function ClassicHero({
             </div>
 
             <div className="min-w-0 flex-1 space-y-4">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-border/60 pb-3">
-                <BrandWordmark as="p" className="text-[1.65rem]" />
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pb-1">
+                <BrandWordmark as="p" className="text-base" />
                 <p className="text-sm font-medium text-secondary">
                   {t('ui_mode.simple') || 'Classic'}
                 </p>
               </div>
               <div className="min-w-0 space-y-1">
-                <h1 className="break-words text-2xl font-semibold text-foreground sm:text-[1.75rem]">{name}</h1>
+                <h1 className="break-words text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">{name}</h1>
                 <p className="break-words text-sm text-secondary">{subtitle}</p>
               </div>
-              <p className="max-w-xl text-sm leading-6 text-secondary">{description}</p>
+              <p className="max-w-sm text-sm leading-6 text-secondary">{description}</p>
             </div>
           </div>
         </section>
@@ -315,7 +315,7 @@ export function ClassicHero({
             ? (reducedMotion
               ? `drop-shadow(0 0 18px ${accentHex}45) drop-shadow(0 0 32px ${accentHex}28)`
               : `drop-shadow(0 0 20px ${accentHex}60) drop-shadow(0 0 36px ${accentHex}40)`)
-            : 'drop-shadow(0 0 20px rgb(var(--brand-mark-glow) / 0.18)) drop-shadow(0 0 36px rgb(var(--brand-mark-glow) / 0.12))'} !important; }
+            : 'none'} !important; }
         `}</style>
       </div>
     </>

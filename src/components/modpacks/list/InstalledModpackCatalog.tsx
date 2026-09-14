@@ -58,7 +58,7 @@ function isContextMenuShortcut(event: KeyboardEvent<HTMLElement>): boolean {
 
 const InstalledModpackCardSkeleton = memo(function InstalledModpackCardSkeleton() {
   return (
-    <div role="listitem" className="surface-card min-h-[200px] p-5">
+    <div role="listitem" className="surface-card min-h-[235px] p-5">
       <div className="mb-3 flex items-start gap-4">
         <SkeletonLoader variant="rounded" width={80} height={80} />
         <div className="min-w-0 flex-1 space-y-2">
@@ -104,7 +104,6 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
     () => formatDateLabel(item.metadata.updatedAt ?? item.metadata.createdAt, formatDate),
     [formatDate, item.metadata.createdAt, item.metadata.updatedAt],
   );
-  const activeBackground = getAccentStyles('soft-bg');
   const activeBorder = getAccentStyles('soft-border');
   const activeLabel = getAccentStyles('title');
   const menuOpen = menu.activeModpackId === item.id;
@@ -116,17 +115,17 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
   return (
     <div
       className={cn(
-        'surface-card relative flex min-h-[17rem] cursor-pointer flex-col p-4 transition-all duration-300 ease-out',
-        'transform animate-fade-in-up hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg',
+        'surface-card relative flex min-h-[22rem] cursor-pointer flex-col overflow-hidden p-5 transition-all duration-300 ease-out',
+        'motion-safe-transform animate-fade-in-up motion-safe:hover:-translate-y-0.5',
         'focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background',
         selected
-          ? cn('scale-[1.02] border-border bg-card/90 shadow-[0_18px_36px_rgba(0,0,0,0.18)]', activeBackground.className, activeBorder.className)
-          : 'hover:border-border-active hover:bg-card',
+          ? cn('bg-card', activeBorder.className)
+          : 'hover:border-border-active hover:bg-card/95',
       )}
       data-state={selected ? 'active' : 'inactive'}
       style={{
         animationDelay: `${index * 50}ms`,
-        ...(selected ? { ...activeBackground.style, ...activeBorder.style } : undefined),
+        ...(selected ? activeBorder.style : undefined),
       }}
       role="listitem"
       onContextMenu={(event) => menu.openAtPointer(event, item.id)}
@@ -146,30 +145,30 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
       />
 
       <div className="pointer-events-none relative z-20 flex h-full flex-col gap-4">
-        <div className="flex items-start gap-4">
-          <div className="h-20 w-20 flex-shrink-0">
+        <div className="relative -mx-5 -mt-5 overflow-hidden border-b border-border/55 bg-background/35">
+          <div className="h-32 w-full sm:h-36">
             <LazyImage
               src={item.metadata.iconUrl}
               alt={item.name}
               fallbackKind="content-artwork"
-              className="h-full w-full rounded-2xl border border-border/70 object-cover"
+              className="h-full w-full object-cover opacity-90"
               placeholder={<SkeletonLoader variant="rounded" width={80} height={80} />}
             />
           </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="truncate text-base font-semibold text-foreground">{item.name}</h3>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent px-5 pb-4 pt-10">
+            <h3 className="line-clamp-2 text-xl font-bold leading-tight tracking-[-0.02em] text-white drop-shadow-sm">{item.name}</h3>
             {selected && (
-              <div className={cn('mt-1 text-xs font-medium', activeLabel.className)} style={activeLabel.style}>
+              <div className={cn('mt-1 text-xs font-medium text-white', activeLabel.className)} style={activeLabel.style}>
                 {t('modpacks.active')}
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs text-secondary">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs text-secondary">
           {runtimeSummary.minecraftVersion && (
             <div className="min-w-[8rem]">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+              <div className="text-[11px] font-medium text-muted">
                 {translateWithFallback(t, 'modpacks.minecraft_version', 'Minecraft Version')}
               </div>
               <div className="mt-1 text-sm font-medium text-foreground">{runtimeSummary.minecraftVersion}</div>
@@ -177,7 +176,7 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
           )}
           {updatedLabel && (
             <div className="min-w-[8rem]">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+              <div className="text-[11px] font-medium text-muted">
                 {translateWithFallback(t, 'modpacks.updated', 'Updated')}
               </div>
               <div className="mt-1 text-sm font-medium text-foreground">{updatedLabel}</div>
@@ -189,7 +188,7 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
           <div
             data-testid={`installed-modpack-update-indicator-${item.id}`}
             data-update-scope="modpack-local"
-            className="text-xs font-medium text-secondary"
+            className="rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300"
           >
             {translateWithFallback(t, 'modpacks.update_available', 'Update available')}
           </div>
@@ -201,12 +200,11 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
           data-testid={`installed-modpack-actions-${item.id}`}
         >
           <Button
-            variant="primary"
+            variant="secondary"
             size="sm"
             geometry="catalog-primary"
             onClick={() => onShowDetails(item.id)}
             className="col-span-2 min-w-0 justify-center transition-all duration-200"
-            style={getAccentStyles('bg').style}
             aria-label={`${detailsText}: ${item.name}`}
           >
             <FolderOpen className="h-4 w-4" />
@@ -334,7 +332,10 @@ export function InstalledModpackCatalog({
         controlsTestId="installed-modpack-filter-controls"
         header={(
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <h2 className="text-base font-semibold text-foreground">{t('modpacks.title')}</h2>
+            <div>
+              <h1 className="text-3xl font-bold tracking-[-0.03em] text-foreground">{t('modpacks.title')}</h1>
+              <p className="mt-1 text-sm text-secondary">{t('modpacks.desc')}</p>
+            </div>
             <InstalledModpackActions onImportCode={onImportCode} onCreate={onCreate} onBrowse={onBrowse} />
           </div>
         )}
@@ -410,11 +411,11 @@ export function InstalledModpackCatalog({
         activeFilterTokens={activeFilterTokens}
         onReset={hasActiveFilters ? onResetFilters : undefined}
         resetLabel={translateWithFallback(t, 'modpacks.clear_filters', 'Clear filters')}
-        className="mb-6"
+        className="mb-8"
       />
 
       {loading ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3" role="list" aria-label={t('modpacks.title') || 'Modpacks'}>
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3" role="list" aria-label={t('modpacks.title') || 'Modpacks'}>
           {Array.from({ length: 6 }).map((_, index) => <InstalledModpackCardSkeleton key={index} />)}
         </div>
       ) : loadError ? (

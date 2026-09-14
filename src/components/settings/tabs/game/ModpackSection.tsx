@@ -46,7 +46,7 @@ export function ModpackSection(props: {
         {t('modpacks.title')}
       </label>
 
-      <div className="surface-soft space-y-3 p-3">
+      <div className="settings-section-shell space-y-3 p-4">
         <div className="space-y-2">
           <Select
             label={t('modpacks.selected')}

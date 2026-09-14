@@ -13,7 +13,7 @@ import { getThemePreset, getThemePresetAccent, inferThemePresetId } from './sett
 import type { ThemeRuntimeState } from './settings/theme';
 import { applyThemeToDocument, extractThemeOverrides, pruneThemeConfig, resolveAccentColor, resolveThemeConfig, resolveThemeRuntimeState } from './settings/theme';
 import { createTranslator, getLocaleForLanguage } from './settings/i18n';
-import { getAccentClassForColor, getAccentHexForColor, getAccentStylesForColor, getPresetAccentSafelistClassName } from './settings/accent';
+import { DEFAULT_ACCENT_COLOR, getAccentClassForColor, getAccentHexForColor, getAccentStylesForColor, getPresetAccentSafelistClassName } from './settings/accent';
 import { formatDateForLocale, formatNumberForLocale } from '../utils/format';
 import { windowControlsIPC } from '../services/ipc/windowControlsIPC';
 
@@ -70,7 +70,7 @@ interface SettingsState {
 const SettingsContext = createContext<SettingsState | undefined>(undefined);
 
 const DEFAULT_APPEARANCE_STATE: AppearanceSettingsState = {
-    accentColor: 'emerald',
+    accentColor: DEFAULT_ACCENT_COLOR,
     accentColorSource: 'preset',
     customTheme: {},
     theme: 'dark',
@@ -142,13 +142,14 @@ function deserializeAppearanceState(raw: string | null): AppearanceSettingsState
     if (raw) {
         try {
             const parsed = JSON.parse(raw) as Partial<AppearanceSettingsState>;
+            const storedAccentColor = typeof parsed.accentColor === 'string' ? parsed.accentColor : null;
             return normalizeAppearanceState({
-                accentColor: parseStoredAccentColor(typeof parsed.accentColor === 'string' ? parsed.accentColor : null),
+                accentColor: parseStoredAccentColor(storedAccentColor),
                 accentColorSource: parsed.accentColorSource === 'user'
                     ? 'user'
                     : parsed.accentColorSource === 'preset'
                         ? 'preset'
-                        : undefined,
+                        : storedAccentColor ? undefined : 'preset',
                 customTheme: pruneThemeConfig(parsed.customTheme),
                 theme: parsed.theme === 'light' ? 'light' : 'dark',
                 themePresetId: typeof parsed.themePresetId === 'string' ? parsed.themePresetId : null,
@@ -159,13 +160,15 @@ function deserializeAppearanceState(raw: string | null): AppearanceSettingsState
     }
 
     const legacyTheme = parseStoredTheme(localStorage.getItem('settings_theme'));
-    const legacyAccentColor = parseStoredAccentColor(localStorage.getItem('settings_accentColor'));
+    const legacyAccentRaw = localStorage.getItem('settings_accentColor');
+    const legacyAccentColor = parseStoredAccentColor(legacyAccentRaw);
     const explicitPresetId = parseStoredThemePresetId(localStorage.getItem('settings_themePresetId'));
     const legacyCustomTheme = parseStoredCustomTheme(localStorage.getItem('settings_customTheme'));
     const inferredPresetId = explicitPresetId ?? inferThemePresetId(legacyTheme, legacyCustomTheme);
 
     return normalizeAppearanceState({
         accentColor: legacyAccentColor,
+        accentColorSource: legacyAccentRaw ? undefined : 'preset',
         customTheme: explicitPresetId ? extractThemeOverrides(legacyTheme, explicitPresetId, legacyCustomTheme) : legacyCustomTheme,
         theme: legacyTheme,
         themePresetId: inferredPresetId,

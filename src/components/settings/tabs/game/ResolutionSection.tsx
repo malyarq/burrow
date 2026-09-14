@@ -32,7 +32,7 @@ export function ResolutionSection(props: {
         />
       </div>
 
-      <div className="surface-soft flex items-center justify-between gap-3 p-3 transition-colors hover:bg-card/84">
+      <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-4">
         <div>
           <p className="text-sm font-medium text-foreground">{t('settings.fullscreen')}</p>
           <p className="helper-text">{t('settings.fullscreen_desc')}</p>

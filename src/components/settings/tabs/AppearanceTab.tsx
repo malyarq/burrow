@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSettings } from '../../../contexts/SettingsContext';
 import type { CustomThemeConfig } from '../../../contexts/settings/types';
+import { buildThemeDocumentColors } from '../../../contexts/settings/theme-document';
 import { AppearanceBackgroundControls } from '../appearance/AppearanceBackgroundControls';
 import {
   AppearanceBranding,
@@ -44,10 +45,14 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
     });
   };
 
+  const resetSurfaceColors = () => {
+    setCustomTheme({ ...customTheme, colors: undefined });
+  };
+
   return (
     <div className="space-y-6">
       <div
-        className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)]"
+        className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.12fr)_minmax(18rem,0.88fr)]"
         data-testid="appearance-primary-grid"
       >
         <AppearancePresets
@@ -74,8 +79,10 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
       </div>
 
       <AppearanceSurfaceColors
+        baseColors={buildThemeDocumentColors(theme, activeThemeConfig)}
         colors={customTheme.colors}
         onColorChange={updateColor}
+        onReset={resetSurfaceColors}
         t={t}
       />
       <AppearanceBackgroundControls

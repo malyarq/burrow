@@ -41,4 +41,27 @@ describe('MultiplayerPage capability surfaces', () => {
     expect(screen.getByText('multiplayer.map_port')).toBeTruthy();
     expect(screen.queryByRole('tab')).toBeNull();
   });
+
+  it.each([
+    [0, 0, 'multiplayer.endpoint_waiting'],
+    [1, 0, 'multiplayer.peer_ready'],
+    [1, 1, 'multiplayer.game_stream_open'],
+  ])('distinguishes peer=%i and open streams=%i', (peerCount, activeGameConnectionCount, expected) => {
+    state.current = { ...base, networkMode: 'hyperswarm', mode: 'join', mappedPort: 30000, directAddress: 'localhost:30000',
+      tunnel: { revision: 1, state: 'active', role: 'join', peerCount, metrics: { gameConnectionCount: 3, activeGameConnectionCount } },
+    };
+    render(<MultiplayerPage onBack={vi.fn()} />);
+    expect(screen.getAllByText(expected)).toHaveLength(2);
+    expect(screen.queryByText('multiplayer.tunnel_established')).toBeNull();
+    expect(screen.getByText('localhost:30000')).toBeTruthy();
+  });
+
+  it('shows a safe timeout diagnostic and retains the stop action', () => {
+    state.current = { ...base, networkMode: 'hyperswarm', mode: 'join', mappedPort: 30000, directAddress: 'localhost:30000',
+      tunnel: { revision: 1, state: 'active', role: 'join', peerCount: 0 }, diagnostic: { code: 'TUNNEL_PEER_UNAVAILABLE' },
+    };
+    render(<MultiplayerPage onBack={vi.fn()} />);
+    expect(screen.getByRole('status').textContent).toBe('multiplayer.diagnostic.TUNNEL_PEER_UNAVAILABLE');
+    expect(screen.getByRole('button', { name: 'multiplayer.stop' })).toBeTruthy();
+  });
 });

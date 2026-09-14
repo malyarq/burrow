@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
+import http from 'node:http';
 import { AuthServer } from '../server';
 
 describe('AuthServer lifecycle', () => {
@@ -20,6 +21,20 @@ describe('AuthServer lifecycle', () => {
     const port = Number(new URL(owner.url).port);
     const follower = new AuthServer(port); servers.push(follower);
     await expect(follower.start()).resolves.toEqual({ url: owner.url, owned: false });
+  });
+
+  it('falls back to an ephemeral loopback port when a different service occupies the requested port', async () => {
+    const occupied = http.createServer((_req, res) => res.end('not the auth mock'));
+    await new Promise<void>((resolve) => occupied.listen(0, '127.0.0.1', resolve));
+    const address = occupied.address();
+    if (!address || typeof address === 'string') throw new Error('Test server did not bind a TCP port');
+
+    const server = new AuthServer(address.port); servers.push(server);
+    const started = await server.start();
+
+    expect(started.owned).toBe(true);
+    expect(new URL(started.url).port).not.toBe(String(address.port));
+    await new Promise<void>((resolve, reject) => occupied.close((error) => error ? reject(error) : resolve()));
   });
 
   it('returns the Yggdrasil no-profile response instead of invalid JSON', async () => {

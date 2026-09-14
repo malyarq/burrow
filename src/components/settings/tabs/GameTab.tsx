@@ -91,7 +91,7 @@ export const GameTab: React.FC<GameTabProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="surface-soft space-y-3 p-3 sm:p-4">
+      <div className="settings-section-shell space-y-4 p-4 sm:p-5">
         <div className="control-label">
           {translateWithFallback(t, 'settings.tab_game', 'Game')}
         </div>
@@ -99,7 +99,7 @@ export const GameTab: React.FC<GameTabProps> = ({
         {isReadOnly ? (
           <div
             id="game-tab-readonly-hint"
-            className="surface-inline rounded-xl border border-border/60 px-3 py-2 text-xs leading-5 text-secondary"
+            className="border-t border-border/60 pt-3 text-xs leading-5 text-secondary"
           >
             {translateWithFallback(
               t,

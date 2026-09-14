@@ -1,12 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { app } from 'electron';
-import {
-  fetchJavaRuntimeManifest,
-  installJavaRuntimeTask,
-  JavaRuntimeTargetType,
-} from '@xmcl/installer';
+import type { JavaRuntimeTargetType } from '@xmcl/installer';
 import type { Task } from '@xmcl/task';
+import { patchUndiciThrowOnError } from '../../utils/undiciPatcher';
 import { ensureJavaExecutablePermission, findJavaExecutable } from './findJavaExecutable';
 import { findLocalJava } from './discovery';
 import { getJavaVersion, validateJavaPath, verifyJava } from './validation';
@@ -39,6 +36,14 @@ export class JavaManager {
     version: SupportedJavaVersion,
     onProgress: (status: string, current?: number, total?: number) => void
   ): Promise<string> {
+    // @xmcl/installer passes throwOnError to undici 7.29, which rejects it.
+    // Patch before dynamically loading the installer so it sees the compatible transport.
+    patchUndiciThrowOnError();
+    const {
+      fetchJavaRuntimeManifest,
+      installJavaRuntimeTask,
+      JavaRuntimeTargetType,
+    } = await import('@xmcl/installer');
     let runtimeDir: string;
     let targetCandidates: Array<JavaRuntimeTargetType | string>;
 

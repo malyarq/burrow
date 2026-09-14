@@ -23,13 +23,13 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
     const isBusy = Boolean(isLoading);
     const baseStyles =
-        'motion-safe-transform flex min-w-0 items-center justify-center gap-2 rounded-xl border font-semibold leading-none shadow-[0_10px_28px_rgba(0,0,0,0.12)] hover:shadow-[0_14px_34px_rgba(0,0,0,0.16)] disabled:hover:shadow-none motion-safe:transform motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-out motion-safe:active:scale-[0.98] motion-safe:hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-100 disabled:shadow-none disabled:active:scale-100 disabled:hover:scale-100';
+        'motion-safe-transform flex min-w-0 items-center justify-center gap-2 rounded-lg border font-medium leading-none shadow-none disabled:hover:shadow-none motion-safe:transform motion-safe:transition-all motion-safe:duration-150 motion-safe:ease-out motion-safe:active:scale-[0.98]  focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-100 disabled:shadow-none disabled:active:scale-100 disabled:hover:scale-100';
 
     const variants = {
         primary:
-            'border-[rgb(var(--accent-main)/0.28)] bg-[rgb(var(--accent-main))] text-[rgb(var(--accent-content))] hover:border-[rgb(var(--accent-hover)/0.34)] hover:bg-[rgb(var(--accent-hover))] active:bg-[rgb(var(--accent-hover))] disabled:border-border/60 disabled:bg-background/72 disabled:text-muted',
+            'border-[rgb(var(--accent-main)/0.28)] bg-[rgb(var(--accent-main))] text-[rgb(var(--accent-content))] hover:text-[rgb(var(--accent-hover-content))] active:text-[rgb(var(--accent-hover-content))] hover:border-[rgb(var(--accent-hover)/0.34)] hover:bg-[rgb(var(--accent-hover))] active:bg-[rgb(var(--accent-hover))] disabled:border-border/60 disabled:bg-background/72 disabled:text-muted disabled:hover:text-muted',
         secondary:
-            'border-border/70 bg-card/82 text-foreground hover:border-[rgb(var(--accent-main)/0.18)] hover:bg-card/96 hover:text-foreground backdrop-blur-md disabled:border-border/60 disabled:bg-background/72 disabled:text-muted',
+            'border-border/70 bg-card/82 text-foreground hover:border-[rgb(var(--accent-main)/0.18)] hover:bg-card/96 hover:text-foreground  disabled:border-border/60 disabled:bg-background/72 disabled:text-muted',
         danger:
             'border-red-500/20 bg-red-500 text-white hover:border-red-500/40 hover:bg-red-600 shadow-[0_10px_28px_rgba(239,68,68,0.24)] hover:shadow-[0_14px_34px_rgba(239,68,68,0.28)] disabled:border-border/60 disabled:bg-background/72 disabled:text-muted',
         ghost:
@@ -37,7 +37,7 @@ export const Button: React.FC<ButtonProps> = ({
     };
 
     const sizes = {
-        sm: 'min-h-9 px-3.5 text-sm',
+        sm: 'min-h-9 px-3 text-sm',
         md: 'min-h-11 px-4 text-sm',
         lg: 'min-h-[3.25rem] px-5 text-base',
     };

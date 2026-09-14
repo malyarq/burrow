@@ -63,6 +63,25 @@ describe('LanDiscoveryService', () => {
     });
   });
 
+  it('returns a safe bind diagnostic when broadcast starts discovery', async () => {
+    mocks.failBind = true;
+    const service = new LanDiscoveryService();
+    await expect(service.broadcast('world', 25565)).resolves.toMatchObject({ state: 'failed', diagnostic: { code: 'LAN_BIND_FAILED' } });
+    expect(mocks.instances[0].destroy).toHaveBeenCalledOnce();
+    await service.stop();
+  });
+
+  it('destroys the failed broadcaster before retrying', async () => {
+    const service = new LanDiscoveryService();
+    await service.start();
+    mocks.instances[0].broadcast.mockRejectedValueOnce(new Error('send failed'));
+    await service.broadcast('world', 25565);
+    await expect(service.broadcast('world', 25565)).resolves.toMatchObject({ state: 'active' });
+    expect(mocks.instances[0].destroy).toHaveBeenCalledOnce();
+    expect(mocks.instances).toHaveLength(2);
+    await service.stop();
+  });
+
   it('returns a typed diagnostic when ping fails', async () => {
     mocks.queryStatus.mockRejectedValueOnce(new Error('/private/network details'));
     await expect(new LanDiscoveryService().ping('localhost')).resolves.toEqual({

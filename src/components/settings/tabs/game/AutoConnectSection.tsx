@@ -14,7 +14,7 @@ export function AutoConnectSection(props: {
 
   return (
     <>
-      <div className="surface-soft flex items-center justify-between gap-3 p-3 transition-colors hover:bg-card/84">
+      <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-4">
         <div>
           <p className="text-sm font-medium text-foreground">{t('settings.autoconnect')}</p>
           <p className="helper-text">{t('settings.autoconnect_desc')}</p>

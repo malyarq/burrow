@@ -16,6 +16,34 @@ const READY_TIMEOUT_MS = 30_000;
 const QUIT_TIMEOUT_MS = 15_000;
 const CLEANUP_TIMEOUT_MS = 5_000;
 const packageSmokeSchema = JSON.parse(readFileSync(join(projectRoot, 'quality/schemas/package-smoke.schema.json'), 'utf8'));
+const UPGRADE_RENDERER_SETTINGS = Object.freeze({
+  settings_language: 'ru',
+  settings_uiScale: '110',
+  settings_compactMode: 'true',
+});
+const UPGRADE_STATISTICS = Object.freeze({
+  global: { totalPlayTime: 123_456, totalLaunches: 7, lastPlayed: 1_700_000_000_000 },
+  instances: { 'upgrade-fixture': { name: 'Upgrade Fixture', playTime: 123_456, launches: 7, lastPlayed: 1_700_000_000_000 } },
+  history: { '2023-11-14': { launches: 7, playTime: 123_456 } },
+  _burrowSchemaVersion: 1,
+});
+const UPGRADE_CONTROL_PLANE = Object.freeze({
+  snapshot: {
+    selectedId: 'upgrade-fixture',
+    records: [{
+      id: 'upgrade-fixture',
+      name: 'Upgrade Fixture',
+      source: {
+        source: 'local',
+        createdAt: '2026-09-01T00:00:00.000Z',
+        updatedAt: '2026-09-01T00:00:00.000Z',
+      },
+      config: { runtime: { minecraftVersion: '1.21.1' } },
+      summary: { minecraftVersion: '1.21.1' },
+    }],
+  },
+  _burrowSchemaVersion: 1,
+});
 
 function expectedArtifactName(version, platform) {
   switch (platform) {
@@ -91,8 +119,12 @@ export function validatePackageSmokeEvidence(value) {
       || typeof upgrade.previousVersion !== 'string'
       || !/^[a-f0-9]{64}$/.test(upgrade.previousArtifactSha256)
       || typeof upgrade.previousLaunchVerified !== 'boolean'
-      || typeof upgrade.userDataPreserved !== 'boolean';
-    if (invalid || (evidence.status === 'passed' && (!upgrade.previousLaunchVerified || !upgrade.userDataPreserved))) {
+      || typeof upgrade.userDataPreserved !== 'boolean'
+      || !isObject(upgrade.statePreserved)
+      || typeof upgrade.statePreserved.rendererSettings !== 'boolean'
+      || typeof upgrade.statePreserved.statistics !== 'boolean'
+      || typeof upgrade.statePreserved.controlPlane !== 'boolean';
+    if (invalid || (evidence.status === 'passed' && (!upgrade.previousLaunchVerified || !upgrade.userDataPreserved || !upgrade.statePreserved.rendererSettings || !upgrade.statePreserved.statistics || !upgrade.statePreserved.controlPlane))) {
       errors.push('invalid upgrade');
     }
   }
@@ -345,13 +377,35 @@ function defaultRuntime() {
     rm: rmSync,
     exists: existsSync,
     writeFile: writeFileSync,
+    readFile: readFileSync,
     spawn,
     reservePort,
     waitForRendererReadiness: (port, timeoutMs, child) => waitForRendererReadiness(port, timeoutMs, () => child.exitCode !== null),
     waitForExit,
     requestGracefulQuit: requestPlatformQuit,
     verifyRenderedVersion,
+    evaluateRenderer: evaluateDebugTarget,
     waitForProfileRelease,
+  };
+}
+
+function serializedFixture(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+async function seedRendererSettings(runtime, page) {
+  const stored = await runtime.evaluateRenderer(page, `(() => { const values = ${JSON.stringify(UPGRADE_RENDERER_SETTINGS)}; for (const [key, value] of Object.entries(values)) localStorage.setItem(key, value); return Object.fromEntries(Object.keys(values).map((key) => [key, localStorage.getItem(key)])); })()`);
+  if (JSON.stringify(stored) !== JSON.stringify(UPGRADE_RENDERER_SETTINGS)) throw new Error('previous package did not persist representative renderer settings');
+}
+
+async function verifyUpgradeState(runtime, page, userDataPath) {
+  const settings = await runtime.evaluateRenderer(page, `(() => { const keys = ${JSON.stringify(Object.keys(UPGRADE_RENDERER_SETTINGS))}; return Object.fromEntries(keys.map((key) => [key, localStorage.getItem(key)])); })()`);
+  const statistics = runtime.readFile(join(userDataPath, 'statistics.json'), 'utf8') === serializedFixture(UPGRADE_STATISTICS);
+  const controlPlane = runtime.readFile(join(userDataPath, 'minecraft_data', 'instance-control-plane.json'), 'utf8') === serializedFixture(UPGRADE_CONTROL_PLANE);
+  return {
+    rendererSettings: JSON.stringify(settings) === JSON.stringify(UPGRADE_RENDERER_SETTINGS),
+    statistics,
+    controlPlane,
   };
 }
 
@@ -382,6 +436,7 @@ export async function runPackageSmoke(options = {}) {
       previousArtifactSha256: '',
       previousLaunchVerified: false,
       userDataPreserved: false,
+      statePreserved: { rendererSettings: false, statistics: false, controlPlane: false },
     };
   }
   let workspace = null;
@@ -408,14 +463,15 @@ export async function runPackageSmoke(options = {}) {
     // operation recovery probes its real path on a clean first start.
     makeDirectory(join(userDataPath, 'minecraft_data'));
     runtime.writeFile(configPath, JSON.stringify({ cleanUserData: true, artifact: basename(artifact.path), version, platform }), 'utf8');
-    const preservationMarker = join(userDataPath, 'upgrade-preservation-marker');
     if (evidence.upgrade) {
       if (!options.previousArtifactPath || !options.previousVersion) throw new Error('upgrade smoke requires both previous artifact and previous version');
       const previousArtifactPath = resolve(options.previousArtifactPath);
       if (!runtime.exists(previousArtifactPath)) throw new Error(`missing previous release artifact: ${previousArtifactPath}`);
       const previousProductName = productNameForArtifact(previousArtifactPath, options.previousVersion, platform);
       evidence.upgrade.previousArtifactSha256 = sha256(previousArtifactPath);
-      runtime.writeFile(preservationMarker, `upgrade ${options.previousVersion} -> ${version}\n`, 'utf8');
+      makeDirectory(join(userDataPath, 'minecraft_data', 'modpacks', 'upgrade-fixture'));
+      runtime.writeFile(join(userDataPath, 'statistics.json'), serializedFixture(UPGRADE_STATISTICS), 'utf8');
+      runtime.writeFile(join(userDataPath, 'minecraft_data', 'instance-control-plane.json'), serializedFixture(UPGRADE_CONTROL_PLANE), 'utf8');
       previousAdapter = (options.createAdapter ?? createPlatformAdapter)(platform, {
         artifactPath: previousArtifactPath,
         workspace,
@@ -440,6 +496,7 @@ export async function runPackageSmoke(options = {}) {
       previousChild.stderr.on('data', (chunk) => { evidence.logs.stderr = appendLog(evidence.logs.stderr, chunk); });
       const previousPages = await runtime.waitForRendererReadiness(previousDebugPort, options.readinessTimeoutMs ?? READY_TIMEOUT_MS, previousChild);
       await runtime.verifyRenderedVersion(previousPages[0], options.previousVersion);
+      await seedRendererSettings(runtime, previousPages[0]);
       evidence.upgrade.previousLaunchVerified = true;
       await runtime.requestGracefulQuit({ platform, child: previousChild, debugPort: previousDebugPort, pages: previousPages });
       const previousExitCode = await runtime.waitForExit(previousChild, options.quitTimeoutMs ?? QUIT_TIMEOUT_MS);
@@ -475,7 +532,8 @@ export async function runPackageSmoke(options = {}) {
     );
     await runtime.verifyRenderedVersion(pages[0], version);
     if (evidence.upgrade) {
-      evidence.upgrade.userDataPreserved = runtime.exists(preservationMarker);
+      evidence.upgrade.statePreserved = await verifyUpgradeState(runtime, pages[0], userDataPath);
+      evidence.upgrade.userDataPreserved = Object.values(evidence.upgrade.statePreserved).every(Boolean);
       if (!evidence.upgrade.userDataPreserved) throw new Error('upgrade removed the existing launcher user-data marker');
     }
     evidence.launch.readiness = 'remote-debugging-page-and-rendered-version';

@@ -55,12 +55,16 @@ export function useMultiplayer() {
     void Promise.all([
       networkIPC.tunnel.getState(), networkIPC.lan.getState(), networkIPC.upnp.getState(),
     ]).then(([nextTunnel, nextLan, nextUpnp]) => {
-      if (alive) { setTunnel(nextTunnel); setLan(nextLan); setUpnp(nextUpnp); }
+      if (alive) {
+        setTunnel((current) => nextTunnel.revision >= current.revision ? nextTunnel : current);
+        setLan((current) => nextLan.revision >= current.revision ? nextLan : current);
+        setUpnp((current) => nextUpnp.revision >= current.revision ? nextUpnp : current);
+      }
     }).catch(() => { if (alive) setStatus(t('multiplayer.network_unavailable')); });
     const unsubscribers = [
-      networkIPC.tunnel.onState(setTunnel),
-      networkIPC.lan.onState(setLan),
-      networkIPC.upnp.onState(setUpnp),
+      networkIPC.tunnel.onState((next) => { if (alive) setTunnel((current) => next.revision >= current.revision ? next : current); }),
+      networkIPC.lan.onState((next) => { if (alive) setLan((current) => next.revision >= current.revision ? next : current); }),
+      networkIPC.upnp.onState((next) => { if (alive) setUpnp((current) => next.revision >= current.revision ? next : current); }),
       networkIPC.lan.onDiscover((event) => setDiscovered((current) => {
         const withoutDuplicate = current.filter((item) => item.address !== event.address || item.port !== event.port);
         return [...withoutDuplicate, event].slice(-50);

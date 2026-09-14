@@ -48,7 +48,7 @@ export function ClassicContentTabs({
       title={title}
       defaultExpanded={false}
       storageKey="classic_content_expanded"
-      className="mt-4 min-w-0 w-full max-w-2xl"
+      className="mt-4 min-w-0 w-full"
     >
       <div className="min-w-0 space-y-4">
         <div className="surface-card min-w-0 space-y-2 p-4">

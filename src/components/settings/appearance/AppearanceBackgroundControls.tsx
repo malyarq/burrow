@@ -73,11 +73,11 @@ export function AppearanceBackgroundControls({
   return (
     <CollapsibleSection title={t('settings.background_effects') || 'Background Effects'} defaultExpanded={false}>
       <div
-        className="surface-muted min-w-0 space-y-4 p-4"
+        className="min-w-0 space-y-4 pt-4"
         data-appearance-owner="background"
         data-testid="appearance-background-controls"
       >
-        <div className="surface-inline space-y-1 p-3" data-testid="appearance-background-scope">
+        <div className="space-y-1" data-testid="appearance-background-scope">
           <p className="kicker-label">{t('settings.background_preview_title')}</p>
           <p className="text-sm leading-6 text-secondary">{t('settings.background_scope_desc')}</p>
         </div>

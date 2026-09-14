@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body><div id="root"></div><script type="module">
+import { installManualVerificationEnvironment, seedManualVerificationStorage } from '/src/verification/manual/mockEnvironment.ts';
+const params=new URLSearchParams(location.search); seedManualVerificationStorage('phase-24-home-closeout'); installManualVerificationEnvironment();
+localStorage.setItem('first_launch','false');localStorage.setItem('onboarding_completed','true');localStorage.setItem('simple_play_welcome_dismissed','true');localStorage.setItem('settings_language',params.get('lang')||'ru');localStorage.setItem('settings_theme',params.get('theme')||'dark');localStorage.setItem('settings_uiMode',params.get('mode')||'simple');
+if(params.get('state') !== 'unavailable') window.api.launcher={onLog:()=>()=>{},onProgress:()=>()=>{},onClose:()=>()=>{},getVersionList:async()=>[{id:'1.20.1',type:'release'},{id:'1.21.1',type:'release'}],getForgeSupportedVersions:async()=>['1.20.1'],getFabricSupportedVersions:async()=>['1.20.1'],getNeoForgeSupportedVersions:async()=>[],getOptiFineSupportedVersions:async()=>[],launch:async()=>{throw new Error('Visual fixture: game launch is not supported')}};
+if(params.has('accent')) localStorage.setItem('settings_accentColor',params.get('accent'));
+if(params.has('preset')) localStorage.setItem('settings_themePresetId',params.get('preset'));
+if(params.get('motion') === 'on') localStorage.setItem('settings_disableAnimations','false');
+window.api.storageMaintenance={getStats:async()=>({totalSize:2147483648,dedupedSize:536870912,totalFiles:1240,storedFiles:910}),cleanup:async()=>({freedSize:0,deletedFiles:0})};
+await import('/src/main.tsx');
+</script></body></html>
+
+
+
+

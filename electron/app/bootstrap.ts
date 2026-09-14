@@ -106,6 +106,7 @@ export function bootstrapMain() {
   }
 
   let winRef: ReturnType<typeof createMainWindow> | null = null;
+  let composition: ReturnType<typeof createCompositionRoot> | undefined;
 
   registerApplicationInstanceHandoff(() => winRef);
 
@@ -118,6 +119,16 @@ export function bootstrapMain() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     winRef = win;
+    if (composition) {
+      IPCManager.unregisterAllHandlers();
+      IPCManager.registerAllHandlers({ window: win, composition: composition.handlerDependencies });
+      registerConsoleWindowHandlers({
+        preloadPath: path.join(paths.mainDist, 'preload.cjs'),
+        rendererDevUrl: paths.rendererDevUrl,
+        rendererDist: paths.rendererDist,
+        vitePublicPath: paths.vitePublicPath,
+      });
+    }
     // Initialize auto-updater once the window exists.
     new SelfUpdater(win);
     return win;
@@ -141,7 +152,6 @@ export function bootstrapMain() {
 
     const nativeIconPath = applyNativeAppIcon(paths.vitePublicPath);
     const authServer = createAuthServer();
-    let composition: ReturnType<typeof createCompositionRoot> | undefined;
     let tray: Tray | undefined;
     try {
       const { url: authServerUrl } = await authServer.start();
@@ -153,7 +163,7 @@ export function bootstrapMain() {
       // Recovery is part of startup and finishes before any window can submit
       // a mutation or observe an incomplete canonical state.
       await composition.recoverOperations();
-      const win = createWindow();
+      createWindow();
 
       tray = createTray({
         iconPath: nativeIconPath,
@@ -175,14 +185,6 @@ export function bootstrapMain() {
         destroyTray: () => tray?.destroy(),
       });
 
-      IPCManager.registerAllHandlers({ window: win, composition: composition.handlerDependencies });
-
-      registerConsoleWindowHandlers({
-          preloadPath: path.join(paths.mainDist, 'preload.cjs'),
-          rendererDevUrl: paths.rendererDevUrl,
-          rendererDist: paths.rendererDist,
-          vitePublicPath: paths.vitePublicPath,
-      });
     } catch (error) {
       const partialLifecycle = applicationLifecycle ?? new ApplicationLifecycle({
         unregisterIpc: () => IPCManager.unregisterAllHandlers(),

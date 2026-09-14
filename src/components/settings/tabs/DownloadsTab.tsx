@@ -23,9 +23,7 @@ export const DownloadsTab: React.FC<DownloadsTabProps> = ({
   t,
   embedded = false,
 }) => {
-  const tuningSectionClassName = embedded
-    ? 'surface-muted settings-section-stack min-w-0 p-5'
-    : 'settings-section-shell settings-section-stack min-w-0 p-5';
+  const tuningSectionClassName = 'settings-section-shell settings-section-stack min-w-0 p-5';
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(19rem,0.85fr)]">
@@ -71,7 +69,7 @@ export const DownloadsTab: React.FC<DownloadsTabProps> = ({
           </button>
         </div>
 
-        <div className="settings-control-card grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 border-t border-border/60 pt-4">
           <Input
             label={t('settings.download_threads')}
             type="number"

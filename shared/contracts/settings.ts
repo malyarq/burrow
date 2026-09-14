@@ -45,7 +45,7 @@ export type SettingsBackupImportResult = Readonly<{
 
 export interface SettingsAPI {
   selectMinecraftPath: () => Promise<{ success: boolean; path: string | null; error?: string }>;
-  openMinecraftPath: (path?: string) => Promise<{ success: boolean; error?: string }>;
+  openMinecraftPath: () => Promise<{ success: boolean; error?: string }>;
   getDefaultMinecraftPath: () => Promise<string>;
   exportBackup: (values: SettingsBackupValues) => Promise<SettingsBackupExportResult>;
   importBackup: () => Promise<SettingsBackupImportResult>;

@@ -35,8 +35,8 @@ describe('AppearanceTab customized state', () => {
 
     expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Customized')).toBeTruthy();
-    expect(screen.getByText('Customized preset')).toBeTruthy();
-    expect(screen.getByText('Remove refinements and return to the untouched Forest · Dark runtime contract.')).toBeTruthy();
+    expect(screen.getByText('Default variant')).toBeTruthy();
+    expect(screen.getByText('Restore the colors and background of Forest · Dark.')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Return to Forest · Dark' }));
 
@@ -48,6 +48,6 @@ describe('AppearanceTab customized state', () => {
       expect(screen.queryByText('Customized')).toBeNull();
     });
 
-    expect(screen.getByText('Untouched preset')).toBeTruthy();
+    expect(screen.getByText('Unchanged')).toBeTruthy();
   });
 });

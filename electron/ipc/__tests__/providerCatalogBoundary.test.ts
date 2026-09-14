@@ -15,12 +15,13 @@ describe('provider catalog IPC boundary wiring', () => {
       readFile(new URL('../../preload.ts', import.meta.url), 'utf8'),
       readFile(new URL('../../../shared/contracts/windowApi.ts', import.meta.url), 'utf8'),
     ]);
+    const normalizedPreload = preload.replace(/\r\n/g, '\n');
 
     expect(bridge).toContain('ProviderCatalogAPI');
     expect(bridge).toContain('PROVIDER_CATALOG_CHANNELS');
     expect(bridge).not.toMatch(/modpacks|rootPath|filePath/);
     expect(windowApi).toContain('providerCatalog: ProviderCatalogAPI');
-    expect(preload).toContain("import { providerCatalog } from './preload/bridges/ProviderCatalogBridge'");
-    expect(preload.match(/\bproviderCatalog,\n/g)).toHaveLength(1);
+    expect(normalizedPreload).toContain("import { providerCatalog } from './preload/bridges/ProviderCatalogBridge'");
+    expect(normalizedPreload.match(/\bproviderCatalog,\n/g)).toHaveLength(1);
   });
 });

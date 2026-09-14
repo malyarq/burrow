@@ -13,7 +13,7 @@ export function ModpackDetailsOverview({ actions, header }: ModpackDetailsOvervi
   return (
     <div data-details-owner="overview" data-testid="modpack-details-overview" className="min-w-0">
       <section
-        className="surface-card grid gap-3 overflow-hidden p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-start"
+        className="surface-card space-y-5 overflow-hidden p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_15rem]"
         data-testid="modpack-details-hero"
       >
         <ModpackDetailsHeader {...header} />

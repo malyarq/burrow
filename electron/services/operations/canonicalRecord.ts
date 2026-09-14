@@ -8,7 +8,7 @@ type MutableConfig = {
   java?: { executable?: string };
   memory?: { maxMb: number; minMb?: number };
   vmOptions?: string[];
-  game?: { resolution?: { width?: number; height?: number; fullscreen?: boolean }; extraArgs?: string[] };
+  game?: { resolution?: { width?: number; height?: number; fullscreen?: boolean }; extraArgs?: string[]; useOptiFine?: boolean };
   server?: { host: string; port: number };
   networkMode?: InstanceEditableConfig['networkMode'];
 };
@@ -78,6 +78,10 @@ function configFromLegacy(value: unknown, expectedId: string): Readonly<{ name: 
     if (game.extraArgs !== undefined) {
       if (!Array.isArray(game.extraArgs) || game.extraArgs.some((entry) => typeof entry !== 'string')) throw new Error('Staged modpack extraArgs are invalid');
       next.extraArgs = [...game.extraArgs];
+    }
+    if (game.useOptiFine !== undefined) {
+      if (typeof game.useOptiFine !== 'boolean') throw new Error('Staged modpack OptiFine option is invalid');
+      next.useOptiFine = game.useOptiFine;
     }
     config.game = next;
   }

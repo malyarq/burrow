@@ -19,10 +19,10 @@ describe('javaRuntimeIPC', () => {
     vi.stubGlobal('window', { api: { javaRuntime } });
 
     await javaRuntimeIPC.scan();
-    await javaRuntimeIPC.select({ installationId: 'installation-1' });
+    await javaRuntimeIPC.select({ instanceId: 'classic', installationId: 'installation-1' });
 
     expect(javaRuntime.scan).toHaveBeenCalledWith();
-    expect(javaRuntime.select).toHaveBeenCalledWith({ installationId: 'installation-1' });
+    expect(javaRuntime.select).toHaveBeenCalledWith({ instanceId: 'classic', installationId: 'installation-1' });
   });
 
   it('uses no raw IPC, native import, or legacy modpacks facade', async () => {

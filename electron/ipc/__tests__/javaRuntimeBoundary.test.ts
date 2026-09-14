@@ -14,11 +14,12 @@ describe('java runtime IPC boundary wiring', () => {
       readFile(new URL('../../preload/bridges/JavaRuntimeBridge.ts', import.meta.url), 'utf8'),
       readFile(new URL('../../preload.ts', import.meta.url), 'utf8'),
     ]);
+    const normalizedPreload = preload.replace(/\r\n/g, '\n');
 
     expect(bridge).toContain('type JavaRuntimeAPI');
     expect(bridge).toContain('JAVA_RUNTIME_CHANNELS');
     expect(bridge).not.toMatch(/modpacks|path:/);
-    expect(preload).toContain("import { javaRuntime } from './preload/bridges/JavaRuntimeBridge'");
-    expect(preload.match(/\bjavaRuntime,\n/g)).toHaveLength(1);
+    expect(normalizedPreload).toContain("import { javaRuntime } from './preload/bridges/JavaRuntimeBridge'");
+    expect(normalizedPreload.match(/\bjavaRuntime,\n/g)).toHaveLength(1);
   });
 });

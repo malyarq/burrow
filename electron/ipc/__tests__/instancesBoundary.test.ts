@@ -17,16 +17,17 @@ describe('instances IPC boundary wiring', () => {
       readFile(new URL('../../preload/bridges/InstancesBridge.ts', import.meta.url), 'utf8'),
       readFile(new URL('../../preload.ts', import.meta.url), 'utf8'),
     ]);
+    const normalizedPreload = preload.replace(/\r\n/g, '\n');
 
     expect(bridge).toContain("type InstancesAPI");
     expect(bridge).toContain('INSTANCE_CHANNELS');
     expect(bridge).not.toMatch(/modpacks|instanceContent|rootPath/);
-    expect(preload).toContain("import { instances } from './preload/bridges/InstancesBridge'");
-    expect(preload).toMatch(/const api: BurrowApi = \{[\s\S]*\binstances,\n[\s\S]*\n\}/);
-    expect(preload.match(/\binstances,\n/g)).toHaveLength(1);
+    expect(normalizedPreload).toContain("import { instances } from './preload/bridges/InstancesBridge'");
+    expect(normalizedPreload).toMatch(/const api: BurrowApi = \{[\s\S]*\binstances,\n[\s\S]*\n\}/);
+    expect(normalizedPreload.match(/\binstances,\n/g)).toHaveLength(1);
 
     const exposedNamespaces = Array.from(
-      preload.matchAll(/contextBridge\.exposeInMainWorld\((['"])([^'"]+)\1/g),
+      normalizedPreload.matchAll(/contextBridge\.exposeInMainWorld\((['"])([^'"]+)\1/g),
       (match) => match[2],
     );
     expect(exposedNamespaces).toEqual(['api']);

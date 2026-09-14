@@ -92,16 +92,16 @@ export const LaunchControls = React.memo(function LaunchControls(props: {
           data-tour="launch"
           data-launch-priority={priority}
           className={cn(
-            'text-lg font-black uppercase tracking-widest transform !transition-none',
+            'text-base font-semibold tracking-normal',
             // Плавная анимация изменения формы - переопределяем rounded-lg из Button
             isCollapsed 
               ? 'w-12 h-12 p-0 flex-none [&>div]:gap-0 [&>div]:justify-center' 
-              : 'flex-1 py-5',
+              : 'flex-1 py-4',
             isLaunching || !canLaunch
               ? 'bg-zinc-300 dark:bg-zinc-600 text-zinc-500 dark:text-zinc-400 cursor-not-allowed shadow-none scale-100'
               : isPrimary
                 ? cn(
-                  'text-white hover:brightness-110 active:scale-[0.97] hover:scale-[1.03]',
+                  'text-white hover:brightness-110 active:scale-[0.97] hover:scale-100',
                   'hover:shadow-[0_0_40px_rgba(0,0,0,0.4)]',
                   getAccentStyles('bg').className
                 )
@@ -111,15 +111,15 @@ export const LaunchControls = React.memo(function LaunchControls(props: {
             !isLaunching && canLaunch && isPrimary
               ? {
                   ...accentStyle,
-                  boxShadow: `0 12px 40px ${accentHex}50, 0 0 30px ${accentHex}30`,
-                  borderRadius: isCollapsed ? '9999px' : '1rem',
+                  boxShadow: `0 4px 16px ${accentHex}20`,
+                  borderRadius: isCollapsed ? '0.75rem' : '0.75rem',
                   transition: isCollapsed 
                     ? 'width 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), height 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), padding 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 200ms ease-out, box-shadow 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                     : 'width 600ms cubic-bezier(0.34, 1.56, 0.64, 1), height 600ms cubic-bezier(0.34, 1.56, 0.64, 1), padding 600ms cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 700ms cubic-bezier(0.34, 1.56, 0.64, 1), transform 200ms ease-out, box-shadow 600ms cubic-bezier(0.34, 1.56, 0.64, 1)',
                   willChange: 'border-radius, width, height, padding',
                 }
               : {
-                  borderRadius: isCollapsed ? '9999px' : '1rem',
+                  borderRadius: isCollapsed ? '0.75rem' : '0.75rem',
                   transition: isCollapsed
                     ? 'width 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), height 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), padding 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), border-radius 800ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'
                     : 'width 600ms cubic-bezier(0.34, 1.56, 0.64, 1), height 600ms cubic-bezier(0.34, 1.56, 0.64, 1), padding 600ms cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 700ms cubic-bezier(0.34, 1.56, 0.64, 1)',

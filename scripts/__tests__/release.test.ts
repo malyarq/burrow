@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { collectPlatformSmoke, parseReleaseArgs } from '../release.js';
+import { createRequire } from 'node:module';
+const { collectPlatformSmoke, parseReleaseArgs } = createRequire(import.meta.url)('../release.js') as typeof import('../release.js');
 const roots: string[] = [];
 
 afterEach(() => {

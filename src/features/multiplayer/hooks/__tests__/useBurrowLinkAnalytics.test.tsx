@@ -83,4 +83,14 @@ describe('useBurrowLinkAnalytics', () => {
     });
     expect(JSON.stringify(capture.mock.calls)).not.toContain(roomCode);
   });
+
+  it('does not count a ready local endpoint as a peer or game connection', async () => {
+    const { result, rerender } = renderHook(({ snapshot }) => useBurrowLinkAnalytics(snapshot, 'hyperswarm'), { initialProps: { snapshot: idle } });
+    await act(async () => result.current.beginAttempt('join', 'ab'.repeat(32)));
+    rerender({ snapshot: { ...idle, revision: 1, state: 'active', role: 'join', localPort: 30000 } });
+    await act(async () => result.current.discoveryReady());
+    expect(capture.mock.calls.map(([event]) => event)).toContain('burrow_link_discovery_ready');
+    expect(capture.mock.calls.map(([event]) => event)).not.toContain('burrow_link_peer_connected');
+    expect(capture.mock.calls.map(([event]) => event)).not.toContain('burrow_link_game_connected');
+  });
 });

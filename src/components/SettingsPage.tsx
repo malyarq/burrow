@@ -3,6 +3,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import { useAppUpdater } from '../features/updater/hooks/useAppUpdater';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
+import { LoadingSpinner } from './ui/LoadingSpinner';
 import { cn } from '../utils/cn';
 import { SettingsTabsHeader } from './settings/SettingsTabsHeader';
 import {
@@ -12,11 +13,11 @@ import {
 } from './settings/settingsTabs';
 
 import { AppearanceTab } from './settings/tabs/AppearanceTab';
+import { DownloadsTab } from './settings/tabs/DownloadsTab';
 import { StorageSettings } from './settings/tabs/StorageTab';
 import { UpdateModal } from './UpdateModal';
 import { storageMaintenanceIPC } from '../services/ipc/storageMaintenanceIPC';
 
-const DownloadsTab = lazy(() => import('./settings/tabs/DownloadsTab').then((module) => ({ default: module.DownloadsTab })));
 const LauncherTab = lazy(() => import('./settings/tabs/LauncherTab').then((module) => ({ default: module.LauncherTab })));
 const PrivacyFeedbackCard = lazy(() => import('../features/feedback/PrivacyFeedbackCard').then((module) => ({ default: module.PrivacyFeedbackCard })));
 const AccountsPage = lazy(() => import('../features/accounts/AccountsPage').then((module) => ({ default: module.AccountsPage })));
@@ -27,14 +28,17 @@ interface SettingsPageProps {
     initialTab?: SettingsTabId;
 }
 
-function SettingsTabLoadingState() {
-    return (
-        <div
-            role="status"
-            aria-label="Loading"
-            aria-live="polite"
-            className="min-h-12 w-full animate-pulse bg-background/30"
-        />
+function SettingsTabLoadingState({ label }: { label: string }) {
+  return (
+    <div
+      role="status"
+      aria-label={label}
+      aria-live="polite"
+      className="flex min-h-[22rem] w-full flex-col items-center justify-center gap-3 text-sm text-secondary"
+    >
+      <LoadingSpinner size="md" variant="accent" />
+      <span>{label}</span>
+    </div>
     );
 }
 
@@ -141,12 +145,12 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             onClose={onClose}
             closeLabel={t('general.close_dialog')}
             title={t('settings.title')}
-            className="max-w-[min(72rem,calc(100vw-1rem))]"
+            className="max-w-[min(64rem,calc(100vw-1rem))]"
         >
-            <div className="min-h-0 space-y-3">
+            <div className="min-h-0 space-y-6">
                 <div
                     data-testid="settings-shell-header"
-                    className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+                    className="flex flex-col gap-4 border-b border-border/70 pb-5 lg:flex-row lg:items-end lg:justify-between"
                 >
                     <div className="min-w-0 flex-1">
                         <SettingsTabsHeader
@@ -159,7 +163,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                     <Button
                         onClick={onClose}
                         className={cn(
-                            'w-full shrink-0 text-white sm:w-auto sm:min-w-[9rem]',
+                            'w-full shrink-0 text-white shadow-sm sm:w-auto sm:min-w-[9rem]',
                             getAccentStyles('bg').className,
                         )}
                         style={getAccentStyles('bg').style}
@@ -173,9 +177,9 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                     role="tabpanel"
                     aria-labelledby={getSettingsTabLabelId(activeTab)}
                     tabIndex={0}
-                    className="settings-route-panel min-h-[22rem] outline-none p-4 sm:p-5"
+                    className="settings-route-panel min-h-[22rem] outline-none"
                 >
-                    <Suspense fallback={<SettingsTabLoadingState />}>
+                    <Suspense fallback={<SettingsTabLoadingState label={t('settings.loading') || 'Loading settings…'} />}>
                         {renderActiveTab()}
                     </Suspense>
                 </div>

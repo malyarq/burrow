@@ -130,8 +130,8 @@ describe('SettingsPage storage route', () => {
 
     expect(await screen.findByText('Cleanup')).toBeTruthy();
     expect(screen.queryByText('Track deduplicated content usage and clean up stored files that are no longer needed.')).toBeNull();
-    expect(screen.getByText('Cleanup').closest('.surface-muted')).toBeTruthy();
-    expect(screen.getByText('Total size').closest('.surface-muted')).toBeTruthy();
+    expect(screen.getByText('Cleanup').closest('.settings-section-shell')).toBeTruthy();
+    expect(screen.getByText('Total size').closest('.settings-section-shell')).toBeTruthy();
     expect(screen.getByText('Total size')).toBeTruthy();
     expect(screen.getByText('Saved size')).toBeTruthy();
     expect(screen.getByText('Stored files')).toBeTruthy();

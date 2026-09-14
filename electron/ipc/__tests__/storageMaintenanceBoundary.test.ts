@@ -15,12 +15,13 @@ describe('storage maintenance IPC boundary wiring', () => {
       readFile(new URL('../../preload.ts', import.meta.url), 'utf8'),
       readFile(new URL('../../../shared/contracts/windowApi.ts', import.meta.url), 'utf8'),
     ]);
+    const normalizedPreload = preload.replace(/\r\n/g, '\n');
 
     expect(bridge).toContain('StorageMaintenanceAPI');
     expect(bridge).toContain('STORAGE_MAINTENANCE_CHANNELS');
     expect(bridge).not.toMatch(/modpacks|rootPath|filePath|\bfs\b/);
     expect(windowApi).toContain('storageMaintenance: StorageMaintenanceAPI');
-    expect(preload).toContain("import { storageMaintenance } from './preload/bridges/StorageMaintenanceBridge'");
-    expect(preload.match(/\bstorageMaintenance,\n/g)).toHaveLength(1);
+    expect(normalizedPreload).toContain("import { storageMaintenance } from './preload/bridges/StorageMaintenanceBridge'");
+    expect(normalizedPreload.match(/\bstorageMaintenance,\n/g)).toHaveLength(1);
   });
 });

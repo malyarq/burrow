@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import os from 'node:os';
+import path from 'node:path';
 
 const mocked = vi.hoisted(() => ({
   handlers: new Map<string, (...args: unknown[]) => unknown>(),
@@ -19,7 +21,7 @@ import {
   consumeArchiveReference,
 } from '../../../security/archiveReferenceAuthorizations';
 
-const archivePath = '/tmp/burrow-import.zip';
+const archivePath = path.join(os.tmpdir(), 'burrow-import.zip');
 const inspection = {
   format: 'modrinth' as const,
   manifest: {

@@ -97,8 +97,15 @@ describe('canonical launch options', () => {
     })).rejects.toThrow('Canonical instance state is uninitialized');
   });
 
-  it('creates the classic profile transiently without reading or persisting canonical config', async () => {
-    const instances = readerFor();
+  it('loads Classic from its canonical configuration', async () => {
+    const classic = {
+      ...record,
+      id: 'classic',
+      name: 'Classic',
+      config: { ...record.config, runtime: { minecraftVersion: '1.20.4' } },
+      summary: { minecraftVersion: '1.20.4' },
+    } satisfies CanonicalInstanceRecord;
+    const instances = readerFor([classic]);
 
     const context = await prepareLaunchContext({
       instances,
@@ -108,8 +115,15 @@ describe('canonical launch options', () => {
       options: { nickname: 'Player', version: '1.20.4', ram: 4, instanceId: 'classic' },
     });
 
-    expect(instances.read).not.toHaveBeenCalled();
-    expect(context.record.config.runtime.minecraftVersion).toBe('1.20.4');
-    expect(context.record.source.source).toBe('local');
+    expect(instances.read).toHaveBeenCalledOnce();
+    expect(context.record).toBe(classic);
+    expect(context.record.config).toEqual(classic.config);
+  });
+
+  it('rejects Quilt before downloader or installer setup', () => {
+    expect(() => computeEffectiveLaunchOptions({
+      options: { version: '1.20.4', ram: 4 },
+      config: { runtime: { minecraftVersion: '1.20.4', modLoader: { type: 'quilt' } } },
+    })).toThrow('Quilt is not supported for launch.');
   });
 });

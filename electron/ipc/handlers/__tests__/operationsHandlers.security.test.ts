@@ -57,6 +57,7 @@ const recoveredSnapshot = {
   phase: 'completed' as const,
   result: { status: 'recovered' as const },
 };
+const authorizedArchivePath = path.join(os.tmpdir(), 'burrow-private-imports', 'alpha.mrpack');
 
 describe('operations IPC security boundary', () => {
   afterEach(() => {
@@ -117,12 +118,12 @@ describe('operations IPC security boundary', () => {
     const start = mocked.handlers.get('operations:start');
     const owner = { sender: { id: 7 } };
     const foreign = { sender: { id: 8 } };
-    const reference = authorizeArchiveReference(7, '/private/imports/alpha.mrpack');
+    const reference = authorizeArchiveReference(7, authorizedArchivePath);
 
     await expect(start?.(foreign, { kind: 'import', archiveRef: reference })).rejects.toThrow(/authorized/i);
     await expect(start?.(owner, { kind: 'import', archiveRef: reference })).resolves.toMatchObject({ kind: 'duplicate' });
     expect(runner.start).toHaveBeenCalledWith(expect.objectContaining({
-      kind: 'import', rootPath: '/approved/root', filePath: '/private/imports/alpha.mrpack',
+      kind: 'import', rootPath: '/approved/root', filePath: authorizedArchivePath,
     }));
     await expect(start?.(owner, { kind: 'import', archiveRef: reference })).rejects.toThrow(/authorized/i);
     expect(runner.start).toHaveBeenCalledOnce();
@@ -199,12 +200,15 @@ describe('operations IPC security boundary', () => {
 
   it('does not expose absolute paths from a recovered journal snapshot', async () => {
     const rootPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-public-operation-snapshot-'));
+    const timestamp = new Date().toISOString();
     try {
       const journal = new OperationJournal(rootPath);
       journal.save({
         ...recoveredSnapshot,
         rootPath,
-        progress: { completed: 1, total: 1, message: '/private/root/operation.log' },
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        progress: { completed: 1, total: 1, message: path.join(rootPath, 'operation.log') },
         input: { kind: 'duplicate', rootPath, sourceId: 'source-pack' },
       });
       const runner = new OperationRunner([]);

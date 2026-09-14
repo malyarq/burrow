@@ -31,19 +31,19 @@ const DEFAULT_THEME_DOCUMENT_COLORS: Record<Theme, ThemeDocumentColors> = {
 
 const DEFAULT_BRAND_DOCUMENT_TOKENS: Record<Theme, BrandDocumentTokens> = {
   light: {
-    shellGlow: '#6b8b6f', markFrame: '#eef2e8', markBorder: '#cbd5c2', markGlow: '#314338',
-    mediaFrame: '#edf1e8', mediaBorder: '#d2dad0',
-    surfacePanelShadow: '0 24px 80px rgba(24, 31, 27, 0.16)',
-    surfaceCardShadow: '0 14px 48px rgba(24, 31, 27, 0.12)',
-    surfaceSoftShadow: '0 8px 24px rgba(24, 31, 27, 0.08)',
+    shellGlow: '#a1a1aa', markFrame: '#fafafa', markBorder: '#d4d4d8', markGlow: '#52525b',
+    mediaFrame: '#f4f4f5', mediaBorder: '#d4d4d8',
+    surfacePanelShadow: '0 8px 24px rgba(24, 31, 27, 0.06)',
+    surfaceCardShadow: '0 2px 8px rgba(24, 31, 27, 0.06)',
+    surfaceSoftShadow: '0 1px 3px rgba(24, 31, 27, 0.04)',
     wordmarkWeight: '460', wordmarkSpacing: '-0.035em',
   },
   dark: {
-    shellGlow: '#7aa57d', markFrame: '#131916', markBorder: '#344138', markGlow: '#8eb795',
-    mediaFrame: '#1a221c', mediaBorder: '#36433a',
-    surfacePanelShadow: '0 24px 80px rgba(0, 0, 0, 0.26)',
-    surfaceCardShadow: '0 14px 48px rgba(0, 0, 0, 0.22)',
-    surfaceSoftShadow: '0 8px 24px rgba(0, 0, 0, 0.18)',
+    shellGlow: '#71717a', markFrame: '#18181b', markBorder: '#3f3f46', markGlow: '#a1a1aa',
+    mediaFrame: '#27272a', mediaBorder: '#3f3f46',
+    surfacePanelShadow: '0 8px 24px rgba(0, 0, 0, 0.06)',
+    surfaceCardShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    surfaceSoftShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
     wordmarkWeight: '460', wordmarkSpacing: '-0.035em',
   },
 };
@@ -77,7 +77,7 @@ function getAccentContent(accentHex: string) {
     : '255 255 255';
 }
 
-function buildThemeDocumentColors(theme: Theme, customTheme?: CustomThemeConfig): ThemeDocumentColors {
+export function buildThemeDocumentColors(theme: Theme, customTheme?: CustomThemeConfig): ThemeDocumentColors {
   const defaults = DEFAULT_THEME_DOCUMENT_COLORS[theme];
   const colors = customTheme?.colors;
   return {
@@ -100,7 +100,8 @@ function buildBrandDocumentTokens(theme: Theme, customTheme?: CustomThemeConfig)
 
 export function applyThemeToDocument(theme: Theme, accentColor: AccentColor, customTheme?: CustomThemeConfig) {
   const root = document.documentElement;
-  const accentHex = getAccentHexForColor(accentColor || 'emerald');
+  const accentHex = getAccentHexForColor(accentColor || 'blue');
+  const accentHoverHex = getAccentHoverHexForColor(accentColor || 'blue');
   const palette = buildThemeDocumentColors(theme, customTheme);
   const brandTokens = buildBrandDocumentTokens(theme, customTheme);
   document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -117,8 +118,9 @@ export function applyThemeToDocument(theme: Theme, accentColor: AccentColor, cus
     '--border-default': hexToRgb(palette.border),
     '--border-active': hexToRgb(palette.borderActive),
     '--accent-main': hexToRgb(accentHex),
-    '--accent-hover': hexToRgb(getAccentHoverHexForColor(accentColor || 'emerald')),
+    '--accent-hover': hexToRgb(accentHoverHex),
     '--accent-content': getAccentContent(accentHex),
+    '--accent-hover-content': getAccentContent(accentHoverHex),
     '--color-error': hexToRgb(palette.error),
     '--brand-shell-glow': hexToRgb(brandTokens.shellGlow),
     '--brand-mark-frame': hexToRgb(brandTokens.markFrame),

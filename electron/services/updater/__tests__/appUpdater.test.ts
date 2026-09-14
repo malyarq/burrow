@@ -20,20 +20,29 @@ describe('SelfUpdater download policy', () => {
   });
 
   it('announces an available update without downloading before user consent', async () => {
-    const send = vi.fn();
-    const win = {
+    const sendFirst = vi.fn();
+    const sendSecond = vi.fn();
+    const firstWindow = {
       on: vi.fn(),
       isDestroyed: () => false,
-      webContents: { send },
+      webContents: { send: sendFirst },
+    };
+    const secondWindow = {
+      on: vi.fn(),
+      isDestroyed: () => false,
+      webContents: { send: sendSecond },
     };
     const { SelfUpdater } = await import('../appUpdater');
 
-    new SelfUpdater(win as never);
+    new SelfUpdater(firstWindow as never);
+    new SelfUpdater(secondWindow as never);
     autoUpdater.emit('update-available', { version: '0.7.0' });
 
     expect(autoUpdater.autoDownload).toBe(false);
     expect(autoUpdater.autoInstallOnAppQuit).toBe(true);
     expect(autoUpdater.downloadUpdate).not.toHaveBeenCalled();
-    expect(send).toHaveBeenCalledWith('app-updater:available', { version: '0.7.0' });
+    expect(autoUpdater.listenerCount('update-available')).toBe(1);
+    expect(sendFirst).toHaveBeenCalledWith('app-updater:available', { version: '0.7.0' });
+    expect(sendSecond).toHaveBeenCalledWith('app-updater:available', { version: '0.7.0' });
   });
 });

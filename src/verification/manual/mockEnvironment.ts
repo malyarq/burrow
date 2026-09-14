@@ -1126,7 +1126,8 @@ export function seedManualVerificationStorage(view: string) {
   localStorage.setItem('settings_accentColor', isPhase22ThemeLight || isPhase24ThemeLight ? 'rose' : 'emerald');
   localStorage.setItem('settings_disableAnimations', PHASE_24_CLOSEOUT_VIEWS.has(view) || PHASE_41_PROOF_VIEWS.has(view) ? 'true' : 'false');
   localStorage.setItem('settings_minecraftPath', '/mock/.minecraft');
-  localStorage.setItem('mp_mode', view === PHASE_42_LAN_RU_VIEW ? 'join' : 'host');
+  const joinPreview = view === PHASE_42_TUNNEL_EN_VIEW && new URLSearchParams(location.search).has('joinState');
+  localStorage.setItem('mp_mode', view === PHASE_42_LAN_RU_VIEW || joinPreview ? 'join' : 'host');
   localStorage.setItem('settings_uiMode', simpleViews.has(view) ? 'simple' : 'modpacks');
   localStorage.setItem('simple_play_welcome_dismissed', 'false');
   localStorage.setItem('onboarding_completed', simpleViews.has(view) ? 'false' : 'true');
@@ -1580,12 +1581,18 @@ export function installManualVerificationEnvironment() {
     },
   };
 
+  const joinPreviewState = view === PHASE_42_TUNNEL_EN_VIEW ? new URLSearchParams(location.search).get('joinState') : null;
   const tunnelSnapshot = {
     revision: 1,
     state: view === PHASE_42_TUNNEL_EN_VIEW ? 'active' as const : 'idle' as const,
-    role: view === PHASE_42_TUNNEL_EN_VIEW ? 'host' as const : null,
+    role: view === PHASE_42_TUNNEL_EN_VIEW ? (joinPreviewState ? 'join' as const : 'host' as const) : null,
     ...(view === PHASE_42_TUNNEL_EN_VIEW ? { roomCode: 'ab'.repeat(32) } : {}),
-    peerCount: view === PHASE_42_TUNNEL_EN_VIEW ? 2 : 0,
+    peerCount: joinPreviewState ? (joinPreviewState === 'peer' || joinPreviewState === 'game' ? 1 : 0) : view === PHASE_42_TUNNEL_EN_VIEW ? 2 : 0,
+    ...(joinPreviewState ? {
+      localPort: 30000,
+      metrics: { connectionMode: 'unknown' as const, sessionDurationMs: 1000, transferredBytes: 0, peakPeerCount: 1, gameConnectionCount: joinPreviewState === 'game' ? 1 : 0, activeGameConnectionCount: joinPreviewState === 'game' ? 1 : 0 },
+      ...(joinPreviewState === 'timeout' ? { diagnostic: { code: 'TUNNEL_PEER_UNAVAILABLE' as const, message: 'Peer unavailable' } } : {}),
+    } : {}),
   };
   const lanSnapshot = {
     revision: 1,

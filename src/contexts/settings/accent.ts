@@ -1,12 +1,12 @@
 import type { AccentStyleResult, AccentStyleType } from './types';
 
 // Preset styles are static to prevent Tailwind purging.
-const TEXT_ON_ACCENT = 'text-[rgb(var(--accent-content))]';
-export const DEFAULT_ACCENT_COLOR = 'emerald';
+const ACCENT_BACKGROUND_CLASSES = 'bg-[rgb(var(--accent-main))] hover:bg-[rgb(var(--accent-hover))] text-[rgb(var(--accent-content))] hover:text-[rgb(var(--accent-hover-content))]';
+export const DEFAULT_ACCENT_COLOR = 'blue';
 
 const PRESET_STYLES: Record<string, Record<string, string>> = {
   emerald: {
-    bg: `bg-emerald-600 hover:bg-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500 ${TEXT_ON_ACCENT}`,
+    bg: ACCENT_BACKGROUND_CLASSES,
     text: 'text-emerald-500 dark:text-emerald-400',
     border: 'focus:border-emerald-500 dark:focus:border-emerald-400',
     hover: 'hover:text-emerald-600 dark:hover:text-emerald-300',
@@ -15,7 +15,7 @@ const PRESET_STYLES: Record<string, Record<string, string>> = {
     title: 'text-emerald-600 dark:text-emerald-400',
   },
   blue: {
-    bg: `bg-blue-600 hover:bg-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500 ${TEXT_ON_ACCENT}`,
+    bg: ACCENT_BACKGROUND_CLASSES,
     text: 'text-blue-500 dark:text-blue-400',
     border: 'focus:border-blue-500 dark:focus:border-blue-400',
     hover: 'hover:text-blue-600 dark:hover:text-blue-300',
@@ -24,7 +24,7 @@ const PRESET_STYLES: Record<string, Record<string, string>> = {
     title: 'text-blue-600 dark:text-blue-400',
   },
   purple: {
-    bg: `bg-purple-600 hover:bg-purple-500 dark:bg-purple-600 dark:hover:bg-purple-500 ${TEXT_ON_ACCENT}`,
+    bg: ACCENT_BACKGROUND_CLASSES,
     text: 'text-purple-500 dark:text-purple-400',
     border: 'focus:border-purple-500 dark:focus:border-purple-400',
     hover: 'hover:text-purple-600 dark:hover:text-purple-300',
@@ -33,7 +33,7 @@ const PRESET_STYLES: Record<string, Record<string, string>> = {
     title: 'text-purple-600 dark:text-purple-400',
   },
   orange: {
-    bg: `bg-orange-600 hover:bg-orange-500 dark:bg-orange-600 dark:hover:bg-orange-500 ${TEXT_ON_ACCENT}`,
+    bg: ACCENT_BACKGROUND_CLASSES,
     text: 'text-orange-500 dark:text-orange-400',
     border: 'focus:border-orange-500 dark:focus:border-orange-400',
     hover: 'hover:text-orange-600 dark:hover:text-orange-300',
@@ -42,7 +42,7 @@ const PRESET_STYLES: Record<string, Record<string, string>> = {
     title: 'text-orange-600 dark:text-orange-400',
   },
   rose: {
-    bg: `bg-rose-600 hover:bg-rose-500 dark:bg-rose-600 dark:hover:bg-rose-500 ${TEXT_ON_ACCENT}`,
+    bg: ACCENT_BACKGROUND_CLASSES,
     text: 'text-rose-500 dark:text-rose-400',
     border: 'focus:border-rose-500 dark:focus:border-rose-400',
     hover: 'hover:text-rose-600 dark:hover:text-rose-300',
@@ -57,17 +57,17 @@ const PRESET_KEYS = Object.keys(PRESET_STYLES);
 const PRESET_HEX_MAP: Record<string, string> = {
   emerald: '#10b981',
   blue: '#3b82f6',
-  purple: '#a855f7',
+  purple: '#9333ea',
   orange: '#f97316',
-  rose: '#f43f5e',
+  rose: '#e11d48',
 };
 
 const PRESET_HOVER_HEX_MAP: Record<string, string> = {
   emerald: '#059669',
   blue: '#2563eb',
-  purple: '#9333ea',
+  purple: '#7e22ce',
   orange: '#ea580c',
-  rose: '#e11d48',
+  rose: '#be123c',
 };
 
 function isPreset(color: string) {
@@ -115,13 +115,14 @@ export function getAccentStylesForColor(
   const color = accentColor || DEFAULT_ACCENT_COLOR;
 
   if (isPreset(color)) {
-    if (type === 'soft-bg') return { className: `bg-${color}-500/10` };
-    if (type === 'soft-border') return { className: `border-${color}-500/20` };
+    if (type === 'bg') return { className: ACCENT_BACKGROUND_CLASSES };
+    if (type === 'soft-bg') return { className: `bg-[rgb(var(--accent-main)/0.1)]` };
+    if (type === 'soft-border') return { className: `border-[rgb(var(--accent-main)/0.2)]` };
     return { className: PRESET_STYLES[color][type] || '' };
   }
 
   if (type === 'bg') {
-    return { style: { backgroundColor: color, color: 'rgb(var(--accent-content))' } };
+    return { className: ACCENT_BACKGROUND_CLASSES };
   }
   if (type === 'text') return { style: { color } };
   if (type === 'title') return { style: { color } };

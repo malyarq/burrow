@@ -19,6 +19,7 @@ export type JavaRuntimeInstallationDto = Readonly<{
 }>;
 
 export type JavaRuntimeSelectRequest = Readonly<{
+  instanceId: string;
   installationId: string;
 }>;
 

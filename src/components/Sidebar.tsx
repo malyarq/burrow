@@ -112,14 +112,25 @@ const Sidebar = ({
         localStorage.setItem('sidebar_collapsed', String(isCollapsed));
     }, [isCollapsed]);
 
+    useEffect(() => {
+        if (typeof window.matchMedia !== 'function') return;
+        const narrowWindow = window.matchMedia('(max-width: 799px)');
+        const collapseForNarrowWindow = () => {
+            if (narrowWindow.matches) setIsCollapsed(true);
+        };
+        collapseForNarrowWindow();
+        narrowWindow.addEventListener('change', collapseForNarrowWindow);
+        return () => narrowWindow.removeEventListener('change', collapseForNarrowWindow);
+    }, []);
+
     // В режиме modpacks проверяем, есть ли выбранный модпак
     // В режиме simple всегда разрешаем запуск (там используется дефолтный пак)
     const isModpackAvailable = uiMode === 'simple' || (selectedId && modpacks.some(m => m.id === selectedId));
     const canLaunch = isModpackAvailable && !runtime.isLaunching;
     const launchPriority = uiMode === 'modpacks' && modpackPrimaryActionOwnership === 'route' ? 'secondary' : 'primary';
     const expandedWidthClass = compactMode
-        ? 'w-[clamp(15rem,24vw,18rem)] p-3 sm:p-4'
-        : 'w-[clamp(16.5rem,28vw,21rem)] p-3.5 sm:p-5';
+        ? 'w-[clamp(14rem,21vw,16rem)] p-3 sm:p-4'
+        : 'w-[clamp(15rem,23vw,18rem)] p-3.5 sm:p-5';
     const classicRuntime = buildRuntimeDependencyState({
         minecraftVersion: launch.version,
         modLoaderType: getClassicLoaderType(launch),
@@ -137,7 +148,7 @@ const Sidebar = ({
             data-instance-owner="canonical"
             data-selected-instance-id={effectiveModpackId}
             className={cn(
-            'relative z-10 flex h-full min-w-0 shrink-0 flex-col border-r border-border bg-sidebar/86 shadow-[0_24px_80px_rgba(0,0,0,0.16)] backdrop-blur-xl transition-all duration-300 ease-out',
+            'launcher-sidebar relative z-10 flex h-full min-w-0 shrink-0 flex-col border-r border-border bg-sidebar/94 transition-colors duration-150',
             isCollapsed ? "w-14 p-2 sm:w-16 sm:p-2.5" : expandedWidthClass,
             sidebarPosition === 'right' ? "border-l border-r-0 order-last" : "border-r border-l-0"
         )}
@@ -163,26 +174,13 @@ const Sidebar = ({
             {!isCollapsed && (
                 <div
                     id={sidebarContentId}
-                    className="custom-scrollbar flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pr-1"
+                    className="custom-scrollbar flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto -mx-1 px-1 pb-1"
                 >
                     {/* Игровые настройки – ник, версия и (в Classic) модлоадер/OptiFine */}
-                    <div className="space-y-4 sidebar-section-enter">
-                        <h2 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                    <div className="space-y-4">
+                        <h2 className="text-xs font-medium text-muted">
                             {t('sidebar.game_settings') || 'Игровые настройки'}
                         </h2>
-                        {uiMode === 'simple' && (
-                            <div
-                                data-testid="sidebar-classic-runtime-summary"
-                                className="rounded-2xl border border-border/70 bg-card/78 px-3 py-2 shadow-[0_10px_24px_rgba(0,0,0,0.08)]"
-                            >
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-secondary">
-                                    {t('sidebar.current_runtime') || 'Current runtime'}
-                                </p>
-                                <p className="mt-1 text-sm font-semibold text-foreground">
-                                    {classicRuntimeLabel}
-                                </p>
-                            </div>
-                        )}
                         <NicknameSection
                             nickname={launch.nickname}
                             setNickname={launch.setNickname}
@@ -190,9 +188,23 @@ const Sidebar = ({
                             t={t}
                             disabled={runtime.isLaunching}
                         />
+                        {uiMode === 'simple' && (
+                            <div
+                                data-testid="sidebar-classic-runtime-summary"
+                                className="border-l-2 border-[rgb(var(--accent-main))] px-3 py-1"
+                            >
+                                <p className="text-xs font-medium text-muted">
+                                    {t('sidebar.current_runtime') || 'Current runtime'}
+                                </p>
+                                <p className="mt-1 text-sm font-semibold text-foreground">
+                                    {classicRuntimeLabel}
+                                </p>
+                            </div>
+                        )}
+
 
                         {uiMode === 'simple' && (
-                            <div className="space-y-3 sidebar-section-enter" style={{ animationDelay: '50ms' }}>
+                            <div className="space-y-3">
                                 {/* Minecraft version selector */}
                                 <div data-tour="version">
                                     <Select

@@ -68,6 +68,10 @@ export function createDuplicateOperationAdapter(options: DuplicateOperationOptio
         workspace.cleanupBackups();
         return { status: 'succeeded', instanceId: destinationId };
       } catch (error) {
+        if (context.isControlPlaneCommitted()) {
+          workspace.cleanupStaging();
+          throw error;
+        }
         if (backupCreated && !workspace.restoreDestination(destinationPath, destinationId)) return { status: 'recovery-required', message: 'Duplicate rollback destination is ambiguous' };
         if (published && !backupCreated && workspace.recoverUncommittedDestination(destinationPath, destinationId) === false) {
           throw new Error('ROLLBACK_RECOVERY_REQUIRED');

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { extractReleaseNotes } from '../changelog-release-notes.js';
+import { createRequire } from 'node:module';
+const { extractReleaseNotes } = createRequire(import.meta.url)('../changelog-release-notes.js') as typeof import('../changelog-release-notes.js');
 
 const changelog = `# История изменений / Changelog
 

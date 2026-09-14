@@ -81,8 +81,8 @@ export const THEME_PRESETS: ThemePreset[] = [
         fallbackLabel: 'Default',
         defaultTheme: 'dark',
         accentDefaults: {
-            light: 'emerald',
-            dark: 'emerald',
+            light: 'blue',
+            dark: 'blue',
         },
         themes: {
             light: createPresetColors({

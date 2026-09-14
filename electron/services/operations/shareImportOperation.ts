@@ -65,6 +65,10 @@ export function createShareImportOperationAdapter(installer: ShareManifestInstal
           ? { status: 'degraded', instanceId: destinationId, missing }
           : { status: 'succeeded', instanceId: destinationId };
       } catch (error) {
+        if (context.isControlPlaneCommitted()) {
+          workspace.cleanupStaging();
+          throw error;
+        }
         if (backupCreated && !workspace.restoreDestination(destinationPath, destinationId)) return { status: 'recovery-required', message: 'Share import rollback destination is ambiguous' };
         if (published && !backupCreated && workspace.recoverUncommittedDestination(destinationPath, destinationId) === false) return { status: 'recovery-required', message: 'Share import rollback requires recovery' };
         workspace.cleanupStaging();

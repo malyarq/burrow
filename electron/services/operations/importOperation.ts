@@ -34,7 +34,9 @@ export function createImportOperationAdapter(options: ImportOperationOptions = {
         throwIfCancelled(context);
         const staged = await stageArchiveImport(input.filePath, workspace.stagedModpack(destinationId));
         missing = staged.missing;
-        const config = buildConfig(destinationId, input.name?.trim() || staged.manifest.name, staged.manifest.minecraft.version, staged.manifest.minecraft.modLoaders[0]?.id);
+        const loaderId = staged.manifest.minecraft.modLoaders[0]?.id;
+        if (parseLoader(loaderId)?.type === 'quilt') throw new Error('Quilt modpacks are not supported');
+        const config = buildConfig(destinationId, input.name?.trim() || staged.manifest.name, staged.manifest.minecraft.version, loaderId);
         writeStagedConfig(workspace.stagedModpack(destinationId), config);
         workspace.markStaged(workspace.stagedModpack(destinationId));
         context.setRecoveryData({ destinationId, destinationName: config.name, missing });
@@ -64,6 +66,10 @@ export function createImportOperationAdapter(options: ImportOperationOptions = {
         workspace.cleanupBackups();
         return missing.length > 0 ? { status: 'degraded', instanceId: destinationId, missing } : { status: 'succeeded', instanceId: destinationId };
       } catch (error) {
+        if (context.isControlPlaneCommitted()) {
+          workspace.cleanupStaging();
+          throw error;
+        }
         if (backupCreated && !workspace.restoreDestination(destinationPath, destinationId)) return { status: 'recovery-required', message: 'Import rollback destination is ambiguous' };
         if (published && !backupCreated && workspace.recoverUncommittedDestination(destinationPath, destinationId) === false) {
           throw new Error('ROLLBACK_RECOVERY_REQUIRED');

@@ -113,10 +113,10 @@ export function RuntimeSection(props: {
   }
 
   const handleJavaChange = async (installationId: string) => {
-    if (!installationId) return;
+    if (!installationId || !modpackConfig?.id) return;
 
     try {
-      await javaRuntimeIPC.select({ installationId });
+      await javaRuntimeIPC.select({ instanceId: modpackConfig.id, installationId });
       setSelectedInstallationId(installationId);
     } catch (err) {
       console.error('Failed to select Java runtime:', err);

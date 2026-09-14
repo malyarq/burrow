@@ -80,12 +80,12 @@ describe('GameTab theme surface contrast', () => {
       expect(scanJavaMock).toHaveBeenCalled();
     });
 
-    expect(screen.getByText('Game').closest('.surface-soft')).toBeTruthy();
+    expect(screen.getByText('Game').closest('.settings-section-shell')).toBeTruthy();
     expect(getTextboxByLabel('Extra JVM Args').className).toContain('control-frame');
     expect(getTextboxByLabel('Extra Game Args').className).toContain('control-frame');
     expect(screen.getByRole('combobox').className).toContain('control-frame');
-    expect(screen.getByText('Fullscreen').closest('.surface-soft')).toBeTruthy();
-    expect(screen.getByText('Auto Connect').closest('.surface-soft')).toBeTruthy();
+    expect(screen.getByText('Fullscreen').closest('.border-t')).toBeTruthy();
+    expect(screen.getByText('Auto Connect').closest('.border-t')).toBeTruthy();
     expect(container.querySelectorAll('.helper-text').length).toBeGreaterThanOrEqual(4);
   });
 });

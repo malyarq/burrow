@@ -7,16 +7,18 @@ const mocked = vi.hoisted(() => ({
   handlers: new Map<string, (...args: unknown[]) => unknown>(),
   showSaveDialog: vi.fn(),
   showOpenDialog: vi.fn(),
+  openPath: vi.fn(),
+  userDataPath: '/tmp',
 }));
 
 vi.mock('electron', () => ({
-  app: { getPath: vi.fn(() => '/tmp') },
+  app: { getPath: vi.fn((name: string) => name === 'userData' ? mocked.userDataPath : '/tmp') },
   dialog: { showSaveDialog: mocked.showSaveDialog, showOpenDialog: mocked.showOpenDialog },
   ipcMain: {
     removeHandler: (channel: string) => mocked.handlers.delete(channel),
     handle: (channel: string, handler: (...args: unknown[]) => unknown) => mocked.handlers.set(channel, handler),
   },
-  shell: { openPath: vi.fn() },
+  shell: { openPath: mocked.openPath },
 }));
 
 import { registerSettingsHandlers } from '../settingsHandlers';
@@ -30,9 +32,48 @@ describe('settings native save dialog authorization', () => {
 
   afterEach(() => {
     mocked.handlers.clear();
+    mocked.openPath.mockReset();
+    mocked.userDataPath = '/tmp';
     clearSavePathAuthorizationsForTests();
     vi.restoreAllMocks();
     for (const directory of temporaryDirectories.splice(0)) fs.rmSync(directory, { recursive: true, force: true });
+  });
+
+  it('opens only the persisted native-selected directory, ignoring renderer arguments', async () => {
+    const userDataPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-settings-directory-'));
+    const nativeDirectory = path.join(userDataPath, 'native-directory');
+    const rendererDirectory = path.join(userDataPath, 'renderer-directory');
+    temporaryDirectories.push(userDataPath);
+    fs.mkdirSync(nativeDirectory);
+    fs.mkdirSync(rendererDirectory);
+    mocked.userDataPath = userDataPath;
+    mocked.showOpenDialog.mockResolvedValue({ canceled: false, filePaths: [nativeDirectory] });
+    mocked.openPath.mockResolvedValue('');
+    registerSettingsHandlers({ window: {} as never });
+
+    const select = mocked.handlers.get('settings:selectMinecraftPath');
+    const open = mocked.handlers.get('settings:openMinecraftPath');
+    const getDefault = mocked.handlers.get('settings:getDefaultMinecraftPath');
+    await expect(select?.({})).resolves.toEqual({ success: true, path: nativeDirectory });
+    await expect(getDefault?.({})).resolves.toBe(nativeDirectory);
+    await expect(open?.({}, rendererDirectory)).resolves.toEqual({ success: true });
+
+    expect(mocked.openPath).toHaveBeenCalledWith(nativeDirectory);
+    expect(JSON.parse(fs.readFileSync(path.join(userDataPath, 'minecraft-directory.json'), 'utf8'))).toEqual({ directory: nativeDirectory });
+  });
+
+  it('rejects unsafe native directory selections before they can be opened or persisted', async () => {
+    const userDataPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-settings-directory-'));
+    temporaryDirectories.push(userDataPath);
+    mocked.userDataPath = userDataPath;
+    mocked.showOpenDialog.mockResolvedValue({ canceled: false, filePaths: ['\\\\server\\share'] });
+    registerSettingsHandlers({ window: {} as never });
+
+    const select = mocked.handlers.get('settings:selectMinecraftPath');
+    await expect(select?.({})).resolves.toMatchObject({ success: false, path: null, error: expect.stringMatching(/local absolute path/i) });
+
+    expect(mocked.openPath).not.toHaveBeenCalled();
+    expect(fs.existsSync(path.join(userDataPath, 'minecraft-directory.json'))).toBe(false);
   });
 
   it('returns and authorizes the exact native path for the originating renderer', async () => {
@@ -41,7 +82,7 @@ describe('settings native save dialog authorization', () => {
     const showSaveDialog = mocked.handlers.get('dialog:showSaveDialog');
 
     await expect(showSaveDialog?.({ sender: { id: 7 } }, {})).resolves.toEqual({ canceled: false, filePath: '/tmp/burrow-authorized-export.zip' });
-    expect(consumeAuthorizedSavePath(7, '/tmp/burrow-authorized-export.zip')).toBe('/tmp/burrow-authorized-export.zip');
+    expect(consumeAuthorizedSavePath(7, '/tmp/burrow-authorized-export.zip')).toBe(path.resolve('/tmp/burrow-authorized-export.zip'));
   });
 
   it('does not create an authorization when the native save dialog is cancelled', async () => {

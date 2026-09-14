@@ -155,14 +155,14 @@ describe('AppLayout responsive shell', () => {
     const split = screen.getByTestId('app-layout-split');
 
     expect(shellFrame.className).toContain('min-w-0');
-    expect(shellFrame.className).toContain('sm:rounded-[28px]');
+    expect(shellFrame.className).toContain('sm:rounded-none');
     expect(titleBar.nextElementSibling).toBe(notifications);
     expect(notifications.nextElementSibling).toBe(safeArea);
     expect(notifications.textContent).toContain('Update notification');
     expect(safeArea.getAttribute('data-shell-safe-area')).toBe('shell-chrome');
     expect(notifications.getAttribute('data-shell-platform')).toBe('renderer-controls');
     expect(safeArea.getAttribute('data-shell-platform')).toBe('renderer-controls');
-    expect(safeArea.className).toContain('pt-2');
+    expect(safeArea.className).toContain('pt-0');
     expect(split.parentElement).toBe(safeArea);
     expect(main.className).toContain('min-w-0');
     expect(split.className).toContain('flex-row');

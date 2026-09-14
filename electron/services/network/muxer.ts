@@ -37,9 +37,15 @@ export class MuxerStream extends Duplex {
   public _read(): void {}
 
   public _destroy(error: Error | null, callback: (error: Error | null) => void): void {
-    if (!this.remoteClosing && !error) this.muxer.sendClose(this.sessionId);
-    this.muxer.removeStream(this.sessionId);
-    callback(error);
+    let failure = error;
+    try {
+      if (!this.remoteClosing) this.muxer.sendClose(this.sessionId);
+    } catch (cause) {
+      failure ??= cause instanceof Error ? cause : new Error(String(cause));
+    } finally {
+      this.muxer.removeStream(this.sessionId);
+      callback(failure);
+    }
   }
 
   public pushData(data: Buffer): void {
@@ -55,6 +61,8 @@ export class MuxerStream extends Duplex {
 export class Muxer extends EventEmitter {
   private buffer = Buffer.alloc(0);
   private readonly streams = new Map<number, MuxerStream>();
+  // IDs are 16-bit. Retain closed IDs until reuse to tolerate in-flight frames.
+  private readonly closedSessions = new Set<number>();
   private nextSessionId = 1;
   private closed = false;
 
@@ -69,10 +77,17 @@ export class Muxer extends EventEmitter {
   }
 
   public createStream(): MuxerStream {
+    if (this.closed) throw new Error('Tunnel connection is closed');
     const sessionId = this.allocateSessionId();
     const stream = new MuxerStream(this, sessionId);
     this.streams.set(sessionId, stream);
-    this.send(sessionId, CMD_OPEN);
+    this.closedSessions.delete(sessionId);
+    try {
+      this.send(sessionId, CMD_OPEN);
+    } catch (error) {
+      stream.closeFromRemote();
+      throw error;
+    }
     return stream;
   }
 
@@ -102,6 +117,7 @@ export class Muxer extends EventEmitter {
 
   public removeStream(sessionId: number): void {
     this.streams.delete(sessionId);
+    this.closedSessions.add(sessionId);
   }
 
   public get activeStreamCount(): number {
@@ -146,16 +162,19 @@ export class Muxer extends EventEmitter {
           return;
         }
         const stream = new MuxerStream(this, sessionId);
+        this.closedSessions.delete(sessionId);
         this.streams.set(sessionId, stream);
         this.emit('stream', stream);
       } else if (command === CMD_DATA) {
         if (!existing) {
+          if (this.closedSessions.has(sessionId)) continue;
           this.protocolViolation('Tunnel data targets an unknown session');
           return;
         }
         existing.pushData(payload);
       } else {
         if (!existing) {
+          if (this.closedSessions.has(sessionId)) continue;
           this.protocolViolation('Tunnel close targets an unknown session');
           return;
         }
@@ -189,6 +208,7 @@ export class Muxer extends EventEmitter {
     // consumers that treat disconnects as normal lifecycle events.
     for (const stream of [...this.streams.values()]) stream.closeFromRemote();
     this.streams.clear();
+    this.closedSessions.clear();
     this.emit('close');
   }
 }

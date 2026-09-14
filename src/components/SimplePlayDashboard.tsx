@@ -78,7 +78,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
   }, [instanceId, modpackNavigation, setMode]);
 
   const frameClassName = cn(
-    'launcher-content-width flex min-h-full flex-col items-center px-4 py-6 sm:px-5 lg:px-6',
+    'classic-dashboard launcher-content-width flex min-h-full flex-col items-stretch px-4 py-6 sm:px-7 lg:px-10',
     !disableAnimations && 'animate-fade-in-up',
   );
 
@@ -219,7 +219,7 @@ export function SimplePlayDashboard({ launch, runtime, actions }: SimplePlayDash
           runtimeSummary={runtimeSummary}
           onOpenGuidedContent={openGuidedContent}
         />
-        <Button type="button" variant="ghost" onClick={showModpacks} disabled={lockLaunchSurface} className="mt-8">
+        <Button type="button" variant="ghost" onClick={showModpacks} disabled={lockLaunchSurface} className="mt-6 self-start">
           <Boxes className="h-4 w-4" />
           {translateWithFallback(t, 'dashboard.go_to_modpacks', 'Go to Modpacks')}
         </Button>

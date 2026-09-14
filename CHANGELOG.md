@@ -4,9 +4,29 @@
 
 This file summarizes the current public release. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
 
-## Не выпущено / Unreleased
+## [0.14.0] — 2026-09-14
 
-После v0.13.0 изменений нет. / No changes after v0.13.0.
+### Русский
+
+- Переработан интерфейс: нейтральные светлая и тёмная темы, независимый пользовательский акцент и единые размеры элементов. Настройки используют плоские разделы и удобные строки переключателей. Главный экран использует статичный пейзаж. Исправлены цвета готовых тем в тёмном режиме, обрезание рамок фокуса и положение тумблеров. Поля боковой панели больше не мерцают при смене режима, настройки загрузок открываются сразу, а свои цвета показаны на подписанном примере. Пасхалка сохранена. В библиотеке крупнее обложки, в узком окне сворачивается панель, скрытые элементы исключены из клавиатурной навигации.
+- Burrow Link различает локальную готовность, подключение друга и игровой поток; таймаут виден пользователю, закрытые попытки не оставляют ожидание.
+- Обновление модпаков сохраняет пользовательские файлы и настройки запуска. Небезопасное обновление старой CurseForge-сборки останавливается до замены данных.
+- Исправлены восстановление операций после сохранения каталога, атомарная запись игровых настроек и сетевые гонки.
+- Выбор Java относится к редактируемому инстансу и сохраняется при изменении других настроек; Classic использует каноническую конфигурацию. Quilt отклоняется явно.
+- Исправлены завершение первого знакомства, запуск при занятом порте авторизации, безопасные ошибки входа и привязка обработчиков к пересозданному окну.
+- Открытие папки игры принимает только нативный выбор. Проверка обновления проверяет реальные настройки, статистику и выбранный инстанс; зависимости обновлены для устранения известных уязвимостей.
+- Исправлена переносимость автоматических проверок на Windows.
+
+### English
+
+- Redesigned the interface with neutral light and dark themes, an independent user accent and consistent control sizes. Settings use flat sections and readable toggle rows. The home screen uses a static landscape. Fixed preset colors in dark mode, clipped focus outlines and toggle alignment. Sidebar fields remain stable when switching modes, download settings open immediately, and custom colors include a labeled preview. The easter egg remains. The library emphasizes covers, the sidebar collapses in narrow windows, and hidden controls stay out of keyboard navigation.
+- Burrow Link distinguishes local readiness, peer connection, and game streams; timeouts are visible and closed attempts stop waiting.
+- Modpack updates preserve user files and launch settings. Unsafe legacy CurseForge updates stop before replacing data.
+- Fixed operation recovery after catalog commits, atomic game settings writes, and network races.
+- Java selection targets the edited instance and survives other settings changes; Classic uses canonical configuration. Quilt is explicitly rejected.
+- Fixed onboarding completion, startup with an occupied authentication port, safe sign-in errors, and handler rebinding for recreated windows.
+- Opening the game folder accepts only native selection. Upgrade checks verify real settings, statistics, and a selected instance; dependencies address known vulnerabilities.
+- Fixed Windows portability of automated checks.
 
 ## [0.13.0] — 2026-08-09
 

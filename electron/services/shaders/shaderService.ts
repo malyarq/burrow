@@ -7,6 +7,7 @@ import type {
 } from '../../../shared/contracts/shaders';
 import { assertAbsolutePath, assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
 import { resolveApprovedInstancePath, resolveShaderPacksDir } from '../instances/paths';
+import { mutateOptionsFile } from '../instances/optionsFileMutation';
 import { openValidatedZip } from '../../security/archivePolicy';
 
 export interface ShaderPack {
@@ -101,26 +102,10 @@ export class ShadersService {
             ? shaderName
             : assertChildName(shaderName, 'Shader pack name');
         const optionsPath = this.getOptionsPath(instancePath);
-        let content = '';
-
-        try {
-            content = await fs.readFile(optionsPath, 'utf-8');
-        } catch {
-            // File doesn't exist, create it
-            content = '';
-        }
-
         const shaderPackLine = `shaderPack=${safeShaderName}`;
-
-        if (content.match(/^shaderPack=.+$/m)) {
-            // Replace existing line
-            content = content.replace(/^shaderPack=.+$/m, shaderPackLine);
-        } else {
-            // Add new line
-            content = content.trim() + '\n' + shaderPackLine + '\n';
-        }
-
-        await fs.writeFile(optionsPath, content, 'utf-8');
+        await mutateOptionsFile(optionsPath, (content) => content.match(/^shaderPack=.+$/m)
+            ? content.replace(/^shaderPack=.+$/m, shaderPackLine)
+            : `${content.trim()}\n${shaderPackLine}\n`);
     }
 
     /**

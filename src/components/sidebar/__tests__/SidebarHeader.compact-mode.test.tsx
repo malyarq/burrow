@@ -75,11 +75,11 @@ describe('SidebarHeader compact mode', () => {
     expect(expandButton.getAttribute('data-button-geometry')).toBe('compact-control');
     expect(expandButton.className).toContain('h-12');
     expect(expandButton.className).toContain('w-12');
-    expect(modeSwitcher.className).toContain('rounded-[18px]');
+    expect(modeSwitcher.className).toContain('rounded-xl');
 
     expect(classicButton.getAttribute('aria-pressed')).toBe('false');
     expect(modpacksButton.getAttribute('aria-pressed')).toBe('true');
-    expect(modpacksButton.className).toContain('bg-card');
+    expect(modpacksButton.className).toContain('bg-[rgb(var(--accent-main)/0.12)]');
     expect(modpacksButton.getAttribute('title')).toBe('Modpacks');
     expect(modpacksButton.className).toContain('min-h-10');
     expect(modpacksButton.className).toContain('rounded-2xl');

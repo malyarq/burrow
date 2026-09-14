@@ -108,6 +108,7 @@ describe('package smoke artifact contract', () => {
         previousArtifactSha256: 'b'.repeat(64),
         previousLaunchVerified: false,
         userDataPreserved: true,
+        statePreserved: { rendererSettings: true, statistics: true, controlPlane: true },
       },
     };
     expect(smoke.validatePackageSmokeEvidence(incompleteUpgrade)).toMatchObject({ valid: false });
@@ -142,7 +143,7 @@ describe('package smoke artifact contract', () => {
     const linux = smoke.createPlatformAdapter('linux', { artifactPath: '/artifacts/Burrow-Linux-0.7.1.AppImage', workspace: path.join(root, 'linux'), ports });
     win.cleanup();
 
-    expect(mac.command).toMatch(/Burrow\.app\/Contents\/MacOS\/Burrow$/);
+    expect(mac.command).toMatch(/Burrow\.app[\\/]Contents[\\/]MacOS[\\/]Burrow$/);
     expect(win.command).toMatch(/installed[\\/]Burrow\.exe$/);
     expect(linux).toMatchObject({ command: '/artifacts/Burrow-Linux-0.7.1.AppImage', args: [] });
     expect(calls).toEqual(expect.arrayContaining([
@@ -274,6 +275,7 @@ describe('package smoke artifact contract', () => {
         rm: removeWorkspace,
         exists: fs.existsSync,
         writeFile: fs.writeFileSync,
+        readFile: fs.readFileSync,
         spawn: (_command: string, _args: string[], options: { env: NodeJS.ProcessEnv }) => {
           spawnedEnvironments.push(options.env);
           return createChild();
@@ -281,6 +283,7 @@ describe('package smoke artifact contract', () => {
         reservePort: async () => { port += 1; return port; },
         waitForRendererReadiness: async () => [{ type: 'page', url: 'file:///index.html' }],
         verifyRenderedVersion: async (_page: unknown, expectedVersion: string, options: unknown) => { verifiedVersions.push([expectedVersion, options]); },
+        evaluateRenderer: async () => ({ settings_language: 'ru', settings_uiScale: '110', settings_compactMode: 'true' }),
         waitForProfileRelease,
         requestGracefulQuit: () => undefined,
         waitForExit: async () => 0,
@@ -300,6 +303,7 @@ describe('package smoke artifact contract', () => {
         previousArtifactSha256: expect.stringMatching(/^[a-f0-9]{64}$/),
         previousLaunchVerified: true,
         userDataPreserved: true,
+        statePreserved: { rendererSettings: true, statistics: true, controlPlane: true },
       },
     });
     expect(verifiedVersions).toEqual([

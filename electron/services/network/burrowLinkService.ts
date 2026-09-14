@@ -23,6 +23,7 @@ type TunnelResources = {
   transferredBytes: number;
   peakPeerCount: number;
   gameConnectionCount: number;
+  activeGameConnectionCount: number;
 };
 
 export type BurrowLinkServiceOptions = {
@@ -124,8 +125,13 @@ export class BurrowLinkService {
         const server = this.createServer(async (socket) => {
           resources.sockets.add(socket);
           socket.once('close', () => resources.sockets.delete(socket));
+          const socketAbort = new AbortController();
+          const onClose = () => socketAbort.abort();
+          socket.once('close', onClose);
+          const signal = AbortSignal.any([resources.abortController.signal, socketAbort.signal]);
           try {
-            const connection = await getOrWaitPeerConnection({ swarm: resources.swarm, signal: resources.abortController.signal });
+            const connection = await getOrWaitPeerConnection({ swarm: resources.swarm, signal });
+            if (signal.aborted || socket.destroyed || this.resources !== resources) return;
             bridgeLocalSocketToMuxer({
               socket,
               muxer: ensureMuxerOnConnection(connection, this.onLog),
@@ -134,7 +140,15 @@ export class BurrowLinkService {
               onGameConnectionClosed: (bytes) => this.publishGameConnectionClosed(resources, bytes),
             });
           } catch {
+            if (!signal.aborted && this.resources === resources && this.state.get().state === 'active') {
+              this.state.publish({
+                ...this.state.get(),
+                diagnostic: diagnostic('TUNNEL_PEER_UNAVAILABLE', 'The game connection could not reach a peer. Check the host and retry.'),
+              });
+            }
             socket.destroy();
+          } finally {
+            socket.off('close', onClose);
           }
         });
         resources.server = server;
@@ -168,6 +182,7 @@ export class BurrowLinkService {
       transferredBytes: 0,
       peakPeerCount: 0,
       gameConnectionCount: 0,
+      activeGameConnectionCount: 0,
     };
     this.resources = resources;
     return resources;
@@ -176,7 +191,7 @@ export class BurrowLinkService {
   private publishPeerCount(resources: TunnelResources, delta: number): void {
     resources.peerCount = Math.max(0, resources.peerCount + delta);
     resources.peakPeerCount = Math.max(resources.peakPeerCount, resources.peerCount);
-    if (delta > 0 && !resources.connectedAt) {
+    if (delta > 0 && resources.connectedAt === undefined) {
       resources.connectedAt = this.now();
       // Burrow does not configure a relay today. Keep the explicit value in the contract for a future relay transport.
       resources.connectionMode = 'direct';
@@ -188,10 +203,16 @@ export class BurrowLinkService {
 
   private publishGameConnectionOpened(resources: TunnelResources): void {
     resources.gameConnectionCount += 1;
+    resources.activeGameConnectionCount += 1;
+    if (this.resources === resources && this.state.get().state === 'active') {
+      this.state.publish({ ...this.state.get(), diagnostic: undefined, metrics: this.metricsSnapshot(resources) });
+      return;
+    }
     this.publishMetrics(resources);
   }
 
   private publishGameConnectionClosed(resources: TunnelResources, transferredBytes: number): void {
+    resources.activeGameConnectionCount = Math.max(0, resources.activeGameConnectionCount - 1);
     if (Number.isFinite(transferredBytes) && transferredBytes > 0) resources.transferredBytes += transferredBytes;
     this.publishMetrics(resources);
   }
@@ -204,11 +225,12 @@ export class BurrowLinkService {
   private metricsSnapshot(resources: TunnelResources): NonNullable<BurrowLinkSnapshot['metrics']> {
     return {
       connectionMode: resources.connectionMode,
-      connectDurationMs: resources.connectedAt ? resources.connectedAt - resources.startedAt : undefined,
+      connectDurationMs: resources.connectedAt === undefined ? undefined : resources.connectedAt - resources.startedAt,
       sessionDurationMs: Math.max(0, this.now() - resources.startedAt),
       transferredBytes: resources.transferredBytes,
       peakPeerCount: resources.peakPeerCount,
       gameConnectionCount: resources.gameConnectionCount,
+      activeGameConnectionCount: resources.activeGameConnectionCount,
     };
   }
 

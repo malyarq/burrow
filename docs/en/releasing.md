@@ -25,6 +25,8 @@ The first command prepares the three expected artifacts under `release/<version>
 
 ## Review the evidence
 
+Upgrade verification must load the previous package with representative settings, statistics, and a selected nonempty instance, then verify that the new package preserves them. An unrelated marker file is insufficient. Run Windows installer checks in a disposable VM or clean runner: NSIS changes installation registration and shortcuts, so a temporary directory alone does not isolate the user's working installation.
+
 Review the pre-push report before asking for any release action. It names the exact version/proposed tag/commit, every quality stage, artifact paths and SHA-256 checksums, platform smoke with unsupported-runner reasons, signing/notarization status, known failures, and the immutable rollback action.
 
 Checksums establish artifact integrity only. The local report is decision evidence, not a security boundary, publisher-authentication proof, or publication authorization. Current macOS DMGs and Windows artifacts are not publisher-signed unless platform verification evidence says otherwise. A local ad-hoc macOS app signature proves neither publisher identity nor notarization; never infer either from a checksum or successful launch. Gatekeeper and SmartScreen prompts are OS/reputation behavior that must be checked manually on the target platform and recorded separately.

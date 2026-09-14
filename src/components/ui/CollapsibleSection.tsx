@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -25,6 +25,7 @@ export function CollapsibleSection({
   hintText,
   hintStorageKey,
 }: CollapsibleSectionProps) {
+  const contentId = useId();
   const [expanded, setExpanded] = useState(() => {
     if (storageKey) {
       const saved = localStorage.getItem(storageKey);
@@ -59,17 +60,16 @@ export function CollapsibleSection({
   };
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('disclosure', className)}>
       <button
         type="button"
         onClick={handleToggle}
         aria-expanded={expanded}
+        aria-controls={contentId}
         data-state={expanded ? 'expanded' : 'collapsed'}
         className={cn(
-          'flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-xs font-bold uppercase tracking-wider transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-main))] focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-          expanded
-            ? 'border-[rgb(var(--accent-main)/0.24)] bg-[rgb(var(--accent-main)/0.12)] text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.16)]'
-            : 'border-border/60 bg-card/68 text-secondary hover:border-[rgb(var(--accent-main)/0.16)] hover:bg-card/92 hover:text-foreground'
+          'disclosure-trigger flex min-h-14 w-full items-center justify-between gap-3 text-left text-sm font-medium text-foreground transition-colors focus:outline-none',
+          expanded ? 'text-foreground' : 'text-secondary'
         )}
       >
         <span>{title}</span>
@@ -87,12 +87,14 @@ export function CollapsibleSection({
       )}
       <div
         className={cn(
-          'overflow-hidden transition-all duration-200 ease-out',
-          expanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+          'disclosure-content',
+          expanded ? 'opacity-100' : 'opacity-0'
         )}
+        id={contentId}
+        hidden={!expanded}
         aria-hidden={!expanded}
       >
-        <div className="pt-2 space-y-3">{children}</div>
+        <div className="space-y-5">{children}</div>
       </div>
     </div>
   );

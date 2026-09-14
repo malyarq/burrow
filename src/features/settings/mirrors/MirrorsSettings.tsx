@@ -130,12 +130,10 @@ export const MirrorsSettings: React.FC<MirrorsSettingsProps> = ({ embedded = fal
     };
 
     const activeMirror = mirrors.find((mirror) => mirror.isActive) ?? null;
-    const sectionFrameClassName = embedded
-        ? 'surface-muted space-y-4 p-5'
-        : 'settings-section-shell space-y-4 p-5';
+    const sectionFrameClassName = 'settings-section-shell space-y-4 p-5';
     const listFrameClassName = embedded
-        ? 'overflow-hidden rounded-[20px] border border-border/60 bg-background/42'
-        : 'overflow-hidden rounded-[20px] border border-border/65 bg-card/60';
+        ? 'overflow-hidden rounded-xl border border-border/60 bg-background/42'
+        : 'overflow-hidden rounded-xl border border-border/65 bg-card/60';
 
     return (
         <div className={embedded ? 'space-y-4' : 'space-y-6'}>
@@ -150,51 +148,46 @@ export const MirrorsSettings: React.FC<MirrorsSettingsProps> = ({ embedded = fal
                     </div>
                 )}
 
-                <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
-                    <div className="grid gap-3 md:grid-cols-2">
-                        <div className="settings-toggle-row">
-                            <div className="settings-toggle-copy">
-                                <p className="settings-toggle-title">{t('mirrors.autoSelect')}</p>
-                                <p id="mirrors-auto-select-hint" className="settings-toggle-description">
-                                    {t('mirrors.priorityHint')}
-                                </p>
+                <div className="settings-toggle-row">
+                    <div className="settings-toggle-copy max-w-[50ch]">
+                        <p className="settings-toggle-title">{t('mirrors.autoSelect')}</p>
+                        <p id="mirrors-auto-select-hint" className="settings-toggle-description">
+                            {t('mirrors.priorityHint')}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={autoSelect}
+                        aria-label={t('mirrors.autoSelect')}
+                        aria-describedby="mirrors-auto-select-hint"
+                        data-state={autoSelect ? 'checked' : 'unchecked'}
+                        onClick={() => void handleAutoSelectChange(!autoSelect)}
+                        className="settings-toggle-switch"
+                    >
+                        <span
+                            className="settings-toggle-thumb"
+                            data-state={autoSelect ? 'checked' : 'unchecked'}
+                        />
+                    </button>
+                </div>
+
+                <div className="flex flex-wrap items-start gap-3 border-t border-border/60 pt-4">
+                    <div className="min-w-[min(100%,18rem)] flex-1">
+                        <p className="settings-toggle-title">{t('mirrors.current')}</p>
+                        {activeMirror ? (
+                            <div className="mt-1 space-y-1">
+                                <p className="text-sm text-foreground">{activeMirror.name}</p>
+                                <p className="break-all text-xs text-secondary">{activeMirror.rootUrl}</p>
                             </div>
-                            <button
-                                type="button"
-                                role="switch"
-                                aria-checked={autoSelect}
-                                aria-label={t('mirrors.autoSelect')}
-                                aria-describedby="mirrors-auto-select-hint"
-                                data-state={autoSelect ? 'checked' : 'unchecked'}
-                                onClick={() => void handleAutoSelectChange(!autoSelect)}
-                                className="settings-toggle-switch"
-                            >
-                                <span
-                                    className="settings-toggle-thumb"
-                                    data-state={autoSelect ? 'checked' : 'unchecked'}
-                                />
-                            </button>
-                        </div>
-
-                        <div className="settings-control-card">
-                            <p className="settings-toggle-title">{t('mirrors.current')}</p>
-                            {activeMirror ? (
-                                <div className="mt-1 space-y-1">
-                                    <p className="text-sm text-foreground">{activeMirror.name}</p>
-                                    <p className="break-all text-xs text-secondary">{activeMirror.rootUrl}</p>
-                                </div>
-                            ) : (
-                                <p className="mt-1 text-sm text-secondary">{t('mirrors.priorityHint')}</p>
-                            )}
-                        </div>
+                        ) : (
+                            <p className="mt-1 text-sm text-secondary">{t('mirrors.priorityHint')}</p>
+                        )}
                     </div>
-
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
-                        <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="gap-2">
-                            <Plus size={18} />
-                            {t('mirrors.addCustom')}
-                        </Button>
-                    </div>
+                    <Button onClick={() => setIsDialogOpen(true)} variant="secondary" className="shrink-0 gap-2">
+                        <Plus size={18} />
+                        {t('mirrors.addCustom')}
+                    </Button>
                 </div>
             </div>
 
@@ -212,7 +205,7 @@ export const MirrorsSettings: React.FC<MirrorsSettingsProps> = ({ embedded = fal
                                 mirror.isDisabled
                                     ? "bg-amber-500/10"
                                     : mirror.isActive
-                                        ? "bg-emerald-500/10"
+                                        ? "border-l-2 border-[rgb(var(--accent-main)/0.56)] bg-[rgb(var(--accent-main)/0.04)]"
                                         : "hover:bg-card/56"
                             )}
                         >
@@ -223,7 +216,7 @@ export const MirrorsSettings: React.FC<MirrorsSettingsProps> = ({ embedded = fal
                                         mirror.isDisabled
                                             ? "bg-amber-500/20 text-amber-300"
                                             : mirror.isActive
-                                                ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                                ? "bg-[rgb(var(--accent-main)/0.12)] text-[rgb(var(--accent-main))]"
                                                 : "bg-card/68 text-secondary"
                                     )}>
                                         <Globe size={18} />
@@ -254,7 +247,7 @@ export const MirrorsSettings: React.FC<MirrorsSettingsProps> = ({ embedded = fal
                                             )}
                                         </div>
 
-                                        <p className="break-all font-mono text-sm text-secondary">
+                                        <p className="truncate font-mono text-sm text-secondary" title={mirror.rootUrl}>
                                             {mirror.rootUrl}
                                         </p>
 

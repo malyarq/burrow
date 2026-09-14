@@ -97,9 +97,8 @@ describe('SettingsPage navigation', () => {
     expect(within(header).queryByText('Apply a ready-made visual profile, or import/export your own configuration.')).toBeNull()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Downloads' }))
-    expect(await screen.findByRole('tabpanel', { name: 'Downloads' })).toBeTruthy()
-    expect(screen.getAllByRole('status', { name: 'Loading' })).toHaveLength(1)
-    expect(await screen.findByText('Downloads tab')).toBeTruthy()
+    expect(screen.getByRole('tabpanel', { name: 'Downloads' })).toBeTruthy()
+    expect(screen.getByText('Downloads tab')).toBeTruthy()
     expect(screen.queryByRole('status', { name: 'Loading' })).toBeNull()
     expect(within(header).queryByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeNull()
 

@@ -77,4 +77,38 @@ describe('Muxer', () => {
     expect(() => connection.emit('error', new Error('peer failed'))).not.toThrow();
     expect(stream.destroyed).toBe(true);
   });
+
+  it('keeps other game streams alive when close frames cross in flight', () => {
+    const connection = new FakeConnection();
+    const muxer = new Muxer(connection);
+    const closing = muxer.createStream();
+    const remaining = muxer.createStream();
+    closing.destroy();
+    connection.emit('data', Buffer.concat([frame(closing.sessionId, 0, Buffer.from('late')), frame(closing.sessionId, 2)]));
+    expect(connection.destroy).not.toHaveBeenCalled();
+    expect(remaining.destroyed).toBe(false);
+    expect(muxer.activeStreamCount).toBe(1);
+  });
+
+  it('notifies the peer when a local game socket fails', async () => {
+    const connection = new FakeConnection();
+    const muxer = new Muxer(connection);
+    const stream = muxer.createStream();
+    stream.on('error', () => undefined);
+    stream.destroy(new Error('local socket reset'));
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(connection.writes.at(-1)).toEqual(frame(stream.sessionId, 2));
+    expect(muxer.activeStreamCount).toBe(0);
+  });
+
+  it('does not retain a stream if opening it fails', () => {
+    const connection = new FakeConnection();
+    const muxer = new Muxer(connection);
+    vi.spyOn(connection, 'write').mockImplementation(() => { throw new Error('write failed'); });
+    expect(() => muxer.createStream()).toThrow('write failed');
+    expect(muxer.activeStreamCount).toBe(0);
+    connection.emit('close');
+    expect(() => muxer.createStream()).toThrow('closed');
+    expect(muxer.activeStreamCount).toBe(0);
+  });
 });

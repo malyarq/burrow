@@ -88,15 +88,16 @@ function validateSelectionRequest(value: unknown): JavaRuntimeSelectRequest {
   }
 
   const record = value as Record<string, unknown>;
-  if (Object.keys(record).some((key) => key !== 'installationId')) {
+  if (Object.keys(record).some((key) => key !== 'instanceId' && key !== 'installationId')) {
     throw new Error('Java runtime selection request contains unsupported fields.');
   }
 
-  if (typeof record.installationId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.installationId)) {
+  if (typeof record.instanceId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.instanceId)
+    || typeof record.installationId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.installationId)) {
     throw new Error('Java runtime selection request installation ID is invalid.');
   }
 
-  return { installationId: record.installationId };
+  return { instanceId: record.instanceId, installationId: record.installationId };
 }
 
 /** Registers the path-free Java scan and canonical selection IPC boundary. */
@@ -126,8 +127,8 @@ export function registerJavaRuntimeHandlers(deps: JavaRuntimeHandlerDependencies
       const installation = registry.resolve(root, parsed.installationId);
       if (!installation) throw unavailable();
       const state = await deps.application.read(root);
-      if (state.status !== 'ready' || state.snapshot.selectedId === null) throw unavailable();
-      const record = state.snapshot.records.find((candidate) => candidate.id === state.snapshot.selectedId);
+      if (state.status !== 'ready') throw unavailable();
+      const record = state.snapshot.records.find((candidate) => candidate.id === parsed.instanceId);
       if (!record) throw unavailable();
 
       await deps.application.execute(root, {

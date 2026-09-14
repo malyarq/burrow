@@ -94,7 +94,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
     <>
       <div
         className={cn(
-          'flex flex-1 flex-col overflow-y-auto p-8 transition-all',
+          'flex flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-7 sm:py-8 xl:px-10 transition-all',
           catalog.isDragging && 'border-2 border-dashed border-border-active bg-background/60',
         )}
         onDragOver={catalog.handleDragOver}

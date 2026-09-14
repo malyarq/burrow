@@ -85,7 +85,7 @@ describe('ManifestContentInstaller', () => {
     )).resolves.toEqual([]);
 
     expect(contentStore.linkFile).toHaveBeenCalledOnce();
-    expect(contentStore.linkFile.mock.calls[0]?.[0]).toMatch(/\/modpacks\/pack\/mods\/cached\.jar$/);
+    expect(contentStore.linkFile.mock.calls[0]?.[0]).toBe(path.join(rootPath, 'modpacks', 'pack', 'mods', 'cached.jar'));
     expect(contentStore.linkFile.mock.calls[0]?.[1]).toBe('sha1');
     expect(contentStore.importFile).not.toHaveBeenCalled();
     expect(mocked.downloadSingle).not.toHaveBeenCalled();
@@ -122,7 +122,7 @@ describe('ManifestContentInstaller', () => {
     expect(typeof temporaryPath).toBe('string');
     expect(contentStore.importFile).toHaveBeenCalledWith(temporaryPath, 'sha1', 'sha1');
     expect(contentStore.linkFile).toHaveBeenCalledOnce();
-    expect(contentStore.linkFile.mock.calls[0]?.[0]).toMatch(/\/modpacks\/pack\/mods\/downloaded\.jar$/);
+    expect(contentStore.linkFile.mock.calls[0]?.[0]).toBe(path.join(rootPath, 'modpacks', 'pack', 'mods', 'downloaded.jar'));
     expect(contentStore.linkFile.mock.calls[0]?.[1]).toBe('sha1');
     expect(fs.existsSync(temporaryPath as string)).toBe(false);
   });
@@ -187,7 +187,7 @@ describe('ManifestContentInstaller', () => {
     )).resolves.toEqual([]);
 
     expect(mocked.downloadSingle).toHaveBeenCalledOnce();
-    expect(mocked.downloadSingle.mock.calls[0]?.[1]).toMatch(/\/modpacks\/pack\/mods\/curseforge\.jar$/);
+    expect(mocked.downloadSingle.mock.calls[0]?.[1]).toBe(path.join(rootPath, 'modpacks', 'pack', 'mods', 'curseforge.jar'));
     expect(contentStore.importFile).not.toHaveBeenCalled();
   });
 
@@ -220,8 +220,8 @@ describe('ManifestContentInstaller', () => {
       providers,
     )).resolves.toEqual([]);
 
-    expect(contentStore.linkFile.mock.calls[0]?.[0]).toMatch(
-      /\/\.burrow-operations\/staging\/share-operation\/modpacks\/share-pack\/mods\/shared\.jar$/,
+    expect(contentStore.linkFile.mock.calls[0]?.[0]).toBe(
+      path.join(workspace.stagingRoot, 'modpacks', 'share-pack', 'mods', 'shared.jar'),
     );
   });
 });

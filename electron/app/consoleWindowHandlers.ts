@@ -9,6 +9,7 @@ export function registerConsoleWindowHandlers(paths: {
 }): void {
   let consoleWindow: BrowserWindow | null = null;
 
+  ipcMain.removeHandler('window:openConsole');
   ipcMain.handle('window:openConsole', () => {
     if (consoleWindow && !consoleWindow.isDestroyed()) {
       consoleWindow.show();
@@ -19,6 +20,7 @@ export function registerConsoleWindowHandlers(paths: {
     consoleWindow.on('closed', () => { consoleWindow = null; });
   });
 
+  ipcMain.removeHandler('window:closeConsole');
   ipcMain.handle('window:closeConsole', () => {
     if (consoleWindow && !consoleWindow.isDestroyed()) consoleWindow.close();
     consoleWindow = null;

@@ -19,7 +19,10 @@ export class LanDiscoveryService {
   public onDiscover(listener: DiscoverListener): () => void { this.listeners.add(listener); return () => this.listeners.delete(listener); }
 
   public start(family: 'udp4' | 'udp6' = 'udp4'): Promise<LanDiscoverySnapshot> {
-    return this.queue.run(async () => {
+    return this.queue.run(() => this.startUnlocked(family));
+  }
+
+  private async startUnlocked(family: 'udp4' | 'udp6'): Promise<LanDiscoverySnapshot> {
       if (this.discover && this.state.get().state === 'active' && this.state.get().family === family) return this.state.get();
       await this.stopUnlocked();
       this.state.publish({ state: 'starting', family, discoveredCount: 0 });
@@ -46,14 +49,16 @@ export class LanDiscoveryService {
         await discover.destroy().catch(() => undefined);
         return this.state.publish({ state: 'failed', family, discoveredCount: 0, diagnostic: diagnostic('LAN_BIND_FAILED', 'LAN discovery could not start', error) });
       }
-    });
   }
 
   public stop(): Promise<LanDiscoverySnapshot> { return this.queue.run(async () => await this.stopUnlocked()); }
 
   public broadcast(motd: string, port: number): Promise<LanDiscoverySnapshot> {
     return this.queue.run(async () => {
-      if (!this.discover || this.state.get().state !== 'active') await this.startUnlocked('udp4');
+      if (!this.discover || this.state.get().state !== 'active') {
+        const started = await this.startUnlocked('udp4');
+        if (started.state !== 'active') return started;
+      }
       try {
         await this.discover!.broadcast({ motd, port });
         return this.state.get();
@@ -70,33 +75,6 @@ export class LanDiscoveryService {
       return { status: 'ok', server: toStatusDto(status) };
     } catch (error) {
       return { status: 'failed', diagnostic: diagnostic('LAN_PING_FAILED', 'Minecraft server did not answer', error) };
-    }
-  }
-
-  private async startUnlocked(family: 'udp4' | 'udp6'): Promise<void> {
-    if (this.discover && this.state.get().state === 'active') return;
-    this.state.publish({ state: 'starting', family, discoveredCount: 0 });
-    const discover = new MinecraftLanDiscover(family);
-    this.discover = discover;
-    const onDiscover = (event: { motd: string; port: number; remote: { address: string } }) => {
-      if (this.discover !== discover) return;
-      const value = { motd: event.motd.slice(0, 256), port: event.port, address: event.remote.address.slice(0, 64) };
-      this.discovered.add(`${value.address}:${value.port}`);
-      const current = this.state.get();
-      this.state.publish({ ...current, discoveredCount: this.discovered.size });
-      for (const listener of this.listeners) listener(value);
-    };
-    this.discoverListener = onDiscover;
-    discover.on('discover', onDiscover);
-    try {
-      await discover.bind();
-      this.state.publish({ state: 'active', family, discoveredCount: 0 });
-    } catch (error) {
-      discover.removeListener('discover', onDiscover);
-      if (this.discover === discover) this.discover = undefined;
-      if (this.discoverListener === onDiscover) this.discoverListener = undefined;
-      await discover.destroy().catch(() => undefined);
-      throw error;
     }
   }
 

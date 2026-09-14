@@ -242,7 +242,8 @@ export class InstanceApplication {
   public constructor(private readonly ports: InstanceApplicationPorts) {}
 
   public async read(root: LauncherRoot): Promise<InstanceControlPlaneRead> {
-    return await this.ports.controlPlane.read(root);
+    await this.writeTail;
+    return await this.readCurrent(root);
   }
 
   public async execute(root: LauncherRoot, command: unknown): Promise<InstanceCommandResult> {
@@ -265,7 +266,7 @@ export class InstanceApplication {
 
   private async executeAccepted(root: LauncherRoot, command: unknown): Promise<InstanceCommandResult> {
     assertSupportedCommand(command);
-    const current = await this.read(root);
+    const current = await this.readCurrent(root);
     const snapshot = current.status === 'uninitialized'
       ? { selectedId: null, records: [] as CanonicalInstanceRecord[] }
       : current.snapshot;
@@ -279,6 +280,10 @@ export class InstanceApplication {
     }
 
     return deepFreeze({ status: result.status, snapshot: immutableSnapshot });
+  }
+
+  private async readCurrent(root: LauncherRoot): Promise<InstanceControlPlaneRead> {
+    return await this.ports.controlPlane.read(root);
   }
 
   private apply(snapshot: CanonicalInstanceSnapshot, command: InstanceCommand): InstanceCommandResult {

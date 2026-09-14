@@ -86,7 +86,7 @@ describe('TitleBar brand contract', () => {
       },
     })
 
-    expect(getRootVar('--accent-main')).toBe('244 63 94')
+    expect(getRootVar('--accent-main')).toBe('225 29 72')
     expect(getRootVar('--brand-shell-glow')).toBe('17 34 51')
     expect(getRootVar('--brand-mark-frame')).toBe('34 51 68')
     expect(getRootVar('--brand-media-border')).toBe('102 119 136')

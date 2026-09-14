@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { aggregatePlatformSmoke, writePlatformSmokeAggregate } from '../aggregate-platform-smoke.js';
+import { createRequire } from 'node:module';
+const { aggregatePlatformSmoke, writePlatformSmokeAggregate } = createRequire(import.meta.url)('../aggregate-platform-smoke.js') as typeof import('../aggregate-platform-smoke.js');
 
 const roots: string[] = [];
 
@@ -24,6 +25,7 @@ function evidence(platform: 'darwin' | 'linux' | 'win32', marker: string) {
       previousArtifactSha256: 'f'.repeat(64),
       previousLaunchVerified: true,
       userDataPreserved: true,
+      statePreserved: { rendererSettings: true, statistics: true, controlPlane: true },
     },
   };
 }

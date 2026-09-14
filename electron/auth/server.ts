@@ -37,6 +37,16 @@ export class AuthServer {
                     resolve({ url: this.url, owned: false });
                     return;
                 }
+                if (error.code === 'EADDRINUSE') {
+                    const fallbackError = (fallback: Error) => reject(fallback);
+                    this.server.once('error', fallbackError);
+                    this.server.once('listening', () => {
+                        this.server.off('error', fallbackError);
+                        onListening();
+                    });
+                    this.server.listen(0, '127.0.0.1');
+                    return;
+                }
                 reject(error);
             };
             const onListening = () => {

@@ -17,10 +17,10 @@ describe('AppearanceTab brand contract', () => {
     expect(screen.getByTestId('appearance-branding').getAttribute('data-appearance-owner')).toBe('branding')
     expect(screen.getByLabelText('Theme Presets')).toBeTruthy()
     expect(
-      screen.getByText(/Choose the base shell mood of the launcher, then fine-tune accent and background behavior below/i),
+      screen.getByText(/The theme sets the background and surfaces. Choose an accent separately/i),
     ).toBeTruthy()
     expect(
-      screen.getByText(/Accent colors tune highlights and active controls while the rest of the shell stays calm and consistent/i),
+      screen.getByText(/The accent highlights buttons, selections and focus. It does not change the background/i),
     ).toBeTruthy()
     screen.getByRole('button', { name: 'Background Effects' }).click()
     expect(

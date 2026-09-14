@@ -20,8 +20,6 @@ export function useOnboarding() {
         setIsFirstLaunch(true);
         setShowWelcome(true);
       }, 0);
-      // Помечаем, что первый запуск был
-      localStorage.setItem(FIRST_LAUNCH_KEY, 'false');
       void analyticsClient.capture('onboarding_shown', {});
     }
   }, []);
@@ -30,6 +28,7 @@ export function useOnboarding() {
     setShowWelcome(false);
     setShowTour(false);
     localStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+    localStorage.setItem(FIRST_LAUNCH_KEY, 'false');
   };
 
   const handleTourStart = () => {
@@ -41,6 +40,7 @@ export function useOnboarding() {
   const handleTourComplete = () => {
     setShowTour(false);
     localStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+    localStorage.setItem(FIRST_LAUNCH_KEY, 'false');
     void analyticsClient.capture('onboarding_action', { action: 'tour_completed' });
   };
 

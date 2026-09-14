@@ -34,9 +34,9 @@ describe('AppearanceTab state fidelity', () => {
     const englishButton = screen.getByRole('button', { name: 'English' });
     const russianButton = screen.getByRole('button', { name: 'Русский' });
     const roseAccentChip = screen.getByRole('button', { name: /rose/i });
-    const customAccentChip = screen.getByRole('button', { name: /custom color/i });
+    const customAccentChip = screen.getByRole('button', { name: 'Accent Color: Custom Color' });
     const customAccentInput = screen.getByLabelText('Custom Color');
-    const advancedAppearanceToggle = screen.getByRole('button', { name: 'Advanced Appearance' });
+    const advancedAppearanceToggle = screen.getByRole('button', { name: 'Custom colors' });
 
     expect(darkThemeButton.getAttribute('aria-pressed')).toBe('true');
     expect(darkThemeButton.getAttribute('data-state')).toBe('active');
@@ -61,7 +61,7 @@ describe('AppearanceTab state fidelity', () => {
     expect(customAccentInput.className).toContain('sr-only');
 
     expect(advancedAppearanceToggle.getAttribute('aria-expanded')).toBe('false');
-    expect(advancedAppearanceToggle.className).toContain('focus-visible:ring-2');
+    expect(advancedAppearanceToggle.className).toContain('disclosure-trigger');
   });
 
   it('keeps preset ancestry visible when bounded refinements are layered on top', () => {

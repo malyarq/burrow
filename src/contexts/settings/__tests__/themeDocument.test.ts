@@ -7,6 +7,24 @@ function getRootVar(name: string) {
   return document.documentElement.style.getPropertyValue(name);
 }
 
+function toHex(rgb: string) {
+  return `#${rgb.split(' ').map((channel) => Number(channel).toString(16).padStart(2, '0')).join('')}`;
+}
+
+function contrastRatio(first: string, second: string) {
+  const luminance = (hex: string) => [0, 2, 4]
+    .map((offset) => parseInt(hex.slice(offset + 1, offset + 3), 16) / 255)
+    .map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4))
+    .reduce((sum, channel, index) => sum + (channel * [0.2126, 0.7152, 0.0722][index]), 0);
+  const [firstLuminance, secondLuminance] = [luminance(first), luminance(second)];
+  return (Math.max(firstLuminance, secondLuminance) + 0.05)
+    / (Math.min(firstLuminance, secondLuminance) + 0.05);
+}
+
+function accentContentHex(token: string) {
+  return token === '24 24 27' ? '#18181b' : '#ffffff';
+}
+
 describe('applyThemeToDocument', () => {
   beforeEach(() => {
     document.documentElement.className = '';
@@ -25,6 +43,7 @@ describe('applyThemeToDocument', () => {
     root.style.setProperty('--accent-main', '9 9 9');
     root.style.setProperty('--accent-hover', '9 9 9');
     root.style.setProperty('--accent-content', '0 0 0');
+    root.style.setProperty('--accent-hover-content', '0 0 0');
 
     applyThemeToDocument('dark', 'blue');
 
@@ -33,6 +52,7 @@ describe('applyThemeToDocument', () => {
     expect(getRootVar('--accent-main')).toBe('59 130 246');
     expect(getRootVar('--accent-hover')).toBe('37 99 235');
     expect(getRootVar('--accent-content')).toBe('24 24 27');
+    expect(getRootVar('--accent-hover-content')).toBe('255 255 255');
     expect(getRootVar('--bg-app')).toBe('24 24 27');
     expect(getRootVar('--bg-card')).toBe('39 39 42');
     expect(getRootVar('--bg-overlay')).toBe('24 24 27');
@@ -48,9 +68,10 @@ describe('applyThemeToDocument', () => {
 
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(document.body.classList.contains('dark')).toBe(false);
-    expect(getRootVar('--accent-main')).toBe('244 63 94');
-    expect(getRootVar('--accent-hover')).toBe('225 29 72');
-    expect(getRootVar('--accent-content')).toBe('24 24 27');
+    expect(getRootVar('--accent-main')).toBe('225 29 72');
+    expect(getRootVar('--accent-hover')).toBe('190 18 60');
+    expect(getRootVar('--accent-content')).toBe('255 255 255');
+    expect(getRootVar('--accent-hover-content')).toBe('255 255 255');
     expect(getRootVar('--bg-app')).toBe('244 244 245');
     expect(getRootVar('--bg-card')).toBe('255 255 255');
     expect(getRootVar('--bg-overlay')).toBe('255 255 255');
@@ -61,6 +82,35 @@ describe('applyThemeToDocument', () => {
     expect(getRootVar('--border-default')).toBe('228 228 231');
     expect(getRootVar('--border-active')).toBe('161 161 170');
     expect(getRootVar('--color-error')).toBe('220 38 38');
+  });
+
+  it('uses the neutral zinc defaults and a readable non-green fallback accent', () => {
+    applyThemeToDocument('dark', '');
+
+    expect(getRootVar('--bg-app')).toBe('24 24 27');
+    expect(getRootVar('--bg-card')).toBe('39 39 42');
+    expect(getRootVar('--border-default')).toBe('63 63 70');
+    expect(getRootVar('--text-main')).toBe('255 255 255');
+    expect(getRootVar('--accent-main')).toBe('59 130 246');
+    expect(getRootVar('--brand-shell-glow')).toBe('113 113 122');
+    expect(getRootVar('--brand-mark-glow')).toBe('161 161 170');
+
+    applyThemeToDocument('light', '');
+
+    expect(getRootVar('--bg-app')).toBe('244 244 245');
+    expect(getRootVar('--bg-card')).toBe('255 255 255');
+    expect(getRootVar('--border-default')).toBe('228 228 231');
+    expect(getRootVar('--text-main')).toBe('24 24 27');
+    expect(getRootVar('--brand-shell-glow')).toBe('161 161 170');
+  });
+
+  it('keeps normal and hover foregrounds readable for every preset and bright or dark custom accents', () => {
+    for (const accent of ['emerald', 'blue', 'purple', 'orange', 'rose', '#ffff00', '#111111']) {
+      applyThemeToDocument('dark', accent);
+
+      expect(contrastRatio(toHex(getRootVar('--accent-main')), accentContentHex(getRootVar('--accent-content')))).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(toHex(getRootVar('--accent-hover')), accentContentHex(getRootVar('--accent-hover-content')))).toBeGreaterThanOrEqual(4.5);
+    }
   });
 
   it('applies custom theme color variables and derives dependent document vars from the same runtime contract', () => {
@@ -78,6 +128,7 @@ describe('applyThemeToDocument', () => {
     expect(getRootVar('--accent-main')).toBe('18 52 86');
     expect(getRootVar('--accent-hover')).toBe('15 43 71');
     expect(getRootVar('--accent-content')).toBe('255 255 255');
+    expect(getRootVar('--accent-hover-content')).toBe('255 255 255');
     expect(getRootVar('--bg-app')).toBe('17 34 51');
     expect(getRootVar('--bg-card')).toBe('171 205 239');
     expect(getRootVar('--bg-overlay')).toBe('171 205 239');

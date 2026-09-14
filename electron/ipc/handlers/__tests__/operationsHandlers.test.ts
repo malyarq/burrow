@@ -106,4 +106,24 @@ describe('operations IPC handlers', () => {
     mocked.listeners.get('operations:unsubscribe')?.({ sender }, '11111111-1111-1111-1111-111111111111');
     expect(unsubscribe).toHaveBeenCalledOnce();
   });
+
+  it('disposes existing runner subscriptions before rebinding IPC for a recreated window', async () => {
+    const unsubscribe = vi.fn();
+    const runner = {
+      prepareRoot: vi.fn().mockResolvedValue(undefined),
+      start: vi.fn(() => activeSnapshot),
+      get: vi.fn(() => activeSnapshot),
+      cancel: vi.fn(),
+      subscribe: vi.fn(() => unsubscribe),
+      listRecovered: vi.fn(() => []),
+    };
+    const sender = { id: 7, isDestroyed: () => false, send: vi.fn() };
+    registerOperationsHandlers({ runner: runner as never });
+
+    await mocked.handlers.get('operations:start')?.({ sender }, { kind: 'duplicate', sourceId: 'source-pack' });
+    await mocked.handlers.get('operations:subscribe')?.({ sender }, activeSnapshot.id);
+    registerOperationsHandlers({ runner: runner as never });
+
+    expect(unsubscribe).toHaveBeenCalledOnce();
+  });
 });

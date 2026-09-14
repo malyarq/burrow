@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Button } from '../../../ui/Button';
 import { Input } from '../../../ui/Input';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -11,16 +12,23 @@ export function MinecraftPathSection(props: {
   const { minecraftPath, setMinecraftPath, t } = props;
   const toast = useToast();
 
+  useEffect(() => {
+    void settingsIPC.getDefaultMinecraftPath()
+      .then(setMinecraftPath)
+      .catch(() => undefined);
+  }, [setMinecraftPath]);
+
   return (
     <div className="space-y-2">
-      <label className="control-label block">
+      <label htmlFor="minecraft-directory" className="control-label block">
         {t('settings.minecraft_path')}
       </label>
       <div className="flex gap-2 items-center">
         <div className="flex-1 min-w-0">
           <Input
+            id="minecraft-directory"
             value={minecraftPath}
-            onChange={(e) => setMinecraftPath(e.target.value)}
+            readOnly
             placeholder={t('settings.minecraft_path_placeholder')}
             containerClassName="mb-0 gap-0"
           />
@@ -30,6 +38,7 @@ export function MinecraftPathSection(props: {
             onClick={async () => {
               try {
                 const result = await settingsIPC.selectMinecraftPath();
+                if (!result.success && result.error) throw new Error(result.error);
                 if (result.success && result.path) {
                   setMinecraftPath(result.path);
                 }
@@ -45,8 +54,8 @@ export function MinecraftPathSection(props: {
           <Button
             onClick={async () => {
               try {
-                const pathToOpen = minecraftPath || (await settingsIPC.getDefaultMinecraftPath());
-                await settingsIPC.openMinecraftPath(pathToOpen);
+                const result = await settingsIPC.openMinecraftPath();
+                if (!result.success) throw new Error(result.error || t('error.opening_folder'));
               } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 toast.error(t('error.opening_folder') + ': ' + errorMessage);

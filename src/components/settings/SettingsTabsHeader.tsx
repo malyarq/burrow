@@ -76,15 +76,13 @@ export function SettingsTabsHeader(props: {
 
   return (
     <div
-      className="settings-segmented-row settings-tab-row grid-cols-2 md:grid-cols-3 xl:grid-cols-6"
+      className="settings-tab-row grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6"
       role="tablist"
       aria-label={t('settings.title')}
       aria-orientation="horizontal"
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
-        const activeBackground = isActive ? getAccentStyles('soft-bg') : undefined;
-        const activeBorder = isActive ? getAccentStyles('soft-border') : undefined;
         const activeLabel = isActive ? getAccentStyles('title') : undefined;
         const tabLabelId = getSettingsTabLabelId(tab.id);
 
@@ -104,17 +102,9 @@ export function SettingsTabsHeader(props: {
             tabIndex={isActive ? 0 : -1}
             data-state={isActive ? 'active' : 'inactive'}
             className={cn(
-              'settings-segmented-option settings-tab-option w-full text-center',
-              isActive ? 'bg-card/92' : 'bg-transparent'
+              'settings-tab-option w-full text-center',
+              isActive ? 'text-foreground' : 'text-secondary'
             )}
-            style={
-              isActive
-                ? {
-                    ...activeBackground?.style,
-                    ...activeBorder?.style,
-                  }
-                : undefined
-            }
           >
             <span
               id={tabLabelId}

@@ -25,7 +25,7 @@ describe('AppearanceTab keyboard and responsive contract', () => {
 
     const primaryGrid = screen.getByTestId('appearance-primary-grid');
     expect(primaryGrid.className).toContain('grid-cols-1');
-    expect(screen.getByText(/Примените готовый профиль оболочки и поверхностей/i)).toBeTruthy();
+    expect(screen.getByText(/Выберите палитру или загрузите сохранённую тему/i)).toBeTruthy();
 
     const presets = screen.getByTestId('appearance-presets');
     const branding = screen.getByTestId('appearance-branding');

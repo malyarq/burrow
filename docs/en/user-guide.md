@@ -60,7 +60,9 @@ Burrow Link connects a Minecraft world opened to LAN through an invitation:
 1. The host opens a world to LAN in Minecraft and copies the LAN port shown in chat.
 2. The host starts Burrow Link with that port and copies the generated `BURROW-…` invitation.
 3. The other player pastes the invitation into Burrow Link.
-4. After the connection is ready, the joining player opens **Multiplayer → Direct Connection** in Minecraft and enters the `localhost:<port>` address shown by Burrow.
+4. Once a local address appears, the joining player opens **Multiplayer → Direct Connection** in Minecraft and enters the `localhost:<port>` address shown by Burrow.
+
+A ready local address does not mean a peer has been found. Burrow separately shows waiting for a peer, an available peer connection, and an open game stream. If the game cannot reach the peer, check the code and the host's open LAN world, then reconnect in Minecraft. Stop the current session before entering a different code. Actual multiplayer requires two running computers and an available network.
 
 The invitation contains a private connection secret. Share it only with the person who should join and stop the session when finished.
 

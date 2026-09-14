@@ -47,7 +47,6 @@ export function NicknameSection(props: {
           setNicknameError(validateNickname(e.target.value));
         }}
         placeholder="Steve"
-        className="bg-white dark:bg-zinc-900"
         error={nicknameError || undefined}
         required
         disabled={disabled}

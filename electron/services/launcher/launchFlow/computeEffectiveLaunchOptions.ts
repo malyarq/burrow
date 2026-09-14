@@ -15,6 +15,9 @@ export function computeEffectiveLaunchOptions(params: {
 
   const runtimeMinecraft = config.runtime.minecraftVersion.trim();
   const runtimeLoader = config.runtime.modLoader?.type.toLowerCase();
+  if (runtimeLoader === 'quilt') {
+    throw new Error('Quilt is not supported for launch.');
+  }
   let requestedVersion = options.version;
   if (runtimeMinecraft) {
     if (runtimeLoader === 'neoforge') requestedVersion = `${runtimeMinecraft}-NeoForge`;

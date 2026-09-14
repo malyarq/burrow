@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createProviderInstallOperationAdapters, type ProviderInstallers } from '../providerInstallOperation';
 import { OperationRunner } from '../operationRunner';
 import { OperationJournal } from '../operationJournal';
@@ -43,6 +43,60 @@ describe('staged provider install operations', () => {
     expect(fs.readFileSync(path.join(rootPath, 'modpacks', 'provider-pack', 'payload.txt'), 'utf8')).toBe('staged bytes');
   });
 
+  it('updates only provider-owned files while retaining user content and launch preferences', async () => {
+    const rootPath = seedRoot();
+    tempDirs.push(rootPath);
+    const live = path.join(rootPath, 'modpacks', 'provider-pack');
+    fs.mkdirSync(path.join(live, 'mods'), { recursive: true });
+    fs.mkdirSync(path.join(live, 'SAVES', 'world'), { recursive: true });
+    fs.writeFileSync(path.join(live, 'mods', 'obsolete.jar'), 'old provider');
+    fs.writeFileSync(path.join(live, 'mods', 'local.jar'), 'local mod');
+    fs.writeFileSync(path.join(live, 'SAVES', 'world', 'level.dat'), 'user world');
+    fs.writeFileSync(path.join(live, '.burrow-provider-content.json'), JSON.stringify({ version: 1, files: ['mods/obsolete.jar', 'SAVES/world/level.dat', '..\\..\\outside', 'C:\\outside', '\\\\server\\share', 'modpack.json'] }));
+    fs.writeFileSync(path.join(live, 'modpack.json'), JSON.stringify({ ...config('provider-pack'), memory: { maxMb: 2048 }, vmOptions: ['-Dstale=true'] }));
+    const installers: ProviderInstallers = {
+      curseforge: providerUpdateStage('curseforge'),
+      modrinth: providerUpdateStage('modrinth'),
+    };
+
+    const commands: InstanceCommand[] = [];
+    const runner = canonicalRunner(createProviderInstallOperationAdapters({ installers }), (command) => { commands.push(command); return committed(command); });
+    const operation = runner.start(request('install-modrinth', rootPath));
+    await expect(runner.waitFor(operation.id)).resolves.toMatchObject({ status: 'succeeded' });
+    expect(fs.existsSync(path.join(live, 'mods', 'obsolete.jar'))).toBe(false);
+    expect(fs.readFileSync(path.join(live, 'mods', 'local.jar'), 'utf8')).toBe('local mod');
+    expect(fs.readFileSync(path.join(live, 'mods', 'new.jar'), 'utf8')).toBe('new provider');
+    expect(fs.readFileSync(path.join(live, 'config', 'new-feature.json'), 'utf8')).toBe('{}');
+    expect(fs.readFileSync(path.join(live, 'SAVES', 'world', 'level.dat'), 'utf8')).toBe('user world');
+    expect(JSON.parse(fs.readFileSync(path.join(live, 'modpack.json'), 'utf8'))).toMatchObject({ memory: { maxMb: 8192 }, vmOptions: ['-Duser=true'] });
+    expect(commands[0]).toMatchObject({ record: { config: { java: { executable: '/trusted/java' }, game: { useOptiFine: true }, server: { host: 'localhost', port: 25565 }, networkMode: 'hyperswarm' } } });
+  });
+
+  it('fails before publication for a legacy CurseForge instance without a provider ownership record', async () => {
+    const rootPath = seedRoot();
+    tempDirs.push(rootPath);
+    const before = capture(rootPath);
+    const runner = canonicalRunner(createProviderInstallOperationAdapters({ installers: successfulInstallers() }));
+    const started = runner.start(request('install-curseforge', rootPath));
+    await expect(runner.waitFor(started.id)).resolves.toMatchObject({ status: 'failed', result: { message: expect.stringContaining('Install the new version as a separate copy') } });
+    expect(capture(rootPath)).toEqual(before);
+  });
+
+  it('refuses to merge a linked instance without touching the linked directory', async () => {
+    const rootPath = seedRoot();
+    tempDirs.push(rootPath);
+    const outside = path.join(rootPath, 'outside');
+    fs.mkdirSync(outside);
+    fs.writeFileSync(path.join(outside, 'sentinel'), 'keep');
+    const live = path.join(rootPath, 'modpacks', 'provider-pack');
+    fs.symlinkSync(outside, path.join(live, 'linked'), process.platform === 'win32' ? 'junction' : 'dir');
+    const runner = canonicalRunner(createProviderInstallOperationAdapters({ installers: successfulInstallers() }));
+    const started = runner.start(request('install-modrinth', rootPath));
+    await expect(runner.waitFor(started.id)).resolves.toMatchObject({ status: 'failed' });
+    expect(fs.readFileSync(path.join(outside, 'sentinel'), 'utf8')).toBe('keep');
+    expect(fs.lstatSync(path.join(live, 'linked')).isSymbolicLink()).toBe(true);
+  });
+
   it.each(['publish', 'control-plane'] as const)('restores the live destination when %s fails after staging', async (fault) => {
     const rootPath = seedRoot();
     tempDirs.push(rootPath);
@@ -56,6 +110,38 @@ describe('staged provider install operations', () => {
 
     await expect(runner.waitFor(started.id)).resolves.toMatchObject({ status: 'failed', result: { status: 'failed' } });
     expect(capture(rootPath)).toEqual(before);
+  });
+
+  it('does not restore live files when the post-commit journal transition fails and recovers idempotently', async () => {
+    const rootPath = seedRoot();
+    tempDirs.push(rootPath);
+    const commands: InstanceCommand[] = [];
+    const originalSave = OperationJournal.prototype.save;
+    let failOnce = true;
+    const save = vi.spyOn(OperationJournal.prototype, 'save').mockImplementation(function (this: OperationJournal, snapshot) {
+      if (failOnce && snapshot.phase === 'control-plane-committed') {
+        failOnce = false;
+        throw new Error('injected post-commit journal failure');
+      }
+      return originalSave.call(this, snapshot);
+    });
+    try {
+      const execute = (command: InstanceCommand) => {
+        commands.push(command);
+        return committed(command);
+      };
+      const runner = canonicalRunner(createProviderInstallOperationAdapters({ installers: successfulInstallers() }), execute);
+      const started = runner.start(request('install-modrinth', rootPath));
+      await expect(runner.waitFor(started.id)).resolves.toMatchObject({ status: 'recovery-required' });
+      expect(fs.readFileSync(path.join(rootPath, 'modpacks', 'provider-pack', 'payload.txt'), 'utf8')).toBe('staged bytes');
+      expect(new OperationJournal(rootPath).get(started.id)).toMatchObject({ phase: 'published' });
+
+      await canonicalRunner(createProviderInstallOperationAdapters({ installers: successfulInstallers() }), execute).recover(rootPath);
+      expect(commands).toHaveLength(2);
+      expect(new OperationJournal(rootPath).get(started.id)).toMatchObject({ status: 'recovered', phase: 'completed' });
+    } finally {
+      save.mockRestore();
+    }
   });
 
   it('rejects traversal destinations and cancellation before publish without changing live data', async () => {
@@ -95,6 +181,7 @@ describe('staged provider install operations', () => {
   it.each(['install-curseforge', 'install-modrinth'] as const)('records the complete %s command before publish and commits only through the supplied scope', async (kind) => {
     const rootPath = seedRoot();
     tempDirs.push(rootPath);
+    fs.writeFileSync(path.join(rootPath, 'modpacks', 'provider-pack', '.burrow-provider-content.json'), JSON.stringify({ version: 1, files: ['modpack.json', 'payload.txt'] }));
     const commands: InstanceCommand[] = [];
     const runner = canonicalRunner(createProviderInstallOperationAdapters({ installers: successfulInstallers() }), (command) => {
       commands.push(command);
@@ -212,6 +299,18 @@ function stage(rootPath: string, destinationId: string, source: 'curseforge' | '
   return { config: config(destinationId), source: { source, sourceId: 'provider', sourceVersionId: 'version' }, content: { instanceId: destinationId, descriptor: source === 'curseforge' ? 'manifest.json' as const : 'modrinth.index.json' as const }, missing: [] };
 }
 
+function providerUpdateStage(source: 'curseforge' | 'modrinth') {
+  return async ({ rootPath, destinationId }: { rootPath: string; destinationId: string }) => {
+    const stagePath = path.join(rootPath, 'modpacks', destinationId);
+    fs.mkdirSync(path.join(stagePath, 'mods'), { recursive: true });
+    fs.mkdirSync(path.join(stagePath, 'config'), { recursive: true });
+    fs.writeFileSync(path.join(stagePath, 'config', 'new-feature.json'), '{}');
+    fs.writeFileSync(path.join(stagePath, 'mods', 'new.jar'), 'new provider');
+    fs.writeFileSync(path.join(stagePath, 'modpack.json'), JSON.stringify(config(destinationId)));
+    return { config: config(destinationId), source: { source, sourceId: 'provider', sourceVersionId: 'version' }, content: { instanceId: destinationId, descriptor: source === 'curseforge' ? 'manifest.json' as const : 'modrinth.index.json' as const }, missing: [] };
+  };
+}
+
 function canonicalRunner(adapters: ReturnType<typeof createProviderInstallOperationAdapters>, execute?: (command: InstanceCommand) => InstanceCommandResult): OperationRunner {
   return new OperationRunner(adapters, {
     rootMutationCoordinator: {
@@ -240,7 +339,7 @@ function providerCommand(source: 'curseforge' | 'modrinth'): InstanceCommand {
 }
 
 function record() {
-  return { id: 'provider-pack', name: 'Original', source: { source: 'local' as const, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }, config: { runtime: { minecraftVersion: '1.20.1' } }, summary: { minecraftVersion: '1.20.1' } };
+  return { id: 'provider-pack', name: 'Original', source: { source: 'local' as const, createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }, config: { runtime: { minecraftVersion: '1.20.1' }, memory: { maxMb: 8192 }, vmOptions: ['-Duser=true'], java: { executable: '/trusted/java' }, game: { useOptiFine: true }, server: { host: 'localhost', port: 25565 }, networkMode: 'hyperswarm' as const }, summary: { minecraftVersion: '1.20.1' } };
 }
 
 function config(id: string) {
