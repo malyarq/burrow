@@ -1,4 +1,5 @@
 import path from 'node:path';
+import os from 'node:os';
 import fs from 'fs-extra';
 import { download } from '@xmcl/file-transfer';
 import { ModrinthV2Client } from '@xmcl/modrinth';
@@ -6,12 +7,16 @@ import { CurseforgeV1Client, type File as CurseforgeFile, type Mod as Curseforge
 import type { InstanceApplication } from '../../../domains/instances/instanceApplication';
 import type { LauncherRoot } from '../../../domains/instances/instanceTypes';
 import type { ModInstallRequest } from '../../../../shared/contracts/mods';
+import type { ProviderCatalogContents, ProviderCatalogContentsRequest } from '../../../../shared/contracts/providerCatalog';
 import { ensureDir } from './fsUtils';
 import { CF_SORT_POPULARITY, CF_SORT_LAST_UPDATED, CF_SORT_NAME, mapLoaderToCurseforge, mapLoaderToModrinth } from './loaderMapping';
 import { pickPrimaryModrinthFile } from './modrinthUtils';
 import { InstanceManifestManager } from '../../instances/manifestManager';
 import { openValidatedZip } from '../../../security/archivePolicy';
+import { fetchPublicHttpsUrl } from '../../../security/remoteUrls';
 import { assertChildName } from '../../../security/pathGuards';
+import { parseCurseForgeManifest } from '../../modpacks/parsers/curseforgeParser';
+import { parseModrinthManifest } from '../../modpacks/parsers/modrinthParser';
 import {
   type GuidedContentInstallIssue,
   type GuidedContentInstallIssueStatus,
@@ -79,9 +84,57 @@ function isGuidedContentType(contentType: ModInstallRequest['contentType']): con
   return contentType === 'resourcepack' || contentType === 'shader';
 }
 
+const DEFAULT_OVERRIDE_ROOTS = ['overrides', 'client-overrides', 'server-overrides'];
+
+export function classifyPackPath(value: string | undefined, overrideRoots: readonly string[] = DEFAULT_OVERRIDE_ROOTS): 'mod' | 'resourcepack' | 'shader' | 'other' {
+  const normalized = value?.replace(/\\/g, '/') ?? '';
+  const root = overrideRoots.find((candidate) => normalized.toLowerCase().startsWith(`${candidate.toLowerCase()}/`));
+  const path = (root ? normalized.slice(root.length + 1) : normalized).toLowerCase();
+  if (path.startsWith('mods/')) return 'mod';
+  if (path.startsWith('resourcepacks/')) return 'resourcepack';
+  if (path.startsWith('shaderpacks/')) return 'shader';
+  return 'other';
+}
+
+export const PREVIEW_ARCHIVE_MAX_BYTES = 32 * 1024 * 1024;
+const PREVIEW_ARCHIVE_TIMEOUT_MS = 20_000;
+
+async function downloadPreviewArchive(url: string, destination: string, label: string): Promise<void> {
+  const response = await fetchPublicHttpsUrl(url, label, { signal: AbortSignal.timeout(PREVIEW_ARCHIVE_TIMEOUT_MS) });
+  if (!response.ok || !response.body) throw new Error(`${label} could not be downloaded (${response.status})`);
+  const length = Number(response.headers.get('content-length'));
+  if (Number.isFinite(length) && length > PREVIEW_ARCHIVE_MAX_BYTES) {
+    await response.body.cancel();
+    throw new Error(`${label} exceeds the ${PREVIEW_ARCHIVE_MAX_BYTES / (1024 * 1024)} MB preview limit`);
+  }
+  const handle = await fs.promises.open(destination, 'w');
+  let received = 0;
+  try {
+    const reader = response.body.getReader();
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        received += value.byteLength;
+        if (received > PREVIEW_ARCHIVE_MAX_BYTES) {
+          await reader.cancel();
+          throw new Error(`${label} exceeds the ${PREVIEW_ARCHIVE_MAX_BYTES / (1024 * 1024)} MB preview limit`);
+        }
+        await handle.writeFile(value);
+      }
+    } finally {
+      await reader.cancel().catch(() => undefined);
+      reader.releaseLock();
+    }
+  } finally {
+    await handle.close();
+  }
+}
+
 export class ModPlatformService {
   private readonly modrinth: ModrinthV2Client;
   private readonly curseforge: CurseforgeV1Client | null;
+  private readonly previewContents = new Map<string, Promise<ProviderCatalogContents>>();
 
   constructor(
     private readonly instanceApplication: InstanceApplication,
@@ -612,6 +665,7 @@ export class ModPlatformService {
           platform: 'curseforge',
           projectId: String(m.id),
           slug: m.slug,
+          projectUrl: m.slug ? `https://www.curseforge.com/minecraft/modpacks/${encodeURIComponent(m.slug)}` : undefined,
           title: m.name,
           description: m.summary,
           iconUrl: m.logo?.thumbnailUrl,
@@ -807,6 +861,74 @@ export class ModPlatformService {
         sha1: f.hashes?.sha1,
       })),
     }));
+  }
+
+  /**
+   * Reads only a selected provider archive into a temporary file, then exposes
+   * its manifest and bundled override paths. It never creates an instance or
+   * downloads the mod files referenced by that manifest.
+   */
+  public async inspectModpackContents(request: ProviderCatalogContentsRequest): Promise<ProviderCatalogContents> {
+    const key = `${request.platform}:${request.projectId}:${request.versionId}`;
+    const existing = this.previewContents.get(key);
+    if (existing) return await existing;
+    const inspection = this.inspectModpackContentsOnce(request);
+    this.previewContents.set(key, inspection);
+    try { return await inspection; } finally { this.previewContents.delete(key); }
+  }
+
+  private async inspectModpackContentsOnce(request: ProviderCatalogContentsRequest): Promise<ProviderCatalogContents> {
+    const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-pack-preview-'));
+    const archivePath = path.join(temporaryDirectory, request.platform === 'modrinth' ? 'pack.mrpack' : 'pack.zip');
+    try {
+      const source = await this.resolveModpackArchive(request);
+      await downloadPreviewArchive(source.url, archivePath, `${request.platform} modpack preview URL`);
+      const archive = await openValidatedZip(archivePath, `${request.platform} modpack preview`);
+      try {
+        const manifestName = request.platform === 'modrinth' ? 'modrinth.index.json' : 'manifest.json';
+        const manifestEntry = archive.getEntry(manifestName);
+        if (!manifestEntry) throw new Error(`${request.platform} modpack does not contain ${manifestName}`);
+        const manifest = request.platform === 'modrinth'
+          ? parseModrinthManifest((await archive.getData(manifestEntry, 8 * 1024 * 1024)).toString('utf8'))
+          : parseCurseForgeManifest((await archive.getData(manifestEntry, 8 * 1024 * 1024)).toString('utf8'));
+        const overrideRoots = Array.from(new Set(['overrides', 'client-overrides', 'server-overrides', manifest.overrides]
+          .filter((root): root is string => typeof root === 'string' && root.length > 0)
+          .map((root) => root.replace(/\\/g, '/').replace(/^\/+|\/+$/g, ''))));
+        const entries = manifest.files.map((file) => ({
+          kind: file.path ? classifyPackPath(file.path) : 'mod' as const,
+          label: file.path ?? `CurseForge project ${file.projectID ?? '?'} / file ${file.fileID ?? '?'}`,
+          required: file.required,
+        }));
+        for (const entry of archive.getEntries()) {
+          if (entry.fileName === manifestName || entry.fileName.endsWith('/')) continue;
+          const normalized = entry.fileName.replace(/\\/g, '/');
+          if (!overrideRoots.some((root) => normalized.toLowerCase().startsWith(`${root.toLowerCase()}/`))) continue;
+          entries.push({ kind: classifyPackPath(normalized, overrideRoots), label: normalized, required: true });
+        }
+        return { entries: entries.slice(0, 500), truncated: entries.length > 500 };
+      } finally {
+        archive.close();
+      }
+    } finally {
+      fs.rmSync(temporaryDirectory, { recursive: true, force: true });
+    }
+  }
+
+  private async resolveModpackArchive(request: ProviderCatalogContentsRequest): Promise<{ url: string; sha1?: string }> {
+    if (request.platform === 'modrinth') {
+      const version = await this.modrinth.getProjectVersion(request.versionId);
+      if (version.project_id !== request.projectId) throw new Error('Modrinth version does not belong to the requested project.');
+      const file = version.files.find((candidate) => candidate.filename.endsWith('.mrpack'));
+      if (!file?.url) throw new Error('Modrinth modpack version has no download URL');
+      return { url: file.url, sha1: file.hashes?.sha1 };
+    }
+    if (!this.curseforge) throw new Error('CurseForge API key is not configured. Set CURSEFORGE_API_KEY env var.');
+    const projectId = Number(request.projectId);
+    const fileId = Number(request.versionId);
+    if (!Number.isSafeInteger(projectId) || !Number.isSafeInteger(fileId)) throw new Error('CurseForge project and version ids must be positive integers.');
+    const file = await this.curseforge.getModFile(projectId, fileId);
+    if (!file.downloadUrl) throw new Error('CurseForge modpack file has no download URL');
+    return { url: file.downloadUrl, sha1: file.hashes?.find((hash) => hash.algo === 1)?.value };
   }
 
   /**

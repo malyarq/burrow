@@ -79,9 +79,7 @@ export function RuntimeSection(props: {
 
   const currentRam = getRamGb(modpackConfig, 4);
   const sliderMaxGb = Math.max(32, currentRam, sliderRange.id === modpackConfig?.id ? sliderRange.max : 32);
-  useEffect(() => {
-    setSliderRange({ id: modpackConfig?.id, max: sliderMaxGb });
-  }, [modpackConfig?.id, sliderMaxGb]);
+  const retainSliderRange = () => setSliderRange({ id: modpackConfig?.id, max: sliderMaxGb });
   const sliderMidpointGb = sliderMaxGb / 2;
   const requiredJavaVer = getRequiredJavaForMinecraftVersion(modpackConfig?.runtime?.minecraft ?? '1.16.5');
 
@@ -145,6 +143,7 @@ export function RuntimeSection(props: {
     }
     const next = Math.min(MAX_INSTANCE_MEMORY_GB, Math.max(1, requested));
     setMemoryInput(String(next));
+    setSliderRange({ id: modpackConfig?.id, max: Math.max(32, next) });
     setMemoryGb(next);
   };
 
@@ -167,7 +166,7 @@ export function RuntimeSection(props: {
               size="sm"
               variant="secondary"
               className="flex-1"
-              onClick={() => setMemoryGb(2)}
+              onClick={() => { setSliderRange({ id: modpackConfig?.id, max: 32 }); setMemoryGb(2); }}
             >
               2 GB
             </Button>
@@ -175,7 +174,7 @@ export function RuntimeSection(props: {
               size="sm"
               variant="secondary"
               className="flex-1"
-              onClick={() => setMemoryGb(4)}
+              onClick={() => { setSliderRange({ id: modpackConfig?.id, max: 32 }); setMemoryGb(4); }}
             >
               4 GB
             </Button>
@@ -183,7 +182,7 @@ export function RuntimeSection(props: {
               size="sm"
               variant="secondary"
               className="flex-1"
-              onClick={() => setMemoryGb(8)}
+              onClick={() => { setSliderRange({ id: modpackConfig?.id, max: 32 }); setMemoryGb(8); }}
             >
               8 GB
             </Button>
@@ -194,6 +193,8 @@ export function RuntimeSection(props: {
               <input
                 type="range"
                 aria-label={t('settings.ram')}
+                onPointerDown={retainSliderRange}
+                onKeyDown={retainSliderRange}
                 min="1"
                 max={sliderMaxGb}
                 step="0.5"
@@ -293,6 +294,8 @@ export function RuntimeSection(props: {
             ))}
           </div>
         )}
+
+        <p className="helper-text">{t('settings.java_runtime_help')}</p>
 
         {/* Java Selection */}
         <div className="space-y-2">

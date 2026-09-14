@@ -1,8 +1,13 @@
+import fs from 'node:fs';
+import os from 'node:os';
 import { describe, expect, it, vi } from 'vitest';
 import type { ModrinthV2Client } from '@xmcl/modrinth';
 import type { InstanceApplication } from '../../../../domains/instances/instanceApplication';
 import type { LauncherRoot } from '../../../../domains/instances/instanceTypes';
-import { ModPlatformService } from '../modPlatformService';
+import { classifyPackPath, ModPlatformService, PREVIEW_ARCHIVE_MAX_BYTES } from '../modPlatformService';
+
+const fetchPublicHttpsUrlMock = vi.fn();
+vi.mock('../../../../security/remoteUrls', () => ({ fetchPublicHttpsUrl: (...args: unknown[]) => fetchPublicHttpsUrlMock(...args) }));
 
 type ModrinthSearchResult = Awaited<ReturnType<ModrinthV2Client['searchProjects']>>;
 type ModrinthSearchHit = ModrinthSearchResult['hits'][number];
@@ -47,6 +52,40 @@ function createPlatformService(): ModPlatformService {
 }
 
 describe('ModPlatformService alphabetical modpack pagination', () => {
+  it('classifies manifest and all supported override roots as user-visible content', () => {
+    expect(classifyPackPath(undefined)).toBe('other');
+    expect(classifyPackPath('mods/example.jar')).toBe('mod');
+    expect(classifyPackPath('overrides/mods/example.jar')).toBe('mod');
+    expect(classifyPackPath('client-overrides/resourcepacks/example.zip')).toBe('resourcepack');
+    expect(classifyPackPath('server-overrides/shaderpacks/example.zip')).toBe('shader');
+    expect(classifyPackPath('custom-content/mods/example.jar', ['custom-content'])).toBe('mod');
+  });
+
+  it('keeps the remote preview archive cap bounded and removes its temporary directory after a failed inspection', async () => {
+    const service = createPlatformService();
+    const before = new Set(fs.readdirSync(os.tmpdir()).filter((name) => name.startsWith('burrow-pack-preview-')));
+    expect(PREVIEW_ARCHIVE_MAX_BYTES).toBe(32 * 1024 * 1024);
+    vi.spyOn(service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce({
+      project_id: 'project', files: [{ filename: 'pack.mrpack', url: 'https://example.test/pack.mrpack', hashes: {} }],
+    } as Awaited<ReturnType<ModrinthV2Client['getProjectVersion']>>);
+    fetchPublicHttpsUrlMock.mockResolvedValueOnce(new Response('not a zip'));
+
+    await expect(service.inspectModpackContents({ platform: 'modrinth', projectId: 'project', versionId: 'version' })).rejects.toThrow();
+    expect(fs.readdirSync(os.tmpdir()).filter((name) => name.startsWith('burrow-pack-preview-'))).toEqual([...before]);
+  });
+
+  it('rejects a Modrinth version that belongs to another project before downloading its archive', async () => {
+    const service = createPlatformService();
+    vi.spyOn(service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce({
+      project_id: 'other-project',
+      files: [{ filename: 'pack.mrpack', url: 'https://example.test/pack.mrpack', hashes: {} }],
+    } as Awaited<ReturnType<ModrinthV2Client['getProjectVersion']>>);
+
+    await expect(service.inspectModpackContents({
+      platform: 'modrinth', projectId: 'expected-project', versionId: 'version',
+    })).rejects.toThrow('does not belong to the requested project');
+  });
+
   it('rejects a provider install before network access when its canonical instance is absent', async () => {
     const root = {} as LauncherRoot;
     const application = {

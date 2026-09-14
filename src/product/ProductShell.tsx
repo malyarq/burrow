@@ -93,7 +93,7 @@ export function ProductShell(props: AppLayoutProps) {
             {page === 'play' && <PlayWorkspace launch={props.launch} runtime={runtime} actions={actions} />}
             {page === 'library' && <div className="next-library-workspace"><ModpackRouter onLaunch={props.modpackOnLaunch ?? runtime.onLaunch} /><LibraryLaunchDock {...props} /></div>}
             {page === 'friends' && <div className="next-page-scroll"><FriendsWorkspace /></div>}
-            {(settingsVisited || page === 'settings') && <div hidden={page !== 'settings'} className="next-page-scroll"><SettingsWorkspace /></div>}
+            {(settingsVisited || page === 'settings') && <div hidden={page !== 'settings'} className="next-page-scroll"><SettingsWorkspace onStartTour={actions.onStartTour} /></div>}
           </div>
         </div>
       </div>

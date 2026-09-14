@@ -239,6 +239,7 @@ Settings backup accepts only an explicit, size-bounded allowlist of launcher pre
 
 - `providerCatalog:search`
 - `providerCatalog:versions`
+- `providerCatalog:contents` — downloads only the selected remote pack archive to a temporary location and returns its manifest and override file list; it does not install the pack or its referenced files.
 
 ### 3.10 Resource packs, shaders, worlds, datapacks
 

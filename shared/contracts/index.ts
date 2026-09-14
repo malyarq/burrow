@@ -3,6 +3,9 @@ export { PROVIDER_CATALOG_CHANNELS } from './providerCatalog';
 export type {
   ProviderCatalogAPI,
   ProviderCatalogChannel,
+  ProviderCatalogContentEntry,
+  ProviderCatalogContents,
+  ProviderCatalogContentsRequest,
   ProviderCatalogPlatform,
   ProviderCatalogSearchRequest,
   ProviderCatalogSearchResult,

@@ -19,7 +19,7 @@ export function useModpackDetailsActionsController({
 }: UseModpackDetailsActionsControllerParams) {
   const { t } = useSettings();
   const listQuery = useInstanceList();
-  const { invalidateInstances } = useInstanceInvalidation();
+  const { invalidateInstances, selectInstance } = useInstanceInvalidation();
   const {
     cancelDelete,
     cancelDuplicate,
@@ -33,7 +33,7 @@ export function useModpackDetailsActionsController({
     retryDelete,
     retryDuplicate,
     select,
-  } = useInstanceCrudActions({ invalidateInstances });
+  } = useInstanceCrudActions({ invalidateInstances, selectInstance });
   const modpacks = listQuery.status === 'ready' ? listQuery.data : [];
   const refresh = invalidateInstances;
   const toast = useToast();

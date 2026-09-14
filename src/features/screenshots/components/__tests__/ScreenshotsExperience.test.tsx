@@ -140,7 +140,11 @@ describe('screenshots experience', () => {
     render(<ScreenshotsTab instanceId="alpha" />);
 
     expect(screen.getByTestId('screenshots-workspace-shell')).toBeTruthy();
-    expect(await screen.findByRole('heading', { name: 'No screenshots yet' })).toBeTruthy();
+    const emptyHeading = await screen.findByRole('heading', { name: 'No screenshots yet' });
+    const emptyState = emptyHeading.closest('[data-layout]');
+    expect(emptyState?.getAttribute('data-layout')).toBe('workspace');
+    expect(emptyState?.className).toContain('w-full');
+    expect(emptyState?.querySelector('.surface-card')).toBeNull();
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Open Folder' })[0]);
 

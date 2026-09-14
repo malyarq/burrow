@@ -32,6 +32,8 @@ export function ResolutionSection(props: {
         />
       </div>
 
+      <p className="helper-text">{t('settings.game_resolution_help')}</p>
+
       <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-4">
         <div>
           <p className="text-sm font-medium text-foreground">{t('settings.fullscreen')}</p>

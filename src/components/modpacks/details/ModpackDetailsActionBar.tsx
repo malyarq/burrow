@@ -41,7 +41,7 @@ export function ModpackDetailsActionBar({
   updateVersionSummary,
 }: ModpackDetailsActionBarProps) {
   return (
-    <div data-details-owner="actions" data-testid="modpack-details-action-bar" className="min-w-0 border-t border-border/60 pt-4">
+    <div data-details-owner="actions" data-testid="modpack-details-action-bar" className="min-w-0">
       {updateState.status === 'loading' ? (
         <p role="status" className="mb-2 text-xs text-secondary">
           {t('modpacks.update_checking') || 'Checking for updates...'}

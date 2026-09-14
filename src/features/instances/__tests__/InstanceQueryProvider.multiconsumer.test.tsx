@@ -4,7 +4,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CLASSIC_MODPACK_ID } from '../../../../shared/constants';
-import type { ModpackConfig } from '../../../contexts/instances/types';
+import type { ModpackConfig, ModpackListItem } from '../../../contexts/instances/types';
 
 const services = vi.hoisted(() => ({
   fetchInstanceCatalog: vi.fn(),
@@ -25,6 +25,7 @@ import {
   useInstanceList,
   useInstanceSnapshot,
   useSelectedInstance,
+  useSelectedInstanceId,
 } from '../hooks/useInstanceSelectors';
 
 describe('InstanceQueryProvider multi-consumer semantics', () => {
@@ -128,6 +129,99 @@ describe('InstanceQueryProvider multi-consumer semantics', () => {
     expect(result.current.direct).toEqual({ status: 'ready', data: config('alpha', '1.21.1') });
     expect(services.fetchModpackConfig.mock.calls.filter(([id]) => id === 'alpha')).toHaveLength(1);
     expect(services.fetchModpackConfig.mock.calls.filter(([id]) => id === CLASSIC_MODPACK_ID)).toHaveLength(1);
+  });
+
+  it('keeps the catalog mounted and never exposes the previous snapshot while selecting a known instance', async () => {
+    const refreshedCatalog = deferred<{ instances: ModpackListItem[]; selectedId: string | null }>();
+    services.fetchInstanceCatalog
+      .mockResolvedValueOnce({
+        instances: [
+          { id: 'alpha', name: 'Alpha', selected: true, summary: { minecraftVersion: '1.21.1', modLoader: { type: 'vanilla' } } },
+          { id: 'beta', name: 'Beta', selected: false, summary: { minecraftVersion: '1.20.1', modLoader: { type: 'forge' } } },
+        ],
+        selectedId: 'alpha',
+      })
+      .mockReturnValueOnce(refreshedCatalog.promise);
+    services.fetchModpackConfig.mockImplementation(async (id: string) => config(id, id === 'alpha' ? '1.21.1' : '1.20.1'));
+
+    const { result } = renderHook(() => ({
+      list: useInstanceList(),
+      selected: useSelectedInstance(),
+      invalidation: useInstanceInvalidation(),
+    }), { wrapper });
+    await waitFor(() => expect(result.current.selected).toEqual({
+      status: 'ready', data: { id: 'alpha', snapshot: config('alpha', '1.21.1') },
+    }));
+
+    let selection!: Promise<void>;
+    act(() => {
+      selection = result.current.invalidation.selectInstance('beta');
+    });
+
+    expect(result.current.list).toEqual(expect.objectContaining({
+      status: 'ready',
+      data: expect.arrayContaining([expect.objectContaining({ id: 'beta', selected: true })]),
+    }));
+    await waitFor(() => expect(result.current.selected).toEqual({
+      status: 'ready', data: { id: 'beta', snapshot: config('beta', '1.20.1') },
+    }));
+
+    await act(async () => {
+      refreshedCatalog.resolve({
+        instances: [
+          { id: 'alpha', name: 'Alpha', selected: false, summary: { minecraftVersion: '1.21.1', modLoader: { type: 'vanilla' } } },
+          { id: 'beta', name: 'Beta', selected: true, summary: { minecraftVersion: '1.20.1', modLoader: { type: 'forge' } } },
+        ],
+        selectedId: 'beta',
+      });
+      await selection;
+    });
+  });
+
+  it('discards a catalog response that started before a newer confirmed selection', async () => {
+    const firstRefresh = deferred<{ instances: ModpackListItem[]; selectedId: string | null }>();
+    const secondRefresh = deferred<{ instances: ModpackListItem[]; selectedId: string | null }>();
+    services.fetchInstanceCatalog
+      .mockResolvedValueOnce({
+        instances: [
+          { id: 'alpha', name: 'Alpha', selected: true, summary: { minecraftVersion: '1.21.1', modLoader: { type: 'vanilla' } } },
+          { id: 'beta', name: 'Beta', selected: false, summary: { minecraftVersion: '1.20.1', modLoader: { type: 'forge' } } },
+        ],
+        selectedId: 'alpha',
+      })
+      .mockReturnValueOnce(firstRefresh.promise)
+      .mockReturnValueOnce(secondRefresh.promise);
+
+    const { result } = renderHook(() => ({
+      selectedId: useSelectedInstanceId(),
+      invalidation: useInstanceInvalidation(),
+    }), { wrapper });
+    await waitFor(() => expect(result.current.selectedId).toEqual({ status: 'ready', data: 'alpha' }));
+
+    act(() => { void result.current.invalidation.selectInstance('beta'); });
+    act(() => { void result.current.invalidation.selectInstance('alpha'); });
+    expect(result.current.selectedId).toEqual({ status: 'ready', data: 'alpha' });
+
+    await act(async () => {
+      firstRefresh.resolve({
+        instances: [
+          { id: 'alpha', name: 'Alpha', selected: false, summary: { minecraftVersion: '1.21.1', modLoader: { type: 'vanilla' } } },
+          { id: 'beta', name: 'Beta', selected: true, summary: { minecraftVersion: '1.20.1', modLoader: { type: 'forge' } } },
+        ],
+        selectedId: 'beta',
+      });
+    });
+    expect(result.current.selectedId).toEqual({ status: 'ready', data: 'alpha' });
+
+    await act(async () => {
+      secondRefresh.resolve({
+        instances: [
+          { id: 'alpha', name: 'Alpha', selected: true, summary: { minecraftVersion: '1.21.1', modLoader: { type: 'vanilla' } } },
+          { id: 'beta', name: 'Beta', selected: false, summary: { minecraftVersion: '1.20.1', modLoader: { type: 'forge' } } },
+        ],
+        selectedId: 'alpha',
+      });
+    });
   });
 
   it('does not publish a stale response after an ID switch', async () => {

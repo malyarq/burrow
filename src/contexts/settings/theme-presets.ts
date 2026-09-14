@@ -76,6 +76,38 @@ function normalizeThemeConfig(config: CustomThemeConfig, options?: { includeBran
 
 export const THEME_PRESETS: ThemePreset[] = [
     {
+        id: 'plum', labelKey: 'settings.theme_preset_plum', fallbackLabel: 'Plum',
+        defaultTheme: 'dark', accentDefaults: { light: 'purple', dark: 'purple' },
+        themes: {
+            light: createPresetColors({ background: '#f5f0f7', card: '#ffffff', textMain: '#302436', textSecondary: '#67536e', border: '#ddcfdf', error: '#b42340' }),
+            dark: createPresetColors({ background: '#1b1520', card: '#29212f', textMain: '#f2ebf5', textSecondary: '#c3aecb', border: '#44364d', error: '#ff879e' }),
+        },
+    },
+    {
+        id: 'copper', labelKey: 'settings.theme_preset_copper', fallbackLabel: 'Copper',
+        defaultTheme: 'dark', accentDefaults: { light: 'orange', dark: 'orange' },
+        themes: {
+            light: createPresetColors({ background: '#f5eee5', card: '#fffaf4', textMain: '#352820', textSecondary: '#6c5140', border: '#d9c4b1', error: '#ba2635' }),
+            dark: createPresetColors({ background: '#191715', card: '#29231f', textMain: '#f5eee7', textSecondary: '#cabbac', border: '#493c32', error: '#ff9296' }),
+        },
+    },
+    {
+        id: 'frost', labelKey: 'settings.theme_preset_frost', fallbackLabel: 'Frost',
+        defaultTheme: 'dark', accentDefaults: { light: '#287d92', dark: '#64b4c8' },
+        themes: {
+            light: createPresetColors({ background: '#edf4f5', card: '#faffff', textMain: '#1c343b', textSecondary: '#47656e', border: '#bdd2d7', error: '#b52b40' }),
+            dark: createPresetColors({ background: '#121c22', card: '#1d2c34', textMain: '#ebf4f6', textSecondary: '#acc4ce', border: '#344b57', error: '#ff8a9f' }),
+        },
+    },
+    {
+        id: 'parchment', labelKey: 'settings.theme_preset_parchment', fallbackLabel: 'Parchment',
+        defaultTheme: 'light', accentDefaults: { light: 'orange', dark: 'orange' },
+        themes: {
+            light: createPresetColors({ background: '#eee3cc', card: '#fff6e4', textMain: '#3e3022', textSecondary: '#715b42', border: '#ccba98', error: '#ad2337' }),
+            dark: createPresetColors({ background: '#221e17', card: '#302a20', textMain: '#f6eddc', textSecondary: '#cbbc9f', border: '#504632', error: '#ff9393' }),
+        },
+    },
+    {
         id: 'default',
         labelKey: 'settings.theme_preset_default',
         fallbackLabel: 'Neutral',

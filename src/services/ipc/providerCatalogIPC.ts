@@ -1,4 +1,4 @@
-import type { BurrowApi, ProviderCatalogSearchRequest, ProviderCatalogVersionsRequest } from '@shared/contracts';
+import type { BurrowApi, ProviderCatalogContentsRequest, ProviderCatalogSearchRequest, ProviderCatalogVersionsRequest } from '@shared/contracts';
 import { toIpcError } from './ipcError';
 
 type ProviderCatalogApi = BurrowApi['providerCatalog'];
@@ -25,6 +25,7 @@ export const providerCatalogIPC = {
   isAvailable: () => typeof window !== 'undefined' && Boolean(window.api?.providerCatalog),
   search: (request: ProviderCatalogSearchRequest) => call('search', () => api().search(request)),
   versions: (request: ProviderCatalogVersionsRequest) => call('versions', () => api().versions(request)),
+  contents: (request: ProviderCatalogContentsRequest) => call('contents', () => api().contents(request)),
 };
 
 export type ProviderCatalogIPC = typeof providerCatalogIPC;

@@ -17,6 +17,7 @@ import { toDisplayErrorMessage } from '../../../utils/displayError';
 export interface ModsTabProps {
     instanceId: string;
     showAddButton?: boolean;
+    addDisabled?: boolean;
     defaultMCVersion?: string;
     defaultLoader?: string;
     onUpdate?: () => void;
@@ -35,6 +36,7 @@ function normalizeMods(list: SharedModEntry[]): ModEntry[] {
 export function ModsTab({
     instanceId,
     showAddButton = false,
+    addDisabled = false,
     defaultMCVersion,
     defaultLoader,
     onUpdate,
@@ -136,7 +138,7 @@ export function ModsTab({
                     </div>
                     <div className="flex shrink-0 flex-wrap items-center gap-2 self-start" data-testid="mods-toolbar">
                         {showAddButton && (
-                            <Button variant="primary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" onClick={() => setShowAddModModal(true)} disabled={loading}>
+                            <Button variant="primary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" onClick={() => setShowAddModModal(true)} disabled={loading || addDisabled}>
                                 <PackagePlus className="h-4 w-4" />
                                 {t('modpacks.add_mod_btn')}
                             </Button>

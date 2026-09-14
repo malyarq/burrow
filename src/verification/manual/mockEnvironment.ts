@@ -1429,6 +1429,7 @@ export function installManualVerificationEnvironment() {
     versions: async ({ platform, projectId }: { platform: 'curseforge' | 'modrinth'; projectId: string }) => (
       structuredClone(modpackVersions).filter((version) => version.platform === platform && projectId === 'alpha-pack')
     ),
+    contents: async () => ({ entries: [{kind: 'mod', label: 'mods/example-performance.jar', required: true}, {kind: 'resourcepack', label: 'resourcepacks/example-textures.zip', required: true}, {kind: 'shader', label: 'shaderpacks/example-light.zip', required: false}, {kind: 'other', label: 'overrides/config/example.toml', required: true}], truncated: false } as const),
   };
 
   const statisticsApi = {
@@ -1766,7 +1767,7 @@ export function installManualVerificationEnvironment() {
         if (view === PHASE_24_DEGRADED_CLOSEOUT_VIEW) {
           throw new Error('[IPC] screenshots failed: Screenshots folder unavailable');
         }
-        return structuredClone(screenshots);
+        return new URLSearchParams(window.location.search).get('emptyScreenshots') === '1' ? [] : structuredClone(screenshots);
       },
       delete: async (_fileName: string, _instanceId: string) => ({ ok: true }),
       rename: async (_oldName: string, _newName: string, _instanceId: string) => ({ ok: true }),

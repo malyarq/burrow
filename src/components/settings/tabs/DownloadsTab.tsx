@@ -79,6 +79,7 @@ export const DownloadsTab: React.FC<DownloadsTabProps> = ({
             placeholder="8"
             disabled={autoDownloadThreads}
           />
+          <p className="helper-text">{t('settings.download_threads_help')}</p>
           <Input
             label={t('settings.max_sockets')}
             type="number"
@@ -87,6 +88,7 @@ export const DownloadsTab: React.FC<DownloadsTabProps> = ({
             onChange={(e) => setMaxSockets(parseInt(e.target.value || '1', 10))}
             placeholder="64"
           />
+          <p className="helper-text">{t('settings.max_sockets_help')}</p>
         </div>
       </div>
     </div>

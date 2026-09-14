@@ -20,6 +20,7 @@ function createAdapter() {
     searchModrinthModpacks: vi.fn(),
     getCurseForgeModpackVersions: vi.fn(),
     getModrinthModpackVersions: vi.fn(),
+    inspectModpackContents: vi.fn(),
   };
 }
 

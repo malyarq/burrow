@@ -8,7 +8,7 @@ export function getBundledAssetPath(fileName: string, baseUrl = import.meta.env.
 export const APP_ICON_PATH = getBundledAssetPath('icon.ico')
 export const LAUNCHER_MARK_PATH = getBundledAssetPath('launcher-mark.png')
 
-export const MEDIA_FALLBACK_PATH = getBundledAssetPath('burrow-next-landscape.png')
+export const MEDIA_FALLBACK_PATH = getBundledAssetPath('content-artwork-fallback.svg')
 
 export type BrandAssetRole = 'app-icon' | 'product-mark' | 'media-fallback'
 

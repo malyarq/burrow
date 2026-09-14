@@ -155,6 +155,13 @@ test('Product Next exposes the memory slider label and reaches 8 GB from the key
   await memory.press('ArrowLeft');
   await expect(memory).toHaveValue('127.5');
   await expect(memory).toHaveAttribute('max', '128');
+  await manual.fill('256');
+  await manual.press('Tab');
+  await expect(memory).toHaveAttribute('max', '256');
+  await manual.fill('8');
+  await manual.press('Tab');
+  await expect(memory).toHaveValue('8');
+  await expect(memory).toHaveAttribute('max', '32');
 });
 
 test('Product Next sends resource-pack and shader actions through their guided library routes', async ({ page }) => {
@@ -222,4 +229,86 @@ test('Product Next keeps the welcome language visibly selected after switching',
   await en.click();
   await expect(en).toHaveAttribute('aria-pressed', 'true');
   expect(await en.evaluate(e=>getComputedStyle(e).borderColor)).toBe(selectedBorder);
+});
+
+test('Product Next can replay the tour from Settings after completing it', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-settings').click();
+  await page.getByRole('button', { name: 'Take the tour again', exact: true }).click();
+  await expect(page.getByText('1 / 4', { exact:true })).toBeVisible();
+  for (let step=0; step<3; step++) await page.getByRole('button', { name:'Next', exact:true }).click();
+  await page.getByRole('button', { name:'Finish', exact:true }).click();
+  await page.getByRole('button', { name:'Take the tour again', exact:true }).click();
+  await expect(page.getByText('1 / 4', { exact:true })).toBeVisible();
+});
+
+test('Product Next applies four additional distinct preset families in both modes', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-settings').click();
+  for (const mode of ['Dark', 'Light']) {
+    await page.getByRole('button', { name:mode, exact:true }).click();
+    const backgrounds = [];
+    for (const preset of ['plum', 'copper', 'frost', 'parchment']) {
+      await page.getByRole('combobox', { name:'Theme Presets', exact:true }).selectOption(preset);
+      backgrounds.push(await page.locator('.next-window').evaluate(e=>getComputedStyle(e).backgroundColor));
+    }
+    expect(new Set(backgrounds).size).toBe(4);
+  }
+});
+
+test('Product Next empty screenshots span the same width as the screenshot workspace', async ({ page }) => {
+  await page.setViewportSize({width:1100,height:850});
+  await page.goto(productNext + '&emptyScreenshots=1');
+  await page.getByTestId('next-nav-library').click();
+  await page.getByRole('button', {name:'Open details: Alpha Pack',exact:true}).click();
+  const actions = page.getByTestId('modpack-details-actions');
+  const heights = await actions.getByRole('button').evaluateAll(elements=>elements.filter(e=>!e.getAttribute('data-route-action')?.includes('update')).map(e=>e.getBoundingClientRect().height));
+  expect(new Set(heights).size).toBe(1);
+  await page.getByRole('tab',{name:'Screenshots',exact:true}).click();
+  const empty = page.getByText('No screenshots yet', {exact:true});
+  await expect(empty).toBeVisible();
+  const frame = await empty.evaluate(e=>e.closest('[data-layout]')?.firstElementChild?.getBoundingClientRect().width);
+  const workspace = await page.getByTestId('screenshots-workspace-shell').boundingBox();
+  expect(frame).toBeCloseTo(workspace!.width,0);
+});
+
+test('Product Next keeps mod content mounted while switching Vanilla and Forge', async ({ page }) => {
+  await openProduct(page);
+  const tabs = page.getByRole('tablist', { name:'Content',exact:true });
+  const beforeTabs = await tabs.elementHandle();
+  const list = page.getByRole('list', { name:'Installed Mods',exact:true });
+  await expect(list).toBeVisible();
+  const beforeList = await list.elementHandle();
+  const add = page.getByRole('button', { name:'+ Add Mod',exact:true });
+  for (const name of ['Vanilla','Forge','Vanilla','Fabric']) {
+    await page.getByTestId('play-workspace-loader').getByRole('button',{name,exact:true}).click();
+    await expect(page.getByRole('tab',{name:'Mods',exact:true})).toHaveAttribute('aria-selected','true');
+    expect(await beforeTabs!.evaluate(e=>e.isConnected)).toBe(true);
+    expect(await beforeList!.evaluate(e=>e.isConnected)).toBe(true);
+    if(name==='Vanilla') await expect(add).toBeDisabled();
+    else await expect(add).toBeEnabled();
+  }
+});
+
+test('Product Next keeps installed catalog controls mounted when selecting another pack', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-library').click();
+  const controls = await page.getByTestId('installed-modpack-filter-controls').elementHandle();
+  await page.getByRole('button',{name:'Make active: Classic',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Active now: Classic',exact:true})).toBeVisible();
+  expect(await controls!.evaluate(e=>e.isConnected)).toBe(true);
+});
+
+
+test('Product Next shows remote pack contents and its official page action', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-library').click();
+  await page.getByRole('button', { name: 'Modpack Browser', exact: true }).click();
+  await page.getByRole('button', { name: 'Open details: Alpha Pack', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Open official project page', exact: true })).toBeVisible();
+  const contents = page.getByTestId('remote-modpack-contents');
+  for (const label of ['Mods', 'Resource packs', 'Shaders', 'Other included files']) {
+    await expect(contents.getByRole('list', { name: label, exact: true })).toBeVisible();
+  }
+  await assertNoHorizontalOverflow(page);
 });

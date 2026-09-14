@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useToast } from '../../contexts/ToastContext';
 import { Button } from '../ui/Button';
 import { LazyImage } from '../ui/LazyImage';
 import { Select } from '../ui/Select';
 import { cn } from '../../utils/cn';
-import type { ProviderCatalogSearchResultItem, ProviderCatalogVersionDescriptor } from '@shared/contracts';
+import type { ProviderCatalogContentEntry, ProviderCatalogSearchResultItem, ProviderCatalogVersionDescriptor } from '@shared/contracts';
 import { instancesIPC } from '../../services/ipc/instancesIPC';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { useInstanceInvalidation } from '../../features/instances/hooks/useInstanceInvalidation';
 import { useOperationSession } from '../../features/operations/hooks/useOperationSession';
 import { OperationStatusView } from '../../features/operations/components/OperationStatusView';
+import { externalLinksIPC } from '../../services/ipc/externalLinksIPC';
+import { providerCatalogIPC } from '../../services/ipc/providerCatalogIPC';
 
 interface InstallModpackPageProps {
   modpack: ProviderCatalogSearchResultItem;
@@ -30,6 +32,10 @@ export const InstallModpackPage: React.FC<InstallModpackPageProps> = ({
   const [selectedVersion, setSelectedVersion] = useState<ProviderCatalogVersionDescriptor | null>(
     versions[0] || null
   );
+  const [contents, setContents] = useState<readonly ProviderCatalogContentEntry[]>([]);
+  const [contentsLoading, setContentsLoading] = useState(false);
+  const [contentsError, setContentsError] = useState(false);
+  const [contentsTruncated, setContentsTruncated] = useState(false);
   const { invalidateInstances } = useInstanceInvalidation();
   const closeTimerRef = useRef<number | null>(null);
   const operation = useOperationSession({
@@ -56,6 +62,41 @@ export const InstallModpackPage: React.FC<InstallModpackPageProps> = ({
       if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!selectedVersion) return;
+    let active = true;
+    void (async () => {
+      if (active) {
+        setContentsLoading(true);
+        setContentsError(false);
+      }
+      try {
+        const result = await providerCatalogIPC.contents({ platform, projectId: modpack.projectId, versionId: selectedVersion.versionId });
+        if (active) {
+          setContents(result.entries);
+          setContentsTruncated(result.truncated);
+        }
+      } catch (error) {
+        console.error('Error loading remote modpack contents:', error);
+        if (active) setContentsError(true);
+      } finally {
+        if (active) setContentsLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [modpack.projectId, platform, selectedVersion]);
+
+  const contentGroups = useMemo(() => ({
+    mod: contents.filter((entry) => entry.kind === 'mod'),
+    resourcepack: contents.filter((entry) => entry.kind === 'resourcepack'),
+    shader: contents.filter((entry) => entry.kind === 'shader'),
+    other: contents.filter((entry) => entry.kind === 'other'),
+  }), [contents]);
+
+  const projectUrl = modpack.projectUrl ?? (platform === 'modrinth' && modpack.slug
+    ? `https://modrinth.com/modpack/${encodeURIComponent(modpack.slug)}`
+    : undefined);
 
   const handleInstall = async () => {
     if (!selectedVersion) return;
@@ -119,6 +160,15 @@ export const InstallModpackPage: React.FC<InstallModpackPageProps> = ({
                   {modpack.description}
                 </p>
               )}
+              {projectUrl && <Button
+                variant="ghost"
+                size="sm"
+                className="mt-3"
+                onClick={() => void externalLinksIPC.open({ url: projectUrl, context: `${modpack.title} on ${platform}` }).catch((error) => console.error('Failed to open modpack project:', error))}
+              >
+                <ExternalLink className="h-4 w-4" />
+                {t('modpacks.open_project') === 'modpacks.open_project' ? 'Open official project page' : t('modpacks.open_project')}
+              </Button>}
             </div>
           </div>
 
@@ -161,6 +211,31 @@ export const InstallModpackPage: React.FC<InstallModpackPageProps> = ({
               </div>
             </div>
           ) : null) as React.ReactNode}
+
+          <section className="surface-card space-y-3 p-4" aria-live="polite" data-testid="remote-modpack-contents">
+            <div>
+              <h3 className="text-base font-semibold text-foreground">{t('modpacks.included_contents') === 'modpacks.included_contents' ? 'Included contents' : t('modpacks.included_contents')}</h3>
+              <p className="mt-1 text-sm text-secondary">
+                {t('modpacks.contents_manifest_hint') === 'modpacks.contents_manifest_hint' ? 'Read from this version’s archive manifest; no modpack is installed.' : t('modpacks.contents_manifest_hint')}
+              </p>
+            </div>
+            {contentsLoading ? <p className="text-sm text-secondary">{t('modpacks.loading')}</p> : contentsError ? (
+              <p className="text-sm text-secondary">{t('modpacks.contents_unavailable') === 'modpacks.contents_unavailable' ? 'The provider did not make this version’s manifest available.' : t('modpacks.contents_unavailable')}</p>
+            ) : (
+              <div className="space-y-3">
+                {([['mod', 'Mods'], ['resourcepack', 'Resource packs'], ['shader', 'Shaders'], ['other', 'Other included files']] as const).map(([kind, fallback]) => contentGroups[kind].length > 0 && (
+                  <div key={kind}>
+                    <p className="helper-text mb-1">{t(`modpacks.contents_${kind}`) === `modpacks.contents_${kind}` ? fallback : t(`modpacks.contents_${kind}`)} ({contentGroups[kind].length})</p>
+                    <ul className="max-h-40 space-y-1 overflow-y-auto text-sm text-foreground" aria-label={t(`modpacks.contents_${kind}`) === `modpacks.contents_${kind}` ? fallback : t(`modpacks.contents_${kind}`)}>
+                      {contentGroups[kind].map((entry, index) => <li key={`${entry.label}-${index}`} className="truncate" title={entry.label}>{entry.label}</li>)}
+                    </ul>
+                  </div>
+                ))}
+                {contents.length === 0 && <p className="text-sm text-secondary">{t('modpacks.contents_empty') === 'modpacks.contents_empty' ? 'This version’s manifest does not list included files.' : t('modpacks.contents_empty')}</p>}
+                {contentsTruncated && <p className="text-sm text-secondary">{t('modpacks.contents_truncated') === 'modpacks.contents_truncated' ? 'Only the first 500 included files are shown.' : t('modpacks.contents_truncated')}</p>}
+              </div>
+            )}
+          </section>
 
           <OperationStatusView
             snapshot={operation.snapshot}

@@ -1,3 +1,4 @@
+import { Button } from '../components/ui/Button';
 import { SettingsContent } from '../components/settings/SettingsContent';
 import { useSettings } from '../contexts/SettingsContext';
 
@@ -6,7 +7,7 @@ function translated(t: (key: string) => string, key: string, fallback: string) {
   return value === key ? fallback : value;
 }
 
-export function SettingsWorkspace() {
+export function SettingsWorkspace({ onStartTour }: { onStartTour?: () => void }) {
   const { t } = useSettings();
 
   return (
@@ -14,6 +15,7 @@ export function SettingsWorkspace() {
       <header className="mb-8 max-w-2xl space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{translated(t, 'settings.workspace_title', 'Settings')}</h1>
         <p className="text-sm leading-6 text-secondary">{translated(t, 'settings.workspace_description', 'Personalize the launcher and manage its local data.')}</p>
+        {onStartTour && <Button variant="secondary" size="sm" onClick={onStartTour}>{t('settings.restart_tour')}</Button>}
       </header>
       <SettingsContent presentation="page" />
     </main>

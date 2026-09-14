@@ -151,6 +151,9 @@ describe('Modpack details density', () => {
     const routeTop = screen.getByTestId('modpack-details-route-top');
     expect(hero.className).not.toContain('surface-card');
     expect(hero.className).toContain('space-y-5');
+    const [header, actionBar] = Array.from(hero.children) as HTMLElement[];
+    expect(header.className).not.toContain('border-b');
+    expect(actionBar.className).not.toContain('border-t');
     expect(routeTop.className).not.toContain('flex-col');
     expect(routeTop.textContent).not.toContain('Modpack details');
 
@@ -171,6 +174,7 @@ describe('Modpack details density', () => {
 
     const actions = screen.getByTestId('modpack-details-actions');
     expect(actions.className).not.toContain('surface-card');
+    expect(actions.className).toContain('border-t');
     expect(actions.textContent).toContain('More actions');
     expect(actions.textContent).toContain('Play');
     expect(screen.getByRole('button', { name: 'Play' }).closest('[data-testid="modpack-details-hero"]')).toBe(hero);

@@ -144,7 +144,7 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
   };
 
   return (
-    <div className="min-w-0 space-y-5 border-b border-border/65 pb-5">
+    <div className="min-w-0 space-y-5 pb-5">
       <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start">
         <LazyImage
           src={metadata?.iconUrl}

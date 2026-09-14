@@ -35,6 +35,7 @@ export interface InstanceQueryStore {
   mutateInstance(id: string, update: (current: ModpackConfig) => ModpackConfig): Promise<void>;
   invalidateInstance(id: string): Promise<void>;
   invalidateInstances(): Promise<void>;
+  selectInstance(id: string): Promise<void>;
 }
 
 const IDLE_STATE: InstanceQueryState<never> = { status: 'idle' };
@@ -178,13 +179,32 @@ class CanonicalInstanceQueryStore implements InstanceQueryStore {
   };
 
   invalidateInstances = async (): Promise<void> => {
-    const retainedIds = [...this.retainCounts.keys()];
-    const catalog = this.catalogRequest?.invalidation
-      ? this.catalogRequest.promise
-      : this.loadFreshCatalog(true);
-    const snapshots = retainedIds.map((id) => this.invalidateInstance(id));
-    await Promise.all([catalog, ...snapshots]);
+    await this.refreshInstances();
   };
+
+  selectInstance = async (id: string): Promise<void> => {
+    if (this.listState.status !== 'ready' || !this.listState.data.some((instance) => instance.id === id)) {
+      await this.refreshInstances();
+      return;
+    }
+
+    this.listState = {
+      status: 'ready',
+      data: this.listState.data.map((instance) => ({ ...instance, selected: instance.id === id })),
+    };
+    this.selectedIdState = { status: 'ready', data: id };
+    this.emit();
+    await this.refreshInstances(true, true);
+  };
+
+  private refreshInstances(preserveReadyCatalog = false, forceFreshCatalog = false): Promise<void> {
+    const retainedIds = [...this.retainCounts.keys()];
+    const catalog = !forceFreshCatalog && this.catalogRequest?.invalidation
+      ? this.catalogRequest.promise
+      : this.loadFreshCatalog(true, preserveReadyCatalog);
+    const snapshots = retainedIds.map((id) => this.invalidateInstance(id));
+    return Promise.all([catalog, ...snapshots]).then(() => undefined);
+  }
 
   start = (): (() => void) => {
     this.active = true;
@@ -202,10 +222,14 @@ class CanonicalInstanceQueryStore implements InstanceQueryStore {
     };
   };
 
-  private loadFreshCatalog(invalidation = false): Promise<void> {
+  private loadFreshCatalog(invalidation = false, preserveReadyCatalog = false): Promise<void> {
     const generation = ++this.catalogGeneration;
-    this.listState = LOADING_STATE;
-    this.selectedIdState = LOADING_STATE;
+    if (!preserveReadyCatalog || this.listState.status !== 'ready') {
+      this.listState = LOADING_STATE;
+    }
+    if (!preserveReadyCatalog || this.selectedIdState.status !== 'ready') {
+      this.selectedIdState = LOADING_STATE;
+    }
     this.emit();
 
     const promise = fetchInstanceCatalog().then(

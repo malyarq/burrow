@@ -12,6 +12,7 @@ const cancelMock = vi.fn();
 const setSelectedMock = vi.fn();
 const invalidateInstancesMock = vi.fn();
 const successMock = vi.fn();
+const contentsMock = vi.fn();
 let listener: ((snapshot: OperationSnapshot) => void) | undefined;
 let unsubscribeMock: ReturnType<typeof vi.fn>;
 
@@ -45,6 +46,14 @@ vi.mock('../../../services/ipc/operationsIPC', () => ({
     subscribe: (...args: unknown[]) => subscribeMock(...args),
     cancel: (...args: unknown[]) => cancelMock(...args),
   },
+}));
+
+vi.mock('../../../services/ipc/providerCatalogIPC', () => ({
+  providerCatalogIPC: { contents: (...args: unknown[]) => contentsMock(...args) },
+}));
+
+vi.mock('../../../services/ipc/externalLinksIPC', () => ({
+  externalLinksIPC: { open: vi.fn() },
 }));
 
 const queued: OperationSnapshot = {
@@ -102,6 +111,7 @@ describe('InstallModpackPage provider operations', () => {
     setSelectedMock.mockReset().mockResolvedValue({ ok: true });
     invalidateInstancesMock.mockReset().mockResolvedValue(undefined);
     successMock.mockReset();
+    contentsMock.mockReset().mockResolvedValue({ entries: [], truncated: false });
   });
 
   afterEach(() => vi.useRealTimers());

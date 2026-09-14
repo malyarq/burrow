@@ -37,11 +37,12 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
       className="flex min-w-0 flex-wrap items-start gap-3 border-t border-border/65 pt-4"
       data-testid="modpack-details-actions"
     >
-      <div className="min-w-[10rem] sm:w-44">
+      <div className="min-w-[8rem] w-32">
         <Button
           variant="primary"
+          size="sm"
           onClick={onLaunch}
-          className="w-full min-w-[10rem]"
+          className="min-h-9 w-full"
           style={getAccentStyles('bg').style}
           data-primary-action="route"
           data-route-action="play"

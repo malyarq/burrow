@@ -2,6 +2,8 @@ import { ipcMain } from 'electron';
 import {
   PROVIDER_CATALOG_CHANNELS,
   type ProviderCatalogSearchRequest,
+  type ProviderCatalogContents,
+  type ProviderCatalogContentsRequest,
   type ProviderCatalogSearchResult,
   type ProviderCatalogVersionDescriptor,
   type ProviderCatalogVersionsRequest,
@@ -35,6 +37,7 @@ type ProviderCatalogAdapter = Readonly<{
   ): Promise<ProviderCatalogSearchResult>;
   getCurseForgeModpackVersions(projectId: number): Promise<readonly ProviderCatalogVersionDescriptor[]>;
   getModrinthModpackVersions(projectId: string): Promise<readonly ProviderCatalogVersionDescriptor[]>;
+  inspectModpackContents(request: ProviderCatalogContentsRequest): Promise<ProviderCatalogContents>;
 }>;
 
 type ProviderCatalogHandlerDependencies = Readonly<{ providerCatalog: ProviderCatalogAdapter }>;
@@ -93,6 +96,16 @@ function validateVersionsRequest(value: unknown): ProviderCatalogVersionsRequest
   };
 }
 
+function validateContentsRequest(value: unknown): ProviderCatalogContentsRequest {
+  const request = requireObject(value, 'Provider catalog contents request');
+  rejectUnknownFields(request, ['platform', 'projectId', 'versionId'], 'Provider catalog contents request');
+  return {
+    platform: validateEnum(request.platform, 'Provider catalog platform', PROVIDER_CATALOG_PLATFORMS),
+    projectId: validateBoundedString(request.projectId, 'Provider catalog project id', { maxLength: 128 }),
+    versionId: validateBoundedString(request.versionId, 'Provider catalog version id', { maxLength: 128 }),
+  };
+}
+
 function toCurseForgeProjectId(projectId: string): number {
   if (!/^\d+$/.test(projectId)) {
     throw new Error('CurseForge project id must be a positive integer.');
@@ -119,5 +132,12 @@ export function registerProviderCatalogHandlers({ providerCatalog }: ProviderCat
     return parsed.platform === 'curseforge'
       ? providerCatalog.getCurseForgeModpackVersions(toCurseForgeProjectId(parsed.projectId))
       : providerCatalog.getModrinthModpackVersions(parsed.projectId);
+  });
+
+  ipcMain.removeHandler(PROVIDER_CATALOG_CHANNELS.contents);
+  ipcMain.handle(PROVIDER_CATALOG_CHANNELS.contents, async (_event, request: unknown) => {
+    const parsed = validateContentsRequest(request);
+    if (parsed.platform === 'curseforge') toCurseForgeProjectId(parsed.projectId);
+    return await providerCatalog.inspectModpackContents(parsed);
   });
 }

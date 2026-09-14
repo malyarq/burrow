@@ -139,6 +139,7 @@ function MainApp() {
         actions={{
           onShowMultiplayer: openMultiplayer,
           onShowSettings: openSettings,
+          onStartTour: handleTourStart,
         }}
         modpackOnLaunch={stableOnLaunch}
         launch={{

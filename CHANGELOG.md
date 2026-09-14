@@ -4,6 +4,22 @@
 
 This file summarizes current product versions. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
 
+## [1.0.0-next.3] — 2026-09-15
+
+### Русский
+
+- Диапазон памяти уменьшается после ручного ввода и остаётся неподвижным при перетаскивании. Добавлены пояснения Java, размеров окна игры, аргументов и настроек загрузки.
+- Выбор сборки и переключение модлоадера сохраняют каталог и вкладки контента на экране. Исправлены ширина пустой галереи, размеры действий и лишние разделители.
+- Путеводитель можно повторить из настроек. Добавлены темы «Слива», «Медь», «Иней» и «Пергамент»; прежние темы сохранены. Пещера в заглушке контента заменена блочной мозаикой.
+- В браузере модпаков доступны официальная страница и состав выбранной версии из архива: моды, ресурспаки, шейдеры и другие файлы. Предпросмотр ограничен 32 МБ и первыми 500 файлами.
+
+### English
+
+- Memory range contracts after manual input and stays stable during dragging. Added explanations for Java, game window size, launch arguments, and downloads.
+- Selecting a pack or switching loaders preserves catalog and content tabs. Fixed empty gallery width, action sizing, and redundant dividers.
+- Settings can restart the tour. Added Plum, Copper, Frost, and Parchment presets while retaining existing themes. Content fallback uses a block mosaic.
+- Remote modpacks expose their official page and selected archive contents, grouped by type. Preview is limited to 32 MB and the first 500 entries.
+
 ## [1.0.0-next.2] — 2026-09-14
 
 ### Русский

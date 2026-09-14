@@ -29,8 +29,9 @@ function settlePending(
 
 export function useInstanceCrudActions(params: {
   invalidateInstances: () => Promise<void>;
+  selectInstance: (id: string) => Promise<void>;
 }) {
-  const { invalidateInstances } = params;
+  const { invalidateInstances, selectInstance } = params;
   const duplicatePendingRef = useRef<PendingOperation | null>(null);
   const deletePendingRef = useRef<PendingOperation | null>(null);
 
@@ -42,9 +43,9 @@ export function useInstanceCrudActions(params: {
   const select = useCallback(
     async (id: string) => {
       await setSelectedModpackId(id);
-      await invalidateInstances();
+      await selectInstance(id);
     },
-    [invalidateInstances],
+    [selectInstance],
   );
 
   const create = useCallback(

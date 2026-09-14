@@ -26,16 +26,21 @@ export function ClassicContentTabs({
   presentation = 'disclosure',
 }: ClassicContentTabsProps) {
   const { t } = useSettings();
-  const [activeTab, setActiveTab] = useState<ContentTab>(showMods ? 'mods' : 'resourcepacks');
+  const [activeTab, setActiveTab] = useState<ContentTab>('mods');
   const idPrefix = `classic-content-${useId().replace(/:/g, '')}`;
   const title = t('dashboard.content') || 'Content';
   const tabs = useMemo<Array<{ key: ContentTab; label: string }>>(() => [
-    ...(showMods ? [{ key: 'mods' as const, label: t('modpacks.tab_mods') || 'Mods' }] : []),
+    { key: 'mods' as const, label: t('modpacks.tab_mods') || 'Mods' },
     { key: 'resourcepacks', label: t('modpacks.tab_resourcepacks') || 'Resource Packs' },
     { key: 'shaders', label: t('modpacks.tab_shaders') || 'Shaders' },
     { key: 'worlds', label: t('modpacks.tab_worlds') || 'Worlds' },
-  ], [showMods, t]);
-  const visibleActiveTab = showMods || activeTab !== 'mods' ? activeTab : 'resourcepacks';
+  ], [t]);
+  const visibleActiveTab = activeTab;
+  const vanillaModsHintKey = 'play_workspace.vanilla_mods_hint';
+  const translatedVanillaModsHint = t(vanillaModsHintKey);
+  const vanillaModsHint = translatedVanillaModsHint === vanillaModsHintKey
+    ? 'Vanilla не подключает моды; выберите загрузчик для них.'
+    : translatedVanillaModsHint;
 
   const activateRelativeTab = (currentIndex: number, offset: number) => {
     const nextIndex = (currentIndex + offset + tabs.length) % tabs.length;
@@ -103,12 +108,20 @@ export function ClassicContentTabs({
           aria-labelledby={`${idPrefix}-tab-${visibleActiveTab}`}
         >
           {visibleActiveTab === 'mods' ? (
-            <ModsTab
-              instanceId={instanceId}
-              showAddButton
-              defaultMCVersion={runtimeSummary.minecraftVersion}
-              defaultLoader={runtimeSummary.modLoader?.type ?? 'vanilla'}
-            />
+            <>
+              {!showMods ? (
+                <p className="border-l-2 border-border px-3 text-sm leading-6 text-secondary" role="status" data-testid="classic-mods-loader-hint">
+                  {vanillaModsHint}
+                </p>
+              ) : null}
+              <ModsTab
+                instanceId={instanceId}
+                showAddButton
+                addDisabled={!showMods}
+                defaultMCVersion={runtimeSummary.minecraftVersion}
+                defaultLoader={runtimeSummary.modLoader?.type ?? 'vanilla'}
+              />
+            </>
           ) : null}
           {visibleActiveTab === 'resourcepacks' ? (
             <ResourcePacksTab instanceId={instanceId} onAddResourcePack={() => onOpenGuidedContent('resourcepack')} />

@@ -173,3 +173,18 @@ describe('applyThemeToDocument', () => {
     expect(getRootVar('--border-default')).toBe('231 224 215');
   });
 });
+
+
+describe('Additional preset readability', () => {
+  for (const preset of ['plum', 'copper', 'frost', 'parchment'] as const) {
+    for (const theme of ['dark', 'light'] as const) {
+      it(`${preset} ${theme} keeps text readable on both surfaces`, () => {
+        const colors = resolveThemeConfig(theme, preset).colors!;
+        for (const surface of [colors.background!, colors.card!]) {
+          expect(contrastRatio(colors.textMain!, surface)).toBeGreaterThanOrEqual(4.5);
+          expect(contrastRatio(colors.textSecondary!, surface)).toBeGreaterThanOrEqual(4.5);
+        }
+      });
+    }
+  }
+});

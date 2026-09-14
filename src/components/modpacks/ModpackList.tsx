@@ -32,7 +32,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
   const { t } = useSettings();
   const listQuery = useInstanceList();
   const selectedQuery = useSelectedInstanceId();
-  const { invalidateInstances } = useInstanceInvalidation();
+  const { invalidateInstances, selectInstance } = useInstanceInvalidation();
   const {
     select,
     remove,
@@ -46,7 +46,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
     deleteOperationError,
     cancelDelete,
     retryDelete,
-  } = useInstanceCrudActions({ invalidateInstances });
+  } = useInstanceCrudActions({ invalidateInstances, selectInstance });
   const selectedId = selectedQuery.status === 'ready' ? selectedQuery.data : '';
   const modpacks = listQuery.status === 'ready' ? listQuery.data : EMPTY_MODPACKS;
   const refresh = invalidateInstances;

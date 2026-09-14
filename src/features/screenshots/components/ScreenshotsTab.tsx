@@ -143,6 +143,7 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
             ) : loadError ? (
                 <DegradedStateView
                     variant="unavailable"
+                    layout="workspace"
                     label={t('degraded.unavailable_label')}
                     title={t('screenshots.loadError')}
                     description={screenshotsErrorDescription}
@@ -162,6 +163,7 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
             ) : screenshots.length === 0 ? (
                 <DegradedStateView
                     variant="empty"
+                    layout="workspace"
                     label={t('degraded.empty_label')}
                     title={t('screenshots.emptyTitle')}
                     description={t('screenshots.emptyDescription')}
@@ -172,7 +174,7 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
                         </Button>
                     )}
                 >
-                    <div className="rounded-full border border-border/60 bg-background/78 p-4 text-secondary">
+                    <div className="w-fit rounded-xl border border-border/60 bg-background/78 p-4 text-secondary">
                         <ImageIcon className="h-8 w-8" />
                     </div>
                 </DegradedStateView>

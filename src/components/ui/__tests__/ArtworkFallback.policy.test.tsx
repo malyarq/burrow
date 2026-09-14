@@ -9,6 +9,8 @@ describe('ArtworkFallback policy', () => {
   it('defaults content artwork to the neutral media fallback instead of the launcher mark or app icon', () => {
     expect(ArtworkFallback.defaultKind).toBe('content-artwork');
     expect(ArtworkFallback.getSrc()).toBe(MEDIA_FALLBACK_PATH);
+    expect(ArtworkFallback.getSrc()).toContain('content-artwork-fallback.svg');
+    expect(ArtworkFallback.getSrc()).not.toContain('burrow-next-landscape.png');
     expect(ArtworkFallback.getSrc('product-mark')).toBe(LAUNCHER_MARK_PATH);
     expect(ArtworkFallback.getSrc('app-icon')).toBe(APP_ICON_PATH);
     expect(ArtworkFallback.isSource(MEDIA_FALLBACK_PATH)).toBe(true);

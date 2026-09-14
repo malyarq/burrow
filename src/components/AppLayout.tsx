@@ -23,6 +23,7 @@ export type AppLayoutProps = {
   actions: {
     onShowMultiplayer: () => void;
     onShowSettings: () => void;
+    onStartTour?: () => void;
   };
   launch: {
     nickname: string;

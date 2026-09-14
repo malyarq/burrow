@@ -5,4 +5,5 @@ import { PROVIDER_CATALOG_CHANNELS, type ProviderCatalogAPI } from '@shared/cont
 export const providerCatalog: ProviderCatalogAPI = {
   search: (request) => ipcRenderer.invoke(PROVIDER_CATALOG_CHANNELS.search, request),
   versions: (request) => ipcRenderer.invoke(PROVIDER_CATALOG_CHANNELS.versions, request),
+  contents: (request) => ipcRenderer.invoke(PROVIDER_CATALOG_CHANNELS.contents, request),
 };

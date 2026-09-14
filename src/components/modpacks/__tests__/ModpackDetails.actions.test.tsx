@@ -33,6 +33,7 @@ describe('ModpackDetailsActions primary-action truth', () => {
     expect(actions.className).not.toContain('surface-card');
     expect(screen.getByRole('button', { name: 'Play' }).getAttribute('data-route-action')).toBe('play');
     expect(screen.getByRole('button', { name: 'Play' }).getAttribute('data-primary-action')).toBe('route');
+    expect(screen.getByRole('button', { name: 'Play' }).className).toContain('min-h-9');
     expect(screen.getByRole('button', { name: 'Rename' }).className).toContain('min-h-9');
     expect(screen.getByRole('button', { name: 'Duplicate' }).className).toContain('min-h-9');
     expect(screen.getByRole('button', { name: 'Export' }).className).toContain('min-h-9');

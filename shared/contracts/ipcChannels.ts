@@ -46,6 +46,7 @@ export const allowedIpcChannels = [
   // provider catalog
   'providerCatalog:search',
   'providerCatalog:versions',
+  'providerCatalog:contents',
 
   // storage maintenance
   'storageMaintenance:getStats',

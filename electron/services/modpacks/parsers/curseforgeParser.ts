@@ -47,6 +47,9 @@ export function parseCurseForgeManifest(manifestJson: string): ModpackManifest {
   if (!Array.isArray(parsed.files)) {
     throw new Error('CurseForge manifest files must be an array');
   }
+  if (parsed.files.some((file) => !Number.isSafeInteger(file.projectID) || file.projectID <= 0 || !Number.isSafeInteger(file.fileID) || file.fileID <= 0)) {
+    throw new Error('CurseForge manifest files must use positive project and file IDs');
+  }
 
   // Преобразование в универсальный формат
   const manifest: ModpackManifest = {
@@ -103,7 +106,7 @@ export function validateCurseForgeManifest(manifest: CurseForgeManifest): boolea
     
     // Валидация файлов
     for (const file of manifest.files) {
-      if (typeof file.projectID !== 'number' || typeof file.fileID !== 'number') {
+      if (!Number.isSafeInteger(file.projectID) || file.projectID <= 0 || !Number.isSafeInteger(file.fileID) || file.fileID <= 0) {
         return false;
       }
     }

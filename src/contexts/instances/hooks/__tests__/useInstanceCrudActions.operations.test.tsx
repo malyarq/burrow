@@ -184,6 +184,22 @@ describe('useInstanceCrudActions duplicate operation', () => {
   });
 });
 
+describe('useInstanceCrudActions selection', () => {
+  afterEach(() => vi.clearAllMocks());
+
+  it('publishes a confirmed selection through the canonical owner without a full loading reset', async () => {
+    const { result, refresh, selectInstance } = renderActions();
+
+    await act(async () => {
+      await result.current.select('published-pack');
+    });
+
+    expect(mocked.select).toHaveBeenCalledWith({ id: 'published-pack' });
+    expect(selectInstance).toHaveBeenCalledWith('published-pack');
+    expect(refresh).not.toHaveBeenCalled();
+  });
+});
+
 describe('useInstanceCrudActions delete operation', () => {
   afterEach(() => vi.clearAllMocks());
 
@@ -250,8 +266,10 @@ describe('useInstanceCrudActions delete operation', () => {
 
 function renderActions() {
   const invalidateInstances = vi.fn().mockResolvedValue(undefined);
+  const selectInstance = vi.fn().mockResolvedValue(undefined);
   const { result, unmount } = renderHook(() => useInstanceCrudActions({
     invalidateInstances,
+    selectInstance,
   }));
 
   mocked.select.mockResolvedValue({ ok: true, value: { status: 'committed', selectedId: 'published-pack', instances: [] } });
@@ -271,6 +289,7 @@ function renderActions() {
     unmount,
     refresh: invalidateInstances,
     loadSelected: invalidateInstances,
+    selectInstance,
   };
 }
 

@@ -7,6 +7,7 @@
 export const PROVIDER_CATALOG_CHANNELS = {
   search: 'providerCatalog:search',
   versions: 'providerCatalog:versions',
+  contents: 'providerCatalog:contents',
 } as const;
 
 export type ProviderCatalogChannel = (typeof PROVIDER_CATALOG_CHANNELS)[keyof typeof PROVIDER_CATALOG_CHANNELS];
@@ -28,6 +29,8 @@ export type ProviderCatalogSearchResultItem = Readonly<{
   platform: ProviderCatalogPlatform;
   projectId: string;
   slug?: string;
+  /** Provider-supplied canonical project URL, when available. */
+  projectUrl?: string;
   title: string;
   description?: string;
   iconUrl?: string;
@@ -66,8 +69,27 @@ export type ProviderCatalogVersionDescriptor = Readonly<{
   }>[];
 }>;
 
+export type ProviderCatalogContentsRequest = Readonly<{
+  platform: ProviderCatalogPlatform;
+  projectId: string;
+  versionId: string;
+}>;
+
+export type ProviderCatalogContentEntry = Readonly<{
+  kind: 'mod' | 'resourcepack' | 'shader' | 'other';
+  label: string;
+  required: boolean;
+}>;
+
+/** Contents come from the selected pack archive's manifest; no instance is created. */
+export type ProviderCatalogContents = Readonly<{
+  entries: readonly ProviderCatalogContentEntry[];
+  truncated: boolean;
+}>;
+
 /** Dedicated typed preload capability for remote provider discovery only. */
 export type ProviderCatalogAPI = Readonly<{
   search(request: ProviderCatalogSearchRequest): Promise<ProviderCatalogSearchResult>;
   versions(request: ProviderCatalogVersionsRequest): Promise<readonly ProviderCatalogVersionDescriptor[]>;
+  contents(request: ProviderCatalogContentsRequest): Promise<ProviderCatalogContents>;
 }>;
