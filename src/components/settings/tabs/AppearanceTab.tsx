@@ -18,18 +18,23 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
     accentColor,
     activeThemeConfig,
     applyAppearanceState,
+    applySavedTheme,
     applyThemePreset,
     customTheme,
+    deleteSavedTheme,
     getAccentStyles,
     language,
     setAccentColor,
     setCustomTheme,
     setLanguage,
+    saveTheme,
     setTheme,
     t,
     theme,
     themePresetId,
     themeRuntimeState,
+    savedThemes,
+    renameSavedTheme,
   } = useSettings();
 
   const updateColor = (
@@ -58,11 +63,16 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({ embedded = false }
         <AppearancePresets
           accentColor={accentColor}
           activeThemeConfig={activeThemeConfig}
+          applySavedTheme={applySavedTheme}
           customTheme={customTheme}
+          deleteSavedTheme={deleteSavedTheme}
           embedded={embedded}
           onAppearanceStateChange={applyAppearanceState}
           onPresetChange={applyThemePreset}
           onThemeChange={setTheme}
+          onRenameSavedTheme={renameSavedTheme}
+          onSaveTheme={saveTheme}
+          savedThemes={savedThemes}
           t={t}
           theme={theme}
           themePresetId={themePresetId}

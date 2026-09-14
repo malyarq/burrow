@@ -21,7 +21,7 @@ test('a saved purple accent survives palette and mode changes without tinting ne
     expect((await tokens(page)).bg).toBe('24 24 27');
   }
   const selector = page.getByRole('combobox', { name: 'Theme Presets', exact: true });
-  for (const preset of ['forest', 'midnight', 'navy', 'light-plus', 'default']) {
+  for (const preset of ['forest', 'midnight', 'navy', 'default']) {
     await selector.selectOption(preset);
     expect((await tokens(page)).accent).toBe('147 51 234');
   }

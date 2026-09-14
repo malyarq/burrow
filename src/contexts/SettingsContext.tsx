@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
-import type { AccentColor, AccentStyleType, AppearanceSettingsState, BrandThemeConfig, DownloadProvider, Language, Theme, UIMode, CustomThemeConfig, ThemePresetId } from './settings/types';
+import type { AccentColor, AccentStyleType, AppearanceSettingsState, BrandThemeConfig, DownloadProvider, Language, Theme, UIMode, CustomThemeConfig, SavedTheme, ThemePresetId } from './settings/types';
 import {
     deserializeBoolean,
     deserializeInt,
@@ -9,7 +9,7 @@ import {
         serializeString,
         useLocalStorageState,
 } from './settings/persistence';
-import { getThemePreset, getThemePresetAccent, inferThemePresetId } from './settings/theme-presets';
+import { getThemePreset, getThemePresetAccent, inferThemePresetId, isLegacyPresetConfig } from './settings/theme-presets';
 import type { ThemeRuntimeState } from './settings/theme';
 import { applyThemeToDocument, extractThemeOverrides, pruneThemeConfig, resolveAccentColor, resolveThemeConfig, resolveThemeRuntimeState } from './settings/theme';
 import { createTranslator, getLocaleForLanguage } from './settings/i18n';
@@ -34,6 +34,11 @@ interface SettingsState {
     applyThemePreset: (presetId: ThemePresetId) => void;
     clearThemePreset: () => void;
     applyAppearanceState: (val: AppearanceSettingsState) => void;
+    savedThemes: SavedTheme[];
+    saveTheme: (name: string) => void;
+    applySavedTheme: (id: string) => void;
+    renameSavedTheme: (id: string, name: string) => void;
+    deleteSavedTheme: (id: string) => void;
     downloadProvider: DownloadProvider;
     setDownloadProvider: (val: DownloadProvider) => void;
     autoDownloadThreads: boolean;
@@ -82,6 +87,7 @@ function parseStoredTheme(raw: string | null): Theme {
 }
 
 function parseStoredThemePresetId(raw: string | null): ThemePresetId | null {
+    if (raw === 'light-plus') return 'default';
     if (!raw) {
         return null;
     }
@@ -107,7 +113,10 @@ function parseStoredCustomTheme(raw: string | null): CustomThemeConfig {
 
 function normalizeAppearanceState(state: AppearanceSettingsState): AppearanceSettingsState {
     const normalizedTheme = state.theme === 'light' ? 'light' : 'dark';
-    const normalizedPresetId = state.themePresetId ? parseStoredThemePresetId(state.themePresetId) : null;
+    const parsedPresetId = state.themePresetId ? parseStoredThemePresetId(state.themePresetId) : null;
+    const normalizedPresetId = parsedPresetId === 'midnight' && normalizedTheme === 'light'
+        ? 'default'
+        : parsedPresetId;
     const normalizedAccentSource = state.accentColorSource === 'user'
         ? 'user'
         : state.accentColorSource === 'preset'
@@ -169,7 +178,7 @@ function deserializeAppearanceState(raw: string | null): AppearanceSettingsState
     return normalizeAppearanceState({
         accentColor: legacyAccentColor,
         accentColorSource: legacyAccentRaw ? undefined : 'preset',
-        customTheme: explicitPresetId ? extractThemeOverrides(legacyTheme, explicitPresetId, legacyCustomTheme) : legacyCustomTheme,
+        customTheme: explicitPresetId ? extractThemeOverrides(legacyTheme, explicitPresetId, legacyCustomTheme) : isLegacyPresetConfig(legacyTheme, inferredPresetId, legacyCustomTheme) ? {} : legacyCustomTheme,
         theme: legacyTheme,
         themePresetId: inferredPresetId,
     });
@@ -177,6 +186,26 @@ function deserializeAppearanceState(raw: string | null): AppearanceSettingsState
 
 function serializeAppearanceState(state: AppearanceSettingsState) {
     return JSON.stringify(normalizeAppearanceState(state));
+}
+
+function deserializeSavedThemes(raw: string | null): SavedTheme[] {
+    if (!raw) return [];
+    try {
+        const parsed = JSON.parse(raw) as unknown;
+        if (!Array.isArray(parsed)) return [];
+        return parsed.flatMap((entry): SavedTheme[] => {
+            if (!entry || typeof entry !== 'object') return [];
+            const candidate = entry as Partial<SavedTheme>;
+            if (typeof candidate.id !== 'string' || typeof candidate.name !== 'string' || !candidate.name.trim()) return [];
+            return [{ ...normalizeAppearanceState({
+                accentColor: candidate.accentColor ?? DEFAULT_APPEARANCE_STATE.accentColor,
+                accentColorSource: candidate.accentColorSource,
+                customTheme: candidate.customTheme ?? {},
+                theme: candidate.theme ?? DEFAULT_APPEARANCE_STATE.theme,
+                themePresetId: candidate.themePresetId ?? null,
+            }), id: candidate.id, name: candidate.name.trim() }];
+        });
+    } catch { return []; }
 }
 
 // Centralized UI settings with localStorage persistence.
@@ -191,6 +220,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         'settings_appearanceState',
         deserializeAppearanceState,
         serializeAppearanceState,
+    );
+    const [savedThemes, setSavedThemes] = useLocalStorageState<SavedTheme[]>(
+        'settings_savedThemes', deserializeSavedThemes, JSON.stringify,
     );
     const [legacyDownloadProvider, setDownloadProvider] = useLocalStorageState<DownloadProvider>(
         'settings_downloadProvider',
@@ -210,6 +242,23 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const applyAppearanceState = useCallback((nextState: AppearanceSettingsState) => {
         setAppearanceStateRaw(normalizeAppearanceState(nextState));
     }, [setAppearanceStateRaw]);
+    const saveTheme = useCallback((name: string) => {
+        const trimmedName = name.trim();
+        if (!trimmedName) return;
+        const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        setSavedThemes([...savedThemes, { ...normalizeAppearanceState(appearanceState), id, name: trimmedName }]);
+    }, [appearanceState, savedThemes, setSavedThemes]);
+    const applySavedTheme = useCallback((id: string) => {
+        const savedTheme = savedThemes.find((entry) => entry.id === id);
+        if (savedTheme) applyAppearanceState(savedTheme);
+    }, [applyAppearanceState, savedThemes]);
+    const renameSavedTheme = useCallback((id: string, name: string) => {
+        const trimmedName = name.trim();
+        if (trimmedName) setSavedThemes(savedThemes.map((entry) => entry.id === id ? { ...entry, name: trimmedName } : entry));
+    }, [savedThemes, setSavedThemes]);
+    const deleteSavedTheme = useCallback((id: string) => {
+        setSavedThemes(savedThemes.filter((entry) => entry.id !== id));
+    }, [savedThemes, setSavedThemes]);
     const setAccentColor = useCallback((val: AccentColor) => {
         applyAppearanceState({
             ...appearanceState,
@@ -221,6 +270,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         applyAppearanceState({
             ...appearanceState,
             theme: val,
+            themePresetId: appearanceState.themePresetId === 'midnight' && val === 'light' ? 'default' : appearanceState.themePresetId,
         });
     }, [appearanceState, applyAppearanceState]);
     const clearThemePreset = useCallback(() => {
@@ -359,6 +409,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             applyThemePreset,
             clearThemePreset,
             applyAppearanceState,
+            savedThemes, saveTheme, applySavedTheme, renameSavedTheme, deleteSavedTheme,
             downloadProvider, setDownloadProvider,
             autoDownloadThreads, setAutoDownloadThreads,
             downloadThreads, setDownloadThreads,

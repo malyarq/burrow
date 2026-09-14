@@ -4,6 +4,20 @@
 
 This file summarizes the current public release. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
 
+## [0.15.0] — 2026-09-14
+
+### Русский
+
+- Свои темы можно сохранять, применять, переименовывать и удалять вместе с акцентом, режимом, цветами и фоновыми эффектами. Готовые палитры: Нейтральная, Тёплый камень, Океан и Полночь для тёмного режима.
+- Вкладки настроек подгружаются заранее и сохраняют состояние. Кнопка «Готово» находится в общей шапке; аккаунты, моды, ресурспаки и шейдеры используют согласованные панели и действия.
+- Выбор модпака больше не перезагружает фильтры. Обновление ресурсов сохраняет видимый список. Исправлена отметка 8 ГБ на шкале памяти, убрано изменение размеров при появлении диалогов, обновлена стандартная обложка модпака.
+
+### English
+
+- Save, apply, rename and delete personal themes with their accent, mode, colors and background effects. Presets are Neutral, Warm Stone, Ocean and dark-only Midnight.
+- Settings tabs preload and retain state. Done stays in the shared header; accounts, mods, resource packs and shaders use consistent panels and actions.
+- Selecting a modpack no longer reloads filters. Resource refresh preserves the visible list. Fixed the 8 GB memory tick, removed dialog arrival scaling and replaced the default modpack cover.
+
 ## [0.14.0] — 2026-09-14
 
 ### Русский

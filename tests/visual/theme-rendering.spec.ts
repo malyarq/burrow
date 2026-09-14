@@ -4,9 +4,7 @@ const fixture = '/tests/visual/fixtures/launcher-shell.html';
 
 const presets = {
   default: { light: '244 244 245', dark: '24 24 27' },
-  midnight: { light: '238 242 255', dark: '9 9 11' },
-  forest: { light: '236 253 245', dark: '5 46 22' },
-  'light-plus': { light: '255 255 255', dark: '24 24 27' },
+  forest: { light: '250 247 242', dark: '28 25 23' },
   navy: { light: '239 246 255', dark: '15 23 42' },
 } as const;
 
@@ -20,7 +18,7 @@ async function surfaceState(page: Page) {
     const sidebarStyle = getComputedStyle(sidebar!);
     const cardStyle = getComputedStyle(card);
     const state = {
-      bodyBackground: bodyStyle.backgroundColor,
+      bodyBackground: bodyStyle.backgroundColor.replace(/^rgba\((.*), 1\)$/, 'rgb($1)'),
       bodyToken: bodyStyle.getPropertyValue('--bg-app').trim(),
       cardBackground: cardStyle.backgroundColor,
       cardToken: cardStyle.getPropertyValue('--bg-card').trim(),
@@ -78,3 +76,33 @@ for (const [preset, colors] of Object.entries(presets)) {
     expect(surfaces.accent).toBe('147 51 234');
   });
 }
+
+test('saved themes restore the complete appearance after restart and can be renamed or removed', async ({ page }) => {
+  await page.goto(`${fixture}?theme=dark&accent=purple&lang=en`);
+  await page.locator('[data-tour="settings"]').click();
+  const preset = page.getByRole('combobox', { name: 'Theme Presets', exact: true });
+  await preset.selectOption('midnight');
+  await page.getByRole('button', { name: 'Custom colors', exact: true }).click();
+  // Surface color controls, excluding the separate custom accent picker.
+  const background = page.getByRole('button', { name: 'Custom colors', exact: true }).locator('..').locator('input[type="color"]').first();
+  await background.fill('#222233');
+  const saved = page.getByTestId('saved-themes');
+  await saved.getByRole('textbox', { name: 'Theme name' }).fill('Evening');
+  await saved.getByRole('button', { name: 'Save', exact: true }).click();
+  const original = await page.evaluate(() => JSON.parse(localStorage.getItem('settings_appearanceState')!));
+  await preset.selectOption('navy');
+  await page.reload();
+  await page.locator('[data-tour="settings"]').click();
+  await saved.getByRole('button', { name: 'Evening', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('settings_appearanceState')!))).toEqual(original);
+  await saved.getByRole('button', { name: 'Rename', exact: true }).click();
+  await saved.getByRole('textbox', { name: 'Theme name' }).last().fill('Night');
+  await saved.getByRole('button', { name: 'Save', exact: true }).last().click();
+  await expect(saved.getByRole('button', { name: 'Night', exact: true })).toBeVisible();
+  await saved.getByRole('button', { name: 'Delete Night', exact: true }).click();
+  await expect(saved.getByRole('button', { name: 'Night', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Light', exact: true }).click();
+  await expect(preset).toHaveValue('default');
+  expect(await preset.locator('option[value="midnight"]').count()).toBe(0);
+  expect(await preset.locator('option[value="light-plus"]').count()).toBe(0);
+});

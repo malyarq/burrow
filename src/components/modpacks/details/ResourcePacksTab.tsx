@@ -23,6 +23,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
     const confirm = useConfirm();
     const [packs, setPacks] = useState<ResourcePack[]>([]);
     const [loading, setLoading] = useState(true);
+    const [hasLoaded, setHasLoaded] = useState(false);
     const [loadError, setLoadError] = useState<unknown | null>(null);
     const toast = useToast();
 
@@ -31,12 +32,13 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
         setLoadError(null);
         try {
             const list = await resourcePacksIPC.list(instanceId);
-            setPacks(list);
+            setPacks(list ?? []);
         } catch (err) {
             console.error(err);
             setLoadError(err);
             toast.error(t('modpacks.resourcepack_load_error'));
         } finally {
+            setHasLoaded(true);
             setLoading(false);
         }
     }, [instanceId, t, toast]);
@@ -127,7 +129,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
 
     return (
         <div className="space-y-4">
-            <div className="surface-card space-y-4 p-4">
+            <div className="surface-card space-y-5 rounded-xl p-5">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_resourcepacks')}</div>
@@ -138,12 +140,12 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {onAddResourcePack && (
-                            <Button onClick={onAddResourcePack} variant="primary" size="sm">
+                            <Button onClick={onAddResourcePack} variant="primary" size="sm" disabled={loading}>
                                 <ImagePlus className="h-4 w-4" />
                                 {t('modpacks.add_resourcepack_btn')}
                             </Button>
                         )}
-                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm">
+                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" disabled={loading} isLoading={loading}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
                         </Button>
@@ -151,44 +153,24 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                 </div>
 
                 <div
-                    className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_repeat(2,minmax(0,9rem))]"
-                    data-testid="resourcepacks-summary"
-                >
-                    <div className="surface-inline p-3 text-sm text-secondary">
-                        {t('modpacks.resourcepacks_priority_hint')}
-                    </div>
-                    <div className="surface-inline rounded-2xl px-3 py-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.enabled')}</p>
-                        <p className="mt-2 text-base font-semibold text-foreground">{loadError ? t('degraded.unavailable_label') : enabledPacks.length}</p>
-                    </div>
-                    <div className="surface-inline rounded-2xl px-3 py-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">{t('modpacks.installed')}</p>
-                        <p className="mt-2 text-base font-semibold text-foreground">{loadError ? t('degraded.unavailable_label') : packs.length}</p>
-                    </div>
-                </div>
-
-                <div
-                    className="surface-inline rounded-2xl border border-border/70 bg-background/60 p-3"
+                    className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border/70 pt-4 text-sm text-secondary"
                     data-testid="resourcepacks-scope-note"
                 >
-                    <p className="text-sm font-medium text-foreground">
-                        {t('modpacks.resourcepack_scope_title') || 'Instance-scoped resource packs'}
-                    </p>
-                    <p className="mt-1 text-sm text-secondary">
-                        {t('modpacks.resourcepack_scope_desc')
-                            || 'Resource packs added here only affect this modpack. Burrow does not mark them compatible or incompatible for you.'}
-                    </p>
+                    <span>{t('modpacks.resourcepacks_priority_hint')}</span>
+                    <span className="text-foreground">{t('modpacks.enabled')}: {loadError && packs.length === 0 ? t('degraded.unavailable_label') : enabledPacks.length}</span>
+                    <span className="text-foreground">{t('modpacks.installed')}: {loadError && packs.length === 0 ? t('degraded.unavailable_label') : packs.length}</span>
                 </div>
             </div>
 
-            {loading ? (
-                <div className="surface-inline flex items-center justify-center gap-3 p-6 text-sm text-secondary" role="status">
+            {loading && !hasLoaded ? (
+                <div className="surface-card flex min-h-40 items-center justify-center gap-3 rounded-xl p-5 text-sm text-secondary" role="status">
                     <LoadingSpinner size="sm" variant="accent" />
                     {t('modpacks.loading')}
                 </div>
-            ) : loadError ? (
+            ) : loadError && packs.length === 0 ? (
                 <DegradedStateView
                     variant="unavailable"
+                    layout="inline"
                     label={t('degraded.unavailable_label')}
                     title={t('modpacks.resourcepack_load_error')}
                     description={resourcePackLoadDescription}
@@ -210,6 +192,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
             ) : packs.length === 0 ? (
                 <DegradedStateView
                     variant="empty"
+                    layout="inline"
                     label={t('degraded.empty_label')}
                     title={t('modpacks.no_resourcepacks_installed')}
                     description={t('modpacks.resourcepacks_empty_hint')}
@@ -231,7 +214,7 @@ export function ResourcePacksTab({ instanceId, onUpdate, onAddResourcePack }: Re
                             <div
                                 key={pack.fileName}
                                 role="listitem"
-                                className={cn('surface-card flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
+                                className={cn('surface-card flex flex-col gap-4 rounded-xl p-5 lg:flex-row lg:items-center lg:justify-between', !pack.isEnabled && 'opacity-75')}
                             >
                                 <div className="flex min-w-0 flex-1 items-center gap-4">
                                     <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/70 bg-background/70">

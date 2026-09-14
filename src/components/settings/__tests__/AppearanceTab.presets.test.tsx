@@ -46,15 +46,15 @@ describe('AppearanceTab preset contract', () => {
 
     expect(localStorage.getItem('settings_customTheme')).toBe('{}');
     expect(getPresetSelect().value).toBe('forest');
-    expect(getRootVar('--bg-app')).toBe('5 46 22');
-    expect(getRootVar('--bg-card')).toBe('6 78 59');
-    expect(getRootVar('--text-main')).toBe('236 253 245');
-    expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
+    expect(getRootVar('--bg-app')).toBe('28 25 23');
+    expect(getRootVar('--bg-card')).toBe('41 37 36');
+    expect(getRootVar('--text-main')).toBe('250 250 249');
+    expect(screen.getAllByText('Warm Stone · Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Default variant')).toBeTruthy();
     expect(screen.getByText('Unchanged')).toBeTruthy();
   });
 
-  it('keeps the preset identity when switching theme mode and repaints to that preset variant', async () => {
+  it('returns Midnight to the neutral family when switching to light mode', async () => {
     renderAppearanceTab();
 
     fireEvent.change(getPresetSelect(), { target: { value: 'midnight' } });
@@ -70,13 +70,13 @@ describe('AppearanceTab preset contract', () => {
       expect(localStorage.getItem('settings_theme')).toBe('light');
     });
 
-    expect(localStorage.getItem('settings_themePresetId')).toBe('midnight');
-    expect(getPresetSelect().value).toBe('midnight');
-    expect(getRootVar('--bg-app')).toBe('238 242 255');
-    expect(getRootVar('--bg-card')).toBe('224 231 255');
-    expect(getRootVar('--text-main')).toBe('17 24 39');
+    expect(localStorage.getItem('settings_themePresetId')).toBe('default');
+    expect(getPresetSelect().value).toBe('default');
+    expect(getRootVar('--bg-app')).toBe('244 244 245');
+    expect(getRootVar('--bg-card')).toBe('255 255 255');
+    expect(getRootVar('--text-main')).toBe('24 24 27');
     expect(getRootVar('--accent-main')).toBe('59 130 246');
-    expect(screen.getAllByText('Midnight · Light').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Neutral · Light').length).toBeGreaterThan(0);
     expect(screen.getByText('Alternate variant')).toBeTruthy();
   });
 
@@ -124,8 +124,8 @@ describe('AppearanceTab preset contract', () => {
 
     expect(localStorage.getItem('settings_theme')).toBe('light');
     expect(getPresetSelect().value).toBe('forest');
-    expect(getRootVar('--bg-app')).toBe('236 253 245');
-    expect(screen.getAllByText('Forest · Light').length).toBeGreaterThan(0);
+    expect(getRootVar('--bg-app')).toBe('250 247 242');
+    expect(screen.getAllByText('Warm Stone · Light').length).toBeGreaterThan(0);
     expect(screen.getByText('Alternate variant')).toBeTruthy();
   });
 
@@ -157,9 +157,9 @@ describe('AppearanceTab preset contract', () => {
       theme: string;
     };
 
-    expect(exportedTheme.accentColor).toBe('emerald');
+    expect(exportedTheme.accentColor).toBe('orange');
     expect(exportedTheme.customTheme).toEqual({});
-    expect(exportedTheme.name).toBe('Forest · Dark');
+    expect(exportedTheme.name).toBe('Warm Stone · Dark');
     expect(exportedTheme.presetId).toBe('forest');
     expect(exportedTheme.theme).toBe('dark');
 
@@ -188,7 +188,7 @@ describe('AppearanceTab preset contract', () => {
 
     expect(localStorage.getItem('settings_customTheme')).toBe('{}');
     expect(getPresetSelect().value).toBe('forest');
-    expect(getRootVar('--bg-app')).toBe('5 46 22');
+    expect(getRootVar('--bg-app')).toBe('28 25 23');
   });
 
   it('restores the preset identity when importing an exported preset payload', async () => {
@@ -228,7 +228,7 @@ describe('AppearanceTab preset contract', () => {
     });
 
     expect(getPresetSelect().value).toBe('forest');
-    expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Warm Stone · Dark').length).toBeGreaterThan(0);
     expect(localStorage.getItem('settings_accentColor')).toBe('#123456');
   });
 
@@ -264,8 +264,8 @@ describe('AppearanceTab preset contract', () => {
         background: '#112233',
       },
     });
-    expect(container.textContent).toContain('Forest · Dark');
+    expect(container.textContent).toContain('Warm Stone · Dark');
     expect(screen.getByText('Customized')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Return to Forest · Dark' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Return to Warm Stone · Dark' })).toBeTruthy();
   });
 });

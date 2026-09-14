@@ -2,6 +2,10 @@
 
 This guide covers the current stable release. For confirmed limitations, see [Known issues](known-issues.md).
 
+## Appearance themes
+
+Appearance settings offer Neutral, Warm Stone and Ocean. Midnight is available only in dark mode; switching to light replaces it with Neutral. Custom colors include a labeled preview. To save the complete appearance, enter a name under Saved themes and choose Save. Select its name to restore the theme, mode, accent and background effects; adjacent actions rename or remove it.
+
 ## Install
 
 1. Open the [latest GitHub release](https://github.com/malyarq/burrow/releases/latest).

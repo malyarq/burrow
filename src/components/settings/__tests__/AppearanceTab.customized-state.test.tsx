@@ -33,12 +33,12 @@ describe('AppearanceTab customized state', () => {
 
     renderAppearanceTab();
 
-    expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Warm Stone · Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Customized')).toBeTruthy();
     expect(screen.getByText('Default variant')).toBeTruthy();
-    expect(screen.getByText('Restore the colors and background of Forest · Dark.')).toBeTruthy();
+    expect(screen.getByText('Restore the colors and background of Warm Stone · Dark.')).toBeTruthy();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Return to Forest · Dark' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Return to Warm Stone · Dark' }));
 
     await waitFor(() => {
       expect(localStorage.getItem('settings_customTheme')).toBe('{}');

@@ -141,7 +141,7 @@ export function RuntimeSection(props: {
             <Button
               size="sm"
               variant="secondary"
-              className="flex-1 text-[10px] h-7 min-h-0 py-0"
+              className="flex-1"
               onClick={() => setMemoryGb(2)}
             >
               2 GB
@@ -149,7 +149,7 @@ export function RuntimeSection(props: {
             <Button
               size="sm"
               variant="secondary"
-              className="flex-1 text-[10px] h-7 min-h-0 py-0"
+              className="flex-1"
               onClick={() => setMemoryGb(4)}
             >
               4 GB
@@ -157,7 +157,7 @@ export function RuntimeSection(props: {
             <Button
               size="sm"
               variant="secondary"
-              className="flex-1 text-[10px] h-7 min-h-0 py-0"
+              className="flex-1"
               onClick={() => setMemoryGb(8)}
             >
               8 GB
@@ -166,18 +166,19 @@ export function RuntimeSection(props: {
 
           <input
             type="range"
+            aria-label={t('settings.ram')}
             min="1"
             max="16"
             step="0.5"
             value={getRamGb(modpackConfig, 4)}
             onChange={(e) => setMemoryGb(parseFloat(e.target.value))}
-            className={cn('w-full', getAccentStyles('accent').className)}
+            className={cn('settings-slider', getAccentStyles('accent').className)}
             style={getAccentStyles('accent').style}
           />
-          <div className="helper-text flex justify-between text-[10px]">
-            <span>1 GB</span>
-            <span>8 GB</span>
-            <span>16 GB</span>
+          <div className="relative mx-[0.65rem] h-5 text-xs text-secondary" aria-hidden="true">
+            <span className="absolute left-0">1 GB</span>
+            <span data-testid="memory-tick-eight" className="absolute -translate-x-1/2" style={{ left: `${(8 - 1) / (16 - 1) * 100}%` }}>8 GB</span>
+            <span className="absolute right-0">16 GB</span>
           </div>
         </div>
 
@@ -199,7 +200,7 @@ export function RuntimeSection(props: {
               step="0.5"
               value={getMinRamGb(modpackConfig, 1)}
               onChange={(e) => setMinMemoryGb(parseFloat(e.target.value))}
-              className={cn('w-full', getAccentStyles('accent').className)}
+              className={cn('settings-slider', getAccentStyles('accent').className)}
               style={getAccentStyles('accent').style}
             />
             <div className="helper-text flex justify-between text-[10px]">

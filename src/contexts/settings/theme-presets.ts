@@ -78,7 +78,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     {
         id: 'default',
         labelKey: 'settings.theme_preset_default',
-        fallbackLabel: 'Default',
+        fallbackLabel: 'Neutral',
         defaultTheme: 'dark',
         accentDefaults: {
             light: 'blue',
@@ -152,20 +152,20 @@ export const THEME_PRESETS: ThemePreset[] = [
     {
         id: 'forest',
         labelKey: 'settings.theme_preset_forest',
-        fallbackLabel: 'Forest',
+        fallbackLabel: 'Warm Stone',
         defaultTheme: 'dark',
         accentDefaults: {
-            light: 'emerald',
-            dark: 'emerald',
+            light: 'orange',
+            dark: 'orange',
         },
         themes: {
             light: createPresetConfig({
                 colors: {
-                    background: '#ecfdf5', // emerald-50
-                    card: '#d1fae5', // emerald-100
-                    textMain: '#064e3b', // emerald-900
-                    textSecondary: '#047857', // emerald-700
-                    border: '#6ee7b7', // emerald-300
+                    background: '#faf7f2',
+                    card: '#f4eee5',
+                    textMain: '#292524',
+                    textSecondary: '#57534e',
+                    border: '#e7e0d7',
                     error: '#dc2626', // red-600
                 },
                 brand: {
@@ -178,11 +178,11 @@ export const THEME_PRESETS: ThemePreset[] = [
             }),
             dark: createPresetConfig({
                 colors: {
-                    background: '#052e16', // emerald-950
-                    card: '#064e3b', // emerald-900
-                    textMain: '#ecfdf5', // emerald-50
-                    textSecondary: '#6ee7b7', // emerald-300
-                    border: '#065f46', // emerald-800
+                    background: '#1c1917',
+                    card: '#292524',
+                    textMain: '#fafaf9',
+                    textSecondary: '#d6d3d1',
+                    border: '#44403c',
                     error: '#f87171', // red-400
                 },
                 brand: {
@@ -198,7 +198,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     {
         id: 'light-plus',
         labelKey: 'settings.theme_preset_light_plus',
-        fallbackLabel: 'Light+',
+        fallbackLabel: 'Paper',
         defaultTheme: 'light',
         accentDefaults: {
             light: 'orange',
@@ -244,7 +244,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     {
         id: 'navy',
         labelKey: 'settings.theme_preset_navy',
-        fallbackLabel: 'Navy',
+        fallbackLabel: 'Ocean',
         defaultTheme: 'dark',
         accentDefaults: {
             light: 'blue',
@@ -287,6 +287,11 @@ export const THEME_PRESETS: ThemePreset[] = [
             }),
         }
     }
+];
+
+const LEGACY_PRESET_CONFIGS: Array<{ id: ThemePresetId; theme: Theme; config: CustomThemeConfig }> = [
+    { id: 'forest', theme: 'dark', config: createPresetColors({ background: '#052e16', card: '#064e3b', textMain: '#ecfdf5', textSecondary: '#6ee7b7', border: '#065f46', error: '#f87171' }) },
+    { id: 'forest', theme: 'light', config: createPresetColors({ background: '#ecfdf5', card: '#d1fae5', textMain: '#064e3b', textSecondary: '#047857', border: '#6ee7b7', error: '#dc2626' }) },
 ];
 
 export function getThemePreset(presetId: ThemePresetId | string | null | undefined) {
@@ -362,5 +367,16 @@ export function inferThemePresetId(
         (preset) => preset.id !== 'default' && normalizeThemeConfig(preset.themes[theme], { includeBrand: false }) === normalized,
     );
 
-    return inferredPreset?.id ?? null;
+    return inferredPreset?.id
+        ?? LEGACY_PRESET_CONFIGS.find((preset) => preset.theme === theme && normalizeThemeConfig(preset.config, { includeBrand: false }) === normalized)?.id
+        ?? null;
+}
+
+export function getSelectableThemePresets(theme: Theme) {
+    return THEME_PRESETS.filter((preset) => preset.id !== 'light-plus' && (preset.id !== 'midnight' || theme === 'dark'));
+}
+
+export function isLegacyPresetConfig(theme: Theme, presetId: ThemePresetId | null, config: CustomThemeConfig) {
+    return LEGACY_PRESET_CONFIGS.some((preset) => preset.id === presetId && preset.theme === theme
+        && normalizeThemeConfig(preset.config, { includeBrand: false }) === normalizeThemeConfig(config, { includeBrand: false }));
 }

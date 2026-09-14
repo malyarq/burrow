@@ -7,6 +7,7 @@ interface ModalProps {
     onClose: () => void;
     children: React.ReactNode;
     title?: React.ReactNode;
+    headerActions?: React.ReactNode;
     className?: string;
     bodyClassName?: string;
     bodyProps?: Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'className' | 'id'>;
@@ -113,6 +114,7 @@ export const Modal: React.FC<ModalProps> = ({
     onClose,
     children,
     title,
+    headerActions,
     className,
     bodyClassName,
     bodyProps,
@@ -280,6 +282,8 @@ export const Modal: React.FC<ModalProps> = ({
                             >
                                 {title}
                             </h3>
+                            <div className="flex shrink-0 items-center gap-2">
+                            {headerActions}
                             <button
                                 type="button"
                                 onClick={requestClose}
@@ -289,6 +293,7 @@ export const Modal: React.FC<ModalProps> = ({
                             >
                                 <X className="h-4 w-4" />
                             </button>
+                            </div>
                         </div>
                     )}
 

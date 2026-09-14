@@ -65,7 +65,6 @@ export function useInstalledModpackCatalog({
   const modpacksKey = modpacks.map((item) => [
     item.id,
     item.name,
-    item.selected,
     item.summary.minecraftVersion,
     item.summary.modLoader?.type ?? '',
     item.summary.modLoader?.version ?? '',

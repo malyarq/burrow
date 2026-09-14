@@ -9,8 +9,8 @@ const getSelectedAccountMock = vi.fn()
 const getSkinStateMock = vi.fn()
 const onCloseMock = vi.fn()
 
-vi.mock('../../contexts/SettingsContext', () => ({
-  useSettings: () => ({
+vi.mock('../../contexts/SettingsContext', () => {
+  const settings = {
     hideLauncher: false,
     setHideLauncher: vi.fn(),
     showConsole: false,
@@ -48,8 +48,9 @@ vi.mock('../../contexts/SettingsContext', () => ({
     maxSockets: 8,
     setMaxSockets: vi.fn(),
     getAccentStyles: () => ({ className: '', style: undefined }),
-  }),
-}))
+  };
+  return { useSettings: () => settings };
+})
 
 vi.mock('../../features/updater/hooks/useAppUpdater', () => ({
   useAppUpdater: () => ({
@@ -159,19 +160,23 @@ describe('SettingsPage accounts route', () => {
   it('switches from settings tabs into the real accounts route and keeps the modal close action available', async () => {
     render(<SettingsPage onClose={onCloseMock} />)
 
+    await waitFor(() => expect(getAccountsMock).toHaveBeenCalledTimes(1))
     fireEvent.click(screen.getByRole('tab', { name: 'Accounts' }))
 
     const panel = await screen.findByRole('tabpanel', { name: 'Accounts' })
     expect(panel).toBeTruthy()
     expect(screen.queryByRole('heading', { name: 'Accounts' })).toBeNull()
     expect(await screen.findByText('Current account')).toBeTruthy()
-    expect(screen.getByText('Blessing Skin and LittleSkin are supported for provider-aware skin management.')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Add Account' })).toBeTruthy()
     expect(await screen.findByText('Skin Management')).toBeTruthy()
 
     await waitFor(() => {
       expect(getSkinStateMock).toHaveBeenCalledWith('account-1')
     })
 
+    fireEvent.click(screen.getByRole('tab', { name: 'Downloads' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Accounts' }))
+    expect(getAccountsMock).toHaveBeenCalledTimes(1)
     fireEvent.click(screen.getByRole('button', { name: 'Done' }))
     expect(onCloseMock).toHaveBeenCalledTimes(1)
   })

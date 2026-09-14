@@ -99,7 +99,7 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
   const canOpenProvider = Boolean(isSupported && skinState?.manageUrl)
 
   return (
-    <div className="surface-card space-y-4 p-5">
+    <div className="space-y-4 border-t border-border pt-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-foreground">{t('accounts.skinTitle') || 'Skin Management'}</h3>
@@ -115,13 +115,13 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-200">
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-200">
           {error}
         </div>
       )}
 
-      <div className="surface-muted flex flex-col gap-4 p-4 md:flex-row md:items-center">
-        <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-border/60 bg-background/75 p-1">
+      <div className="grid grid-cols-[6rem_minmax(0,1fr)] items-start gap-4">
+        <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-border/60 bg-background/75 p-1">
           <div className="h-full w-full overflow-hidden rounded-xl bg-card/82">
             <LazyImage
               src={avatarUrl}
@@ -148,7 +148,7 @@ export const AccountSkinPanel: React.FC<AccountSkinPanelProps> = ({ account }) =
           </p>
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="col-span-2 flex flex-wrap gap-2">
           <Button
             type="button"
             variant="secondary"

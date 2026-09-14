@@ -105,9 +105,10 @@ describe('SettingsPage layout', () => {
     const tablist = within(header).getByRole('tablist', { name: 'Launcher Settings' });
     const downloadsTab = within(tablist).getByRole('tab', { name: 'Downloads' });
 
-    expect(within(header).getByRole('button', { name: 'Done' })).toBeTruthy();
-    expect(Array.from(header.parentElement?.children ?? [])).toEqual([header, panel]);
-    expect(panel.previousElementSibling).toBe(header);
+    expect(screen.getByRole('button', { name: 'Done' })).toBeTruthy();
+    expect(within(header).queryByRole('button', { name: 'Done' })).toBeNull();
+    expect(header.parentElement?.querySelectorAll('[role="tabpanel"]')).toHaveLength(6);
+    expect(screen.getAllByRole('tabpanel')).toEqual([panel]);
     expect(within(downloadsTab).getByText('Downloads')).toBeTruthy();
     expect(screen.queryByText('Tune mirrors, concurrency, and connection limits for a stable download pipeline.')).toBeNull();
   });

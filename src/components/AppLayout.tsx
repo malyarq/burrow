@@ -14,7 +14,7 @@ import { useSettings } from '../contexts/SettingsContext';
 import type { LaunchStage } from '../features/launcher/services/launcherService';
 import { windowControlsIPC } from '../services/ipc/windowControlsIPC';
 
-const SettingsPage = lazy(() => import('./SettingsPage'));
+import SettingsPage from './SettingsPage';
 const MultiplayerPage = lazy(() => import('./MultiplayerPage'));
 const ModpackRouter = lazy(() =>
   import('./modpacks/ModpackRouter').then((module) => ({ default: module.ModpackRouter })),

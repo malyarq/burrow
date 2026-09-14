@@ -74,3 +74,8 @@ export type AppearanceSettingsState = {
   theme: Theme;
   themePresetId: ThemePresetId | null;
 };
+
+export type SavedTheme = AppearanceSettingsState & {
+  id: string;
+  name: string;
+};

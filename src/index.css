@@ -667,7 +667,7 @@
   .burrow-dialog { animation: dialog-arrive var(--motion-enter) var(--ease-settle) both; }
   .burrow-overlay { animation: fade-in 180ms ease-out both; }
   .disclosure-content:not([hidden]) { animation: disclosure-arrive 180ms var(--ease-settle) both; }
-  @keyframes dialog-arrive { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: none; } }
+  @keyframes dialog-arrive { from { opacity: 0; } to { opacity: 1; } }
   @keyframes disclosure-arrive { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: no-preference) {
     [data-variant='primary']:not(:disabled):hover { transform: translateY(-1px); }

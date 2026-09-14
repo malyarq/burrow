@@ -5,6 +5,7 @@ import { act, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SettingsProvider, useSettings } from '../../SettingsContext';
 import { resolveThemeConfig } from '../theme';
+import { getSelectableThemePresets } from '../theme-presets';
 
 type SettingsSnapshot = ReturnType<typeof useSettings>;
 
@@ -178,6 +179,43 @@ describe('theme runtime contract', () => {
     expect(latestSettings?.themeRuntimeState.customizationScopes).toContain('accent');
   });
 
+  it('offers Midnight only in dark mode and never offers the legacy Paper preset', () => {
+    expect(getSelectableThemePresets('light').map((preset) => preset.id)).not.toContain('midnight');
+    expect(getSelectableThemePresets('light').map((preset) => preset.id)).not.toContain('light-plus');
+    expect(getSelectableThemePresets('dark').map((preset) => preset.id)).toContain('midnight');
+    expect(getSelectableThemePresets('dark').map((preset) => preset.id)).not.toContain('light-plus');
+  });
+
+  it('returns Midnight to the neutral family in light mode without clearing user choices', async () => {
+    render(React.createElement(SettingsProvider, null, React.createElement(SettingsProbe, { onChange: (settings: SettingsSnapshot) => { latestSettings = settings; } })));
+    act(() => latestSettings?.applyThemePreset('midnight'));
+    await waitFor(() => expect(latestSettings?.themePresetId).toBe('midnight'));
+    act(() => latestSettings?.setAccentColor('purple'));
+    act(() => latestSettings?.setCustomTheme({ colors: { card: '#123456' } }));
+    await waitFor(() => expect(latestSettings?.accentColor).toBe('purple'));
+    act(() => latestSettings?.setTheme('light'));
+    await waitFor(() => expect(latestSettings?.themePresetId).toBe('default'));
+    expect(latestSettings?.theme).toBe('light');
+    expect(latestSettings?.accentColor).toBe('purple');
+    expect(latestSettings?.customTheme).toEqual({ colors: { card: '#123456' } });
+  });
+
+  it('normalizes a stored light Midnight theme to Neutral while retaining user overrides', async () => {
+    localStorage.setItem('settings_appearanceState', JSON.stringify({
+      accentColor: 'purple',
+      accentColorSource: 'user',
+      customTheme: { colors: { card: '#123456' } },
+      theme: 'light',
+      themePresetId: 'midnight',
+    }));
+    render(React.createElement(SettingsProvider, null, React.createElement(SettingsProbe, { onChange: (settings: SettingsSnapshot) => { latestSettings = settings; } })));
+
+    await waitFor(() => expect(latestSettings?.themePresetId).toBe('default'));
+    expect(latestSettings?.theme).toBe('light');
+    expect(latestSettings?.accentColor).toBe('purple');
+    expect(latestSettings?.customTheme).toEqual({ colors: { card: '#123456' } });
+  });
+
   it('keeps a stored user accent through mode, preset, custom override, and reload changes', async () => {
     localStorage.setItem('settings_appearanceState', JSON.stringify({
       accentColor: 'purple',
@@ -291,6 +329,29 @@ describe('theme runtime contract', () => {
 
     expect(latestSettings?.accentColor).toBe('rose');
     expect(latestSettings?.themeRuntimeState.customizationScopes).toContain('accent');
+  });
+
+  it('persists, applies, renames, and deletes complete saved themes while ignoring malformed storage', async () => {
+    localStorage.setItem('settings_savedThemes', '{bad json');
+    render(React.createElement(SettingsProvider, null, React.createElement(SettingsProbe, { onChange: (settings: SettingsSnapshot) => { latestSettings = settings; } })));
+
+    await waitFor(() => expect(latestSettings?.savedThemes).toEqual([]));
+    act(() => {
+      latestSettings?.applyAppearanceState({ accentColor: '#123456', accentColorSource: 'user', customTheme: { background: { type: 'particles', particles: { type: 'stars', intensity: 4 } }, brand: { shellGlow: '#654321' } }, theme: 'light', themePresetId: 'navy' });
+    });
+    await waitFor(() => expect(latestSettings?.themePresetId).toBe('navy'));
+    act(() => latestSettings?.saveTheme('Night notes'));
+    await waitFor(() => expect(latestSettings?.savedThemes).toHaveLength(1));
+    const savedTheme = latestSettings!.savedThemes[0];
+    act(() => latestSettings?.setTheme('dark'));
+    act(() => latestSettings?.applySavedTheme(savedTheme.id));
+    await waitFor(() => expect(latestSettings?.theme).toBe('light'));
+    expect(latestSettings?.accentColor).toBe('#123456');
+    expect(latestSettings?.customTheme).toEqual(savedTheme.customTheme);
+    act(() => latestSettings?.renameSavedTheme(savedTheme.id, 'Renamed'));
+    await waitFor(() => expect(latestSettings?.savedThemes[0].name).toBe('Renamed'));
+    act(() => latestSettings?.deleteSavedTheme(savedTheme.id));
+    await waitFor(() => expect(latestSettings?.savedThemes).toEqual([]));
   });
 
   it('binds date and number formatting to the active Burrow language locale', async () => {

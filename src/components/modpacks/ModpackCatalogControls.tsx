@@ -62,16 +62,16 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
       {header && <div data-testid={headerTestId}>{header}</div>}
 
       <div
-        className="space-y-3 lg:flex-row"
+        className="flex flex-col gap-3 lg:flex-row lg:items-end"
         data-testid={controlsTestId}
         data-catalog-controls-layout="compact-shared"
       >
-        <div className="min-w-0 space-y-1">
+        <div className="min-w-0 flex-1 space-y-1">
           <div className="text-xs font-medium text-secondary">{searchLabel}</div>
           {searchControl}
         </div>
         {controls.length > 0 && (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-3">
+          <div className="grid min-w-0 flex-1 grid-cols-[repeat(auto-fit,minmax(10rem,1fr))] gap-3">
             {controls.map((item) => (
               <div key={item.key} className="space-y-1">
                 <div className="text-xs font-medium text-secondary">{item.label}</div>

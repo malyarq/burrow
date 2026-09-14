@@ -1,12 +1,11 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useSettings } from '../contexts/SettingsContext';
 import { useAppUpdater } from '../features/updater/hooks/useAppUpdater';
 import { Modal } from './ui/Modal';
 import { Button } from './ui/Button';
-import { LoadingSpinner } from './ui/LoadingSpinner';
-import { cn } from '../utils/cn';
 import { SettingsTabsHeader } from './settings/SettingsTabsHeader';
 import {
+    SETTINGS_TABS,
     getSettingsPanelId,
     getSettingsTabLabelId,
     type SettingsTabId,
@@ -18,28 +17,14 @@ import { StorageSettings } from './settings/tabs/StorageTab';
 import { UpdateModal } from './UpdateModal';
 import { storageMaintenanceIPC } from '../services/ipc/storageMaintenanceIPC';
 
-const LauncherTab = lazy(() => import('./settings/tabs/LauncherTab').then((module) => ({ default: module.LauncherTab })));
-const PrivacyFeedbackCard = lazy(() => import('../features/feedback/PrivacyFeedbackCard').then((module) => ({ default: module.PrivacyFeedbackCard })));
-const AccountsPage = lazy(() => import('../features/accounts/AccountsPage').then((module) => ({ default: module.AccountsPage })));
-const StatisticsTab = lazy(() => import('../features/settings/statistics/StatisticsTab').then((module) => ({ default: module.StatisticsTab })));
+import { LauncherTab } from './settings/tabs/LauncherTab';
+import { PrivacyFeedbackCard } from '../features/feedback/PrivacyFeedbackCard';
+import { AccountsPage } from '../features/accounts/AccountsPage';
+import { StatisticsTab } from '../features/settings/statistics/StatisticsTab';
 
 interface SettingsPageProps {
     onClose: () => void;
     initialTab?: SettingsTabId;
-}
-
-function SettingsTabLoadingState({ label }: { label: string }) {
-  return (
-    <div
-      role="status"
-      aria-label={label}
-      aria-live="polite"
-      className="flex min-h-[22rem] w-full flex-col items-center justify-center gap-3 text-sm text-secondary"
-    >
-      <LoadingSpinner size="md" variant="accent" />
-      <span>{label}</span>
-    </div>
-    );
 }
 
 // Settings modal for appearance and launcher preferences.
@@ -73,12 +58,12 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
         }
     }, [status]);
 
-    const renderActiveTab = () => {
-        if (activeTab === 'appearance') {
+    const renderTab = (tab: SettingsTabId) => {
+        if (tab === 'appearance') {
             return <AppearanceTab embedded />;
         }
 
-        if (activeTab === 'downloads') {
+        if (tab === 'downloads') {
             return (
                 <DownloadsTab
                     autoDownloadThreads={autoDownloadThreads}
@@ -93,7 +78,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             );
         }
 
-        if (activeTab === 'launcher') {
+        if (tab === 'launcher') {
             return (
                 <LauncherTab
                     hideLauncher={hideLauncher}
@@ -121,7 +106,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             );
         }
 
-        if (activeTab === 'storage') {
+        if (tab === 'storage') {
             return (
                 <StorageSettings
                     t={t}
@@ -132,7 +117,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             );
         }
 
-        if (activeTab === 'accounts') {
+        if (tab === 'accounts') {
             return <AccountsPage embedded />;
         }
 
@@ -145,12 +130,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
             onClose={onClose}
             closeLabel={t('general.close_dialog')}
             title={t('settings.title')}
-            className="max-w-[min(64rem,calc(100vw-1rem))]"
+            className="h-[min(54rem,calc(100dvh-2rem))] max-w-[min(64rem,calc(100vw-1rem))]"
+            headerActions={<Button variant="secondary" size="sm" onClick={onClose}>{t('settings.done')}</Button>}
         >
             <div className="min-h-0 space-y-6">
                 <div
                     data-testid="settings-shell-header"
-                    className="flex flex-col gap-4 border-b border-border/70 pb-5 lg:flex-row lg:items-end lg:justify-between"
+                    className="sticky top-0 z-10 border-b border-border bg-card pb-3"
                 >
                     <div className="min-w-0 flex-1">
                         <SettingsTabsHeader
@@ -160,29 +146,22 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, initialTab = 'appe
                             getAccentStyles={(type) => getAccentStyles(type)}
                         />
                     </div>
-                    <Button
-                        onClick={onClose}
-                        className={cn(
-                            'w-full shrink-0 text-white shadow-sm sm:w-auto sm:min-w-[9rem]',
-                            getAccentStyles('bg').className,
-                        )}
-                        style={getAccentStyles('bg').style}
-                    >
-                        {t('settings.done')}
-                    </Button>
+
                 </div>
 
-                <div
-                    id={getSettingsPanelId(activeTab)}
-                    role="tabpanel"
-                    aria-labelledby={getSettingsTabLabelId(activeTab)}
-                    tabIndex={0}
-                    className="settings-route-panel min-h-[22rem] outline-none"
-                >
-                    <Suspense fallback={<SettingsTabLoadingState label={t('settings.loading') || 'Loading settings…'} />}>
-                        {renderActiveTab()}
-                    </Suspense>
-                </div>
+                {SETTINGS_TABS.map(({ id }) => (
+                    <div
+                        key={id}
+                        id={getSettingsPanelId(id)}
+                        role="tabpanel"
+                        aria-labelledby={getSettingsTabLabelId(id)}
+                        hidden={id !== activeTab}
+                        tabIndex={0}
+                        className="settings-route-panel min-h-[22rem] outline-none"
+                    >
+                        {renderTab(id)}
+                    </div>
+                ))}
             </div>
 
             {showUpdateModal && (

@@ -160,36 +160,21 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                 </div>
             )}
 
-            <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+            <div className={clsx("grid gap-6", selectedAccount && "xl:grid-cols-[1.05fr_0.95fr]")}>
                 <div className="space-y-4">
-                    <div className="settings-section-shell flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="space-y-1">
-                            {embedded ? (
-                                <>
-                                    <p className="settings-embedded-title">{t('accounts.savedCountLabel')}</p>
-                                    <p className="settings-embedded-copy">
-                                        {t('accounts.providerSupportHint') || 'Blessing Skin and LittleSkin are supported for provider-aware skin management.'}
-                                    </p>
-                                </>
-                            ) : (
-                                <>
-                                    <p className="settings-embedded-title">{t('accounts.title')}</p>
-                                    <p className="settings-embedded-copy">{t('accounts.description')}</p>
-                                </>
-                            )}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                        <div className="min-w-0">
+                            <h3 className="text-sm font-semibold text-foreground">
+                                {t('accounts.savedCountLabel')}
+                                <span className="ml-2 text-secondary tabular-nums">{accounts.length}</span>
+                            </h3>
+                            <p className="mt-1 text-sm text-secondary">{t('accounts.description')}</p>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right">
-                                <div className="text-xs text-secondary">{t('accounts.savedCountLabel')}</div>
-                                <div className="text-lg font-semibold text-foreground">{accounts.length}</div>
-                            </div>
-                            {embedded && (
-                                <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2 self-start">
-                                    <Plus size={18} />
-                                    {t('accounts.addAccount')}
-                                </Button>
-                            )}
-                        </div>
+                        {embedded && (
+                            <Button size="sm" onClick={() => setIsAddDialogOpen(true)}>
+                                <Plus size={16} />{t('accounts.addAccount')}
+                            </Button>
+                        )}
                     </div>
 
                     <div className="grid gap-4" role="list" aria-label={t('accounts.title')}>
@@ -198,7 +183,7 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                                 key={account.id}
                                 role="listitem"
                                 className={clsx(
-                                    "surface-card group flex items-center justify-between gap-4 p-4 transition-all",
+                                    "group flex items-center justify-between gap-4 rounded-lg border border-border p-4 transition-colors",
                                     account.isDisabled
                                         ? "bg-amber-500/10 border-amber-500/30"
                                         : selectedId === account.id
@@ -291,16 +276,16 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                         ))}
 
                         {accounts.length === 0 && (
-                            <div className="surface-muted border-dashed py-12 text-center text-secondary">
-                                <User size={48} className="mx-auto mb-4 opacity-50" />
+                            <div className="flex min-h-56 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border px-6 py-10 text-center text-secondary">
+                                <User size={32} className="opacity-60" />
                                 <p>{t('accounts.noAccounts')}</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <div className="surface-card space-y-3 p-5">
+                {selectedAccount && <div className="space-y-6 border-border xl:border-l xl:pl-6">
+                    <div className="space-y-3">
                         <div className="kicker-label">{t('accounts.activeAccount')}</div>
                         {selectedAccount ? (
                             <>
@@ -324,8 +309,8 @@ export const AccountsPage: React.FC<AccountsPageProps> = ({ embedded = false }) 
                         )}
                     </div>
 
-                    {selectedAccount && <AccountSkinPanel account={selectedAccount} />}
-                </div>
+                    <AccountSkinPanel account={selectedAccount} />
+                </div>}
             </div>
 
             <AddAccountDialog

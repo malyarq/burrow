@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTranslator } from '../../../../contexts/settings/i18n';
 import { ResourcePacksTab } from '../ResourcePacksTab';
@@ -86,5 +86,33 @@ describe('ResourcePacksTab guided entry state', () => {
     fireEvent.click(await screen.findByRole('button', { name: /\+ add resource pack/i }));
 
     expect(onAddResourcePack).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps installed packs on screen while a refresh is still pending', async () => {
+    let completeRefresh: ((value: unknown) => void) | undefined;
+    listMock
+      .mockResolvedValueOnce([
+        {
+          fileName: 'faithful-64x.zip',
+          name: 'Faithful 64x',
+          description: 'Sharper textures.',
+          iconUrl: null,
+          isEnabled: true,
+        },
+      ])
+      .mockImplementationOnce(() => new Promise((resolve) => {
+        completeRefresh = resolve;
+      }));
+
+    render(<ResourcePacksTab instanceId="alpha" />);
+
+    expect(await screen.findByText('Faithful 64x')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+
+    expect(screen.getByText('Faithful 64x')).toBeTruthy();
+    expect(screen.queryByText('Loading...')).toBeNull();
+
+    completeRefresh?.([]);
+    await waitFor(() => expect(screen.getByText('No resource packs installed')).toBeTruthy());
   });
 });

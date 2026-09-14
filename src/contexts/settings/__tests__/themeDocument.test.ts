@@ -145,17 +145,17 @@ describe('applyThemeToDocument', () => {
     const lightForest = resolveThemeConfig('light', 'forest');
     const darkForest = resolveThemeConfig('dark', 'forest');
 
-    expect(lightForest.colors?.background).toBe('#ecfdf5');
-    expect(darkForest.colors?.background).toBe('#052e16');
+    expect(lightForest.colors?.background).toBe('#faf7f2');
+    expect(darkForest.colors?.background).toBe('#1c1917');
 
     applyThemeToDocument('light', 'emerald', lightForest);
-    expect(getRootVar('--bg-app')).toBe('236 253 245');
-    expect(getRootVar('--text-main')).toBe('6 78 59');
+    expect(getRootVar('--bg-app')).toBe('250 247 242');
+    expect(getRootVar('--text-main')).toBe('41 37 36');
 
     applyThemeToDocument('dark', 'emerald', darkForest);
-    expect(getRootVar('--bg-app')).toBe('5 46 22');
-    expect(getRootVar('--text-main')).toBe('236 253 245');
-    expect(getRootVar('--border-default')).toBe('6 95 70');
+    expect(getRootVar('--bg-app')).toBe('28 25 23');
+    expect(getRootVar('--text-main')).toBe('250 250 249');
+    expect(getRootVar('--border-default')).toBe('68 64 60');
   });
 
   it('keeps preset ancestry readable when bounded overrides are layered on top of the active variant', () => {
@@ -168,8 +168,8 @@ describe('applyThemeToDocument', () => {
     applyThemeToDocument('light', 'emerald', runtimeConfig);
 
     expect(getRootVar('--bg-app')).toBe('17 34 51');
-    expect(getRootVar('--bg-card')).toBe('209 250 229');
-    expect(getRootVar('--text-main')).toBe('6 78 59');
-    expect(getRootVar('--border-default')).toBe('110 231 183');
+    expect(getRootVar('--bg-card')).toBe('244 238 229');
+    expect(getRootVar('--text-main')).toBe('41 37 36');
+    expect(getRootVar('--border-default')).toBe('231 224 215');
   });
 });

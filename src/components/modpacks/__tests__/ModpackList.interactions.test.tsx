@@ -183,6 +183,26 @@ describe('ModpackList interactions', () => {
     });
   });
 
+  it('keeps runtime filters and loaded cards stable when the active modpack changes', async () => {
+    const { rerender } = renderList();
+
+    await screen.findByRole('button', { name: 'Alpha Pack' });
+    fireEvent.change(screen.getByTestId('installed-modpack-version-filter'), { target: { value: '1.20.1' } });
+    fireEvent.change(screen.getByTestId('installed-modpack-loader-filter'), { target: { value: 'fabric' } });
+    expect(metadataMock).toHaveBeenCalledTimes(1);
+
+    selectedIdState = 'alpha';
+    modpackItemsState = [buildModpackItem('Alpha Pack', true)];
+    rerender(<ModpackList onNavigate={onNavigateMock} />);
+
+    await waitFor(() => {
+      expect((screen.getByTestId('installed-modpack-version-filter') as HTMLSelectElement).value).toBe('1.20.1');
+      expect((screen.getByTestId('installed-modpack-loader-filter') as HTMLSelectElement).value).toBe('fabric');
+      expect(screen.queryByRole('list', { name: 'Modpacks' })).toBeTruthy();
+    });
+    expect(metadataMock).toHaveBeenCalledTimes(1);
+  });
+
   it('opens the action menu from the keyboard with labeled menu semantics', async () => {
     renderList();
 

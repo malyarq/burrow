@@ -443,12 +443,12 @@ describe('secondary content tabs', () => {
     expect(screen.queryByText(/Pack runtime 0\.17\.0/i)).toBeNull();
   });
 
-  it('keeps resource pack summaries explicitly labeled instead of collapsing into raw ratios', async () => {
+  it('keeps resource pack scope and counts as one concise toolbar row', async () => {
     render(<ResourcePacksTab instanceId="alpha" />);
 
     expect(await screen.findByText('Faithful 64x')).toBeTruthy();
 
-    const summary = screen.getByTestId('resourcepacks-summary');
+    const summary = screen.getByTestId('resourcepacks-scope-note');
     expect(summary.textContent).toContain('Enabled');
     expect(summary.textContent).toContain('Installed');
     expect(summary.textContent?.includes('1 / 2')).toBe(false);

@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Download, Sparkles, Upload } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Download, Save, Sparkles, Trash2, Upload } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Select } from '../../ui/Select';
 import {
@@ -7,7 +7,7 @@ import {
   getThemePreset,
   getThemePresetLabel,
   getThemePresetSummary,
-  THEME_PRESETS,
+  getSelectableThemePresets,
 } from '../../../contexts/settings/theme-presets';
 import { extractThemeOverrides } from '../../../contexts/settings/theme';
 import type { ThemeRuntimeState } from '../../../contexts/settings/theme';
@@ -15,6 +15,7 @@ import type {
   AccentColor,
   AppearanceSettingsState,
   CustomThemeConfig,
+  SavedTheme,
   Theme,
   ThemePresetId,
 } from '../../../contexts/settings/types';
@@ -45,11 +46,16 @@ function translateWithFallback(
 interface AppearancePresetsProps {
   accentColor: AccentColor;
   activeThemeConfig: CustomThemeConfig;
+  applySavedTheme: (id: string) => void;
   customTheme: CustomThemeConfig;
+  deleteSavedTheme: (id: string) => void;
   embedded: boolean;
   onAppearanceStateChange: (state: AppearanceSettingsState) => void;
   onPresetChange: (presetId: ThemePresetId) => void;
   onThemeChange: (theme: Theme) => void;
+  onRenameSavedTheme: (id: string, name: string) => void;
+  onSaveTheme: (name: string) => void;
+  savedThemes: SavedTheme[];
   t: Translate;
   theme: Theme;
   themePresetId: ThemePresetId | null;
@@ -59,17 +65,25 @@ interface AppearancePresetsProps {
 export function AppearancePresets({
   accentColor,
   activeThemeConfig,
+  applySavedTheme,
   customTheme,
+  deleteSavedTheme,
   embedded,
   onAppearanceStateChange,
   onPresetChange,
   onThemeChange,
+  onRenameSavedTheme,
+  onSaveTheme,
+  savedThemes = [],
   t,
   theme,
   themePresetId,
   themeRuntimeState,
 }: AppearancePresetsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [savedThemeName, setSavedThemeName] = useState('');
+  const [editingSavedThemeId, setEditingSavedThemeId] = useState<string | null>(null);
+  const [editingSavedThemeName, setEditingSavedThemeName] = useState('');
   const selectedPreset = getThemePreset(themePresetId);
   const themePresetsLabel = translateWithFallback(t, 'settings.theme_presets', 'Theme Presets');
   const themePresetsDescription = translateWithFallback(
@@ -323,7 +337,7 @@ export function AppearancePresets({
             <option value="" disabled>
               {translateWithFallback(t, 'settings.theme_presets_placeholder', 'Select a preset...')}
             </option>
-            {THEME_PRESETS.map((preset) => (
+            {getSelectableThemePresets(theme).map((preset) => (
               <option key={preset.id} value={preset.id}>{getThemePresetLabel(t, preset)}</option>
             ))}
           </Select>
@@ -342,6 +356,31 @@ export function AppearancePresets({
             ))}
             <span className="text-xs text-secondary">{selectedPresetSummary || customThemeExportName}</span>
           </div>
+        </div>
+
+        <div className="space-y-3 border-t border-border/60 pt-4" data-testid="saved-themes">
+          <label className="text-sm font-medium text-foreground">{translateWithFallback(t, 'settings.saved_themes', 'Saved themes')}</label>
+          <div className="flex gap-2">
+            <input
+              aria-label={translateWithFallback(t, 'settings.saved_theme_name', 'Theme name')}
+              className="control-frame min-w-0 flex-1 px-3 py-2"
+              value={savedThemeName}
+              onChange={(event) => setSavedThemeName(event.target.value)}
+            />
+            <Button variant="secondary" onClick={() => { onSaveTheme(savedThemeName); setSavedThemeName(''); }} disabled={!savedThemeName.trim()}>
+              <Save aria-hidden="true" className="h-4 w-4" />
+              {translateWithFallback(t, 'settings.save_theme', 'Save')}
+            </Button>
+          </div>
+          {savedThemes.length > 0 && <div className="space-y-2">
+            {savedThemes.map((savedTheme) => (
+              <div key={savedTheme.id} className="flex items-center gap-2 rounded-lg border border-border/60 p-2">
+                {editingSavedThemeId === savedTheme.id ? <input aria-label={translateWithFallback(t, 'settings.saved_theme_name', 'Theme name')} className="control-frame min-w-0 flex-1 px-2 py-1 text-sm" value={editingSavedThemeName} onChange={(event) => setEditingSavedThemeName(event.target.value)} /> : <button type="button" className="min-w-0 flex-1 truncate text-left text-sm text-foreground" onClick={() => applySavedTheme(savedTheme.id)}>{savedTheme.name}</button>}
+                {editingSavedThemeId === savedTheme.id ? <Button variant="ghost" size="sm" onClick={() => { onRenameSavedTheme(savedTheme.id, editingSavedThemeName); setEditingSavedThemeId(null); }}>{translateWithFallback(t, 'settings.save_theme', 'Save')}</Button> : <Button variant="ghost" size="sm" onClick={() => { setEditingSavedThemeId(savedTheme.id); setEditingSavedThemeName(savedTheme.name); }}>{translateWithFallback(t, 'settings.rename_theme', 'Rename')}</Button>}
+                <Button variant="ghost" size="sm" aria-label={`${translateWithFallback(t, 'settings.delete_theme', 'Delete')} ${savedTheme.name}`} onClick={() => deleteSavedTheme(savedTheme.id)}><Trash2 aria-hidden="true" className="h-4 w-4" /></Button>
+              </div>
+            ))}
+          </div>}
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">

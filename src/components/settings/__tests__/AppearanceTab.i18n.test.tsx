@@ -145,7 +145,7 @@ describe('AppearanceTab i18n seams', () => {
 
     expect(screen.getByText('Accent Color')).toBeTruthy();
     expect(screen.getAllByText('Theme Presets').length).toBeGreaterThan(0);
-    expect(screen.getByRole('option', { name: 'Forest' })).toBeTruthy();
+    expect(screen.getByRole('option', { name: 'Warm Stone' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Custom colors' })).toBeTruthy();
     expect(screen.getAllByText('Sample heading')).toHaveLength(2);
     expect(screen.getByText('Example error')).toBeTruthy();
@@ -171,7 +171,7 @@ describe('AppearanceTab i18n seams', () => {
 
     expect(screen.getByText('Цвет акцента')).toBeTruthy();
     expect(screen.getAllByText('Готовые темы').length).toBeGreaterThan(0);
-    expect(screen.getByRole('option', { name: 'Лес' })).toBeTruthy();
+    expect(screen.getByRole('option', { name: 'Тёплый камень' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Свои цвета' })).toBeTruthy();
     expect(screen.getAllByText('Заголовок')).toHaveLength(2);
     expect(screen.getByText('Пример ошибки')).toBeTruthy();
@@ -189,7 +189,7 @@ describe('AppearanceTab i18n seams', () => {
     expect(container.textContent).not.toContain('settings.background_type');
     expect(container.textContent).not.toContain('settings.reset_custom_theme');
     expect(container.textContent).not.toContain('Theme Presets');
-    expect(container.textContent).not.toContain('Forest');
+    expect(container.textContent).not.toContain('Warm Stone');
     expect(container.textContent).not.toContain('Background Type');
     expect(container.textContent).not.toContain('Reset Custom Theme');
   });

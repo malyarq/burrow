@@ -76,8 +76,8 @@ describe('AppearanceTab state fidelity', () => {
 
     renderAppearanceTab();
 
-    expect(screen.getAllByText('Forest · Dark').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Warm Stone · Dark').length).toBeGreaterThan(0);
     expect(screen.getByText('Customized')).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Return to Forest · Dark' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Return to Warm Stone · Dark' })).toBeTruthy();
   });
 });
