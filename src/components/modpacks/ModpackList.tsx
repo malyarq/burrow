@@ -131,7 +131,7 @@ export function ModpackList({ onNavigate, onCreateWizard }: ModpackListProps) {
           </div>
         )}
 
-        <div className="mx-auto w-full max-w-[67rem]">
+        <div className="mx-auto min-w-0 w-full max-w-[67rem]">
         <InstalledModpackContextMenu
           items={catalog.items}
           selectedId={selectedId}

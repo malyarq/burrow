@@ -134,6 +134,10 @@ describe('Modpack details runtime truth', () => {
     expect(screen.getByTestId('modpack-dependency-status').getAttribute('data-tone')).toBe('unverified');
     expect(within(screen.getByTestId('modpack-dependency-summary')).getByText('Forge')).toBeTruthy();
 
+    const scrollWorkspace = view.container.querySelector<HTMLElement>('.custom-scrollbar');
+    expect(scrollWorkspace).toBeTruthy();
+    scrollWorkspace!.scrollTop = 240;
+
     effectiveConfigRef.current = {
       id: 'runtime-pack',
       name: 'Runtime Pack',
@@ -162,5 +166,7 @@ describe('Modpack details runtime truth', () => {
     expect(screen.getByTestId('modpack-dependency-status').getAttribute('data-tone')).toBe('healthy');
     expect(within(screen.getByTestId('modpack-details-metadata')).getByText('Forge 47.2.0')).toBeTruthy();
     expect(screen.queryByText('Burrow is still reading runtime details from pack metadata. Saved modpack settings can still replace this.')).toBeNull();
+    expect(view.container.querySelector('.custom-scrollbar')).toBe(scrollWorkspace);
+    expect(scrollWorkspace!.scrollTop).toBe(240);
   });
 });

@@ -35,7 +35,7 @@ describe('Modpack details flow layout', () => {
     const actionsSection = playButton.closest('section');
 
     expect(actionsSection).toBeTruthy();
-    expect(actionsSection?.className).toContain('rounded-2xl');
+    expect(actionsSection?.className).toContain('flex-wrap');
     expect(actionsSection?.className).toContain('border');
     expect(actionsSection?.className).not.toContain('surface-card');
     expect(actionsSection?.className).not.toContain('surface-inline mx-6');

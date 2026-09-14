@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GameTab } from '../tabs/GameTab';
 
@@ -20,7 +20,10 @@ const translations: Record<string, string> = {
   'settings.extra_game_args': 'Extra Game Args',
   'settings.extra_game_args_desc': 'Tune the Minecraft launch flags.',
   'settings.ram': 'Max Memory (Xmx)',
+  'settings.memory_input': 'Memory in GB',
+  'settings.memory_limit_hint': 'Enter 1–256 GB. Burrow starts with 4 GB; leave enough memory for your system.',
   'settings.min_ram': 'Initial Memory (Xms)',
+  'settings.min_ram_explanation': 'Initial memory is reserved when Minecraft starts.',
   'general.show_advanced': 'Show Advanced',
   'general.hide_advanced': 'Hide Advanced',
   'settings.java_path': 'Java Version',
@@ -87,5 +90,33 @@ describe('GameTab theme surface contrast', () => {
     expect(screen.getByText('Fullscreen').closest('.border-t')).toBeTruthy();
     expect(screen.getByText('Auto Connect').closest('.border-t')).toBeTruthy();
     expect(container.querySelectorAll('.helper-text').length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('accepts a manual memory value above 16 GB and explains initial memory in advanced settings', async () => {
+    const setMemoryGb = vi.fn();
+    render(
+      <GameTab
+        modpackConfig={null}
+        setMemoryGb={setMemoryGb}
+        setMinMemoryGb={vi.fn()}
+        setVmOptions={vi.fn()}
+        setGameExtraArgs={vi.fn()}
+        setGameResolution={vi.fn()}
+        setAutoConnectServer={vi.fn()}
+        t={t}
+        getAccentStyles={getAccentStyles}
+      />,
+    );
+
+    const memoryInput = await screen.findByRole('spinbutton', { name: 'Memory in GB' });
+    const slider = screen.getByRole('slider', { name: 'Max Memory (Xmx)' });
+    expect(slider.getAttribute('max')).toBe('32');
+    expect(screen.getByTestId('memory-tick-midpoint').textContent).toBe('16 GB');
+    fireEvent.change(memoryInput, { target: { value: '128' } });
+    fireEvent.blur(memoryInput);
+    expect(setMemoryGb).toHaveBeenCalledWith(128);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show Advanced' }));
+    expect(screen.getByText('Initial memory is reserved when Minecraft starts.')).toBeTruthy();
   });
 });

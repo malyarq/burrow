@@ -331,8 +331,8 @@ export function InstalledModpackCatalog({
         headerTestId="installed-modpack-catalog-header"
         controlsTestId="installed-modpack-filter-controls"
         header={(
-          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-            <div className="max-w-2xl">
+          <div className="flex min-w-0 flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="min-w-0 max-w-2xl">
               <p className="kicker-label">{translateWithFallback(t, 'library.kicker', 'Your Minecraft')}</p>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{translateWithFallback(t, 'library.title', 'Library')}</h1>
               <p className="mt-3 text-base leading-6 text-secondary">{translateWithFallback(t, 'library.description', 'Choose a pack to play, create a new world, or discover something different.')}</p>
@@ -416,7 +416,7 @@ export function InstalledModpackCatalog({
       />
 
       {loading ? (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3" role="list" aria-label={t('modpacks.title') || 'Modpacks'}>
+        <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-3" role="list" aria-label={t('modpacks.title') || 'Modpacks'}>
           {Array.from({ length: 6 }).map((_, index) => <InstalledModpackCardSkeleton key={index} />)}
         </div>
       ) : loadError ? (

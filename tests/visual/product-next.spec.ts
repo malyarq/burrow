@@ -17,7 +17,7 @@ test.afterEach(async ({ page }) => {
   expect(runtimeErrors.get(page) ?? []).toEqual([]);
 });
 
-async function openProduct(page: Page, width = 1280, height = 900) {
+async function openProduct(page: Page, width = 1100, height = 850) {
   await page.setViewportSize({ width, height });
   await page.goto(productNext);
   await expect(page.getByTestId('next-nav-play')).toBeVisible();
@@ -139,14 +139,22 @@ test('Product Next keeps the main Play controls stable after returning from the 
 
 test('Product Next exposes the memory slider label and reaches 8 GB from the keyboard', async ({ page }) => {
   await openProduct(page);
-  await page.locator('summary').filter({ hasText: 'Advanced settings' }).click();
+  await page.getByRole('button', { name: 'Advanced settings', exact: true }).click();
   const memory = page.getByRole('slider', { name: 'Allocated Memory (RAM)', exact: true });
   await expect(memory).toBeVisible();
   await memory.focus();
   await page.keyboard.press('Home');
   for (let step = 0; step < 14; step += 1) await page.keyboard.press('ArrowRight');
   await expect(memory).toHaveValue('8');
-  await expect(page.getByTestId('memory-tick-eight')).toHaveText('8 GB');
+  await expect(memory).toHaveAttribute('max', '32');
+  const manual = page.getByRole('spinbutton', { name: 'Memory in GB', exact: true });
+  await manual.fill('128');
+  await manual.press('Tab');
+  await expect(memory).toHaveValue('128');
+  await expect(memory).toHaveAttribute('max', '128');
+  await memory.press('ArrowLeft');
+  await expect(memory).toHaveValue('127.5');
+  await expect(memory).toHaveAttribute('max', '128');
 });
 
 test('Product Next sends resource-pack and shader actions through their guided library routes', async ({ page }) => {
@@ -156,4 +164,62 @@ test('Product Next sends resource-pack and shader actions through their guided l
   await page.goto(productNext);
   await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
   await openGuidedContent(page, 'Shaders', /Add Shader/i, /Add Shader/i);
+});
+
+for (const width of [1100, 880, 720, 640]) {
+  test(`Product Next keeps shader actions together at ${width}px`, async ({ page }) => {
+    await openProduct(page, width, 850);
+    await page.getByRole('tab', { name: 'Shaders', exact: true }).click();
+    const add = page.getByRole('button', { name: /Add Shader/i });
+    await add.scrollIntoViewIfNeeded();
+    const refresh = page.getByRole('button', { name: 'Update', exact: true });
+    const a = await add.boundingBox();
+    const b = await refresh.boundingBox();
+    expect(a).not.toBeNull(); expect(b).not.toBeNull();
+    expect(a!.y).toBeCloseTo(b!.y, 0);
+    expect(b!.x + b!.width).toBeLessThanOrEqual(width);
+    await assertNoHorizontalOverflow(page);
+  });
+}
+
+test('Product Next opens a beginner guide for the selected multiplayer mode', async ({ page }) => {
+  await openProduct(page);
+  await page.getByTestId('next-nav-friends').click();
+  await page.locator('summary').filter({ hasText: 'Playing with a friend, step by step' }).click();
+  await expect(page.getByText(/The host creates an invitation/)).toBeVisible();
+});
+
+for (const width of [1100, 880, 720, 640]) {
+  test(`Product Next contains every modpack action and screenshot panel at ${width}px`, async ({ page }) => {
+    await openProduct(page, width, 850);
+    await page.getByTestId('next-nav-library').click();
+    await page.getByRole('button', { name: 'Open details: Alpha Pack', exact: true }).click();
+    const actions = page.getByTestId('modpack-details-actions');
+    await expect(actions).toBeVisible();
+    for (const button of await actions.getByRole('button').all()) {
+      const bounds = await button.boundingBox();
+      expect(bounds).not.toBeNull();
+      expect(bounds!.x).toBeGreaterThanOrEqual(0);
+      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    }
+    await page.getByRole('tab', { name: 'Screenshots', exact: true }).click();
+    await expect(page.getByTestId('screenshots-workspace-shell')).toBeVisible();
+    const panels = await page.locator('#modpack-details-panel-screenshots').evaluate(e => ({ width:e.clientWidth, scrollWidth:e.scrollWidth }));
+    expect(panels.scrollWidth).toBeLessThanOrEqual(panels.width + 1);
+  });
+}
+
+test('Product Next keeps the welcome language visibly selected after switching', async ({ page }) => {
+  await page.setViewportSize({ width:1100, height:850 });
+  await page.goto(productNext + '&onboarding=1');
+  const ru = page.getByRole('button', { name:'ru', exact:true });
+  const en = page.getByRole('button', { name:'en', exact:true });
+  await ru.click();
+  await expect(ru).toHaveAttribute('aria-pressed', 'true');
+  const selectedBorder = await ru.evaluate(e=>getComputedStyle(e).borderColor);
+  const inactiveBorder = await en.evaluate(e=>getComputedStyle(e).borderColor);
+  expect(selectedBorder).not.toBe(inactiveBorder);
+  await en.click();
+  await expect(en).toHaveAttribute('aria-pressed', 'true');
+  expect(await en.evaluate(e=>getComputedStyle(e).borderColor)).toBe(selectedBorder);
 });

@@ -15,7 +15,8 @@ import { useModSupportedVersions } from './features/launcher/hooks/useModSupport
 import { useVersions } from './features/launcher/hooks/useVersions';
 import { getVersionHint } from './utils/minecraftVersions';
 import { WelcomePage } from './components/onboarding/WelcomePage';
-import { OnboardingTour, type TourStep } from './components/onboarding/OnboardingTour';
+import { OnboardingTour } from './components/onboarding/OnboardingTour';
+import { createTourSteps } from './components/onboarding/tourSteps';
 import { useInstanceInvalidation } from './features/instances/hooks/useInstanceInvalidation';
 import { useEffectiveInstance } from './features/instances/hooks/useEffectiveInstance';
 import { ModpackNavigationProvider } from './features/modpacks/navigation/ModpackNavigationProvider';
@@ -101,36 +102,7 @@ function MainApp() {
   );
 
   // Optional overview for users who explicitly ask for it on the welcome screen.
-  const tourSteps: TourStep[] = useMemo(() => [
-    {
-      id: 'classic',
-      target: '[data-tour="classic"]',
-      title: t('onboarding.tour.step_classic.title') || 'Классика',
-      content: t('onboarding.tour.step_classic.content') || 'Режим быстрого запуска без менеджмента модпаков. Укажите никнейм, версию и модлоадер, затем нажмите «Играть».',
-      position: 'bottom',
-    },
-    {
-      id: 'modpacks',
-      target: '[data-tour="modpacks"]',
-      title: t('onboarding.tour.step_modpacks.title') || 'Модпаки',
-      content: t('onboarding.tour.step_modpacks.content') || 'Здесь вы можете выбрать или создать модпак. Модпаки содержат моды, настройки и версию Minecraft.',
-      position: 'bottom',
-    },
-    {
-      id: 'settings',
-      target: '[data-tour="settings"]',
-      title: t('onboarding.tour.step_settings.title') || 'Настройки',
-      content: t('onboarding.tour.step_settings.content') || 'Путь к Minecraft, язык, тема, источник загрузок и другие параметры лаунчера.',
-      position: 'bottom',
-    },
-    {
-      id: 'multiplayer',
-      target: '[data-tour="multiplayer"]',
-      title: t('onboarding.tour.step_multiplayer.title') || 'Мультиплеер',
-      content: t('onboarding.tour.step_multiplayer.content') || 'Управление серверами и подключением к мультиплееру.',
-      position: 'bottom',
-    },
-  ], [t]);
+  const tourSteps = useMemo(() => createTourSteps(t), [t]);
 
   return (
     <>

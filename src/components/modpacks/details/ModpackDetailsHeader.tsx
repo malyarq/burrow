@@ -145,19 +145,19 @@ export const ModpackDetailsHeader: React.FC<ModpackDetailsHeaderProps> = ({
 
   return (
     <div className="min-w-0 space-y-5 border-b border-border/65 pb-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start">
         <LazyImage
           src={metadata?.iconUrl}
           alt={modpackName}
           fallbackKind="content-artwork"
-          className="h-20 w-20 shrink-0 self-start rounded-2xl border border-border/70 object-cover shadow-sm sm:h-24 sm:w-24"
+          className="h-16 w-16 shrink-0 self-start rounded-xl border border-border/70 object-cover shadow-sm sm:h-20 sm:w-20"
         />
         <div className="min-w-0 flex-1 space-y-4">
           <div className="space-y-1">
-            <h2 className="text-3xl font-bold leading-[1.05] tracking-[-0.045em] text-foreground sm:text-5xl">{modpackName}</h2>
+            <h2 className="break-words text-2xl font-bold leading-tight tracking-[-0.035em] text-foreground sm:text-3xl lg:text-4xl">{modpackName}</h2>
           </div>
           {metadataEntries.length > 0 && (
-            <div className="grid gap-x-8 gap-y-2 sm:grid-cols-2" data-testid="modpack-details-metadata">
+            <div className="grid min-w-0 gap-x-6 gap-y-2 sm:grid-cols-2" data-testid="modpack-details-metadata">
               {metadataEntries.map((entry) => (
                 <div key={entry.label} className="min-w-0 border-l-2 border-border/65 pl-3 py-0.5">
                   <span className="block text-[11px] font-medium uppercase tracking-[0.08em] text-muted">{entry.label}</span>

@@ -66,6 +66,7 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({
     onMetadataUpdated,
   });
   const { modpack, metadataState, overview } = controller;
+  const isInitialMetadataLoad = metadataState.status === 'loading' && metadataState.metadata === null;
   const loaderType = overview.runtimeSummary.modLoader?.type;
   const hasModloader = Boolean(loaderType && loaderType !== 'vanilla');
   const selectedTab = !hasModloader && activeTab === 'mods' ? 'info' : activeTab;
@@ -94,7 +95,7 @@ export const ModpackDetails: React.FC<ModpackDetailsProps> = ({
       />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {metadataState.status === 'loading' ? (
+        {isInitialMetadataLoad ? (
           <div
             className="flex flex-col items-center justify-center gap-3 py-12"
             data-testid="modpack-details-loading"

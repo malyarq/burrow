@@ -1195,5 +1195,15 @@
     "next.friends.router": "Host through your router.",
     "next.friends.world_help": "First open your Minecraft world to LAN. Then create an invitation or connect to a friend.",
     "next.library.choose": "Select a pack from the library",
-    "next.brand.home": "Burrow — home"
+    "next.brand.home": "Burrow — home",
+    "settings.memory_input": "Memory in GB",
+    "settings.memory_limit_hint": "Enter 1–256 GB. Burrow starts with 4 GB; leave enough memory for your system.",
+    "settings.min_ram_explanation": "Initial memory is reserved when Minecraft starts. It can reduce startup stutter, but uses memory before the game needs it.",
+    "next.friends.guide_title": "Playing with a friend, step by step",
+    "next.friends.guide_prepare": "Use the same Minecraft version. For modded play, both players should install the same modpack.",
+    "next.friends.guide_world": "The host opens a world, presses Esc → Open to LAN → Start LAN World. Minecraft prints the port in chat. Enter that number here in the Host tab.",
+    "next.friends.guide_hyperswarm": "The host creates an invitation and sends it to their friend. The friend chooses Join and pastes the invitation, then copies the displayed address into Minecraft → Multiplayer → Direct Connection.",
+    "next.friends.guide_xmcl_lan": "Both computers must be on the same local network. The host starts broadcasting; the friend scans in the Join tab. Enter the discovered address into Minecraft → Multiplayer → Direct Connection.",
+    "next.friends.guide_xmcl_upnp_host": "This mode requires a UPnP router and a publicly reachable IP address. The host maps the port and sends the displayed external address to their friend, who enters it in Minecraft → Multiplayer → Direct Connection. If it is unreachable, try invitation mode.",
+    "next.friends.guide_keep_open": "Keep Burrow and the host world open while playing. Minecraft may assign a different port next time you open the world; check it again before your next session."
 }

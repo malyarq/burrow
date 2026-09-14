@@ -126,18 +126,20 @@ export function WorldsTab({ instanceId, mcVersion, onUpdate }: WorldsTabProps) {
     return (
         <div className="space-y-5">
             <div className="space-y-4 border-b border-border/65 pb-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="space-y-2">
+                <div className="flex flex-col gap-3 min-[900px]:flex-row min-[900px]:items-start min-[900px]:justify-between">
+                    <div className="min-w-0 flex-1 space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_worlds')}</div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground">{t('modpacks.saved_worlds')}</h3>
                             <p className="text-sm text-secondary">{t('modpacks.worlds_description')}</p>
                         </div>
                     </div>
-                    <Button onClick={() => void loadWorlds()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
-                        <RefreshCw className="h-4 w-4" />
-                        {t('modpacks.update')}
-                    </Button>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2 self-start" data-testid="worlds-toolbar">
+                        <Button onClick={() => void loadWorlds()} variant="secondary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" disabled={loading} isLoading={loading}>
+                            <RefreshCw className="h-4 w-4" />
+                            {t('modpacks.update')}
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 border-t border-border/70 pt-4 text-sm text-secondary" data-testid="worlds-summary">

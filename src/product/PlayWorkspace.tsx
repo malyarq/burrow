@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react';
-import { Play } from 'lucide-react';
+import { useCallback, useId, useMemo, useState } from 'react';
+import { ChevronDown, Play } from 'lucide-react';
 import type { AppLayoutProps } from '../components/AppLayout';
 import { GameTab } from '../components/settings/tabs/GameTab';
 import { ClassicContentTabs } from '../components/simple-play/ClassicContentTabs';
@@ -37,7 +37,9 @@ function text(t: (key: string) => string, key: string, fallback: string) {
 }
 
 export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) {
-  const { t, getAccentStyles } = useSettings();
+  const { t, getAccentStyles, disableAnimations } = useSettings();
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const advancedId = useId();
   const { setMode } = useUIMode();
   const effectiveInstance = useEffectiveInstance();
   const instanceId = effectiveInstance.status === 'ready' ? effectiveInstance.data.id : null;
@@ -126,8 +128,8 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
           <img src="./burrow-next-landscape.png" alt="" className="next-play-landscape" />
         </header>
 
-        <section className="surface-panel grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end" aria-label={text(t, 'play_workspace.launch_title', 'Запуск игры')}>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="surface-panel grid gap-5 p-5 sm:p-6" aria-label={text(t, 'play_workspace.launch_title', 'Запуск игры')}>
+          <div className="next-launch-fields">
             <Select
               label={text(t, 'modpacks.minecraft_version', 'Версия Minecraft')}
               value={launch.version}
@@ -148,31 +150,10 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
               placeholder="Steve"
               data-testid="play-workspace-nickname"
             />
-            <Select
-              label={text(t, 'general.modloader', 'Загрузчик модов')}
-              value={launch.loaderType}
-              onChange={(event) => updateLoader(event.target.value as PlayWorkspaceProps['launch']['loaderType'])}
-              disabled={busy}
-              data-testid="play-workspace-loader"
-            >
-              <option value="vanilla">{text(t, 'play_workspace.vanilla', 'Vanilla')}</option>
-              {(['fabric', 'forge', 'neoforge'] as const).map((loader) => {
-                const supported = isLoaderSupported({
-                  loaderType: loader,
-                  mcVersion: launch.version,
-                  forgeVersions: launch.supportedVersions.forge.length ? launch.supportedVersions.forge : forgeVersions,
-                  fabricVersions: launch.supportedVersions.fabric.length ? launch.supportedVersions.fabric : fabricVersions,
-                  neoForgeVersions: launch.supportedVersions.neoForge.length ? launch.supportedVersions.neoForge : neoForgeVersions,
-                });
-                return <option key={loader} value={loader} disabled={!supported}>{loader === 'neoforge' ? 'NeoForge' : loader[0].toUpperCase() + loader.slice(1)}</option>;
-              })}
-            </Select>
-          </div>
-
           <div className="min-w-[12rem] space-y-2">
             <Button
               variant="primary"
-              size="lg"
+              size="md"
               onClick={runtime.onLaunch}
               disabled={!canLaunch}
               progress={showProgress ? runtime.progress : undefined}
@@ -184,6 +165,24 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
             </Button>
             {launch.isOffline ? <p className="text-center text-xs text-secondary">{text(t, 'general.offline', 'Офлайн')}</p> : null}
           </div>
+          </div>
+          <fieldset className="min-w-0" data-testid="play-workspace-loader">
+            <legend className="control-label mb-2">{text(t, 'general.modloader', 'Загрузчик модов')}</legend>
+            <div className="next-loader-switch">
+              {(['vanilla', 'fabric', 'forge', 'neoforge'] as const).map((loader) => {
+                const supported = isLoaderSupported({
+                  loaderType: loader, mcVersion: launch.version,
+                  forgeVersions: launch.supportedVersions.forge.length ? launch.supportedVersions.forge : forgeVersions,
+                  fabricVersions: launch.supportedVersions.fabric.length ? launch.supportedVersions.fabric : fabricVersions,
+                  neoForgeVersions: launch.supportedVersions.neoForge.length ? launch.supportedVersions.neoForge : neoForgeVersions,
+                });
+                return <button key={loader} type="button" aria-pressed={launch.loaderType === loader}
+                  disabled={busy || !supported} onClick={() => updateLoader(loader)}>
+                  {loader === 'vanilla' ? text(t, 'play_workspace.vanilla', 'Vanilla') : loader === 'neoforge' ? 'NeoForge' : loader[0].toUpperCase() + loader.slice(1)}
+                </button>;
+              })}
+            </div>
+          </fieldset>
         </section>
 
         {!loaderSupported ? (
@@ -203,10 +202,14 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
           </section>
         ) : null}
 
-        <details className="order-last border-t border-border/70 pt-6">
-          <summary className="mb-4 cursor-pointer rounded-md text-xl font-semibold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[rgb(var(--accent-main))]">
+        <section className="order-last border-t border-border/70 pt-6">
+          <button type="button" className="next-disclosure-trigger" aria-expanded={advancedOpen}
+            aria-controls={advancedId} onClick={() => setAdvancedOpen((open) => !open)}>
+            <ChevronDown className={advancedOpen ? 'rotate-180' : ''} aria-hidden="true" />
             {text(t, 'play_workspace.advanced_title', 'Расширенные настройки')}
-          </summary>
+          </button>
+          <div id={advancedId} className="next-disclosure" data-open={advancedOpen} data-motion={!disableAnimations} inert={!advancedOpen}>
+          <div className="min-h-0 overflow-hidden"><div className="pt-5">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
             <div>
               <p className="kicker-label">{text(t, 'play_workspace.configuration_kicker', 'Configuration')}</p>
@@ -236,7 +239,8 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
               getAccentStyles={getAccentStyles}
             />
           </div>
-        </details>
+          </div></div></div>
+        </section>
 
         {runtimeSummary ? (
           <section className="border-t border-border/70 pt-6" aria-labelledby="play-workspace-content">

@@ -14,7 +14,7 @@ export function InstalledModpackActions({ onImportCode, onCreate, onBrowse }: In
   const accent = getAccentStyles('bg');
 
   return (
-    <div className="flex flex-wrap items-center gap-2" data-testid="installed-modpack-primary-actions">
+    <div className="flex shrink-0 flex-wrap items-center gap-2" data-testid="installed-modpack-primary-actions">
       <Button
         variant="secondary"
         size="sm"

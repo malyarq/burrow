@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, PackagePlus, RefreshCw, Trash2 } from 'lucide-react';
 import type { ModEntry as SharedModEntry } from '@shared/types/mods';
 import { useConfirm } from '../../../contexts/ConfirmContext';
@@ -48,6 +48,8 @@ export function ModsTab({
     const [showAddModModal, setShowAddModModal] = useState(false);
     const confirm = useConfirm();
     const toast = useToast();
+    const onUpdateRef = useRef(onUpdate);
+    onUpdateRef.current = onUpdate;
 
     const loadMods = useCallback(async () => {
         setLoading(true);
@@ -55,7 +57,7 @@ export function ModsTab({
         try {
             const list = await instanceModsIPC.list(instanceId);
             setMods(normalizeMods(list ?? []));
-            onUpdate?.();
+            onUpdateRef.current?.();
         } catch (err) {
             console.error('Failed to load mods:', err);
             setLoadError(err);
@@ -63,7 +65,7 @@ export function ModsTab({
             setHasLoaded(true);
             setLoading(false);
         }
-    }, [instanceId, onUpdate]);
+    }, [instanceId]);
 
     useEffect(() => {
         void loadMods();
@@ -122,8 +124,8 @@ export function ModsTab({
     return (
         <div className={cn('space-y-5', className)}>
             <div className="space-y-4 border-b border-border/65 pb-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="space-y-2">
+                <div className="flex flex-col gap-3 min-[900px]:flex-row min-[900px]:items-start min-[900px]:justify-between">
+                    <div className="min-w-0 flex-1 space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_mods')}</div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground">
@@ -132,14 +134,14 @@ export function ModsTab({
                             <p className="text-sm text-secondary">{t('modpacks.mods_description')}</p>
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex shrink-0 flex-wrap items-center gap-2 self-start" data-testid="mods-toolbar">
                         {showAddButton && (
-                            <Button variant="primary" size="sm" geometry="catalog-primary" onClick={() => setShowAddModModal(true)} disabled={loading}>
+                            <Button variant="primary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" onClick={() => setShowAddModModal(true)} disabled={loading}>
                                 <PackagePlus className="h-4 w-4" />
                                 {t('modpacks.add_mod_btn')}
                             </Button>
                         )}
-                        <Button onClick={() => void loadMods()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
+                        <Button onClick={() => void loadMods()} variant="secondary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" disabled={loading} isLoading={loading}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
                         </Button>

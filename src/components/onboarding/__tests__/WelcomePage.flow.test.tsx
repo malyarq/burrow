@@ -13,6 +13,7 @@ const setUIModeMock = vi.fn()
 const analyticsCaptureMock = vi.fn().mockResolvedValue('sent')
 const setAnalyticsEnabledMock = vi.fn()
 let analyticsConsent: 'unknown' | 'granted' | 'denied' = 'unknown'
+const languageState = { value: 'en' as 'en' | 'ru' }
 
 vi.mock('../../../features/analytics/AnalyticsProvider', () => ({
   useAnalytics: () => ({
@@ -26,7 +27,7 @@ vi.mock('../../../features/analytics/AnalyticsProvider', () => ({
 
 vi.mock('../../../contexts/SettingsContext', () => ({
   useSettings: () => ({
-    language: 'en',
+    language: languageState.value,
     setLanguage: setLanguageMock,
     setUIMode: setUIModeMock,
     t: (key: string) => ({
@@ -61,6 +62,8 @@ describe('WelcomePage flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     analyticsConsent = 'unknown'
+    languageState.value = 'en'
+    setLanguageMock.mockImplementation((language: 'en' | 'ru') => { languageState.value = language })
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockReturnValue({
@@ -119,9 +122,9 @@ describe('WelcomePage flow', () => {
     expect(completeMock).toHaveBeenCalledTimes(2)
   })
 
-  it('lets the user switch language or explicitly ask for help', () => {
+  it('keeps the selected language visibly marked after switching', () => {
     analyticsConsent = 'granted'
-    render(
+    const rendered = render(
       <WelcomePage
         onComplete={completeMock}
         onStartTour={tourMock}
@@ -132,6 +135,30 @@ describe('WelcomePage flow', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'ru' }))
     expect(setLanguageMock).toHaveBeenCalledWith('ru')
+    rendered.rerender(
+      <WelcomePage
+        onComplete={completeMock}
+        onStartTour={tourMock}
+        onShowMultiplayer={multiplayerMock}
+        onShowSettings={settingsMock}
+      />,
+    )
+    const russian = screen.getByRole('button', { name: 'ru' })
+    expect(russian.getAttribute('aria-pressed')).toBe('true')
+    expect(russian.className).toContain('border-border')
+    expect(screen.getByRole('button', { name: 'en' }).getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('lets the user explicitly ask for help', () => {
+    analyticsConsent = 'granted'
+    render(
+      <WelcomePage
+        onComplete={completeMock}
+        onStartTour={tourMock}
+        onShowMultiplayer={multiplayerMock}
+        onShowSettings={settingsMock}
+      />,
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Show a short tour' }))
     expect(tourMock).toHaveBeenCalledTimes(1)

@@ -88,8 +88,8 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
     return (
         <div className="space-y-4">
             <div className="surface-card space-y-4 p-4" data-testid="screenshots-workspace-shell">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="space-y-2">
+                <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                    <div className="min-w-0 space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_screenshots')}</div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground">{t('modpacks.tab_screenshots')}</h3>
@@ -100,7 +100,7 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
                             </p>
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex shrink-0 flex-wrap gap-2">
                         <Button variant="secondary" size="sm" onClick={() => void loadScreenshots()}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
@@ -113,7 +113,7 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
                 </div>
 
                 <div
-                    className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_10rem]"
+                    className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_minmax(8rem,10rem)]"
                     data-testid="screenshots-summary"
                 >
                     <div className="surface-inline flex items-start gap-3 p-3 text-sm text-secondary">
@@ -178,7 +178,7 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
                 </DegradedStateView>
             ) : (
                 <ul
-                    className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                    className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3"
                     role="list"
                     aria-label={t('modpacks.tab_screenshots')}
                 >

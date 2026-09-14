@@ -62,16 +62,17 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
       {header && <div data-testid={headerTestId}>{header}</div>}
 
       <div
-        className="grid gap-3 md:grid-cols-[minmax(0,1.45fr)_minmax(28rem,1fr)] md:items-end"
+        className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:items-end"
         data-testid={controlsTestId}
         data-catalog-controls-layout="library-toolbar"
+        data-catalog-controls-breakpoint="xl"
       >
         <div className="min-w-0 flex-1 space-y-1">
           <div className="text-xs font-medium text-secondary">{searchLabel}</div>
           {searchControl}
         </div>
         {controls.length > 0 && (
-          <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-3">
+          <div className="grid min-w-0 gap-3 sm:grid-cols-3">
             {controls.map((item) => (
               <div key={item.key} className="space-y-1">
                 <div className="text-xs font-medium text-secondary">{item.label}</div>
@@ -81,7 +82,7 @@ export const ModpackCatalogControls: React.FC<ModpackCatalogControlsProps> = ({
           </div>
         )}
         {onReset && activeFilterTokens.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={onReset} className="justify-self-start md:col-start-2">
+          <Button variant="ghost" size="sm" onClick={onReset} className="justify-self-start xl:col-start-2">
             {resetLabel}
           </Button>
         )}

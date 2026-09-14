@@ -189,7 +189,7 @@ describe('ModpackBrowser ergonomics', () => {
     expect(within(searchRegion).getByTestId('remote-modpack-primary-actions').className).toContain('flex-wrap');
     expect(within(searchRegion).getByText('CurseForge browse unavailable')).toBeTruthy();
     expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
-    expect(controlsGrid.className).toContain('md:grid-cols-');
+    expect(controlsGrid.className).toContain('xl:grid-cols-');
     expect(within(searchRegion).getByText('Search modpacks')).toBeTruthy();
     expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
     expect(within(searchRegion).getByText('Modloader')).toBeTruthy();

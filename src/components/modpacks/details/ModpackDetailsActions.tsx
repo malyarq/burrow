@@ -34,10 +34,10 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
 }) => {
   return (
     <section
-      className="grid min-w-0 gap-4 rounded-2xl border border-border/60 bg-background/45 p-3 lg:grid-cols-[minmax(10rem,0.72fr)_minmax(0,1.25fr)_minmax(20rem,1fr)] lg:items-start"
+      className="flex min-w-0 flex-wrap items-start gap-3 border-t border-border/65 pt-4"
       data-testid="modpack-details-actions"
     >
-      <div className="min-w-0">
+      <div className="min-w-[10rem] sm:w-44">
         <Button
           variant="primary"
           onClick={onLaunch}
@@ -54,7 +54,7 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
         <div
           data-testid="modpack-details-update-notice"
           data-update-scope="modpack-local"
-          className="min-w-0 rounded-xl border border-blue-200/60 bg-blue-50/55 p-3 text-blue-950 dark:border-blue-900/70 dark:bg-blue-950/20 dark:text-blue-100"
+          className="order-last w-full min-w-0 rounded-xl border border-blue-200/60 bg-blue-50/55 p-3 text-blue-950 dark:border-blue-900/70 dark:bg-blue-950/20 dark:text-blue-100"
         >
           <div className="space-y-1">
             <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-800/90 dark:text-blue-200/90">
@@ -79,20 +79,20 @@ export const ModpackDetailsActions: React.FC<ModpackDetailsActionsProps> = ({
         </div>
       )}
 
-      <div className="min-w-0">
+      <div className="min-w-0 flex-[1_1_30rem]">
         <span className="sr-only">{t('modpacks.actions_title')}</span>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2">
-          <Button variant="secondary" size="sm" onClick={onRename} className="min-w-0 whitespace-normal">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" size="sm" onClick={onRename} className="min-w-[8rem] flex-1 whitespace-normal sm:flex-none">
             {t('modpacks.rename')}
           </Button>
-          <Button variant="secondary" size="sm" onClick={onDuplicate} className="min-w-0 whitespace-normal">
+          <Button variant="secondary" size="sm" onClick={onDuplicate} className="min-w-[8rem] flex-1 whitespace-normal sm:flex-none">
             {t('modpacks.duplicate')}
           </Button>
-          <Button variant="secondary" size="sm" onClick={onExport} className="min-w-0 whitespace-normal">
+          <Button variant="secondary" size="sm" onClick={onExport} className="min-w-[8rem] flex-1 whitespace-normal sm:flex-none">
             {t('modpacks.export') || 'Экспорт'}
           </Button>
           {canDelete && (
-            <Button variant="danger" size="sm" onClick={onDelete} className="min-w-0 whitespace-normal">
+            <Button variant="danger" size="sm" onClick={onDelete} className="min-w-[8rem] flex-1 whitespace-normal sm:flex-none">
               {t('modpacks.delete')}
             </Button>
           )}

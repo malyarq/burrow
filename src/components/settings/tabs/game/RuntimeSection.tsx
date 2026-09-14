@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 
 import { Button } from '../../../ui/Button';
+import { Input } from '../../../ui/Input';
 import { Select } from '../../../ui/Select';
 import { cn } from '../../../../utils/cn';
 import type { ModpackConfig } from '../../../../contexts/instances/types';
+import { MAX_INSTANCE_MEMORY_GB } from '../../../../contexts/instances/utils/configPatching';
 import { javaRuntimeIPC } from '../../../../services/ipc/javaRuntimeIPC';
 import type { JavaRuntimeInstallationDto } from '@shared/contracts';
 import { getRequiredJavaForMinecraftVersion } from '@shared/minecraftRuntime';
@@ -45,6 +47,9 @@ export function RuntimeSection(props: {
   const [selectedInstallationId, setSelectedInstallationId] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [memoryInput, setMemoryInput] = useState('');
+  const memoryHintId = useId();
+  const [sliderRange, setSliderRange] = useState({ id: modpackConfig?.id, max: 32 });
 
   // Load Detected Javas on mount or scan
   const scanJava = async () => {
@@ -73,7 +78,16 @@ export function RuntimeSection(props: {
   const selectedJava = detectedJavas.find((java) => java.id === selectedInstallationId);
 
   const currentRam = getRamGb(modpackConfig, 4);
+  const sliderMaxGb = Math.max(32, currentRam, sliderRange.id === modpackConfig?.id ? sliderRange.max : 32);
+  useEffect(() => {
+    setSliderRange({ id: modpackConfig?.id, max: sliderMaxGb });
+  }, [modpackConfig?.id, sliderMaxGb]);
+  const sliderMidpointGb = sliderMaxGb / 2;
   const requiredJavaVer = getRequiredJavaForMinecraftVersion(modpackConfig?.runtime?.minecraft ?? '1.16.5');
+
+  useEffect(() => {
+    setMemoryInput(String(currentRam));
+  }, [currentRam]);
 
   // Warnings
   const warnings: string[] = [];
@@ -123,6 +137,17 @@ export function RuntimeSection(props: {
     }
   };
 
+  const applyMemoryInput = () => {
+    const requested = Number(memoryInput);
+    if (!Number.isFinite(requested) || requested <= 0) {
+      setMemoryInput(String(currentRam));
+      return;
+    }
+    const next = Math.min(MAX_INSTANCE_MEMORY_GB, Math.max(1, requested));
+    setMemoryInput(String(next));
+    setMemoryGb(next);
+  };
+
   return (
     <>
       <div className="space-y-4">
@@ -164,22 +189,44 @@ export function RuntimeSection(props: {
             </Button>
           </div>
 
-          <input
-            type="range"
-            aria-label={t('settings.ram')}
-            min="1"
-            max="16"
-            step="0.5"
-            value={getRamGb(modpackConfig, 4)}
-            onChange={(e) => setMemoryGb(parseFloat(e.target.value))}
-            className={cn('settings-slider', getAccentStyles('accent').className)}
-            style={getAccentStyles('accent').style}
-          />
-          <div className="relative mx-[0.65rem] h-5 text-xs text-secondary" aria-hidden="true">
-            <span className="absolute left-0">1 GB</span>
-            <span data-testid="memory-tick-eight" className="absolute -translate-x-1/2" style={{ left: `${(8 - 1) / (16 - 1) * 100}%` }}>8 GB</span>
-            <span className="absolute right-0">16 GB</span>
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-end">
+            <div>
+              <input
+                type="range"
+                aria-label={t('settings.ram')}
+                min="1"
+                max={sliderMaxGb}
+                step="0.5"
+                value={currentRam}
+                onChange={(e) => setMemoryGb(parseFloat(e.target.value))}
+                className={cn('settings-slider', getAccentStyles('accent').className)}
+                style={getAccentStyles('accent').style}
+              />
+              <div className="relative mx-[0.65rem] mt-1 h-5 text-xs text-secondary" aria-hidden="true">
+                <span className="absolute left-0">1 GB</span>
+                <span data-testid="memory-tick-midpoint" className="absolute -translate-x-1/2" style={{ left: `${(sliderMidpointGb - 1) / (sliderMaxGb - 1) * 100}%` }}>{sliderMidpointGb} GB</span>
+                <span className="absolute right-0">{sliderMaxGb} GB</span>
+              </div>
+            </div>
+            <Input
+              type="number"
+              min="1"
+              max={MAX_INSTANCE_MEMORY_GB}
+              step="0.5"
+              inputMode="decimal"
+              label={translateWithFallback(t, 'settings.memory_input', 'Memory in GB')}
+              aria-describedby={memoryHintId}
+              value={memoryInput}
+              onChange={(event) => setMemoryInput(event.target.value)}
+              onBlur={applyMemoryInput}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') event.currentTarget.blur();
+              }}
+            />
           </div>
+          <p id={memoryHintId} className="helper-text mt-2">
+            {translateWithFallback(t, 'settings.memory_limit_hint', `Enter 1–${MAX_INSTANCE_MEMORY_GB} GB. Burrow starts with 4 GB; leave enough memory for your system.`)}
+          </p>
         </div>
 
         {/* Min Memory Slider (Advanced) */}
@@ -207,6 +254,9 @@ export function RuntimeSection(props: {
               <span>0.5 GB</span>
               <span>{getRamGb(modpackConfig, 4)} GB</span>
             </div>
+            <p className="helper-text mt-2">
+              {translateWithFallback(t, 'settings.min_ram_explanation', 'Initial memory is reserved when Minecraft starts. It can reduce startup stutter, but uses memory before the game needs it.')}
+            </p>
           </div>
         )}
 

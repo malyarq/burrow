@@ -114,7 +114,7 @@ describe('PlayWorkspace', () => {
     expect(screen.getByText('Advanced game settings')).toBeTruthy();
     expect(screen.getByText('Pack content')).toBeTruthy();
     fireEvent.change(screen.getByTestId('play-workspace-version'), { target: { value: '1.20.1' } });
-    fireEvent.change(screen.getByTestId('play-workspace-loader'), { target: { value: 'forge' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Forge' }));
     fireEvent.change(screen.getByTestId('play-workspace-nickname'), { target: { value: 'Alex_42' } });
 
     expect(setVersion).toHaveBeenCalledWith('1.20.1');

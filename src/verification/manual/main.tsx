@@ -14,7 +14,7 @@ const isProductPreview = params.get('view') === 'product-next';
 
 seedManualVerificationStorage(isProductPreview ? 'dashboard' : view);
 if (isProductPreview) {
-  localStorage.setItem('onboarding_completed', 'true');
+  localStorage.setItem('onboarding_completed', params.get('onboarding') === '1' ? 'false' : 'true');
   localStorage.setItem('simple_play_welcome_dismissed', 'true');
   localStorage.setItem('settings_language', params.get('lang') === 'en' ? 'en' : 'ru');
   localStorage.setItem('settings_accentColor', 'blue');

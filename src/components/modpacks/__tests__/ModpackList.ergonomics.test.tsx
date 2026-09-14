@@ -142,7 +142,7 @@ describe('ModpackList ergonomics', () => {
     expect(searchHeader).toBeTruthy();
     expect(within(searchRegion).getByTestId('installed-modpack-primary-actions').className).toContain('flex-wrap');
     expect(controlsGrid.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
-    expect(controlsGrid.className).toContain('md:grid-cols-');
+    expect(controlsGrid.getAttribute('data-catalog-controls-breakpoint')).toBe('xl');
     expect(within(searchRegion).getByText('Search modpacks')).toBeTruthy();
     expect(within(searchRegion).getByText('Minecraft Version')).toBeTruthy();
     expect(within(searchRegion).getByText('Modloader')).toBeTruthy();

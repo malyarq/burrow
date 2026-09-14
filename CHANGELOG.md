@@ -4,6 +4,24 @@
 
 This file summarizes current product versions. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
 
+## [1.0.0-next.2] — 2026-09-14
+
+### Русский
+
+- Исправлены переносы кнопок контента, фильтры библиотеки, размеры обложки и заголовка модпака. Уведомление об обновлении больше не вытесняет действия за край окна.
+- Обновление данных модпака сохраняет рабочую область и прокрутку; вкладки контента не перезагружаются из-за обновления переводов и уведомлений.
+- Возвращены цветной знак с пещерой и переключатель модлоадера. Расширенные настройки плавно раскрываются с учётом отключения анимаций.
+- Память можно ввести вручную до 256 ГБ; обычный диапазон ползунка — 1–32 ГБ. Добавлено объяснение начальной памяти.
+- Выбор языка остаётся выделенным. Порядок экскурсии совпадает с навигацией; раздел «Вместе» содержит пошаговые инструкции.
+
+### English
+
+- Fixed content action wrapping, library filters, and modpack cover/title sizing. Update notices no longer push actions outside the window.
+- Modpack refresh retains its workspace and scroll position; content tabs no longer reload when translation or notification references change.
+- Restored the colorful cave mark and segmented modloader control. Advanced settings expand smoothly and respect motion preferences.
+- Memory supports manual values up to 256 GB, with a normal slider range of 1–32 GB and an explanation of initial memory.
+- Language selection remains visible. Tour order matches navigation; Together includes step-by-step instructions.
+
 ## [1.0.0-next.1] — 2026-09-14
 
 ### Русский

@@ -160,7 +160,7 @@ describe('ModpackCatalogControls shared contract', () => {
     expect(within(searchRegion).getByTestId('installed-modpack-catalog-header')).toBeTruthy();
     expect(within(searchRegion).getByTestId('installed-modpack-primary-actions')).toBeTruthy();
     expect(controls.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
-    expect(controls.className).toContain('md:grid-cols-');
+    expect(controls.getAttribute('data-catalog-controls-breakpoint')).toBe('xl');
     expect(screen.queryByTestId('installed-modpack-summary')).toBeNull();
     expect(screen.queryByText(/Showing\s+\d/i)).toBeNull();
     expect(screen.queryByText(/^Active:/i)).toBeNull();
@@ -185,7 +185,7 @@ describe('ModpackCatalogControls shared contract', () => {
     expect(within(searchRegion).getByTestId('remote-modpack-primary-actions')).toBeTruthy();
     expect(within(searchRegion).getByText('CurseForge browse unavailable')).toBeTruthy();
     expect(controls.getAttribute('data-catalog-controls-layout')).toBe('library-toolbar');
-    expect(controls.className).toContain('md:grid-cols-');
+    expect(controls.getAttribute('data-catalog-controls-breakpoint')).toBe('xl');
     expect(screen.queryByTestId('remote-modpack-summary')).toBeNull();
     expect(screen.queryByText(/Showing\s+\d/i)).toBeNull();
     expect(screen.getByRole('button', { name: 'Clear filters' })).toBeTruthy();

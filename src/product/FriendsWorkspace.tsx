@@ -35,6 +35,15 @@ export function FriendsWorkspace() {
           <MultiplayerConnectionControls multiplayer={multiplayer} />
         </section>
       </div>
+      <details className="mt-8 border-t border-border pt-5">
+        <summary className="cursor-pointer rounded-md text-base font-semibold">{t('next.friends.guide_title')}</summary>
+        <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-6 text-secondary">
+          <li>{t('next.friends.guide_prepare')}</li>
+          <li>{t('next.friends.guide_world')}</li>
+          <li>{t(`next.friends.guide_${multiplayer.networkMode}`)}</li>
+          <li>{t('next.friends.guide_keep_open')}</li>
+        </ol>
+      </details>
     </div>
   );
 }

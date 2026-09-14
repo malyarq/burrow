@@ -16,7 +16,7 @@ The public product name is **Burrow** and the multiplayer feature is **Burrow Li
 | Light doorway | `#f4f1e9` |
 | Warm doorway detail | `#d5a66b` |
 
-`public/burrow-symbol.svg` is the canonical file mark: a geometric doorway on a dark rounded field. `src/product/BurrowSymbol.tsx` is its inline UI variant; it uses `currentColor` and therefore takes its color from the surrounding element. `public/burrow-next-landscape.png` is generated artwork for the Next shell. Files under `docs/assets/brand/` are historical material and are not the source for the current mark or icons. Do not add a separate decorative card around the mark; the wordmark and mark remain independent navigation elements.
+The canonical mark is the voxel cave and torch in `docs/assets/brand/burrow-app-icon.png`. Its UI asset is `public/launcher-mark.png`; application icons are `public/icon.png`, `public/icon.ico`, and `public/icon-macos.png`. `src/product/BurrowSymbol.tsx` displays the image with fixed colors, independent of theme and accent. `public/burrow-next-landscape.png` remains the Next shell illustration. The mark and wordmark do not need an extra decorative card.
 
 ### Semantic colors
 

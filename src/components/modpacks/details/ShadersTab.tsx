@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RefreshCw, Sparkles, Trash2, Wand2 } from 'lucide-react';
 import type { ShaderPack } from '@shared/contracts/shaders';
 import { useConfirm } from '../../../contexts/ConfirmContext';
@@ -32,6 +32,10 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
     const [hasLoaded, setHasLoaded] = useState(false);
     const [loadError, setLoadError] = useState<unknown | null>(null);
     const toast = useToast();
+    const toastRef = useRef(toast);
+    const translateRef = useRef(t);
+    toastRef.current = toast;
+    translateRef.current = t;
 
     const loadPacks = useCallback(async () => {
         setLoading(true);
@@ -42,12 +46,12 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
         } catch (err) {
             console.error(err);
             setLoadError(err);
-            toast.error(t('modpacks.shader_load_error'));
+            toastRef.current.error(translateRef.current('modpacks.shader_load_error'));
         } finally {
             setHasLoaded(true);
             setLoading(false);
         }
-    }, [instanceId, t, toast]);
+    }, [instanceId]);
 
     useEffect(() => {
         void loadPacks();
@@ -123,22 +127,22 @@ export function ShadersTab({ instanceId, runtimeSummary, onUpdate, onAddShader }
     return (
         <div className="space-y-5">
             <div className="space-y-4 border-b border-border/65 pb-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="space-y-2">
+                <div className="flex flex-col gap-3 min-[900px]:flex-row min-[900px]:items-start min-[900px]:justify-between">
+                    <div className="min-w-0 flex-1 space-y-2">
                         <div className="kicker-label">{t('modpacks.tab_shaders')}</div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground">{t('modpacks.installed_shaders')}</h3>
                             <p className="text-sm text-secondary">{t('modpacks.shaders_description')}</p>
                         </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex shrink-0 flex-wrap items-center gap-2 self-start" data-testid="shaders-toolbar">
                         {onAddShader && (
-                            <Button onClick={onAddShader} variant="primary" size="sm" geometry="catalog-primary" disabled={loading}>
+                            <Button onClick={onAddShader} variant="primary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" disabled={loading}>
                                 <Sparkles className="h-4 w-4" />
                                 {t('modpacks.add_shader_btn')}
                             </Button>
                         )}
-                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" geometry="catalog-primary" disabled={loading} isLoading={loading}>
+                        <Button onClick={() => void loadPacks()} variant="secondary" size="sm" geometry="catalog-primary" className="whitespace-nowrap" disabled={loading} isLoading={loading}>
                             <RefreshCw className="h-4 w-4" />
                             {t('modpacks.update')}
                         </Button>

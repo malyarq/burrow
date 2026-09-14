@@ -1,24 +1,33 @@
 import type { ModpackConfig, ModLoaderType, NetworkMode } from '../types';
 import { clamp, toMbFromGb } from './memory';
 
+export const MAX_INSTANCE_MEMORY_GB = 256;
+
 export function patchModpackConfig(prev: ModpackConfig, patch: Partial<ModpackConfig>): ModpackConfig {
   return { ...prev, ...patch } as ModpackConfig;
 }
 
 export function withModpackMemoryGb(prev: ModpackConfig, gb: number): ModpackConfig {
-  const nextGb = clamp(gb, 1, 64);
+  const nextGb = clamp(gb, 1, MAX_INSTANCE_MEMORY_GB);
+  const nextMaxMb = toMbFromGb(nextGb);
+  const previousMinMb = prev.memory?.minMb;
   return {
     ...prev,
-    memory: { ...prev.memory, maxMb: toMbFromGb(nextGb) },
+    memory: {
+      ...prev.memory,
+      maxMb: nextMaxMb,
+      ...(previousMinMb === undefined ? {} : { minMb: Math.min(previousMinMb, nextMaxMb) }),
+    },
   };
 }
 
 export function withModpackMinMemoryGb(prev: ModpackConfig, gb: number): ModpackConfig {
-  const nextGb = clamp(gb, 0.5, 64);
   const baseMemory = prev.memory || { maxMb: 4096 };
+  const maxGb = clamp(baseMemory.maxMb / 1024, 1, MAX_INSTANCE_MEMORY_GB);
+  const nextGb = clamp(gb, 0.5, maxGb);
   return {
     ...prev,
-    memory: { ...baseMemory, minMb: toMbFromGb(nextGb) },
+    memory: { ...baseMemory, maxMb: toMbFromGb(maxGb), minMb: toMbFromGb(nextGb) },
   };
 }
 
