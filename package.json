@@ -32,6 +32,7 @@
     "quality:bundle": "node scripts/quality-bundle.cjs",
     "quality:architecture": "node scripts/check-dependency-graph.cjs && node scripts/check-complexity.cjs --check quality/budgets/complexity-ratchet.json",
     "quality:performance": "playwright test tests/performance --project=performance-production --workers=1",
+    "stress:launcher": "node scripts/stress-launcher.js",
     "quality:accessibility": "playwright test tests/accessibility --project=chromium --workers=1",
     "quality:check": "node scripts/quality-contract.cjs",
     "smoke:package": "node scripts/package-smoke.js",
