@@ -76,6 +76,15 @@ export type InstanceListItemDto = Readonly<{
   summary: InstanceSummaryDto;
 }>;
 
+/** A complete, renderer-safe record from one canonical list snapshot. */
+export type InstanceCatalogItemDto = Readonly<{
+  id: string;
+  name: string;
+  selected: boolean;
+  summary: InstanceSummaryDto;
+  metadata: InstanceMetadataDto;
+}>;
+
 export type InstanceSnapshotDto = Readonly<{
   id: string;
   name: string;
@@ -103,7 +112,7 @@ export type InstanceFailure = Readonly<{
 
 export type InstanceResult<T> = Readonly<{ ok: true; value: T }> | Readonly<{ ok: false; error: InstanceFailure }>;
 
-export type InstanceListResponse = Readonly<{ status: 'ready'; instances: readonly InstanceListItemDto[] }> | Readonly<{ status: 'uninitialized' }>;
+export type InstanceListResponse = Readonly<{ status: 'ready'; instances: readonly InstanceCatalogItemDto[] }> | Readonly<{ status: 'uninitialized' }>;
 export type InstanceSnapshotResponse = InstanceSnapshotDto;
 export type InstanceConfigResponse = InstanceConfigDto;
 export type InstanceMetadataResponse = InstanceMetadataDto;

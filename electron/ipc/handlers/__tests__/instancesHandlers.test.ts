@@ -91,7 +91,20 @@ describe('instances control-plane handler factory', () => {
 
     await expect(handlers[INSTANCE_CHANNELS.list]({})).resolves.toEqual({
       ok: true,
-      value: { status: 'ready', instances: [{ id: 'alpha', name: 'Alpha', selected: true, summary: { minecraftVersion: '1.21.1' } }] },
+      value: {
+        status: 'ready',
+        instances: [{
+          id: 'alpha',
+          name: 'Alpha',
+          selected: true,
+          summary: { minecraftVersion: '1.21.1' },
+          metadata: {
+            source: 'local',
+            createdAt: '2026-08-04T00:00:00.000Z',
+            updatedAt: '2026-08-04T00:00:00.000Z',
+          },
+        }],
+      },
     });
     await handlers[INSTANCE_CHANNELS.snapshot]({ id: 'alpha' });
     await handlers[INSTANCE_CHANNELS.select]({ id: 'alpha' });

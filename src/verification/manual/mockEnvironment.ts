@@ -1,5 +1,6 @@
 import type {
   BurrowApi,
+  InstanceCatalogItemDto,
   InstanceConfigDto,
   InstanceListItemDto,
   InstanceMetadataDto,
@@ -1072,6 +1073,19 @@ function instanceListItems(state: ManualState): InstanceListItemDto[] {
   }));
 }
 
+function instanceCatalogItems(state: ManualState): InstanceCatalogItemDto[] {
+  return state.modpacks.map((config) => ({
+    id: config.id,
+    name: config.name,
+    selected: config.id === state.selectedModpackId,
+    summary: {
+      minecraftVersion: config.runtime.minecraft,
+      ...(config.runtime.modLoader === undefined ? {} : { modLoader: { ...config.runtime.modLoader } }),
+    },
+    metadata: toInstanceMetadata(state.metadata[config.id]),
+  }));
+}
+
 function instanceMutation(state: ManualState, status: 'committed' | 'noop' = 'committed'): InstanceMutationResponse {
   return {
     status,
@@ -1195,7 +1209,7 @@ export function installManualVerificationEnvironment() {
   const state = createState(view);
 
   const instancesApi: InstancesAPI = {
-    list: async () => instanceResult({ status: 'ready', instances: instanceListItems(state) }),
+    list: async () => instanceResult({ status: 'ready', instances: instanceCatalogItems(state) }),
     snapshot: async ({ id }) => {
       const config = findConfig(state, id);
       const metadata = state.metadata[id];

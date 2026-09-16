@@ -4,6 +4,18 @@
 
 This file summarizes current product versions. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
 
+## [1.0.0-next.4] - 2026-09-16
+
+### Русский
+
+- Библиотека получает метаданные всех сборок одним запросом вместо повторного чтения каталога для каждой карточки.
+- Карточки вне экрана пропускают отрисовку. Убрана последовательная анимация всего списка, задерживавшая появление больших библиотек.
+
+### English
+
+- The library loads pack metadata in one request instead of reading the entire catalog for each card.
+- Offscreen cards skip rendering. Removed the staggered entrance animation that delayed large libraries.
+
 ## [1.0.0-next.3] — 2026-09-15
 
 ### Русский

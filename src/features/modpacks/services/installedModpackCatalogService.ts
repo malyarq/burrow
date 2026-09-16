@@ -1,7 +1,6 @@
 import type { ModpackMetadata } from '@shared/types/modpack';
 import { archiveInspectionIPC } from '../../../services/ipc/archiveInspectionIPC';
 import { instancesIPC } from '../../../services/ipc/instancesIPC';
-import type { ModpackListItem } from '../../../contexts/instances/types';
 
 export interface InstalledModpackCatalogItem {
   id: string;
@@ -15,11 +14,12 @@ function instanceValue<T>(result: { ok: true; value: T } | { ok: false; error: {
   throw new Error(result.error.message);
 }
 
-export async function loadInstalledModpackCatalog(
-  instances: readonly ModpackListItem[],
-): Promise<InstalledModpackCatalogItem[]> {
-  return Promise.all(instances.map(async (instance) => {
-    const metadata = instanceValue(await instancesIPC.metadata({ id: instance.id }));
+export async function loadInstalledModpackCatalog(): Promise<InstalledModpackCatalogItem[]> {
+  const catalog = instanceValue(await instancesIPC.list());
+  if (catalog.status === 'uninitialized') return [];
+
+  return catalog.instances.map((instance) => {
+    const metadata = instance.metadata;
     return {
       id: instance.id,
       name: instance.name,
@@ -40,7 +40,7 @@ export async function loadInstalledModpackCatalog(
         updatedAt: metadata.updatedAt,
       },
     };
-  }));
+  });
 }
 
 export async function selectInstalledModpackArchive() {

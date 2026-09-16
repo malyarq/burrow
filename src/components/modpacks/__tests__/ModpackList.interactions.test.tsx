@@ -7,7 +7,6 @@ import { createTranslator } from '../../../contexts/settings/i18n';
 import modpackListSource from '../ModpackList.tsx?raw';
 
 const listMock = vi.fn();
-const metadataMock = vi.fn();
 const selectMock = vi.fn();
 const refreshMock = vi.fn();
 const onNavigateMock = vi.fn();
@@ -97,7 +96,6 @@ vi.mock('../../../contexts/ConfirmContext', () => ({
 vi.mock('../../../services/ipc/instancesIPC', () => ({
   instancesIPC: {
     list: () => listMock(),
-    metadata: (...args: unknown[]) => metadataMock(...args),
   },
 }));
 
@@ -135,7 +133,6 @@ describe('ModpackList interactions', () => {
     modpackItemsState = [buildModpackItem('Alpha Pack')];
 
     listMock.mockReset();
-    metadataMock.mockReset();
     selectMock.mockReset();
     refreshMock.mockReset();
     onNavigateMock.mockReset();
@@ -156,16 +153,13 @@ describe('ModpackList interactions', () => {
             minecraftVersion: metadata.minecraftVersion,
             modLoader: metadata.modLoader,
           },
+          metadata: {
+            source: 'local',
+            description: metadata.description,
+            createdAt: '2026-04-20T00:00:00.000Z',
+            updatedAt: '2026-04-20T00:00:00.000Z',
+          },
         })),
-      },
-    }));
-    metadataMock.mockImplementation(async ({ id }: { id: string }) => ({
-      ok: true,
-      value: {
-        source: 'local',
-        description: modpackItemsState.find((item) => item.id === id)?.metadata.description,
-        createdAt: '2026-04-20T00:00:00.000Z',
-        updatedAt: '2026-04-20T00:00:00.000Z',
       },
     }));
   });
@@ -189,7 +183,7 @@ describe('ModpackList interactions', () => {
     await screen.findByRole('button', { name: 'Alpha Pack' });
     fireEvent.change(screen.getByTestId('installed-modpack-version-filter'), { target: { value: '1.20.1' } });
     fireEvent.change(screen.getByTestId('installed-modpack-loader-filter'), { target: { value: 'fabric' } });
-    expect(metadataMock).toHaveBeenCalledTimes(1);
+    expect(listMock).toHaveBeenCalledTimes(1);
 
     selectedIdState = 'alpha';
     modpackItemsState = [buildModpackItem('Alpha Pack', true)];
@@ -200,7 +194,7 @@ describe('ModpackList interactions', () => {
       expect((screen.getByTestId('installed-modpack-loader-filter') as HTMLSelectElement).value).toBe('fabric');
       expect(screen.queryByRole('list', { name: 'Modpacks' })).toBeTruthy();
     });
-    expect(metadataMock).toHaveBeenCalledTimes(1);
+    expect(listMock).toHaveBeenCalledTimes(1);
   });
 
   it('opens the action menu from the keyboard with labeled menu semantics', async () => {

@@ -139,6 +139,8 @@ There is no generic `invoke/send/on/off` capability and no top-level Electron al
 - `instances:metadata`
 - `instances:prepare`
 
+`instances:list` returns each instance's metadata together with its summary from one canonical snapshot, so lists do not need a separate state request for every instance.
+
 ### 3.4.1 Instance mods
 
 - `instance-mods:list`

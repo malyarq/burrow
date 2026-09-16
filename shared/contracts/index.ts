@@ -78,6 +78,7 @@ export {
 } from './instances';
 export type {
   InstanceChannel,
+  InstanceCatalogItemDto,
   InstanceConfigDto,
   InstanceConfigRequest,
   InstanceConfigResponse,

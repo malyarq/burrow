@@ -60,8 +60,6 @@ export function useInstalledModpackCatalog({
   const [sort, setSort] = useState<InstalledModpackSortOption>('name');
   const [isDragging, setIsDragging] = useState(false);
   const loadGenerationRef = useRef(0);
-  const modpacksRef = useRef(modpacks);
-  modpacksRef.current = modpacks;
   const modpacksKey = modpacks.map((item) => [
     item.id,
     item.name,
@@ -76,7 +74,7 @@ export function useInstalledModpackCatalog({
     setLoadError(null);
 
     try {
-      const nextItems = await loadInstalledModpackCatalog(modpacksRef.current);
+      const nextItems = await loadInstalledModpackCatalog();
 
       if (generation === loadGenerationRef.current) setItems(nextItems);
     } catch (error) {

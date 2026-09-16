@@ -440,6 +440,13 @@
 }
 
 @layer utilities {
+  /* Keep offscreen cards searchable and keyboard accessible without painting
+     every cover and shadow in a large library. The browser remembers real sizes. */
+  .installed-modpack-card {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 27rem;
+  }
+
   .app-drag-region {
     -webkit-app-region: drag;
   }

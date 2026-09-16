@@ -42,6 +42,17 @@ export function instancesFromListFixture(load: () => Promise<LegacyListFixture[]
               minecraftVersion: item.metadata.minecraftVersion ?? '1.20.1',
               ...(item.metadata.modLoader === undefined ? {} : { modLoader: item.metadata.modLoader }),
             },
+            metadata: {
+              source: item.metadata.source ?? 'local',
+              ...(item.metadata.sourceId === undefined ? {} : { sourceId: item.metadata.sourceId }),
+              ...(item.metadata.sourceVersionId === undefined ? {} : { sourceVersionId: item.metadata.sourceVersionId }),
+              ...(item.metadata.version === undefined ? {} : { version: item.metadata.version }),
+              ...(item.metadata.iconUrl === undefined ? {} : { iconUrl: item.metadata.iconUrl }),
+              ...(item.metadata.description === undefined ? {} : { description: item.metadata.description }),
+              ...(item.metadata.author === undefined ? {} : { author: item.metadata.author }),
+              createdAt: item.metadata.createdAt ?? '2026-04-20T00:00:00.000Z',
+              updatedAt: item.metadata.updatedAt ?? '2026-04-20T00:00:00.000Z',
+            },
           })),
         },
       };

@@ -129,7 +129,7 @@ describe('Phase 41 renderer ownership proof', () => {
         );
       }, { timeout: 4000 });
       expect(rendered.container.textContent).toContain(copy[language].ownershipTitle);
-      expect(list).toHaveBeenCalledTimes(1);
+      expect(list).toHaveBeenCalledTimes(3);
 
       fireEvent.click(await screen.findByRole('button', { name: copy[language].makeActive }));
 
@@ -139,7 +139,7 @@ describe('Phase 41 renderer ownership proof', () => {
         expect(document.querySelector('aside[data-instance-owner="canonical"]')
           ?.getAttribute('data-selected-instance-id')).toBe('beta');
       });
-      expect(list).toHaveBeenCalledTimes(2);
+      expect(list).toHaveBeenCalledTimes(4);
       expect(rendered.container.textContent).not.toContain('phase41.');
       expect(rendered.container.textContent).not.toContain('/Users/');
     },

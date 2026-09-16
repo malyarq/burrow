@@ -1,6 +1,7 @@
 import {
   INSTANCE_CHANNELS,
   type InstanceChannel,
+  type InstanceCatalogItemDto,
   type InstanceConfigDto,
   type InstanceFailure,
   type InstanceListItemDto,
@@ -139,9 +140,16 @@ function toListItem(record: CanonicalInstanceRecord, selectedId: string | null):
   };
 }
 
+function toCatalogItem(record: CanonicalInstanceRecord, selectedId: string | null): InstanceCatalogItemDto {
+  return {
+    ...toListItem(record, selectedId),
+    metadata: toMetadata(record),
+  };
+}
+
 function toList(read: InstanceControlPlaneRead): InstanceListResponse {
   if (read.status === 'uninitialized') return { status: 'uninitialized' };
-  return { status: 'ready', instances: read.snapshot.records.map((record) => toListItem(record, read.snapshot.selectedId)) };
+  return { status: 'ready', instances: read.snapshot.records.map((record) => toCatalogItem(record, read.snapshot.selectedId)) };
 }
 
 function toMutation(snapshot: CanonicalInstanceSnapshot, status: 'committed' | 'noop'): InstanceMutationResponse {

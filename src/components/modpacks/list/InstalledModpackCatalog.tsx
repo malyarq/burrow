@@ -80,7 +80,6 @@ const InstalledModpackCardSkeleton = memo(function InstalledModpackCardSkeleton(
 interface InstalledModpackCardProps {
   item: InstalledModpackItem;
   update?: ModpackUpdateInfo;
-  index: number;
   selected: boolean;
   onSelect: (id: string) => void;
   onShowDetails: (id: string) => void;
@@ -89,7 +88,6 @@ interface InstalledModpackCardProps {
 const InstalledModpackCard = memo(function InstalledModpackCard({
   item,
   update,
-  index,
   selected,
   onSelect,
   onShowDetails,
@@ -115,8 +113,7 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
   return (
     <div
       className={cn(
-        'surface-card relative flex min-h-[25rem] cursor-pointer flex-col overflow-hidden p-5 transition-all duration-300 ease-out',
-        'motion-safe-transform animate-fade-in-up motion-safe:hover:-translate-y-0.5',
+        'surface-card installed-modpack-card relative flex min-h-[25rem] cursor-pointer flex-col overflow-hidden p-5 transition-colors duration-200',
         'focus-within:ring-2 focus-within:ring-[rgb(var(--accent-main))] focus-within:ring-offset-2 focus-within:ring-offset-background',
         selected
           ? cn('bg-card shadow-[0_0_0_1px_rgb(var(--accent-main)/0.35)]', activeBorder.className)
@@ -124,7 +121,6 @@ const InstalledModpackCard = memo(function InstalledModpackCard({
       )}
       data-state={selected ? 'active' : 'inactive'}
       style={{
-        animationDelay: `${index * 50}ms`,
         ...(selected ? activeBorder.style : undefined),
       }}
       role="listitem"
@@ -454,12 +450,11 @@ export function InstalledModpackCatalog({
         )
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3" role="list" aria-label={t('modpacks.title') || 'Modpacks'}>
-          {items.map((item, index) => (
+          {items.map((item) => (
             <InstalledModpackCard
               key={item.id}
               item={item}
               update={availableUpdatesById[item.id]}
-              index={index}
               selected={item.id === selectedId}
               onSelect={onSelect}
               onShowDetails={onShowDetails}
