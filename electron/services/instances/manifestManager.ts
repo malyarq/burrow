@@ -52,9 +52,21 @@ export class InstanceManifestManager {
         this.saveManifest(instancePath, manifest);
     }
 
+    public findMod(instancePath: string, source: InstalledMod['source'], projectId: string): InstalledMod | undefined {
+        return this.loadManifest(instancePath).mods.find((mod) => mod.source === source && mod.projectId === projectId);
+    }
+
     public removeMod(instancePath: string, fileName: string) {
         const manifest = this.loadManifest(instancePath);
         manifest.mods = manifest.mods.filter(m => m.fileName !== fileName);
+        this.saveManifest(instancePath, manifest);
+    }
+
+    public renameMod(instancePath: string, fileName: string, targetFileName: string) {
+        const manifest = this.loadManifest(instancePath);
+        const mod = manifest.mods.find((entry) => entry.fileName === fileName);
+        if (!mod) return;
+        mod.fileName = targetFileName;
         this.saveManifest(instancePath, manifest);
     }
 }

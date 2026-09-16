@@ -9,6 +9,7 @@ const scanJavaMock = vi.fn();
 vi.mock('../../../services/ipc/javaRuntimeIPC', () => ({
   javaRuntimeIPC: {
     scan: (...args: unknown[]) => scanJavaMock(...args),
+    get: vi.fn(async () => ({ installationId: null })),
     select: vi.fn(),
   },
 }));

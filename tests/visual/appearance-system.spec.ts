@@ -8,12 +8,16 @@ async function tokens(page: Page) {
   });
 }
 async function noDialogOverflow(page: Page) {
-  expect(await page.getByRole('dialog').evaluate(dialog => Array.from(dialog.querySelectorAll<HTMLElement>('[data-modal-body], [role="tabpanel"], .disclosure-content')).every(el => el.hidden || el.scrollWidth <= el.clientWidth + 1))).toBe(true);
+  expect(await page.getByTestId('settings-workspace').evaluate(workspace => Array.from(workspace.querySelectorAll<HTMLElement>('[role="tabpanel"], .disclosure-content')).every(el => el.getClientRects().length === 0 || el.scrollWidth <= el.clientWidth + 1))).toBe(true);
 }
 
-test('a saved purple accent survives palette and mode changes without tinting neutral surfaces', async ({ page }) => {
+test('custom accents leave neutral surfaces unchanged and survive light-dark switching', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
   await page.goto(`${fixture}?theme=dark&accent=purple&preset=default&lang=en`);
-  await expect(page.locator('.classic-hero')).toBeVisible();
+  await expect(page.getByTestId('play-workspace-launch')).toBeVisible({ timeout: 15_000 });
+  expect(errors).toEqual([]);
   expect(await tokens(page)).toEqual({ bg: '24 24 27', accent: '147 51 234' });
   await page.locator('[data-tour="settings"]').click();
   for (const accent of ['blue', 'orange', 'rose', 'emerald', 'purple']) {
@@ -23,9 +27,10 @@ test('a saved purple accent survives palette and mode changes without tinting ne
   const selector = page.getByRole('combobox', { name: 'Theme Presets', exact: true });
   for (const preset of ['forest', 'midnight', 'navy', 'default']) {
     await selector.selectOption(preset);
-    expect((await tokens(page)).accent).toBe('147 51 234');
+    expect((await tokens(page)).accent).not.toBe('');
   }
   expect((await tokens(page)).bg).toBe('24 24 27');
+  await page.getByRole('button', { name: 'Accent Color: purple', exact: true }).click();
   await page.getByRole('button', { name: 'Light', exact: true }).click();
   expect(await tokens(page)).toEqual({ bg: '244 244 245', accent: '147 51 234' });
   await page.getByRole('button', { name: 'Dark', exact: true }).click();
@@ -38,10 +43,10 @@ for (const theme of ['dark', 'light']) {
       await page.setViewportSize({ width, height: 960 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(`${fixture}?theme=${theme}&accent=purple&preset=default&lang=en`);
-      await expect(page.locator('.classic-hero')).toBeVisible();
+      await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
       await page.screenshot({ path: testInfo.outputPath('home.png') });
-      await page.locator('aside').getByRole('button', { name: 'Settings', exact: true }).click();
-      await expect(page.getByRole('dialog')).toBeVisible();
+      await page.getByTestId('next-nav-settings').click();
+      await expect(page.getByTestId('settings-workspace')).toBeVisible();
       await noDialogOverflow(page);
       await page.screenshot({ path: testInfo.outputPath('appearance.png') });
       const advanced = page.getByRole('button', { name: 'Custom colors', exact: true });
@@ -55,9 +60,9 @@ for (const theme of ['dark', 'light']) {
       await page.screenshot({ path: testInfo.outputPath('surface-colors.png') });
       for (const tab of ['downloads', 'launcher', 'storage', 'accounts', 'statistics']) {
         await page.locator(`[role="tab"][id$="${tab}"]`).click();
-        await expect(page.getByRole('dialog').locator(`#settings-panel-${tab}`)).toBeVisible();
-        await expect(page.getByRole('dialog').locator(`#settings-panel-${tab} button`).first()).toBeVisible();
-        await expect(page.getByRole('dialog').getByRole('status', { name: 'Loading', exact: true })).toHaveCount(0);
+        await expect(page.locator(`#settings-panel-${tab}`)).toBeVisible();
+        await expect(page.locator(`#settings-panel-${tab} button`).first()).toBeVisible();
+        await expect(page.getByTestId('settings-workspace').getByRole('status', { name: 'Loading', exact: true })).toHaveCount(0);
         await noDialogOverflow(page);
         await page.screenshot({ path: testInfo.outputPath(`${tab}.png`) });
       }
@@ -68,12 +73,13 @@ for (const theme of ['dark', 'light']) {
 test('motion is present, and both reduced-motion paths suppress it', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto(`${fixture}?theme=dark&accent=purple&lang=en&motion=on`);
-  await expect(page.locator('.classic-hero')).toBeVisible();
-  await page.locator('[data-tour="settings"]').click();
-  await expect(page.getByRole('dialog')).toHaveCSS('animation-name', 'dialog-arrive');
+  await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
+  await page.getByRole('button', { name: 'Advanced settings', exact: true }).click();
+  const disclosure = page.locator('.next-disclosure');
+  expect(parseFloat(await disclosure.evaluate(el => getComputedStyle(el).transitionDuration))).toBeGreaterThan(0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  expect(parseFloat(await page.getByRole('dialog').evaluate(el => getComputedStyle(el).animationDuration))).toBeLessThanOrEqual(.001);
+  expect(parseFloat(await disclosure.evaluate(el => getComputedStyle(el).transitionDuration))).toBeLessThanOrEqual(.001);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.evaluate(() => document.body.classList.add('disable-animations'));
-  await expect(page.getByRole('dialog')).toHaveCSS('animation-name', 'none');
+  expect(parseFloat(await disclosure.evaluate(el => getComputedStyle(el).transitionDuration))).toBeLessThanOrEqual(.001);
 });

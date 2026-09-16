@@ -14,14 +14,17 @@ describe('javaRuntimeIPC', () => {
       scan: vi.fn<JavaRuntimeAPI['scan']>().mockResolvedValue([
         { id: 'installation-1', version: '21.0.6', majorVersion: 21, arch: 'x64' },
       ]),
+      get: vi.fn<JavaRuntimeAPI['get']>().mockResolvedValue({ installationId: 'installation-1' }),
       select: vi.fn<JavaRuntimeAPI['select']>().mockResolvedValue({ status: 'selected' }),
     };
     vi.stubGlobal('window', { api: { javaRuntime } });
 
     await javaRuntimeIPC.scan();
+    await javaRuntimeIPC.get({ instanceId: 'classic' });
     await javaRuntimeIPC.select({ instanceId: 'classic', installationId: 'installation-1' });
 
     expect(javaRuntime.scan).toHaveBeenCalledWith();
+    expect(javaRuntime.get).toHaveBeenCalledWith({ instanceId: 'classic' });
     expect(javaRuntime.select).toHaveBeenCalledWith({ instanceId: 'classic', installationId: 'installation-1' });
   });
 

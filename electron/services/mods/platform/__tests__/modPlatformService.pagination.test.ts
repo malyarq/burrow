@@ -1,13 +1,21 @@
 import fs from 'node:fs';
 import os from 'node:os';
-import { describe, expect, it, vi } from 'vitest';
+import path from 'node:path';
+import fsExtra from 'fs-extra';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ModrinthV2Client } from '@xmcl/modrinth';
 import type { InstanceApplication } from '../../../../domains/instances/instanceApplication';
 import type { LauncherRoot } from '../../../../domains/instances/instanceTypes';
 import { classifyPackPath, ModPlatformService, PREVIEW_ARCHIVE_MAX_BYTES } from '../modPlatformService';
+import { InstanceManifestManager } from '../../../instances/manifestManager';
 
-const fetchPublicHttpsUrlMock = vi.fn();
+const mocked = vi.hoisted(() => ({
+  fetchPublicHttpsUrl: vi.fn(),
+  download: vi.fn(),
+}));
+const fetchPublicHttpsUrlMock = mocked.fetchPublicHttpsUrl;
 vi.mock('../../../../security/remoteUrls', () => ({ fetchPublicHttpsUrl: (...args: unknown[]) => fetchPublicHttpsUrlMock(...args) }));
+vi.mock('@xmcl/file-transfer', () => ({ download: (...args: unknown[]) => mocked.download(...args) }));
 
 type ModrinthSearchResult = Awaited<ReturnType<ModrinthV2Client['searchProjects']>>;
 type ModrinthSearchHit = ModrinthSearchResult['hits'][number];
@@ -52,6 +60,10 @@ function createPlatformService(): ModPlatformService {
 }
 
 describe('ModPlatformService alphabetical modpack pagination', () => {
+  afterEach(() => {
+    mocked.download.mockReset();
+    vi.restoreAllMocks();
+  });
   it('classifies manifest and all supported override roots as user-visible content', () => {
     expect(classifyPackPath(undefined)).toBe('other');
     expect(classifyPackPath('mods/example.jar')).toBe('mod');
@@ -142,6 +154,147 @@ describe('ModPlatformService alphabetical modpack pagination', () => {
     expect(content.getModpackDir).toHaveBeenCalledWith('/tmp/burrow-platform-test', 'alpha');
   });
 
+  it('replaces a tracked project with a renamed provider file only after its download succeeds', async () => {
+    const rootPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-platform-replace-'));
+    const instancePath = path.join(rootPath, 'modpacks', 'alpha');
+    fs.mkdirSync(path.join(instancePath, 'mods'), { recursive: true });
+    fs.writeFileSync(path.join(instancePath, 'mods', 'project-v1.jar'), 'v1');
+    const manifests = new InstanceManifestManager();
+    manifests.addMod(instancePath, {
+      fileName: 'project-v1.jar', source: 'modrinth', projectId: 'project', versionId: 'v1', installDate: '2026-09-01T00:00:00.000Z',
+    });
+    const application = { read: vi.fn(async () => ({ status: 'ready' as const, snapshot: { records: [{ id: 'alpha' }] } })) } as unknown as InstanceApplication;
+    const service = new ModPlatformService(application, {
+      resolveRoot: async () => ({} as LauncherRoot),
+      getModpackDir: () => instancePath,
+    });
+    mocked.download.mockImplementation(async ({ destination }: { destination: string }) => fs.writeFileSync(destination, 'v2'));
+    vi.spyOn(service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce({
+      files: [{ primary: true, filename: 'project-v2.jar', url: 'https://example.test/project-v2.jar', hashes: {} }],
+    } as Awaited<ReturnType<ModrinthV2Client['getProjectVersion']>>);
+
+    try {
+      await service.installModFile({ platform: 'modrinth', projectId: 'project', versionId: 'v2', instanceId: 'alpha', contentType: 'mod' }, rootPath);
+      expect(fs.existsSync(path.join(instancePath, 'mods', 'project-v1.jar'))).toBe(false);
+      expect(fs.readFileSync(path.join(instancePath, 'mods', 'project-v2.jar'), 'utf8')).toBe('v2');
+      expect(manifests.loadManifest(instancePath).mods).toMatchObject([{ fileName: 'project-v2.jar', projectId: 'project', versionId: 'v2' }]);
+    } finally {
+      fs.rmSync(rootPath, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps a disabled tracked version when replacement download fails', async () => {
+    const rootPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-platform-preserve-'));
+    const instancePath = path.join(rootPath, 'modpacks', 'alpha');
+    fs.mkdirSync(path.join(instancePath, 'mods'), { recursive: true });
+    fs.writeFileSync(path.join(instancePath, 'mods', 'project-v1.jar.disabled'), 'v1-disabled');
+    const manifests = new InstanceManifestManager();
+    manifests.addMod(instancePath, {
+      fileName: 'project-v1.jar', source: 'modrinth', projectId: 'project', versionId: 'v1', installDate: '2026-09-01T00:00:00.000Z',
+    });
+    const application = { read: vi.fn(async () => ({ status: 'ready' as const, snapshot: { records: [{ id: 'alpha' }] } })) } as unknown as InstanceApplication;
+    const service = new ModPlatformService(application, {
+      resolveRoot: async () => ({} as LauncherRoot),
+      getModpackDir: () => instancePath,
+    });
+    mocked.download.mockRejectedValueOnce(new Error('network failed'));
+    vi.spyOn(service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce({
+      files: [{ primary: true, filename: 'project-v2.jar', url: 'https://example.test/project-v2.jar', hashes: {} }],
+    } as Awaited<ReturnType<ModrinthV2Client['getProjectVersion']>>);
+
+    try {
+      await expect(service.installModFile({ platform: 'modrinth', projectId: 'project', versionId: 'v2', instanceId: 'alpha', contentType: 'mod' }, rootPath)).rejects.toThrow('network failed');
+      expect(fs.readFileSync(path.join(instancePath, 'mods', 'project-v1.jar.disabled'), 'utf8')).toBe('v1-disabled');
+      expect(manifests.loadManifest(instancePath).mods).toMatchObject([{ fileName: 'project-v1.jar', projectId: 'project', versionId: 'v1' }]);
+      expect(fs.readdirSync(path.join(instancePath, 'mods')).some((name) => name.includes('.burrow-download-'))).toBe(false);
+    } finally {
+      fs.rmSync(rootPath, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps a replacement disabled when the tracked version is disabled', async () => {
+    const fixture = createReplacementFixture(true);
+    mocked.download.mockImplementation(async ({ destination }: { destination: string }) => fs.writeFileSync(destination, 'v2'));
+    vi.spyOn(fixture.service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce(providerVersion('project-v2.jar'));
+
+    try {
+      await fixture.service.installModFile(request(), fixture.rootPath);
+      expect(fs.existsSync(path.join(fixture.instancePath, 'mods', 'project-v2.jar'))).toBe(false);
+      expect(fs.readFileSync(path.join(fixture.instancePath, 'mods', 'project-v2.jar.disabled'), 'utf8')).toBe('v2');
+      expect(fixture.manifests.loadManifest(fixture.instancePath).mods).toMatchObject([{ fileName: 'project-v2.jar.disabled', versionId: 'v2' }]);
+    } finally { fs.rmSync(fixture.rootPath, { recursive: true, force: true }); }
+  });
+
+  it('does not remove the existing version when creating its backup fails', async () => {
+    const fixture = createReplacementFixture();
+    mocked.download.mockImplementation(async ({ destination }: { destination: string }) => fs.writeFileSync(destination, 'v2'));
+    vi.spyOn(fixture.service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce(providerVersion('project-v2.jar'));
+    const originalMove = fsExtra.move.bind(fsExtra);
+    const move = vi.spyOn(fsExtra, 'move');
+    move.mockImplementation(async (source, destination, options) => {
+      if (String(source).endsWith('project-v1.jar') && String(destination).includes('.burrow-backup-')) throw new Error('backup failed');
+      return await originalMove(source, destination, options);
+    });
+
+    try {
+      await expect(fixture.service.installModFile(request(), fixture.rootPath)).rejects.toThrow('backup failed');
+      expect(fs.readFileSync(path.join(fixture.instancePath, 'mods', 'project-v1.jar'), 'utf8')).toBe('v1');
+      expect(fs.existsSync(path.join(fixture.instancePath, 'mods', 'project-v2.jar'))).toBe(false);
+      expect(fixture.manifests.loadManifest(fixture.instancePath).mods).toMatchObject([{ fileName: 'project-v1.jar', versionId: 'v1' }]);
+    } finally { fs.rmSync(fixture.rootPath, { recursive: true, force: true }); }
+  });
+
+  it('preserves the committed new version if backup cleanup fails', async () => {
+    const fixture = createReplacementFixture();
+    mocked.download.mockImplementation(async ({ destination }: { destination: string }) => fs.writeFileSync(destination, 'v2'));
+    vi.spyOn(fixture.service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce(providerVersion('project-v2.jar'));
+    const originalRemove = fsExtra.remove.bind(fsExtra);
+    const remove = vi.spyOn(fsExtra, 'remove');
+    remove.mockImplementation(async (target) => {
+      if (String(target).includes('.burrow-backup-')) throw new Error('cleanup failed');
+      return await originalRemove(target);
+    });
+
+    try {
+      await expect(fixture.service.installModFile(request(), fixture.rootPath)).resolves.toMatchObject({ filename: 'project-v2.jar' });
+      expect(fs.readFileSync(path.join(fixture.instancePath, 'mods', 'project-v2.jar'), 'utf8')).toBe('v2');
+      expect(fixture.manifests.loadManifest(fixture.instancePath).mods).toMatchObject([{ fileName: 'project-v2.jar', versionId: 'v2' }]);
+    } finally { fs.rmSync(fixture.rootPath, { recursive: true, force: true }); }
+  });
+
+  it('restores the previous version when committing the manifest fails', async () => {
+    const fixture = createReplacementFixture();
+    mocked.download.mockImplementation(async ({ destination }: { destination: string }) => fs.writeFileSync(destination, 'v2'));
+    vi.spyOn(fixture.service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce(providerVersion('project-v2.jar'));
+    vi.spyOn(InstanceManifestManager.prototype, 'addMod').mockImplementation(() => { throw new Error('manifest failed'); });
+
+    try {
+      await expect(fixture.service.installModFile(request(), fixture.rootPath)).rejects.toThrow('manifest failed');
+      expect(fs.readFileSync(path.join(fixture.instancePath, 'mods', 'project-v1.jar'), 'utf8')).toBe('v1');
+      expect(fs.existsSync(path.join(fixture.instancePath, 'mods', 'project-v2.jar'))).toBe(false);
+      expect(fixture.manifests.loadManifest(fixture.instancePath).mods).toMatchObject([{ fileName: 'project-v1.jar', versionId: 'v1' }]);
+    } finally { fs.rmSync(fixture.rootPath, { recursive: true, force: true }); }
+  });
+
+  it('rejects a path-shaped tracked filename without touching files outside mods', async () => {
+    const fixture = createReplacementFixture();
+    const outside = path.join(fixture.instancePath, 'escape.jar');
+    fs.writeFileSync(outside, 'outside');
+    fs.writeFileSync(path.join(fixture.instancePath, 'instance-manifest.json'), JSON.stringify({
+      version: 1,
+      mods: [{ fileName: '../escape.jar', source: 'modrinth', projectId: 'project', versionId: 'v1', installDate: '2026-09-01T00:00:00.000Z' }],
+    }));
+    mocked.download.mockImplementation(async ({ destination }: { destination: string }) => fs.writeFileSync(destination, 'v2'));
+    vi.spyOn(fixture.service.getModrinthClient(), 'getProjectVersion').mockResolvedValueOnce(providerVersion('project-v2.jar'));
+
+    try {
+      await expect(fixture.service.installModFile(request(), fixture.rootPath)).rejects.toThrow(/tracked mod filename/i);
+      expect(fs.readFileSync(outside, 'utf8')).toBe('outside');
+      expect(fs.readFileSync(path.join(fixture.instancePath, 'mods', 'project-v1.jar'), 'utf8')).toBe('v1');
+      expect(fs.readdirSync(path.join(fixture.instancePath, 'mods')).some((name) => name.includes('.burrow-download-'))).toBe(false);
+    } finally { fs.rmSync(fixture.rootPath, { recursive: true, force: true }); }
+  });
+
   it('fetches enough Modrinth pages to serve later alphabetical pages correctly', async () => {
     const service = createPlatformService();
     const allHits = createDescendingHits(135);
@@ -176,3 +329,23 @@ describe('ModPlatformService alphabetical modpack pagination', () => {
     expect(result.items.at(-1)?.title).toBe('Pack 108');
   });
 });
+
+function providerVersion(filename: string): Awaited<ReturnType<ModrinthV2Client['getProjectVersion']>> {
+  return { files: [{ primary: true, filename, url: `https://example.test/${filename}`, hashes: {} }] } as Awaited<ReturnType<ModrinthV2Client['getProjectVersion']>>;
+}
+
+function request() {
+  return { platform: 'modrinth' as const, projectId: 'project', versionId: 'v2', instanceId: 'alpha', contentType: 'mod' as const };
+}
+
+function createReplacementFixture(disabled = false) {
+  const rootPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-platform-transaction-'));
+  const instancePath = path.join(rootPath, 'modpacks', 'alpha');
+  fs.mkdirSync(path.join(instancePath, 'mods'), { recursive: true });
+  fs.writeFileSync(path.join(instancePath, 'mods', disabled ? 'project-v1.jar.disabled' : 'project-v1.jar'), 'v1');
+  const manifests = new InstanceManifestManager();
+  manifests.addMod(instancePath, { fileName: disabled ? 'project-v1.jar.disabled' : 'project-v1.jar', source: 'modrinth', projectId: 'project', versionId: 'v1', installDate: '2026-09-01T00:00:00.000Z' });
+  const application = { read: vi.fn(async () => ({ status: 'ready' as const, snapshot: { records: [{ id: 'alpha' }] } })) } as unknown as InstanceApplication;
+  const service = new ModPlatformService(application, { resolveRoot: async () => ({} as LauncherRoot), getModpackDir: () => instancePath });
+  return { rootPath, instancePath, manifests, service };
+}

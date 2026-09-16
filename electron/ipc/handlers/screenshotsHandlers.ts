@@ -7,6 +7,7 @@ import {
     resolveApprovedInstancePath,
 } from '../../services/instances/paths';
 import { validateIdentifier } from '../validation/privilegedPayloads';
+import { runContentMutation, type ContentMutationGate } from './contentMutation';
 
 function resolveInstancePath(instanceId: unknown): string {
     const safeInstanceId = assertChildName(
@@ -16,24 +17,26 @@ function resolveInstancePath(instanceId: unknown): string {
     return resolveApprovedInstancePath(getModpackDir(getDefaultRootPath(), safeInstanceId));
 }
 
-export function registerScreenshotsHandlers() {
+export function registerScreenshotsHandlers(deps: { runContentMutation?: ContentMutationGate } = {}) {
     ipcMain.handle('screenshots:list', async (_, instanceId: unknown) => {
         const safeInstancePath = resolveInstancePath(instanceId);
         return await screenshotService.listScreenshots(safeInstancePath);
     });
 
     ipcMain.handle('screenshots:delete', async (_, fileName: unknown, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeFileName = assertChildName(
             validateIdentifier(fileName, 'Screenshot name'),
             'Screenshot name',
         );
-        await screenshotService.deleteScreenshot(safeInstancePath, safeFileName);
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await screenshotService.deleteScreenshot(resolveInstancePath(safeInstanceId), safeFileName);
+        });
         return { ok: true };
     });
 
     ipcMain.handle('screenshots:rename', async (_, oldName: unknown, newName: unknown, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeOldName = assertChildName(
             validateIdentifier(oldName, 'Screenshot name'),
             'Screenshot name',
@@ -42,13 +45,17 @@ export function registerScreenshotsHandlers() {
             validateIdentifier(newName, 'Screenshot name'),
             'Screenshot name',
         );
-        await screenshotService.renameScreenshot(safeInstancePath, safeOldName, safeNewName);
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await screenshotService.renameScreenshot(resolveInstancePath(safeInstanceId), safeOldName, safeNewName);
+        });
         return { ok: true };
     });
 
     ipcMain.handle('screenshots:openFolder', async (_, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
-        await screenshotService.openScreenshotFolder(safeInstancePath);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await screenshotService.openScreenshotFolder(resolveInstancePath(safeInstanceId));
+        });
         return { ok: true };
     });
 }

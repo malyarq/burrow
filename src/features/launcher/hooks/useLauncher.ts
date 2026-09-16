@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import type { RefObject } from 'react';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { useEffectiveInstance } from '../../instances/hooks/useEffectiveInstance';
@@ -48,6 +48,8 @@ export const useLauncher = (): UseLauncherResult => {
   const effectiveInstance = useEffectiveInstance();
   const instanceId = effectiveInstance.status === 'ready' ? effectiveInstance.data.id : '';
   const modpackConfig = effectiveInstance.status === 'ready' ? effectiveInstance.data.snapshot : null;
+  const setProgress = state.setProgress;
+  const clearProgress = useCallback(() => setProgress(null), [setProgress]);
 
   useLauncherIPC({
     t,
@@ -57,7 +59,7 @@ export const useLauncher = (): UseLauncherResult => {
     onSetStatusDetail: state.setStatusDetail,
     onSetLaunchStage: state.setLaunchStage,
     onSetLaunching: state.setIsLaunching,
-    onClearProgress: () => state.setProgress(null),
+    onClearProgress: clearProgress,
     getLaunchStage: state.getLaunchStage,
   });
 
@@ -110,7 +112,6 @@ export const useLauncher = (): UseLauncherResult => {
         maxSockets,
         useOptiFine: options.useOptiFine ?? false,
       });
-      state.setStatusText(t('status.game_running'));
       void linkActive.then((active) => analyticsClient.capture('game_launch_succeeded', {
         loader: analyticsLoader, link_active: active, duration: durationBucket(Date.now() - startedAt),
       }));
@@ -126,12 +127,6 @@ export const useLauncher = (): UseLauncherResult => {
         });
       }
 
-      state.setProgress(null);
-      state.setLaunchStage('waiting');
-      state.setStatusText(getLaunchStageTitle('waiting', t));
-      state.setStatusDetail(
-        translateWithFallback(t, 'status.waiting_detail', 'Minecraft process started. Waiting for the game window and logs.')
-      );
     } catch (e) {
       void linkActive.then((active) => analyticsClient.capture('game_launch_failed', {
         failure_stage: 'launch', loader: analyticsLoader, link_active: active, duration: durationBucket(Date.now() - startedAt),

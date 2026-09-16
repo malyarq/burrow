@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { act, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SettingsProvider, useSettings } from '../../SettingsContext';
-import { resolveThemeConfig } from '../theme';
+import { pruneThemeConfig, resolveThemeConfig } from '../theme';
 import { getSelectableThemePresets } from '../theme-presets';
 
 type SettingsSnapshot = ReturnType<typeof useSettings>;
@@ -22,6 +22,23 @@ function SettingsProbe({ onChange }: { onChange: (settings: SettingsSnapshot) =>
 }
 
 describe('theme runtime contract', () => {
+  it('normalizes untrusted theme ranges and rejects malformed nested values', () => {
+    expect(pruneThemeConfig({
+      colors: { card: '#123456', textMain: 42, unknown: 'red' },
+      brand: ['invalid'],
+      background: { type: 'video', position: 'invalid', opacity: -3, blur: 100,
+        video: { url: 'https://example.com/video.mp4', volume: 2, loop: 'yes', autoPause: false },
+        particles: { type: 'lava', intensity: Infinity, speed: -20 } },
+    })).toEqual({
+      colors: { card: '#123456' },
+      background: { type: 'video', opacity: 0, blur: 20,
+        video: { url: 'https://example.com/video.mp4', volume: 1, autoPause: false },
+        particles: { speed: 1 } },
+    });
+    expect(pruneThemeConfig(['invalid'])).toEqual({});
+    expect(pruneThemeConfig({ background: { video: { volume: NaN }, particles: 42 } })).toEqual({});
+  });
+
   beforeEach(() => {
     latestSettings = null;
     localStorage.clear();

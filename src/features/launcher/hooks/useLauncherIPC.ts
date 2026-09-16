@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import type { LauncherSessionSnapshot } from '@shared/contracts';
 import { launcherIPC } from '../../../services/ipc/launcherIPC';
 import {
   getLaunchStageTitle,
@@ -40,6 +41,7 @@ export function useLauncherIPC(params: {
     onClearProgress,
     getLaunchStage,
   } = params;
+  const lastSessionRevision = useRef(-1);
 
   // Subscribe to launcher events once for the active language.
   useEffect(() => {
@@ -95,10 +97,61 @@ export function useLauncherIPC(params: {
       onClearProgress();
     });
 
+    const applySessionState = (snapshot: LauncherSessionSnapshot) => {
+      if (snapshot.revision < lastSessionRevision.current) return;
+      lastSessionRevision.current = snapshot.revision;
+      if (snapshot.phase === 'preparing') {
+        onSetLaunching(true);
+        onSetLaunchStage('preparing');
+        onSetStatusText(getLaunchStageTitle('preparing', t));
+        onSetStatusDetail(translateWithFallback(t, 'status.preparing_detail', 'Checking runtime requirements and selected pack.'));
+        return;
+      }
+      if (snapshot.phase === 'starting') {
+        onSetLaunching(true);
+        onClearProgress();
+        onSetLaunchStage('waiting');
+        onSetStatusText(getLaunchStageTitle('waiting', t));
+        onSetStatusDetail(translateWithFallback(t, 'status.waiting_detail', 'Minecraft process started. Waiting for the game window and logs.'));
+        return;
+      }
+      if (snapshot.phase === 'running') {
+        onSetLaunching(true);
+        onClearProgress();
+        onSetLaunchStage('running');
+        onSetStatusText(getLaunchStageTitle('running', t));
+        onSetStatusDetail('');
+        return;
+      }
+      onSetLaunching(false);
+      onClearProgress();
+      if (snapshot.phase === 'failed') {
+        onSetLaunchStage('failed');
+        onSetStatusText(getLaunchStageTitle('failed', t));
+        onSetStatusDetail(snapshot.exitCode === undefined
+          ? translateWithFallback(t, 'status.launch_failed_detail', 'Minecraft could not be started.')
+          : translateWithFallback(t, 'status.exit_code', 'Minecraft closed with exit code {{code}}').replace('{{code}}', String(snapshot.exitCode)));
+        return;
+      }
+      onSetLaunchStage('idle');
+      onSetStatusText('');
+      onSetStatusDetail('');
+    };
+
+    let mounted = true;
+    const unsubSessionState = launcherIPC.onSessionState(applySessionState);
+    void launcherIPC.getSessionState().then((snapshot) => {
+      if (mounted) applySessionState(snapshot);
+    }).catch(() => {
+      // The launch boundary reports unavailable IPC to the user.
+    });
+
     return () => {
+      mounted = false;
       unsubLog();
       unsubProgress();
       unsubClose();
+      unsubSessionState();
     };
   }, [
     t,

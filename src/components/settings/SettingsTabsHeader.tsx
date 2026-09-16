@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '../../utils/cn';
 import type { AccentStyleType } from '../../contexts/settings/types';
 import {
@@ -18,6 +18,16 @@ export function SettingsTabsHeader(props: {
   layout?: 'row' | 'sidebar';
 }) {
   const { activeTab, onTabChange, t, getAccentStyles, layout = 'row' } = props;
+  const [wideViewport, setWideViewport] = useState(() => typeof window.matchMedia === 'function' && window.matchMedia('(min-width: 1024px)').matches);
+  const vertical = layout === 'sidebar' && wideViewport;
+  useEffect(() => {
+    if (layout !== 'sidebar' || typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia('(min-width: 1024px)');
+    const update = () => setWideViewport(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, [layout]);
   const tabRefs = useRef<Record<SettingsTabId, HTMLButtonElement | null>>({
     appearance: null,
     downloads: null,
@@ -50,10 +60,12 @@ export function SettingsTabsHeader(props: {
     switch (event.key) {
       case 'ArrowRight':
       case 'ArrowDown':
+        if ((event.key === 'ArrowDown') !== vertical) return;
         nextTabId = SETTINGS_TABS[(currentIndex + 1) % SETTINGS_TABS.length].id;
         break;
       case 'ArrowLeft':
       case 'ArrowUp':
+        if ((event.key === 'ArrowUp') !== vertical) return;
         nextTabId = SETTINGS_TABS[(currentIndex - 1 + SETTINGS_TABS.length) % SETTINGS_TABS.length].id;
         break;
       case 'Home':
@@ -83,7 +95,7 @@ export function SettingsTabsHeader(props: {
       )}
       role="tablist"
       aria-label={t('settings.title')}
-      aria-orientation={layout === 'sidebar' ? 'vertical' : 'horizontal'}
+      aria-orientation={vertical ? 'vertical' : 'horizontal'}
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;

@@ -48,6 +48,72 @@ function runtime<K extends 'mod' | 'resourcepack' | 'shader'>(kind: K): ContentR
 describe('useContentAcquisitionState', () => {
   afterEach(() => vi.useRealTimers());
 
+  it('discards an old resolution after clearing and reselecting the same item', async () => {
+    const fake = adapter('mod');
+    vi.mocked(fake.search).mockResolvedValue({ items: [item('a')], nextPage: null });
+    const stale = deferred<Selection>();
+    vi.mocked(fake.resolveSelection).mockReturnValueOnce(stale.promise);
+    const { result } = renderHook(() => useContentAcquisitionState({ adapter: fake, runtime: runtime('mod'), debounceMs: 0 }));
+    await waitFor(() => expect(result.current.searchStatus).toBe('ready'));
+    let pending!: Promise<void>;
+    act(() => { pending = result.current.toggle(item('a'), true); });
+    act(() => result.current.setFilter('loader', 'fabric'));
+    await act(async () => result.current.toggle(item('a'), true));
+    await act(async () => { stale.resolve({ ...selection('a'), versionId: 'stale' }); await pending; });
+    expect(result.current.selections.get('a')?.versionId).toBe('version-a');
+  });
+
+  it('does not apply an old installation outcome to another instance', async () => {
+    const fake = adapter('mod');
+    vi.mocked(fake.search).mockResolvedValue({ items: [item('a')], nextPage: null });
+    const pending = deferred<AcquisitionOutcome>();
+    vi.mocked(fake.install).mockReturnValue(pending.promise);
+    const { result, rerender } = renderHook(({ instanceId }) => useContentAcquisitionState({
+      adapter: fake, runtime: { ...runtime('mod'), instanceId }, debounceMs: 0,
+    }), { initialProps: { instanceId: 'alpha' } });
+    await waitFor(() => expect(result.current.searchStatus).toBe('ready'));
+    await act(async () => result.current.toggle(item('a'), true));
+    let installation!: Promise<AcquisitionOutcome | null>;
+    act(() => { installation = result.current.installSelected(); });
+    rerender({ instanceId: 'beta' });
+    await act(async () => { pending.resolve({ didCommit: true, isPresentationSuccess: true,
+      committedSelectionIds: ['a'], retainedSelectionIds: [], issues: [] }); await installation; });
+    expect(result.current.outcome).toBeNull();
+    expect(result.current.selections.size).toBe(0);
+    expect(fake.install).toHaveBeenCalledWith(expect.objectContaining({ runtime: expect.objectContaining({ instanceId: 'alpha' }) }));
+  });
+
+  it.each(['catalog', 'local'] as const)('serializes %s mutations and preserves retry state while search changes are attempted', async (source) => {
+    const fake = adapter('shader');
+    vi.mocked(fake.search).mockResolvedValue({ items: [item('a')], nextPage: null });
+    const pending = deferred<AcquisitionOutcome>();
+    const partial: AcquisitionOutcome = { didCommit: false, isPresentationSuccess: false,
+      committedSelectionIds: [], retainedSelectionIds: ['a'], issues: [{ selectionId: 'a', label: 'Item a', code: 'runtime-blocked' }] };
+    vi.mocked(fake.install).mockReturnValueOnce(pending.promise).mockResolvedValue(partial);
+    vi.mocked(fake.importLocal!).mockReturnValueOnce(pending.promise).mockResolvedValue(partial);
+    const { result } = renderHook(() => useContentAcquisitionState({ adapter: fake, runtime: runtime('shader'), debounceMs: 0 }));
+    await waitFor(() => expect(result.current.searchStatus).toBe('ready'));
+    await act(async () => result.current.toggle(item('a'), true));
+    let mutation!: Promise<AcquisitionOutcome | null>;
+    act(() => { mutation = source === 'catalog' ? result.current.installSelected() : result.current.importLocal(); });
+    await act(async () => {
+      result.current.setQuery('new query');
+      result.current.setFilter('sort', 'new');
+      result.current.reset();
+      await result.current.toggle(item('a'), false);
+      await result.current.installSelected();
+      await result.current.importLocal();
+    });
+    expect(result.current.query).toBe('');
+    expect(result.current.filters).toEqual({});
+    expect([...result.current.checkedIds]).toEqual(['a']);
+    expect(fake.install).toHaveBeenCalledTimes(source === 'catalog' ? 1 : 0);
+    expect(fake.importLocal).toHaveBeenCalledTimes(source === 'local' ? 1 : 0);
+    await act(async () => { pending.resolve(partial); await mutation; });
+    await act(async () => result.current.retryFailed());
+    expect(source === 'catalog' ? fake.install : fake.importLocal).toHaveBeenCalledTimes(2);
+  });
+
   it.each(['mod', 'resourcepack', 'shader'] as const)('passes only typed %s runtime/search input to its adapter', async (kind) => {
     const fake = adapter(kind);
     vi.mocked(fake.search).mockResolvedValue({ items: [], nextPage: null });

@@ -61,6 +61,20 @@ describe('ContentManager', () => {
     expect(fs.readFileSync(destinationPath, 'utf-8')).toBe('copy fallback');
   });
 
+  it('closes the source before returning its hash so Windows can replace it', async () => {
+    const rootDir = createTempRoot();
+    tempDirs.push(rootDir);
+    const sourcePath = path.join(rootDir, 'source.txt');
+    writeFile(sourcePath, 'hash before replacement');
+    const stream = fs.createReadStream(sourcePath);
+    vi.spyOn(fs, 'createReadStream').mockReturnValueOnce(stream);
+
+    const hash = await new ContentManager(rootDir).calculateHash(sourcePath);
+
+    expect(hash).toMatch(/^[a-f0-9]{40}$/);
+    expect(stream.closed).toBe(true);
+  });
+
   it('preserves an existing destination when both link and fallback copy fail', async () => {
     const rootDir = createTempRoot();
     tempDirs.push(rootDir);

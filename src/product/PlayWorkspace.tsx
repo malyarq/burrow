@@ -150,7 +150,7 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
               placeholder="Steve"
               data-testid="play-workspace-nickname"
             />
-          <div className="min-w-[12rem] space-y-2">
+          <div className="min-w-0">
             <Button
               variant="primary"
               size="md"
@@ -163,9 +163,9 @@ export function PlayWorkspace({ launch, runtime, actions }: PlayWorkspaceProps) 
               <Play className="h-5 w-5" fill="currentColor" />
               {busy ? actionLabel : text(t, 'general.play', 'Играть')}
             </Button>
-            {launch.isOffline ? <p className="text-center text-xs text-secondary">{text(t, 'general.offline', 'Офлайн')}</p> : null}
           </div>
           </div>
+          {launch.isOffline ? <p className="text-right text-xs text-secondary">{text(t, 'general.offline', 'Офлайн')}</p> : null}
           <fieldset className="min-w-0" data-testid="play-workspace-loader">
             <legend className="control-label mb-2">{text(t, 'general.modloader', 'Загрузчик модов')}</legend>
             <div className="next-loader-switch">

@@ -10,6 +10,7 @@ import {
 } from '../../services/instances/paths';
 import { shadersService } from '../../services/shaders/shaderService';
 import { validateIdentifier } from '../validation/privilegedPayloads';
+import { runContentMutation, type ContentMutationGate } from './contentMutation';
 
 function resolveInstancePath(instanceId: unknown): string {
     const safeInstanceId = assertChildName(
@@ -59,7 +60,7 @@ function summarizeShaderPackAcquisition(
     return { status: 'failure', importedFileNames, issues };
 }
 
-export function registerShadersHandlers() {
+export function registerShadersHandlers(deps: { runContentMutation?: ContentMutationGate } = {}) {
     ipcMain.removeHandler('shaders:list');
     ipcMain.handle('shaders:list', async (_evt, instanceId: unknown) => {
         const safeInstancePath = resolveInstancePath(instanceId);
@@ -69,42 +70,48 @@ export function registerShadersHandlers() {
     ipcMain.removeHandler('shaders:setActive');
     ipcMain.handle('shaders:setActive', async (_evt, shaderName: unknown, instanceId: unknown) => {
         const safeShaderName = validateShaderPackName(shaderName);
-        const safeInstancePath = resolveInstancePath(instanceId);
-        return await shadersService.setActiveShader(safeShaderName, safeInstancePath);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
+        return await runContentMutation(deps.runContentMutation, safeInstanceId, async () => (
+            await shadersService.setActiveShader(safeShaderName, resolveInstancePath(safeInstanceId))
+        ));
     });
 
     ipcMain.removeHandler('shaders:disable');
     ipcMain.handle('shaders:disable', async (_evt, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
-        return await shadersService.disable(safeInstancePath);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
+        return await runContentMutation(deps.runContentMutation, safeInstanceId, async () => (
+            await shadersService.disable(resolveInstancePath(safeInstanceId))
+        ));
     });
 
     ipcMain.removeHandler('shaders:delete');
     ipcMain.handle('shaders:delete', async (_evt, fileName: unknown, instanceId: unknown) => {
         const safeFileName = validateShaderPackName(fileName);
-        const safeInstancePath = resolveInstancePath(instanceId);
-        return await shadersService.delete(safeFileName, safeInstancePath);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
+        return await runContentMutation(deps.runContentMutation, safeInstanceId, async () => (
+            await shadersService.delete(safeFileName, resolveInstancePath(safeInstanceId))
+        ));
     });
 
     ipcMain.removeHandler('shaders:openFolder');
     ipcMain.handle('shaders:openFolder', async (_evt, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
-        const folder = resolveShaderPacksDir(safeInstancePath);
-
-        if (!fs.existsSync(folder)) {
-            try {
-                fs.mkdirSync(folder, { recursive: true });
-            } catch (e) {
-                console.error('Failed to create shaderpacks folder', e);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            const folder = resolveShaderPacksDir(resolveInstancePath(safeInstanceId));
+            if (!fs.existsSync(folder)) {
+                try {
+                    fs.mkdirSync(folder, { recursive: true });
+                } catch (e) {
+                    console.error('Failed to create shaderpacks folder', e);
+                }
             }
-        }
-
-        await shell.openPath(folder);
+            await shell.openPath(folder);
+        });
     });
 
     ipcMain.removeHandler('shaders:add');
     ipcMain.handle('shaders:add', async (_evt, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
 
         const { canceled, filePaths } = await dialog.showOpenDialog({
             properties: ['openFile', 'multiSelections'],
@@ -115,6 +122,8 @@ export function registerShadersHandlers() {
             return summarizeShaderPackAcquisition([]);
         }
 
+        return await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+        const safeInstancePath = resolveInstancePath(safeInstanceId);
         const folder = resolveShaderPacksDir(safeInstancePath);
         if (!fs.existsSync(folder)) {
             try {
@@ -139,5 +148,6 @@ export function registerShadersHandlers() {
             filePaths.map((filePath) => shadersService.import(filePath, safeInstancePath)),
         );
         return summarizeShaderPackAcquisition(results);
+        });
     });
 }

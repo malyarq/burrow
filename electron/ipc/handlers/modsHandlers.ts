@@ -3,6 +3,7 @@ import type { ModInstallRequest, ModInstallResponse } from '../../../shared/cont
 import type { ModPlatformService } from '../../services/mods/platform/modPlatformService'
 import { assertChildName } from '../../security/pathGuards'
 import { validateEnum, validateIdentifier } from '../validation/privilegedPayloads'
+import { runContentMutation, type ContentMutationGate } from './contentMutation'
 
 type ModInstallService = Pick<ModPlatformService, 'installModFile' | 'searchMods' | 'getModVersions'>
 
@@ -39,8 +40,8 @@ function publicInstallResult(result: Awaited<ReturnType<ModInstallService['insta
   return { status: 'success', filename: result.filename, issues: [] }
 }
 
-export function registerModsHandlers(deps: { modPlatforms: ModInstallService; getDefaultRootPath: () => string }) {
-  const { modPlatforms, getDefaultRootPath } = deps
+export function registerModsHandlers(deps: { modPlatforms: ModInstallService; getDefaultRootPath: () => string; runContentMutation?: ContentMutationGate }) {
+  const { modPlatforms, getDefaultRootPath, runContentMutation: gate } = deps
 
   ipcMain.removeHandler('mods:searchMods')
   ipcMain.handle('mods:searchMods', async (_evt, query) => {
@@ -54,6 +55,9 @@ export function registerModsHandlers(deps: { modPlatforms: ModInstallService; ge
 
   ipcMain.removeHandler('mods:installModFile')
   ipcMain.handle('mods:installModFile', async (_evt, req) => {
-    return publicInstallResult(await modPlatforms.installModFile(modInstallRequest(req), getDefaultRootPath()))
+    const request = modInstallRequest(req)
+    return publicInstallResult(await runContentMutation(gate, request.instanceId, async () => (
+      await modPlatforms.installModFile(request, getDefaultRootPath())
+    )))
   })
 }

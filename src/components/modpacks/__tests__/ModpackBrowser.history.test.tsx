@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import type { ComponentProps } from 'react';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ProviderCatalogAPI } from '@shared/contracts';
 import type { ProviderCatalogSearchResultItem } from '@shared/contracts/providerCatalog';
@@ -61,6 +61,18 @@ function seedHistory(modpacks: ProviderCatalogSearchResultItem[]) {
 }
 
 describe('ModpackBrowser history flow', () => {
+  it('does not navigate after leaving a browser with a pending version request', async () => {
+    let resolve!: (versions: []) => void;
+    versionsMock.mockImplementationOnce(() => new Promise<[]>((done) => { resolve = done; }));
+    seedHistory([{ platform: 'modrinth', projectId: 'pending', title: 'Pending Pack' }]);
+    const { onNavigate } = renderBrowser({ initialState: { ...DEFAULT_MODPACK_BROWSER_STATE, showHistory: true } });
+    fireEvent.click(await screen.findByRole('button', { name: 'Pending Pack' }));
+    await waitFor(() => expect(versionsMock).toHaveBeenCalled());
+    cleanup();
+    await act(async () => resolve([]));
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
   beforeEach(() => {
     cleanup();
     localStorage.clear();

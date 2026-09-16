@@ -1,16 +1,17 @@
 import { launch, type LaunchOption } from '@xmcl/core';
 import { getLegacyWindowsDpiJvmArgs, withWindowsDpiCompatLayer } from './dpiCompat';
 import type { SupportedJavaVersion } from '../../../../shared/minecraftRuntime';
+import type { ChildProcess } from 'node:child_process';
 
 export async function spawnMinecraft(params: {
   launchOptions: LaunchOption;
   requiredJava: SupportedJavaVersion;
   effectiveVmOptions: string[];
   onLog: (data: string) => void;
-  onClose: (code: number) => void;
+  onSpawn?: (process: ChildProcess) => void;
   onGameStart?: () => void;
 }) {
-  const { launchOptions, requiredJava, effectiveVmOptions, onLog, onClose, onGameStart } = params;
+  const { launchOptions, requiredJava, effectiveVmOptions, onLog, onSpawn, onGameStart } = params;
 
   const legacyWindowsDpiFix = getLegacyWindowsDpiJvmArgs({ requiredJava });
   const extraJVMArgs = [
@@ -34,10 +35,12 @@ export async function spawnMinecraft(params: {
     requiredJava,
     onLog,
     run: async () => {
-      return await launch({
+      const process = await launch({
         ...launchOptions,
         extraJVMArgs,
       });
+      onSpawn?.(process);
+      return process;
     },
   });
 
@@ -68,11 +71,6 @@ export async function spawnMinecraft(params: {
   });
   proc.stderr?.on('data', (data) => {
     onLog(`[GAME] ${data.toString().trim()}`);
-  });
-  proc.on('close', (code) => {
-    const exitCode = typeof code === 'number' ? code : 0;
-    onLog(`[EXIT] Game closed with code ${exitCode}`);
-    onClose(exitCode);
   });
   proc.on('error', (err) => {
     onLog(`[ERROR] Game process error: ${err}`);

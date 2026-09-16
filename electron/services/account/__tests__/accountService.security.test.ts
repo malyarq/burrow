@@ -22,15 +22,60 @@ vi.mock('electron', () => ({
 }));
 
 import { AccountService } from '../accountService';
+import { YggdrasilClient } from '../yggdrasil';
 
 describe('AccountService secret boundaries', () => {
   const tempDirs: string[] = [];
 
   afterEach(() => {
+    vi.restoreAllMocks();
     mocked.encryptionAvailable = true;
     mocked.encryptionChecks = 0;
     mocked.storageBackend = 'keychain';
     for (const dir of tempDirs.splice(0)) fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  function providerService() {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-account-race-'));
+    tempDirs.push(directory);
+    fs.writeFileSync(path.join(directory, 'accounts.json'), JSON.stringify({
+      accounts: [{ id: 'provider', name: 'ProviderPlayer', type: 'third-party',
+        authServerUrl: 'https://skin.example.com/api/yggdrasil', accessToken: 'access', clientToken: 'client' }],
+      selectedAccountId: 'provider',
+    }));
+    return new AccountService(directory);
+  }
+
+  it('does not return the previous identity when selection changes during validation', async () => {
+    const service = providerService();
+    const other = await service.addOfflineAccount('OtherPlayer');
+    let complete!: (valid: boolean) => void;
+    vi.spyOn(YggdrasilClient.prototype, 'validate').mockImplementation(() => new Promise(resolve => { complete = resolve; }));
+    const pending = service.ensureActiveAccountValid();
+    service.selectAccount(other.id);
+    complete(true);
+    await expect(pending).rejects.toThrow('Selected account changed');
+    expect(service.getSelectedAccountId()).toBe(other.id);
+  });
+
+  it('does not restore an account removed while its refresh was pending', async () => {
+    const service = providerService();
+    vi.spyOn(YggdrasilClient.prototype, 'validate').mockResolvedValue(false);
+    let complete!: (value: Awaited<ReturnType<YggdrasilClient['refresh']>>) => void;
+    const refresh = vi.spyOn(YggdrasilClient.prototype, 'refresh').mockImplementation(() => new Promise(resolve => { complete = resolve; }));
+    const pending = service.ensureActiveAccountValid();
+    await vi.waitFor(() => expect(refresh).toHaveBeenCalledOnce());
+    service.removeAccount('provider');
+    complete({ accessToken: 'new-access', clientToken: 'new-client', availableProfiles: [], selectedProfile: { id: 'provider', name: 'ProviderPlayer' } });
+    await expect(pending).rejects.toThrow('Selected account changed');
+    expect(service.getAccounts()).toEqual([]);
+  });
+
+  it('rejects a known invalid session when refreshing fails', async () => {
+    const service = providerService();
+    vi.spyOn(YggdrasilClient.prototype, 'validate').mockResolvedValue(false);
+    vi.spyOn(YggdrasilClient.prototype, 'refresh').mockRejectedValue(new Error('Provider unavailable'));
+    await expect(service.ensureActiveAccountValid()).rejects.toThrow('Account session expired');
   });
 
   it('does not touch secure storage for an empty persisted account list', () => {

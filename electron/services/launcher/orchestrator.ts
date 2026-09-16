@@ -23,10 +23,22 @@ import { getFabricSupportedVersions, getForgeSupportedVersions, getNeoForgeSuppo
 import { patchForgeVersionMetadata, prefetchLegacyForgeRuntimeDeps } from './legacyCompatibility';
 import type { InstanceReadPort, LauncherRootResolver } from '../../domains/instances/ports';
 import type { LaunchAdapters } from '../../infrastructure/instances/launchAdapters';
+import type { LauncherSessionSnapshot } from '../../../shared/contracts/launcher';
+
+type ActiveLaunch = {
+  readonly id: number;
+  readonly onClose: (code: number) => void;
+  cancelled: boolean;
+};
+
+class LaunchPreparationCancelled extends Error {
+  constructor() { super('Launch preparation cancelled'); }
+}
 
 // Orchestrates game launch flow: Java, modloaders, auth, and runtime options.
 export class LauncherManager {
   private currentGameProcess: ChildProcess | null = null;
+  private activeClose: Promise<void> | null = null;
   private javaManager: JavaManager;
   private readonly downloads: RuntimeDownloadService;
   private readonly versionLists: VersionListService;
@@ -42,6 +54,14 @@ export class LauncherManager {
   private readonly accountService?: AccountService;
   private readonly mirrorsService?: MirrorsService;
   private readonly statisticsService?: StatisticsService;
+  private session: LauncherSessionSnapshot = { revision: 0, phase: 'idle' };
+  private activeLaunch: ActiveLaunch | null = null;
+  private preparationDrain: Promise<void> | null = null;
+  private shuttingDown = false;
+  private stateListener: ((snapshot: LauncherSessionSnapshot) => void) | null = null;
+  private closeListener: ((code: number) => void) | null = null;
+  private gameStartListener: (() => void) | null = null;
+  private activeLaunchHidesWindow = false;
 
   constructor(deps: {
     javaManager?: JavaManager;
@@ -110,13 +130,68 @@ export class LauncherManager {
     });
   }
 
-  public async launchGame(
+  public getSessionState(): LauncherSessionSnapshot {
+    return this.session;
+  }
+
+  public setStateListener(listener: ((snapshot: LauncherSessionSnapshot) => void) | null): void {
+    this.stateListener = listener;
+  }
+
+  public setGameLifecycleListeners(listeners: {
+    onClose: ((code: number) => void) | null;
+    onGameStart: (() => void) | null;
+  }): void {
+    this.closeListener = listeners.onClose;
+    this.gameStartListener = listeners.onGameStart;
+  }
+
+  public shouldHideLauncherWindow(): boolean {
+    return this.activeLaunchHidesWindow;
+  }
+
+  /** Stops admission and drains a launch that was already preparing. Running games stay alive. */
+  public async beginShutdown(): Promise<void> {
+    this.shuttingDown = true;
+    try { await this.preparationDrain; }
+    catch (error) { if (!(error instanceof LaunchPreparationCancelled)) throw error; }
+  }
+
+  public launchGame(
     options: LaunchGameOptions,
     onLog: (data: string) => void,
     onProgress: (data: TaskProgressData) => void,
     onClose: (code: number) => void,
     onGameStart?: () => void
-  ) {
+  ): Promise<void> {
+    let launch: ActiveLaunch;
+    try { launch = this.admitLaunch(onClose); }
+    catch (error) { return Promise.reject(error); }
+    this.activeLaunchHidesWindow = Boolean(options.hideLauncher);
+    const drain = this.runLaunch(launch, options, onLog, onProgress, onGameStart).finally(() => {
+      if (this.preparationDrain !== drain) return;
+      this.preparationDrain = null;
+      if (!this.currentGameProcess && this.activeLaunch === launch) {
+        this.activeLaunch = null;
+        this.activeLaunchHidesWindow = false;
+      }
+    });
+    this.preparationDrain = drain;
+    return drain;
+  }
+
+  private checkPreparation(launch: ActiveLaunch): void {
+    if (this.shuttingDown || launch.cancelled) throw new LaunchPreparationCancelled();
+  }
+
+  private async runLaunch(
+    launch: ActiveLaunch,
+    options: LaunchGameOptions,
+    onLog: (data: string) => void,
+    onProgress: (data: TaskProgressData) => void,
+    onGameStart?: () => void,
+  ): Promise<void> {
+    try {
     const { rootPath, instanceId, instancePath, record, effective } = await prepareLaunchContext({
       instances: this.instances,
       rootResolver: this.rootResolver,
@@ -124,6 +199,7 @@ export class LauncherManager {
       launcherRootPath: this.launcherRootPath,
       options,
     });
+    this.checkPreparation(launch);
 
     const {
       requestedVersion,
@@ -150,6 +226,7 @@ export class LauncherManager {
 
     const downloadProvider = this.downloads.getDownloadProvider(options.downloadProvider);
     await this.downloads.warmupMirrors(downloadProvider);
+    this.checkPreparation(launch);
     const maxSockets = options.maxSockets ?? 64;
     const dispatcher = createDispatcher(maxSockets);
     const rangePolicy = new DefaultRangePolicy(5 * 1024 * 1024, 4);
@@ -170,9 +247,11 @@ export class LauncherManager {
       onLog,
       onProgress,
     });
+    this.checkPreparation(launch);
 
     onLog(`Ensuring Minecraft ${mcVersion} is installed...`);
     await this.vanilla.ensureVanillaInstalled(mcVersion, rootPath, onLog, onProgress, downloadProvider, downloadOptions);
+    this.checkPreparation(launch);
 
     const launchVersion = await installModLoaderIfNeeded({
       rootPath,
@@ -192,13 +271,16 @@ export class LauncherManager {
       onLog,
       onProgress,
     });
+    this.checkPreparation(launch);
 
     if (isForge) {
       patchForgeVersionMetadata({ rootPath, launchVersion, mcVersion, onLog });
       await prefetchLegacyForgeRuntimeDeps({ instancePath, mcVersion, downloadProvider, onLog });
+      this.checkPreparation(launch);
     }
 
     await this.logInstalledMods(rootPath, onLog, instancePath);
+    this.checkPreparation(launch);
 
     const { destInjectorPath } = await ensureAuthInjector({
       rootPath,
@@ -207,6 +289,7 @@ export class LauncherManager {
       maxSockets,
       onLog,
     });
+    this.checkPreparation(launch);
 
     let resolvedAuthServerUrl = this.authServerUrl;
     let accessToken: string;
@@ -232,12 +315,49 @@ export class LauncherManager {
     onLog(`[LAUNCH] Java: ${javaPath}`);
     onLog(`[LAUNCH] RAM: Max ${ramGb}GB${minRamGb ? `, Min ${minRamGb}GB` : ''}`);
 
+    this.checkPreparation(launch);
+
+    let closed: Promise<void> | null = null;
+    let attachedProcess: ChildProcess | null = null;
+    const attachProcess = (proc: ChildProcess) => {
+      if (attachedProcess === proc) return;
+      if (attachedProcess) throw new Error('Launch adapter returned more than one game process');
+      attachedProcess = proc;
+
+      // Record launch statistics only after a child process exists.
+      if (this.statisticsService) {
+        try { this.statisticsService.recordLaunch(instanceId, record.name); }
+        catch (e) { console.error('Failed to record launch stats:', e); }
+      }
+      const startTime = Date.now();
+      this.currentGameProcess = proc;
+      closed = new Promise<void>((resolve) => {
+        proc.once('close', (code) => {
+          if (this.currentGameProcess === proc) this.currentGameProcess = null;
+          if (this.statisticsService) {
+            try { this.statisticsService.recordPlayTime(Date.now() - startTime, instanceId); }
+            catch (e) { console.error('Failed to record play time stats:', e); }
+          }
+          const exitCode = typeof code === 'number' ? code : 0;
+          onLog(`[EXIT] Game closed with code ${exitCode}`);
+          this.completeLaunch(launch, exitCode);
+          this.activeClose = null;
+          resolve();
+        });
+      });
+      this.activeClose = closed;
+      this.publishState({ phase: 'starting' });
+    };
+
     const proc = await this.launchAdapters.spawnMinecraft({
       requiredJava,
       effectiveVmOptions,
       onLog,
-      onClose,
-      onGameStart,
+      onSpawn: attachProcess,
+      onGameStart: () => {
+        if (this.activeLaunch?.id === launch.id) this.publishState({ phase: 'running' });
+        (this.gameStartListener ?? onGameStart)?.();
+      },
       launchOptions: {
         gamePath: instancePath,
         resourcePath: rootPath,
@@ -265,52 +385,87 @@ export class LauncherManager {
 
 
 
-    // Record launch statistics
-    if (this.statisticsService) {
-      try {
-        this.statisticsService.recordLaunch(instanceId, record.name);
-      } catch (e) {
-        console.error('Failed to record launch stats:', e);
-      }
+    attachProcess(proc);
+
+    if ((this.shuttingDown || launch.cancelled) && this.currentGameProcess === proc) {
+      await this.killProcess(proc);
+      await this.waitForClose(closed);
     }
-    const startTime = Date.now();
-
-    this.currentGameProcess = proc;
-    proc.on('close', (code) => {
-      this.currentGameProcess = null;
-
-      // Record play time statistics
-      if (this.statisticsService) {
-        try {
-          const duration = Date.now() - startTime;
-          this.statisticsService.recordPlayTime(duration, instanceId);
-        } catch (e) {
-          console.error('Failed to record play time stats:', e);
-        }
-      }
-
-      onClose(code ?? 0);
-    });
+    } catch (error) {
+      if (!this.currentGameProcess) this.failPreparation(launch);
+      throw error;
+    }
   }
 
-  /** Kills the running game process and its entire tree (Java + children). */
-  public async killGameProcess(): Promise<void> {
-    const proc = this.currentGameProcess;
-    this.currentGameProcess = null;
-    const pid = proc?.pid;
+  private admitLaunch(onClose: (code: number) => void): ActiveLaunch {
+    if (this.shuttingDown) throw new Error('Launcher is shutting down');
+    if (this.activeLaunch || this.preparationDrain || this.currentGameProcess) throw new Error('A game launch is already in progress');
+    const launch = { id: this.session.revision + 1, onClose, cancelled: false };
+    this.activeLaunch = launch;
+    this.publishState({ phase: 'preparing' });
+    return launch;
+  }
+
+  private failPreparation(launch: ActiveLaunch): void {
+    if (this.activeLaunch?.id !== launch.id) return;
+    this.activeLaunchHidesWindow = false;
+    this.publishState({ phase: 'failed' });
+  }
+
+  private completeLaunch(launch: ActiveLaunch, exitCode: number): void {
+    if (this.activeLaunch?.id !== launch.id) return;
+    this.publishState(exitCode === 0 ? { phase: 'idle' } : { phase: 'failed', exitCode });
+    (this.closeListener ?? launch.onClose)(exitCode);
+    if (!this.preparationDrain) {
+      this.activeLaunch = null;
+      this.activeLaunchHidesWindow = false;
+    }
+  }
+
+  private publishState(next: Omit<LauncherSessionSnapshot, 'revision'>): void {
+    this.session = { ...next, revision: this.session.revision + 1 };
+    this.stateListener?.(this.session);
+  }
+
+  private async killProcess(proc: ChildProcess): Promise<void> {
+    const pid = proc.pid;
     if (!pid) return;
-    return new Promise((resolve) => {
+    await new Promise<void>((resolve, reject) => {
       kill(pid, 'SIGKILL', (err) => {
         if (err) {
-          try {
-            proc?.kill('SIGKILL');
-          } catch {
-            // ignore
-          }
+          try { proc.kill('SIGKILL'); }
+          catch { reject(err); return; }
         }
         resolve();
       });
     });
+  }
+
+  private async waitForClose(closed: Promise<void> | null): Promise<void> {
+    if (!closed) throw new Error('Minecraft process did not report a close listener');
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        closed,
+        new Promise<never>((_, reject) => { timeout = setTimeout(() => reject(new Error('Timed out waiting for Minecraft to exit')), 5_000); }),
+      ]);
+    } finally {
+      if (timeout) clearTimeout(timeout);
+    }
+  }
+
+  /** Kills the running game process and its entire tree (Java + children). */
+  public async killGameProcess(): Promise<void> {
+    const preparation = this.preparationDrain;
+    if (preparation && this.activeLaunch) this.activeLaunch.cancelled = true;
+    const proc = this.currentGameProcess;
+    const closed = this.activeClose;
+    if (proc) {
+      await this.killProcess(proc);
+      await this.waitForClose(closed);
+    }
+    try { await preparation; }
+    catch (error) { if (!(error instanceof LaunchPreparationCancelled)) throw error; }
   }
   /** Writes data to the game process stdin if available. */
   public writeToGameStdin(data: string): void {

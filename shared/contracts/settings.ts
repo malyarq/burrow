@@ -11,6 +11,7 @@ const SETTINGS_BACKUP_EXACT_KEYS = new Set([
   'settings_hideLauncher',
   'settings_language',
   'settings_appearanceState',
+  'settings_savedThemes',
   'settings_downloadProvider',
   'settings_autoDownloadThreads',
   'settings_downloadThreads',

@@ -59,10 +59,13 @@ describe('provider staging installers', () => {
 
     expect(result).toMatchObject({
       source: { source: 'modrinth', sourceId: 'project', sourceVersionId: 'version', version: '2.0.0' },
+      config: { runtime: { minecraft: '1.20.1', modLoader: { type: 'fabric', version: '0.16.0' } } },
       missing: [{ path: 'mods/optional.jar', reason: '404' }],
     });
     expect(fs.existsSync(path.join(stagingRoot, 'modpacks.json'))).toBe(false);
     expect(fs.existsSync(path.join(stagingRoot, 'modpacks-metadata.json'))).toBe(false);
+    expect(download.download).toHaveBeenCalledTimes(3);
+    expect(fs.readFileSync(path.join(stagingRoot, 'modpacks', 'modrinth-pack', 'config', 'override.txt'), 'utf8')).toBe('client override');
   });
 });
 
@@ -77,7 +80,13 @@ function fakeDownload(failure?: (input: { destination: string }) => Error | unde
 }
 
 function fakeArchive(manifestName: string, manifest: string): ProviderArchivePort {
-  return { extract: async (_source, destination) => { fs.mkdirSync(destination, { recursive: true }); fs.writeFileSync(path.join(destination, manifestName), manifest); } };
+  return { extract: async (_source, destination) => {
+    fs.mkdirSync(destination, { recursive: true }); fs.writeFileSync(path.join(destination, manifestName), manifest);
+    if (manifestName === 'modrinth.index.json') {
+      fs.mkdirSync(path.join(destination, 'overrides', 'config'), { recursive: true }); fs.writeFileSync(path.join(destination, 'overrides', 'config', 'override.txt'), 'override');
+      fs.mkdirSync(path.join(destination, 'client-overrides', 'config'), { recursive: true }); fs.writeFileSync(path.join(destination, 'client-overrides', 'config', 'override.txt'), 'client override');
+    }
+  } };
 }
 
 function nodeContent(): ProviderContentPort {
@@ -98,5 +107,5 @@ function curseManifest() {
 }
 
 function modrinthManifest() {
-  return { formatVersion: 1, game: 'minecraft', versionId: '1.0.0', name: 'Modrinth Pack', summary: 'Summary', files: [{ path: 'mods/required.jar', hashes: {}, downloads: ['https://downloads.example.com/required.jar'], env: { client: 'required' } }, { path: 'mods/optional.jar', hashes: {}, downloads: ['https://downloads.example.com/optional.jar'], env: { client: 'optional' } } ], dependencies: { minecraft: '1.20.1', 'fabric-loader': '0.16.0' } };
+  return { formatVersion: 1, game: 'minecraft', versionId: '1.0.0', name: 'Modrinth Pack', summary: 'Summary', files: [{ path: 'mods/required.jar', hashes: {}, downloads: ['https://downloads.example.com/required.jar'], env: { client: 'required' } }, { path: 'mods/optional.jar', hashes: {}, downloads: ['https://downloads.example.com/optional.jar'], env: { client: 'optional' } }, { path: 'mods/server.jar', hashes: {}, downloads: ['https://downloads.example.com/server.jar'], env: { client: 'unsupported' } } ], dependencies: { minecraft: '1.20.1', 'fabric-loader': '0.16.0' } };
 }

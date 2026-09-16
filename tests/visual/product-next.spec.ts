@@ -312,3 +312,40 @@ test('Product Next shows remote pack contents and its official page action', asy
   }
   await assertNoHorizontalOverflow(page);
 });
+
+for (const lang of ['ru', 'en']) {
+  for (const width of [420, 700, 760, 880]) {
+    test(`launch controls stay inside their panel at 150% scale, ${lang}, ${width}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(`/manual-verification.html?view=product-next&lang=${lang}`);
+      await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
+      await page.evaluate(() => { document.documentElement.style.fontSize = '150%'; });
+      const panel = page.locator('.next-launch-fields');
+      const bounds = (await panel.boundingBox())!;
+      for (const id of ['version', 'nickname', 'launch']) {
+        const control = (await page.getByTestId(`play-workspace-${id}`).boundingBox())!;
+        expect(control.x).toBeGreaterThanOrEqual(bounds.x - 1);
+        expect(control.x + control.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
+      }
+      if (width > 640) {
+        const controls = await Promise.all(['version', 'nickname', 'launch'].map(id => page.getByTestId(`play-workspace-${id}`).boundingBox()));
+        expect(Math.max(...controls.map(b => b!.y + b!.height)) - Math.min(...controls.map(b => b!.y + b!.height))).toBeLessThan(1);
+      }
+      await assertNoHorizontalOverflow(page);
+    });
+  }
+}
+
+test('settings tab orientation follows its responsive layout and keyboard direction', async ({ page }) => {
+  await openProduct(page, 1100);
+  await page.getByTestId('next-nav-settings').click();
+  const tabs = page.getByTestId('settings-workspace').getByRole('tablist');
+  await expect(tabs).toHaveAttribute('aria-orientation', 'vertical');
+  await page.locator('#settings-tab-appearance').focus();
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('#settings-tab-downloads')).toBeFocused();
+  await page.setViewportSize({ width: 760, height: 850 });
+  await expect(tabs).toHaveAttribute('aria-orientation', 'horizontal');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#settings-tab-launcher')).toBeFocused();
+});

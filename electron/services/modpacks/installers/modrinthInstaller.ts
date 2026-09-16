@@ -40,10 +40,8 @@ export async function stageModrinthModpack(ports: ModrinthInstallerPorts, input:
     const manifestPath = resolvePathWithinRoot(extractPath, 'modrinth.index.json', 'Modrinth manifest');
     if (!ports.content.exists(manifestPath)) throw new Error('Modrinth modpack does not contain modrinth.index.json');
     const manifest = parseModrinthManifest(ports.content.readText(manifestPath));
-    const minecraft = version.game_versions?.[0];
-    if (!minecraft) throw new Error('Modrinth modpack version has no Minecraft version');
-    const loader = primaryLoader(version.loaders ?? []);
-    const config = configFor(input.destinationId, manifest.name || project.title, minecraft, loader);
+    const loaderId = manifest.minecraft.modLoaders.find((entry) => entry.primary)?.id ?? manifest.minecraft.modLoaders[0]?.id;
+    const config = configFor(input.destinationId, manifest.name || project.title, manifest.minecraft.version, parseLoader(loaderId));
     ports.content.ensureDirectory(stagePath);
     ports.content.writeText(resolvePathWithinRoot(stagePath, 'modpack.json', 'Modrinth staged config'), JSON.stringify(config));
     const missing: Array<{ path: string; reason: string }> = [];
@@ -51,6 +49,7 @@ export async function stageModrinthModpack(ports: ModrinthInstallerPorts, input:
       const filePath = file.path || '';
       try {
         checkCancelled();
+        if (file.env?.client === 'unsupported') continue;
         if (!filePath) throw new Error('provider file path is missing');
         if (!file.downloads?.length) throw new Error('provider did not return a download URL');
         const destination = resolvePathWithinRoot(stagePath, filePath, 'Modrinth provider file destination');
@@ -58,11 +57,13 @@ export async function stageModrinthModpack(ports: ModrinthInstallerPorts, input:
         await ports.download.download({ urls: file.downloads, destination, sha1: file.hashes?.sha1, label: `Modrinth file ${filePath} download URL` });
         checkCancelled();
       } catch (error) {
+        checkCancelled();
         if (file.required) throw error;
         missing.push({ path: filePath || 'missing-path', reason: error instanceof Error ? error.message : 'optional provider download failed' });
       }
     }
     copyDirectory(ports.content, resolvePathWithinRoot(extractPath, 'overrides', 'Modrinth overrides'), stagePath, checkCancelled);
+    copyDirectory(ports.content, resolvePathWithinRoot(extractPath, 'client-overrides', 'Modrinth client overrides'), stagePath, checkCancelled);
     ports.content.copyFile(manifestPath, resolvePathWithinRoot(stagePath, 'modrinth.index.json', 'Modrinth staged manifest'));
     return {
       config,
@@ -80,9 +81,9 @@ function configFor(id: string, name: string, minecraft: string, modLoader: { typ
   return { id, name: name.trim() || id, runtime: { minecraft, modLoader }, memory: { maxMb: 4096 }, vmOptions: [], createdAt: now, updatedAt: now };
 }
 
-function primaryLoader(loaders: readonly string[]): { type: ModLoaderType; version?: string } {
-  const type = (['forge', 'fabric', 'quilt', 'neoforge'] as const).find((candidate) => loaders.includes(candidate));
-  return { type: type ?? 'vanilla' };
+function parseLoader(id: string | undefined): { type: ModLoaderType; version?: string } {
+  const match = /^(forge|fabric|quilt|neoforge)(?:-(.+))?$/i.exec(id ?? '');
+  return match ? { type: match[1].toLowerCase() as ModLoaderType, ...(match[2] ? { version: match[2] } : {}) } : { type: 'vanilla' };
 }
 
 function copyDirectory(content: ProviderContentPort, source: string, destination: string, checkCancelled: () => void): void {

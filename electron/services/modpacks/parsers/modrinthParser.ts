@@ -3,6 +3,8 @@ import type {
   ModpackManifest,
 } from '../../../../shared/types/modpack';
 
+const loaderKeys = ['forge', 'fabric-loader', 'quilt-loader', 'neoforge'] as const;
+
 /**
  * Парсинг Modrinth манифеста (modrinth.index.json)
  */
@@ -32,20 +34,16 @@ export function parseModrinthManifest(manifestJson: string): ModpackManifest {
     throw new Error('Modrinth manifest files must be an array');
   }
 
-  // Извлечение версии Minecraft из файлов (нужно найти основной файл или использовать первую версию)
-  // В Modrinth манифесте нет явной версии Minecraft, нужно извлекать из модлоадеров или файлов
-  // Для упрощения, будем требовать, чтобы это было указано отдельно или извлекать из первого мода
-  
-  // Преобразование в универсальный формат
-  // Modrinth не хранит версию Minecraft и модлоадеры в манифесте напрямую,
-  // поэтому нужно будет получать их из API или других источников
+  const dependencies = parsed.dependencies ?? {};
+  const minecraftVersion = dependencies.minecraft;
+  if (typeof minecraftVersion !== 'string' || !minecraftVersion) throw new Error('Modrinth manifest missing dependencies.minecraft');
+  const loader = loaderKeys.find((key) => dependencies[key]);
+
   const manifest: ModpackManifest = {
     formatVersion: parsed.formatVersion,
     minecraft: {
-      // Версия Minecraft не указана в Modrinth манифесте
-      // Нужно получать из API или других источников
-      version: '', // Будет заполнено из API
-      modLoaders: [], // Будет заполнено из API
+      version: minecraftVersion,
+      modLoaders: loader ? [{ id: `${loader === 'fabric-loader' ? 'fabric' : loader === 'quilt-loader' ? 'quilt' : loader}-${dependencies[loader]}`, primary: true }] : [],
     },
     name: parsed.name,
     version: parsed.versionId || '1.0.0',
@@ -94,6 +92,9 @@ export function validateModrinthManifest(manifest: ModrinthManifest): boolean {
     }
     
     if (!Array.isArray(manifest.files)) {
+      return false;
+    }
+    if (!manifest.dependencies?.minecraft || typeof manifest.dependencies.minecraft !== 'string') {
       return false;
     }
     

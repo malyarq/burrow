@@ -105,6 +105,7 @@
 ### 3.2 Launcher
 
 - `launcher:launch`
+- `launcher:getSessionState`
 - `launcher:getVersionList`
 - `launcher:getForgeSupportedVersions`
 - `launcher:getFabricSupportedVersions`
@@ -117,8 +118,11 @@
 - `launcher:log`
 - `launcher:progress`
 - `launcher:close`
+- `launcher:sessionState`
 
 `window.api.launcher.launch` принимает логический `instanceId` и ограниченные настройки запуска. Корни лаунчера, пути инстансов, Java executables, VM options и удалённый alias `modpackId` не входят в renderer-контракт: нативные полномочия main разрешает из composition root и канонической записи инстанса.
+
+`launcher:getSessionState` возвращает ревизионный снимок сеанса из main-процесса. `launcher:sessionState` публикует новые снимки, пока renderer смонтирован, поэтому после remount восстанавливается подготовка или запущенная игра, а устаревший ответ запроса не заменяет новое состояние.
 
 ### 3.3 Mods
 
@@ -155,9 +159,10 @@
 ### 3.4.2 Java runtime
 
 - `javaRuntime:scan`
+- `javaRuntime:get`
 - `javaRuntime:select`
 
-`window.api.javaRuntime` возвращает непрозрачные краткоживущие ID установок и метаданные рантайма; выбор принимает `{ instanceId, installationId }` и сохраняет Java в явно указанном редактируемом инстансе. Исполняемый файл Java и корни лаунчера остаются в main-процессе. Последующее сохранение публичной конфигурации сохраняет main-owned выбор Java.
+`window.api.javaRuntime` возвращает непрозрачные краткоживущие ID установок и метаданные рантайма. После scan запрос `get({ instanceId })` возвращает ID, совпадающий с сохранённым выбором, либо `null`; исполняемый файл Java и корни лаунчера остаются в main-процессе. Выбор принимает `{ instanceId, installationId }`; `installationId: null` возвращает автоматический выбор Java для явно указанного инстанса.
 
 ### 3.4.3 Проверка архива
 

@@ -6,6 +6,17 @@ import { applySettingsBackup, collectSettingsBackup } from '../settingsBackup';
 describe('settings backup allowlist', () => {
   beforeEach(() => localStorage.clear());
 
+  it('round-trips saved themes alongside the active appearance', () => {
+    const themes = JSON.stringify([{ id: 'custom', name: 'My theme', theme: 'dark', customTheme: { colors: { card: '#123456' } } }]);
+    localStorage.setItem('settings_savedThemes', themes);
+    localStorage.setItem('settings_appearanceState', '{"theme":"dark"}');
+    const backup = collectSettingsBackup();
+    localStorage.clear();
+    applySettingsBackup(backup);
+    expect(localStorage.getItem('settings_savedThemes')).toBe(themes);
+    expect(localStorage.getItem('settings_appearanceState')).toBe('{"theme":"dark"}');
+  });
+
   it('exports preferences and recent launches without room secrets or analytics identity', () => {
     localStorage.setItem('settings_language', 'ru');
     localStorage.setItem('nickname', 'Alex');

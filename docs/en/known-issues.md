@@ -12,7 +12,7 @@ Checksums detect corruption or asset replacement only when users compare them wi
 
 ## Product limitations
 
-- CurseForge browsing is disabled in official builds because the API key and distribution contract are not configured for public binaries. Import/export of local CurseForge archives remains available.
+- CurseForge browsing is disabled in official builds because the API key and distribution contract are not configured for public binaries. Importing a local CurseForge archive with referenced mods also requires an available provider; otherwise import fails before publishing the instance. Local archive export remains available.
 - Long operations share one cancellable, journaled lifecycle, but interrupted network transfers do not resume byte-for-byte after restart.
 - The recovery inbox does not expose a generic retry for hidden or already-consumed input. A recovery-required import or export may need a fresh archive selection or save destination from the user.
 - Archive export recovery deliberately stops at `recovery-required` after a restart. The launcher preserves the external output and private staging artifacts, but does not rename or delete them after the one-time native save authorization has expired; manual verification is required.

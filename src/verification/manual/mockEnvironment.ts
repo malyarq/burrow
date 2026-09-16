@@ -1544,6 +1544,7 @@ export function installManualVerificationEnvironment() {
       majorVersion: 21,
       arch: 'arm64',
     }],
+    get: async () => ({ installationId: null }),
     select: async () => ({ status: 'selected' as const }),
   };
 
@@ -1678,6 +1679,8 @@ export function installManualVerificationEnvironment() {
   const launchLogListeners = new Set<(log: string) => void>();
   const launchProgressListeners = new Set<(progress: { type: string; task: number; total: number }) => void>();
   const launchCloseListeners = new Set<(code: number) => void>();
+  const launchSessionListeners = new Set<(snapshot: { revision: number; phase: 'idle' | 'preparing' | 'starting' | 'running' | 'failed'; exitCode?: number }) => void>();
+  let launchSession = { revision: 0, phase: 'idle' as const };
   const launcher: BurrowApi['launcher'] = {
     launch: async () => {
       // This is a renderer fixture only. It exercises the launch state machine
@@ -1685,9 +1688,12 @@ export function installManualVerificationEnvironment() {
       for (const listener of launchLogListeners) listener('Manual preview accepted the launch request; no game process is started.');
       for (const listener of launchProgressListeners) listener({ type: 'launch', task: 1, total: 1 });
       queueMicrotask(() => {
+        launchSession = { revision: launchSession.revision + 1, phase: 'idle' };
+        for (const listener of launchSessionListeners) listener(launchSession);
         for (const listener of launchCloseListeners) listener(0);
       });
     },
+    getSessionState: async () => launchSession,
     killAndRestart: async () => {
       for (const listener of launchLogListeners) listener('Manual preview reset the simulated launcher session.');
       for (const listener of launchCloseListeners) listener(0);
@@ -1714,6 +1720,10 @@ export function installManualVerificationEnvironment() {
     onClose: (listener) => {
       launchCloseListeners.add(listener);
       return () => launchCloseListeners.delete(listener);
+    },
+    onSessionState: (listener) => {
+      launchSessionListeners.add(listener);
+      return () => launchSessionListeners.delete(listener);
     },
   };
 

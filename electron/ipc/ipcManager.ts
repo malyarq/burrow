@@ -32,6 +32,7 @@ import { allowedIpcChannels } from '../../shared/contracts/ipcChannels'
 
 import { registerShareHandlers } from './handlers/shareHandlers'
 import type { HandlerComposition } from '../app/compositionRoot'
+import type { ContentMutationGate } from './handlers/contentMutation'
 
 /**
  * Centralized Manager for Electron Inter-Process Communication (IPC).
@@ -56,11 +57,14 @@ export class IPCManager {
         const { window, composition } = params
         const { application, getDefaultRootPath, getDefaultInstanceRoot, scanJava, inspectArchive, launcher, burrowLink, lanDiscovery, portMapping, modPlatforms, instanceMods, storageMaintenance, accountService, mirrorsService, statisticsService, shareService, operations, consumeArchiveReference } = composition
         const sendLog = createThrottledLauncherLogSender()
+        const runContentMutation: ContentMutationGate = async (instanceId, work) => {
+            return await operations.runContentMutation(getDefaultRootPath(), instanceId, work)
+        }
 
         registerWindowHandlers({ window })
         registerLauncherHandlers({ window, launcher, sendLog })
         registerCacheHandlers({ window })
-        registerModsHandlers({ modPlatforms, getDefaultRootPath })
+        registerModsHandlers({ modPlatforms, getDefaultRootPath, runContentMutation })
         registerProviderCatalogHandlers({ providerCatalog: modPlatforms })
         registerStorageMaintenanceHandlers({ storageMaintenance })
         registerJavaRuntimeHandlers({
@@ -72,16 +76,16 @@ export class IPCManager {
             rootPath: getDefaultRootPath(),
             scanJava,
         }))
-        registerInstanceModsHandlers({ instanceMods })
+        registerInstanceModsHandlers({ instanceMods, runContentMutation })
         registerNetworkHandlers({ window, burrowLink, lanDiscovery, portMapping })
         registerSettingsHandlers({ window })
         registerAssetsHandlers()
         registerAppUpdaterHandlers()
-        registerResourcePacksHandlers()
-        registerShadersHandlers()
-        registerWorldsHandlers()
-        registerDatapacksHandlers({ modPlatforms })
-        registerScreenshotsHandlers()
+        registerResourcePacksHandlers({ runContentMutation })
+        registerShadersHandlers({ runContentMutation })
+        registerWorldsHandlers({ runContentMutation })
+        registerDatapacksHandlers({ modPlatforms, runContentMutation })
+        registerScreenshotsHandlers({ runContentMutation })
         registerAppHandlers()
         registerAccountHandlers({ accountService })
         registerMirrorsHandlers({ mirrorsService })

@@ -16,6 +16,7 @@ vi.mock('electron', () => ({
 }));
 
 import { registerModsHandlers } from '../modsHandlers';
+import type { ContentMutationGate } from '../contentMutation';
 
 describe('mods IPC install security boundary', () => {
   const modPlatforms = {
@@ -53,6 +54,22 @@ describe('mods IPC install security boundary', () => {
       versionId: 'sodium-1.0.0',
       contentType: 'mod',
     }, '/approved/root');
+  });
+
+  it('runs an accepted install through the injected root mutation gate', async () => {
+    mocked.installModFile.mockResolvedValueOnce({ destination: '/private/root/mods/sodium.jar', filename: 'sodium.jar', usedUrl: 'https://example.test/sodium.jar' });
+    const gatedInstanceIds: string[] = [];
+    const gate: ContentMutationGate = async (instanceId, work) => {
+      gatedInstanceIds.push(instanceId);
+      return await work();
+    };
+    registerModsHandlers({ modPlatforms, getDefaultRootPath: () => '/approved/root', runContentMutation: gate });
+
+    await mocked.handlers.get('mods:installModFile')?.({}, {
+      instanceId: 'alpha', platform: 'modrinth', projectId: 'sodium', versionId: 'sodium-1.0.0', contentType: 'mod',
+    });
+
+    expect(gatedInstanceIds).toEqual(['alpha']);
   });
 
   it.each([

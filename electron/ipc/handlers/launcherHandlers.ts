@@ -16,6 +16,25 @@ export function registerLauncherHandlers(deps: {
 }) {
   const { window, launcher, sendLog } = deps
 
+  launcher.setStateListener((snapshot) => {
+    if (!window.isDestroyed()) window.webContents.send('launcher:sessionState', snapshot)
+  })
+  launcher.setGameLifecycleListeners({
+    onClose: (code) => {
+      if (launcher.shouldHideLauncherWindow() && !window.isDestroyed()) {
+        window.show()
+        window.focus()
+      }
+      if (!window.isDestroyed()) window.webContents.send('launcher:close', code)
+    },
+    onGameStart: () => {
+      if (launcher.shouldHideLauncherWindow() && !window.isDestroyed()) window.hide()
+    },
+  })
+
+  ipcMain.removeHandler('launcher:getSessionState')
+  ipcMain.handle('launcher:getSessionState', () => launcher.getSessionState())
+
   ipcMain.removeHandler('launcher:killAndRestart')
   ipcMain.handle('launcher:killAndRestart', async () => {
     await launcher.killGameProcess()
@@ -26,7 +45,6 @@ export function registerLauncherHandlers(deps: {
   ipcMain.handle('launcher:launch', async (_evt, rawOptions: unknown) => {
     try {
       const options = validateLaunchGameOptions(rawOptions)
-      const shouldHide = Boolean(options?.hideLauncher)
       await launcher.launchGame(
         options,
         (log: string) => {
@@ -35,18 +53,8 @@ export function registerLauncherHandlers(deps: {
         (progress: TaskProgressData) => {
           if (!window.isDestroyed()) window.webContents.send('launcher:progress', progress)
         },
-        (code: number) => {
-          if (shouldHide && !window.isDestroyed()) {
-            window.show()
-            window.focus()
-          }
-          if (!window.isDestroyed()) window.webContents.send('launcher:close', code)
-        },
-        () => {
-          if (shouldHide && !window.isDestroyed()) {
-            window.hide()
-          }
-        }
+        () => undefined,
+        undefined,
       )
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)

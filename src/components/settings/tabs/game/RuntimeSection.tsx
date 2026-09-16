@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 
 import { Button } from '../../../ui/Button';
 import { Input } from '../../../ui/Input';
@@ -49,25 +49,43 @@ export function RuntimeSection(props: {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [memoryInput, setMemoryInput] = useState('');
   const memoryHintId = useId();
+  const javaSelectId = useId();
+  const minMemorySliderId = useId();
+  const javaLoadGeneration = useRef(0);
+  const [isSelectingJava, setIsSelectingJava] = useState(false);
+  const selectingJavaRef = useRef(false);
   const [sliderRange, setSliderRange] = useState({ id: modpackConfig?.id, max: 32 });
 
-  // Load Detected Javas on mount or scan
-  const scanJava = async () => {
+  const loadJava = async (instanceId: string | null, generation: number) => {
     setIsScanning(true);
     try {
       const result = await javaRuntimeIPC.scan();
+      if (generation !== javaLoadGeneration.current) return;
+      const selection = instanceId ? await javaRuntimeIPC.get({ instanceId }) : { installationId: null };
+      if (generation !== javaLoadGeneration.current) return;
       setDetectedJavas(result);
-      setSelectedInstallationId((current) => result.some((java) => java.id === current) ? current : null);
+      setSelectedInstallationId(result.some((java) => java.id === selection.installationId) ? selection.installationId : null);
     } catch (err) {
-      console.error('Failed to scan Java:', err);
+      if (generation === javaLoadGeneration.current) console.error('Failed to scan Java:', err);
     } finally {
-      setIsScanning(false);
+      if (generation === javaLoadGeneration.current) setIsScanning(false);
     }
   };
 
+  const scanJava = () => {
+    const instanceId = modpackConfig?.id ?? null;
+    const generation = ++javaLoadGeneration.current;
+    void loadJava(instanceId, generation);
+  };
+
   useEffect(() => {
-    void scanJava();
-  }, []);
+    const instanceId = modpackConfig?.id;
+    const generation = ++javaLoadGeneration.current;
+    setDetectedJavas([]);
+    setSelectedInstallationId(null);
+    void loadJava(instanceId ?? null, generation);
+    return () => { javaLoadGeneration.current += 1; };
+  }, [modpackConfig?.id]);
 
   useEffect(() => {
     if (isReadOnly) {
@@ -102,12 +120,12 @@ export function RuntimeSection(props: {
   }
 
   // Java version mismatch
-  if (selectedJava && selectedJava.majorVersion < requiredJavaVer) {
+  if (selectedJava && selectedJava.majorVersion !== requiredJavaVer) {
     warnings.push(
       translateWithFallback(
         t,
         'settings.warning_java_version',
-        'Minecraft {{version}} requires Java {{required}} or newer. Selected: Java {{selected}}.',
+        'Minecraft {{version}} requires exactly Java {{required}}. Selected: Java {{selected}}.',
         {
           version: modpackConfig?.runtime?.minecraft ?? '?',
           required: requiredJavaVer,
@@ -125,13 +143,20 @@ export function RuntimeSection(props: {
   }
 
   const handleJavaChange = async (installationId: string) => {
-    if (!installationId || !modpackConfig?.id) return;
+    const instanceId = modpackConfig?.id;
+    if (!instanceId || selectingJavaRef.current) return;
+    const generation = javaLoadGeneration.current;
+    selectingJavaRef.current = true;
+    setIsSelectingJava(true);
 
     try {
-      await javaRuntimeIPC.select({ instanceId: modpackConfig.id, installationId });
-      setSelectedInstallationId(installationId);
+      await javaRuntimeIPC.select({ instanceId, installationId: installationId || null });
+      if (generation === javaLoadGeneration.current) setSelectedInstallationId(installationId || null);
     } catch (err) {
       console.error('Failed to select Java runtime:', err);
+    } finally {
+      selectingJavaRef.current = false;
+      setIsSelectingJava(false);
     }
   };
 
@@ -242,7 +267,9 @@ export function RuntimeSection(props: {
               </span>
             </div>
             <input
+              id={minMemorySliderId}
               type="range"
+              aria-label={translateWithFallback(t, 'settings.min_ram', 'Initial Memory (Xms)')}
               min="0.5"
               max={getRamGb(modpackConfig, 4)}
               step="0.5"
@@ -300,10 +327,10 @@ export function RuntimeSection(props: {
         {/* Java Selection */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <label className="control-label">
+            <label htmlFor={javaSelectId} className="control-label">
               {translateWithFallback(t, 'settings.java_runtime', 'Java runtime')}
             </label>
-            <Button size="sm" variant="ghost" onClick={scanJava} disabled={isScanning || isReadOnly}>
+            <Button size="sm" variant="ghost" onClick={scanJava} disabled={isScanning || isSelectingJava || isReadOnly}>
               {isScanning
                 ? translateWithFallback(t, 'general.scanning', 'Scanning...')
                 : translateWithFallback(t, 'general.rescan', 'Rescan')}
@@ -311,11 +338,12 @@ export function RuntimeSection(props: {
           </div>
 
           <Select
+            id={javaSelectId}
             value={selectedInstallationId ?? ''}
             onChange={(e) => void handleJavaChange(e.target.value)}
-            disabled={isScanning || isReadOnly}
+            disabled={isScanning || isSelectingJava || isReadOnly}
           >
-            <option value="" disabled>{translateWithFallback(t, 'settings.java_auto', 'Select a detected runtime')}</option>
+            <option value="">{translateWithFallback(t, 'settings.java_auto', 'Auto')}</option>
             {detectedJavas.map((java) => (
               <option key={java.id} value={java.id}>
                 Java {java.majorVersion} ({java.version}){java.arch ? ` [${java.arch}]` : ''}

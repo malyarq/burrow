@@ -6,9 +6,9 @@ for (const width of [420, 1024, 1440]) {
       await page.setViewportSize({ width, height: 960 });
       await page.goto('/tests/visual/fixtures/launcher-shell.html?theme=light&lang=ru&motion=on');
       await page.evaluate(value => { document.documentElement.style.fontSize = `${value}%`; }, scale);
-      await page.locator('aside').getByRole('button', { name: 'Настройки', exact: true }).click();
-      const dialog = page.getByRole('dialog');
-      const done = dialog.getByRole('button', { name: 'Готово', exact: true });
+      await page.getByTestId('next-nav-settings').click();
+      const dialog = page.getByTestId('settings-workspace');
+      const done = page.getByTestId('next-nav-settings');
       await expect(done).toBeVisible();
       const initial = (await done.boundingBox())!;
       await expect(dialog.locator('[role="tabpanel"]')).toHaveCount(6);
@@ -26,15 +26,15 @@ for (const width of [420, 1024, 1440]) {
   }
 }
 
-test('8 GB tick matches the native slider position', async ({ page }) => {
+test('the midpoint tick matches the native slider position', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto('/tests/visual/fixtures/launcher-shell.html?theme=dark&lang=en');
   await page.getByRole('button', { name: 'Advanced settings', exact: true }).click();
-  const tick = page.getByTestId('memory-tick-eight');
+  const tick = page.getByTestId('memory-tick-midpoint');
   await tick.scrollIntoViewIfNeeded();
   const slider = page.getByRole('slider', { name: 'Allocated Memory (RAM)', exact: true });
   const tickBox = (await tick.boundingBox())!;
   const sliderBox = (await slider.boundingBox())!;
   await page.mouse.click(tickBox.x + tickBox.width / 2, sliderBox.y + sliderBox.height / 2);
-  await expect(slider).toHaveValue('8');
+  await expect(slider).toHaveValue('16');
 });

@@ -4,18 +4,18 @@ for (const width of [840, 1280, 1440]) {
   test(`sidebar fields keep their geometry and focus ring, ${width}`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 960 });
     await page.goto('/tests/visual/fixtures/launcher-shell.html?theme=dark&accent=purple&motion=on&lang=ru');
-    await expect(page.locator('[data-tour="nickname"] input')).toBeVisible();
-    const nicknameTop = (await page.locator('[data-tour="nickname"] input').boundingBox())!.y;
+    await expect(page.getByTestId('play-workspace-nickname')).toBeVisible();
+    const nicknameTop = (await page.getByTestId('play-workspace-nickname').boundingBox())!.y;
     await page.locator('[data-tour="modpacks"]').click();
-    expect((await page.locator('[data-tour="nickname"] input').boundingBox())!.y).toBeCloseTo(nicknameTop, 0);
-    await expect(page.locator('[data-tour="version"]')).toHaveCount(0);
+    await expect(page.getByTestId('library-launch-dock')).toBeVisible();
+    await expect(page.getByTestId('play-workspace-version')).toHaveCount(0);
     const frames = await page.evaluate(async () => {
       const samples: { nicknameWidth: number; versionWidth: number; opacity: number; animations: number }[] = [];
       (document.querySelector('[data-tour="classic"]') as HTMLButtonElement).click();
       for (let frame = 0; frame < 32; frame++) {
         await new Promise(requestAnimationFrame);
-        const nickname = document.querySelector('[data-tour="nickname"] input') as HTMLElement;
-        const version = document.querySelector('[data-tour="version"] select') as HTMLElement;
+        const nickname = document.querySelector('[data-testid="play-workspace-nickname"]') as HTMLElement;
+        const version = document.querySelector('[data-testid="play-workspace-version"]') as HTMLElement;
         if (!nickname || !version) continue;
         let opacity = 1;
         for (let el: HTMLElement | null = version; el && el.tagName !== 'BODY'; el = el.parentElement) opacity *= Number(getComputedStyle(el).opacity);
@@ -32,7 +32,8 @@ for (const width of [840, 1280, 1440]) {
       expect(Math.max(...frames.map(f => f[key])) - Math.min(...frames.map(f => f[key]))).toBeLessThan(1);
     }
     expect(frames.every(f => f.opacity === 1 && f.animations === 0)).toBe(true);
-    for (const selector of ['[data-tour="nickname"] input', '[data-tour="version"] select']) {
+    expect((await page.getByTestId('play-workspace-nickname').boundingBox())!.y).toBeCloseTo(nicknameTop, 0);
+    for (const selector of ['[data-testid="play-workspace-nickname"]', '[data-testid="play-workspace-version"]']) {
       const control = page.locator(selector);
       await control.focus();
       const clipping = await control.evaluate(input => {

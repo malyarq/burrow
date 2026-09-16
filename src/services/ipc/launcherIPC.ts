@@ -56,6 +56,10 @@ export const launcherIPC = {
     if (!hasMethod('onClose')) return () => { };
     return requireLauncher('onClose').onClose(callback);
   },
+  onSessionState(callback: Parameters<LauncherApi['onSessionState']>[0]): () => void {
+    if (!hasMethod('onSessionState')) return () => { };
+    return requireLauncher('onSessionState').onSessionState(callback);
+  },
 
   // launcher
   killAndRestart(): Promise<void> {
@@ -63,6 +67,9 @@ export const launcherIPC = {
   },
   launch(options: Parameters<LauncherApi['launch']>[0]): Promise<void> {
     return call('launch', () => requireLauncher('launch').launch(options));
+  },
+  getSessionState(): ReturnType<LauncherApi['getSessionState']> {
+    return call('getSessionState', () => requireLauncher('getSessionState').getSessionState());
   },
   getVersionList(providerId?: Parameters<LauncherApi['getVersionList']>[0]): ReturnType<LauncherApi['getVersionList']> {
     return call('getVersionList', () => requireLauncher('getVersionList').getVersionList(providerId));

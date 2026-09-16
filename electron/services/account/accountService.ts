@@ -334,13 +334,23 @@ export class AccountService {
         if (account.type === 'offline') return account;
         if (account.isDisabled) return null;
 
+        const assertCurrentAccount = () => {
+            if (this.getSelectedInternalAccount() !== account) {
+                throw new Error('Selected account changed during authentication. Start the game again.');
+            }
+        };
+
         if (account.type === 'third-party' && account.authServerUrl && account.accessToken && account.clientToken) {
             const client = new YggdrasilClient(account.authServerUrl);
+            let knownInvalid = false;
             try {
                 const isValid = await client.validate(account.accessToken, account.clientToken);
+                assertCurrentAccount();
                 if (!isValid) {
+                    knownInvalid = true;
                     console.log('[AccountService] Token invalid, refreshing...');
                     const result = await client.refresh(account.accessToken, account.clientToken);
+                    assertCurrentAccount();
                     // Update account with new token
                     const updatedAccount: InternalAccount = this.applyDerivedAccountFields({
                         ...account,
@@ -361,9 +371,9 @@ export class AccountService {
                     return updatedAccount;
                 }
             } catch (e) {
+                assertCurrentAccount();
                 console.error('[AccountService] Failed to refresh token:', e);
-                // Could throw error or return null to indicate login required
-                // For now, return account but it might fail later in launcher
+                if (knownInvalid) throw new Error('Account session expired. Sign in again before launching the game.');
             }
         }
         return account;

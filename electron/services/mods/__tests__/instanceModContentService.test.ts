@@ -6,6 +6,8 @@ import type { ModpackManifest } from '../../../../shared/types/modpack';
 import type { LauncherRoot } from '../../../domains/instances/instanceTypes';
 import type { InstanceReadPort, LauncherRootResolver } from '../../../domains/instances/ports';
 import { InstanceModContentService } from '../instanceModContentService';
+import { InstanceManifestManager } from '../../instances/manifestManager';
+import { ShareService } from '../../sharing/shareService';
 
 function createInstance(): { rootPath: string; instancePath: string } {
   const rootPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-instance-mods-'));
@@ -91,6 +93,59 @@ describe('InstanceModContentService', () => {
     expect(fs.existsSync(path.join(instancePath, 'mods', 'example.jar'))).toBe(false);
     const manifest = JSON.parse(fs.readFileSync(path.join(instancePath, 'manifest.json'), 'utf8')) as ModpackManifest;
     expect(manifest.files).toEqual([]);
+  });
+
+  it('keeps instance-manifest tracking in sync for disabled, enabled, and removed mods', () => {
+    const { rootPath, instancePath } = createInstance();
+    roots.push(rootPath);
+    const manifests = new InstanceManifestManager();
+    fs.writeFileSync(path.join(instancePath, 'mods', 'example.jar'), 'jar');
+    manifests.addMod(instancePath, {
+      fileName: 'example.jar', source: 'modrinth', projectId: 'example', versionId: 'v1', installDate: '2026-09-01T00:00:00.000Z',
+    });
+    const service = createService(rootPath);
+
+    service.setEnabled('pack', 'example.jar', false);
+    expect(manifests.loadManifest(instancePath).mods[0]?.fileName).toBe('example.jar.disabled');
+    service.setEnabled('pack', 'example.jar.disabled', true);
+    expect(manifests.loadManifest(instancePath).mods[0]?.fileName).toBe('example.jar');
+    service.remove('pack', 'example.jar');
+    expect(manifests.loadManifest(instancePath).mods).toEqual([]);
+  });
+
+  it('does not include a removed installed mod in a generated share round-trip', async () => {
+    const { rootPath, instancePath } = createInstance();
+    roots.push(rootPath);
+    const manifests = new InstanceManifestManager();
+    fs.writeFileSync(path.join(instancePath, 'mods', 'example.jar'), 'jar');
+    manifests.addMod(instancePath, {
+      fileName: 'example.jar', source: 'modrinth', projectId: 'example', versionId: 'v1', installDate: '2026-09-01T00:00:00.000Z',
+    });
+    const root = {} as LauncherRoot;
+    const share = new ShareService({
+      read: async () => ({
+        status: 'ready',
+        snapshot: {
+          selectedId: 'pack',
+          records: [{
+            id: 'pack', name: 'Pack',
+            source: { source: 'local', createdAt: '2026-09-01T00:00:00.000Z', updatedAt: '2026-09-01T00:00:00.000Z' },
+            config: { runtime: { minecraftVersion: '1.20.1', modLoader: { type: 'fabric', version: '0.16.0' } } },
+            summary: { minecraftVersion: '1.20.1', modLoader: { type: 'fabric', version: '0.16.0' } },
+          }],
+        },
+      }),
+    }, {
+      resolveDefaultRoot: async () => root,
+      loadManifest: async () => manifests.loadManifest(instancePath),
+    });
+    const service = createService(rootPath);
+
+    const included = await share.resolveShareCode(await share.generateShareCode('pack'));
+    expect(included.files).toMatchObject([{ projectId: 'example', versionId: 'v1' }]);
+    service.remove('pack', 'example.jar');
+    const removed = await share.resolveShareCode(await share.generateShareCode('pack'));
+    expect(removed.files).toEqual([]);
   });
 
   it('does not overwrite the opposite enabled state and rejects path-shaped names', () => {

@@ -1,9 +1,10 @@
 import { ipcRenderer, type IpcRendererEvent } from 'electron'
-import type { LauncherAPI, LauncherLaunchOptions, LauncherProgressEvent } from '@shared/contracts'
+import type { LauncherAPI, LauncherLaunchOptions, LauncherProgressEvent, LauncherSessionSnapshot } from '@shared/contracts'
 import type { DownloadProviderId } from '@shared/types'
 
 export const launcher: LauncherAPI = {
   launch: (options: LauncherLaunchOptions) => ipcRenderer.invoke('launcher:launch', options),
+  getSessionState: () => ipcRenderer.invoke('launcher:getSessionState'),
   killAndRestart: () => ipcRenderer.invoke('launcher:killAndRestart'),
   getVersionList: (providerId?: DownloadProviderId) => ipcRenderer.invoke('launcher:getVersionList', providerId),
   getForgeSupportedVersions: (providerId?: DownloadProviderId) => ipcRenderer.invoke('launcher:getForgeSupportedVersions', providerId),
@@ -25,5 +26,10 @@ export const launcher: LauncherAPI = {
     const subscription = (_event: IpcRendererEvent, code: number) => callback(code)
     ipcRenderer.on('launcher:close', subscription)
     return () => ipcRenderer.removeListener('launcher:close', subscription)
-  }
+  },
+  onSessionState: (callback: (snapshot: LauncherSessionSnapshot) => void) => {
+    const subscription = (_event: IpcRendererEvent, snapshot: LauncherSessionSnapshot) => callback(snapshot)
+    ipcRenderer.on('launcher:sessionState', subscription)
+    return () => ipcRenderer.removeListener('launcher:sessionState', subscription)
+  },
 }

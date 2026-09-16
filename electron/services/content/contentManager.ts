@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { pipeline } from 'node:stream/promises';
 
 export class ContentManager {
     private storePath: string;
@@ -27,14 +28,10 @@ export class ContentManager {
     }
 
     public async calculateHash(filePath: string, algo: 'sha1' | 'sha256' = 'sha1'): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const hash = crypto.createHash(algo);
-            const stream = fs.createReadStream(filePath);
-
-            stream.on('error', reject);
-            stream.on('data', (chunk) => hash.update(chunk));
-            stream.on('end', () => resolve(hash.digest('hex')));
-        });
+        const hash = crypto.createHash(algo);
+        // Wait for the file descriptor to close before callers replace the file.
+        await pipeline(fs.createReadStream(filePath), hash);
+        return hash.digest('hex');
     }
 
     /**

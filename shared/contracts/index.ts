@@ -1,4 +1,4 @@
-export type { LauncherAPI, LauncherLaunchOptions, LauncherProgressEvent, LauncherVersionListResponse } from './launcher';
+export type { LauncherAPI, LauncherLaunchOptions, LauncherProgressEvent, LauncherSessionSnapshot, LauncherVersionListResponse } from './launcher';
 export { PROVIDER_CATALOG_CHANNELS } from './providerCatalog';
 export type {
   ProviderCatalogAPI,
@@ -25,6 +25,8 @@ export { JAVA_RUNTIME_CHANNELS } from './javaRuntime';
 export type {
   JavaRuntimeAPI,
   JavaRuntimeChannel,
+  JavaRuntimeGetRequest,
+  JavaRuntimeGetResponse,
   JavaRuntimeInstallationDto,
   JavaRuntimeSelectRequest,
   JavaRuntimeSelectResponse,

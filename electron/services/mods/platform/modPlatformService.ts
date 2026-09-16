@@ -1,5 +1,6 @@
 import path from 'node:path';
 import os from 'node:os';
+import { randomUUID } from 'node:crypto';
 import fs from 'fs-extra';
 import { download } from '@xmcl/file-transfer';
 import { ModrinthV2Client } from '@xmcl/modrinth';
@@ -14,7 +15,7 @@ import { pickPrimaryModrinthFile } from './modrinthUtils';
 import { InstanceManifestManager } from '../../instances/manifestManager';
 import { openValidatedZip } from '../../../security/archivePolicy';
 import { fetchPublicHttpsUrl } from '../../../security/remoteUrls';
-import { assertChildName } from '../../../security/pathGuards';
+import { assertChildName, resolvePathWithinRoot } from '../../../security/pathGuards';
 import { parseCurseForgeManifest } from '../../modpacks/parsers/curseforgeParser';
 import { parseModrinthManifest } from '../../modpacks/parsers/modrinthParser';
 import {
@@ -474,9 +475,7 @@ export class ModPlatformService {
         }
       }
 
-      const tempDestination = guidedContentType
-        ? path.join(destDir, `.${filename}.burrow-download`)
-        : destination;
+      const tempDestination = path.join(destDir, `.${filename}.burrow-download-${randomUUID()}`);
 
       try {
         if (guidedContentType && await fs.pathExists(tempDestination)) {
@@ -527,30 +526,30 @@ export class ModPlatformService {
           ]);
         }
 
+        await fs.remove(tempDestination).catch(() => undefined);
         throw error;
       }
 
-      // Track installation
-      try {
-        if (instanceDir && isManifestManagedContentType(contentType)) {
-          this.manifestManager.addMod(instanceDir, {
-            fileName: filename,
-            source: trackSource,
-            projectId: trackProjectId,
-            versionId: trackVersionId,
-            sha1,
-            installDate: new Date().toISOString()
-          });
-        }
-      } catch (e) {
-        console.error('Failed to save mod manifest:', e);
+      if (instanceDir && isManifestManagedContentType(contentType)) {
+        const installedFileName = await this.replaceTrackedModFile({
+          instanceDir,
+          temporaryPath: tempDestination,
+          filename,
+          source: trackSource,
+          projectId: trackProjectId,
+          versionId: trackVersionId,
+          sha1,
+        });
+        return {
+          destination: path.join(destDir, installedFileName),
+          filename: installedFileName,
+          usedUrl: primaryUrl,
+        };
+      } else {
+        await fs.move(tempDestination, destination, { overwrite: true });
       }
 
-      return {
-        destination,
-        filename,
-        usedUrl: primaryUrl,
-      };
+      return { destination, filename, usedUrl: primaryUrl };
     };
 
     if (req.platform === 'modrinth') {
@@ -861,6 +860,70 @@ export class ModPlatformService {
         sha1: f.hashes?.sha1,
       })),
     }));
+  }
+
+  private async replaceTrackedModFile(params: {
+    instanceDir: string;
+    temporaryPath: string;
+    filename: string;
+    source: 'modrinth' | 'curseforge';
+    projectId: string;
+    versionId: string;
+    sha1?: string;
+  }): Promise<string> {
+    const previous = this.manifestManager.findMod(params.instanceDir, params.source, params.projectId);
+    const backups: Array<{ original: string; backup: string }> = [];
+    let published = false;
+    let destination: string | undefined;
+    try {
+      const modsDirectory = resolvePathWithinRoot(params.instanceDir, 'mods', 'Mods directory');
+      const providerFileName = assertChildName(params.filename, 'Provider filename');
+      let targetFileName = providerFileName;
+      let previousPath: string | undefined;
+      let disabledPreviousPath: string | undefined;
+      if (previous) {
+        const previousFileName = assertChildName(previous.fileName, 'Tracked mod filename');
+        const trackedDisabled = previousFileName.endsWith('.disabled');
+        const enabledPreviousFileName = trackedDisabled
+          ? assertChildName(previousFileName.slice(0, -'.disabled'.length), 'Tracked mod filename')
+          : previousFileName;
+        previousPath = resolvePathWithinRoot(modsDirectory, enabledPreviousFileName, 'Tracked mod file path');
+        const disabledPreviousFileName = assertChildName(`${enabledPreviousFileName}.disabled`, 'Disabled tracked mod filename');
+        disabledPreviousPath = resolvePathWithinRoot(modsDirectory, disabledPreviousFileName, 'Disabled tracked mod file path');
+        if (trackedDisabled || (!await fs.pathExists(previousPath) && await fs.pathExists(disabledPreviousPath))) {
+          targetFileName = assertChildName(`${providerFileName}.disabled`, 'Disabled provider filename');
+        }
+      }
+      destination = resolvePathWithinRoot(modsDirectory, targetFileName, 'New mod file path');
+      const candidates = new Set<string>([destination, ...(previousPath ? [previousPath] : []), ...(disabledPreviousPath ? [disabledPreviousPath] : [])]);
+      for (const original of candidates) {
+        if (!await fs.pathExists(original)) continue;
+        const backup = path.join(path.dirname(original), `.${path.basename(original)}.burrow-backup-${randomUUID()}`);
+        await fs.move(original, backup, { overwrite: false });
+        backups.push({ original, backup });
+      }
+      await fs.move(params.temporaryPath, destination, { overwrite: false });
+      published = true;
+      this.manifestManager.addMod(params.instanceDir, {
+        fileName: targetFileName,
+        source: params.source,
+        projectId: params.projectId,
+        versionId: params.versionId,
+        sha1: params.sha1,
+        installDate: new Date().toISOString(),
+      });
+    } catch (error) {
+      if (published && destination) await fs.remove(destination).catch(() => undefined);
+      for (const { original, backup } of backups.reverse()) {
+        if (await fs.pathExists(backup)) await fs.move(backup, original, { overwrite: false });
+      }
+      await fs.remove(params.temporaryPath).catch(() => undefined);
+      throw error;
+    }
+    // The manifest write is the commit boundary. A failed cleanup can leave
+    // harmless hidden backups, but must not roll back the published version.
+    await Promise.all(backups.map(async ({ backup }) => await fs.remove(backup).catch(() => undefined)));
+    return path.basename(destination!);
   }
 
   /**

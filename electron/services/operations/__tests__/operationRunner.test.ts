@@ -63,6 +63,36 @@ describe('OperationRunner', () => {
     await expect(runner.waitFor(queued.id)).resolves.toMatchObject({ status: 'cancelled' });
     expect(new OperationJournal(rootPath).get(queued.id)).toMatchObject({ status: 'cancelled' });
   });
+
+  it('rechecks canonical state after a staged delete releases the root writer scope', async () => {
+    const rootPath = fs.mkdtempSync(path.join(os.tmpdir(), 'burrow-content-after-delete-'));
+    tempDirs.push(rootPath);
+    let releaseDelete: (() => void) | undefined;
+    const deleteGate = new Promise<void>((resolve) => { releaseDelete = resolve; });
+    let deleted = false;
+    const record = coordinatorRecord();
+    const runner = new OperationRunner([{
+      kind: 'delete',
+      run: async () => { await deleteGate; deleted = true; return { status: 'succeeded', instanceId: 'source' }; },
+    }], {
+      rootMutationCoordinator: {
+        forRoot: () => ({
+          read: async () => ({ status: 'ready' as const, snapshot: { selectedId: deleted ? null : record.id, records: deleted ? [] : [record] } }),
+          prepare: async () => ({ status: 'ready' as const, source: 'canonical' as const, snapshot: { selectedId: record.id, records: [record] } }),
+          execute: async () => ({ status: 'committed' as const, snapshot: { selectedId: record.id, records: [record] } }),
+        }),
+      },
+    });
+    const operation = runner.start({ kind: 'delete', rootPath, instanceId: 'source' });
+    await vi.waitFor(() => expect(runner.get(operation.id)?.status).toBe('running'));
+    const mutation = vi.fn();
+    const queuedMutation = runner.runContentMutation(rootPath, 'source', async () => { mutation(); });
+
+    releaseDelete?.();
+    await runner.waitFor(operation.id);
+    await expect(queuedMutation).rejects.toThrow('Canonical instance does not exist: source');
+    expect(mutation).not.toHaveBeenCalled();
+  });
 });
 
 function seed(rootPath: string): void {
@@ -80,13 +110,7 @@ function seed(rootPath: string): void {
 }
 
 function coordinator() {
-  const record = {
-    id: 'source',
-    name: 'Source',
-    source: { source: 'local' as const, createdAt: '2026-08-04T00:00:00.000Z', updatedAt: '2026-08-04T00:00:00.000Z' },
-    config: { runtime: { minecraftVersion: '1.20.1', modLoader: { type: 'vanilla' as const } } },
-    summary: { minecraftVersion: '1.20.1', modLoader: { type: 'vanilla' as const } },
-  };
+  const record = coordinatorRecord();
   return {
     forRoot: () => ({
       read: async () => ({ status: 'ready' as const, snapshot: { selectedId: record.id, records: [record] } }),
@@ -98,5 +122,15 @@ function coordinator() {
           : { selectedId: record.id, records: [record] },
       }),
     }),
+  };
+}
+
+function coordinatorRecord() {
+  return {
+    id: 'source',
+    name: 'Source',
+    source: { source: 'local' as const, createdAt: '2026-08-04T00:00:00.000Z', updatedAt: '2026-08-04T00:00:00.000Z' },
+    config: { runtime: { minecraftVersion: '1.20.1', modLoader: { type: 'vanilla' as const } } },
+    summary: { minecraftVersion: '1.20.1', modLoader: { type: 'vanilla' as const } },
   };
 }

@@ -42,7 +42,8 @@ describe('SettingsWorkspace', () => {
     expect(screen.getByTestId('settings-workspace')).toBeTruthy();
     expect(screen.getByRole('heading', { name: 'Settings' })).toBeTruthy();
     expect(screen.queryByRole('dialog')).toBeNull();
-    expect(screen.getByRole('tablist').getAttribute('aria-orientation')).toBe('vertical');
+    // The shared matchMedia fixture models the compact viewport.
+    expect(screen.getByRole('tablist').getAttribute('aria-orientation')).toBe('horizontal');
     expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
     expect(document.querySelectorAll('[role="tabpanel"]')).toHaveLength(6);
     expect(screen.getByText('Appearance content')).toBeTruthy();

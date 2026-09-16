@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { ipcMain } from 'electron';
 import {
   JAVA_RUNTIME_CHANNELS,
+  type JavaRuntimeGetRequest,
   type JavaRuntimeInstallationDto,
   type JavaRuntimeSelectRequest,
 } from '../../../shared/contracts/javaRuntime';
@@ -67,6 +68,14 @@ class JavaInstallationRegistry {
     return this.entriesByRoot.get(root)?.get(id);
   }
 
+  public findIdByExecutable(root: LauncherRoot, executable: string | undefined): string | null {
+    if (!executable) return null;
+    for (const [id, installation] of this.entriesByRoot.get(root) ?? []) {
+      if (installation.executable === executable) return id;
+    }
+    return null;
+  }
+
   private isUsable(detection: DetectedJava): boolean {
     return detection.valid
       && typeof detection.path === 'string'
@@ -93,11 +102,23 @@ function validateSelectionRequest(value: unknown): JavaRuntimeSelectRequest {
   }
 
   if (typeof record.instanceId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.instanceId)
-    || typeof record.installationId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.installationId)) {
+    || (record.installationId !== null && (typeof record.installationId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.installationId)))) {
     throw new Error('Java runtime selection request installation ID is invalid.');
   }
 
-  return { instanceId: record.instanceId, installationId: record.installationId };
+  return { instanceId: record.instanceId, installationId: record.installationId as string | null };
+}
+
+function validateGetRequest(value: unknown): JavaRuntimeGetRequest {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    throw new Error('Java runtime selection request must be an object.');
+  }
+  const record = value as Record<string, unknown>;
+  if (Object.keys(record).some((key) => key !== 'instanceId')
+    || typeof record.instanceId !== 'string' || !INSTALLATION_ID_PATTERN.test(record.instanceId)) {
+    throw new Error('Java runtime selection request instance ID is invalid.');
+  }
+  return { instanceId: record.instanceId };
 }
 
 /** Registers the path-free Java scan and canonical selection IPC boundary. */
@@ -119,18 +140,49 @@ export function registerJavaRuntimeHandlers(deps: JavaRuntimeHandlerDependencies
     }
   });
 
+  ipcMain.removeHandler(JAVA_RUNTIME_CHANNELS.get);
+  ipcMain.handle(JAVA_RUNTIME_CHANNELS.get, async (_event, request: unknown) => {
+    const parsed = validateGetRequest(request);
+    try {
+      const root = await deps.getDefaultInstanceRoot();
+      const state = await deps.application.read(root);
+      if (state.status !== 'ready') throw unavailable();
+      const record = state.snapshot.records.find((candidate) => candidate.id === parsed.instanceId);
+      if (!record) throw unavailable();
+      return { installationId: registry.findIdByExecutable(root, record.config.java?.executable) };
+    } catch (error) {
+      if (error instanceof Error && error.message === unavailable().message) throw error;
+      throw new Error('Java runtime selection is unavailable.');
+    }
+  });
+
   ipcMain.removeHandler(JAVA_RUNTIME_CHANNELS.select);
   ipcMain.handle(JAVA_RUNTIME_CHANNELS.select, async (_event, request: unknown) => {
     const parsed = validateSelectionRequest(request);
     try {
       const root = await deps.getDefaultInstanceRoot();
-      const installation = registry.resolve(root, parsed.installationId);
-      if (!installation) throw unavailable();
+      let installation: AuthorizedInstallation | undefined;
+      if (parsed.installationId !== null) {
+        installation = registry.resolve(root, parsed.installationId);
+        if (!installation) throw unavailable();
+      }
       const state = await deps.application.read(root);
       if (state.status !== 'ready') throw unavailable();
       const record = state.snapshot.records.find((candidate) => candidate.id === parsed.instanceId);
       if (!record) throw unavailable();
 
+      if (parsed.installationId === null) {
+        const configWithoutJava = { ...record.config };
+        delete configWithoutJava.java;
+        await deps.application.execute(root, {
+          version: 1,
+          type: 'save-config',
+          id: record.id,
+          config: configWithoutJava,
+        });
+        return { status: 'auto' as const };
+      }
+      if (!installation) throw unavailable();
       await deps.application.execute(root, {
         version: 1,
         type: 'save-config',

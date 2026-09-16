@@ -17,6 +17,7 @@ export const allowedIpcChannels = [
 
   // launcher
   'launcher:launch',
+  'launcher:getSessionState',
   'launcher:getVersionList',
   'launcher:getForgeSupportedVersions',
   'launcher:getFabricSupportedVersions',
@@ -31,6 +32,7 @@ export const allowedIpcChannels = [
   'launcher:log',
   'launcher:progress',
   'launcher:close',
+  'launcher:sessionState',
 
   // mods
   'mods:searchMods',
@@ -54,6 +56,7 @@ export const allowedIpcChannels = [
 
   // Java runtime
   'javaRuntime:scan',
+  'javaRuntime:get',
   'javaRuntime:select',
 
   // first-run and support diagnostics

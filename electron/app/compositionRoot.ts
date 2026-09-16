@@ -70,7 +70,7 @@ export type MainComposition = HandlerComposition & Readonly<{
 }>;
 
 export type CompositionShutdownReport = Readonly<{
-  failures: readonly { owner: 'operations' | 'instances' | 'friend-tunnel' | 'lan-discovery' | 'port-mapping'; message: string }[];
+  failures: readonly { owner: 'launcher' | 'operations' | 'instances' | 'friend-tunnel' | 'lan-discovery' | 'port-mapping'; message: string }[];
 }>;
 
 export type CompositionRootOptions = Readonly<{
@@ -154,7 +154,11 @@ export function createCompositionRoot(options: CompositionRootOptions): MainComp
   const instanceExporter = new InstanceExporterService(application, archiveContent);
   const operations = new OperationRunner([
     createDuplicateOperationAdapter(),
-    createImportOperationAdapter(),
+    createImportOperationAdapter({
+      installManifestContent: async (stagingRoot, destinationId, manifest) => {
+        return await manifestContentInstaller.install(stagingRoot, destinationId, manifest, modPlatforms);
+      },
+    }),
     createShareImportOperationAdapter({
       resolveShareCode: async (code) => await shareService.resolveShareCode(code),
       stageManifest: async (stagingRoot, destinationId, manifest) => {
@@ -235,6 +239,7 @@ export function createCompositionRoot(options: CompositionRootOptions): MainComp
     async recoverOperations(): Promise<void> { await recoverOperationsAndEnsureClassic(operations, defaultRootPath); },
     async shutdown(): Promise<CompositionShutdownReport> {
       const failures: Array<CompositionShutdownReport['failures'][number]> = [];
+      await settleOwner('launcher', () => initializedLauncher.beginShutdown(), failures);
       await settleOwner('operations', () => operations.beginShutdown(), failures);
       await settleOwner('instances', () => application.beginShutdown(), failures);
       await Promise.all([

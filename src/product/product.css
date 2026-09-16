@@ -47,8 +47,8 @@
 }
 @media(prefers-reduced-motion:reduce) { .next-navigation nav button { transition:none; } }
 
-.next-launch-fields { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(160px,.8fr); gap:16px; align-items:start; }
-.next-launch-fields>div:last-child { padding-top:22px; }
+.next-launch-fields { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.8fr); gap:16px; align-items:end; }
+.next-launch-fields>div { min-width:0; }
 .next-loader-switch { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; padding:4px; border:1px solid rgb(var(--border-default)); border-radius:10px; background:rgb(var(--bg-app)); }
 .next-loader-switch button { min-height:40px; padding:8px; border:1px solid transparent; border-radius:6px; font-size:13px; color:rgb(var(--text-secondary)); transition:background-color .15s,color .15s; }
 .next-loader-switch button[aria-pressed="true"] { background:rgb(var(--bg-card)); color:rgb(var(--text-main)); border-color:rgb(var(--border-default)); box-shadow:0 1px 3px #0001; }

@@ -62,11 +62,13 @@ describe('java runtime IPC handlers', () => {
     const deps = createDependencies();
     registerJavaRuntimeHandlers(deps as never);
     const scan = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.scan);
+    const get = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.get);
     const select = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.select);
 
     const installations = await scan?.({}, {});
     expect(installations).toEqual([{ id: 'installation-1', version: '21.0.6', majorVersion: 21, arch: 'x64' }]);
     expect(JSON.stringify(installations)).not.toContain('/private/java');
+    await expect(get?.({}, { instanceId: 'alpha' })).resolves.toEqual({ installationId: null });
 
     await expect(select?.({}, { instanceId: 'alpha', installationId: 'installation-1' })).resolves.toEqual({ status: 'selected' });
     expect(deps.application.execute).toHaveBeenCalledWith(rootA, {
@@ -141,5 +143,32 @@ describe('java runtime IPC handlers', () => {
     await select?.({}, { instanceId: 'beta', installationId: 'installation-1' });
 
     expect(deps.application.execute).toHaveBeenCalledWith(rootA, expect.objectContaining({ id: 'beta' }));
+  });
+
+  it('returns a persisted selection as an opaque ID after scan and clears it for Auto', async () => {
+    const deps = createDependencies();
+    const state = selectedState();
+    deps.application.read.mockResolvedValue({
+      ...state,
+      snapshot: {
+        ...state.snapshot,
+        records: [{
+          ...state.snapshot.records[0],
+          config: { ...state.snapshot.records[0].config, java: { executable: '/private/java/bin/java' } } as never,
+        }],
+      },
+    });
+    registerJavaRuntimeHandlers(deps as never);
+    const scan = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.scan);
+    const get = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.get);
+    const select = mocked.handlers.get(JAVA_RUNTIME_CHANNELS.select);
+
+    await scan?.({}, {});
+    await expect(get?.({}, { instanceId: 'alpha' })).resolves.toEqual({ installationId: 'installation-1' });
+    await expect(select?.({}, { instanceId: 'alpha', installationId: null })).resolves.toEqual({ status: 'auto' });
+    expect(deps.application.execute).toHaveBeenLastCalledWith(rootA, expect.objectContaining({
+      id: 'alpha',
+      config: expect.not.objectContaining({ java: expect.anything() }),
+    }));
   });
 });

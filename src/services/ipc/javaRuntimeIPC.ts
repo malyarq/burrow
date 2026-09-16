@@ -1,4 +1,4 @@
-import type { BurrowApi, JavaRuntimeSelectRequest } from '@shared/contracts';
+import type { BurrowApi, JavaRuntimeGetRequest, JavaRuntimeSelectRequest } from '@shared/contracts';
 import { toIpcError } from './ipcError';
 
 type JavaRuntimeApi = NonNullable<BurrowApi['javaRuntime']>;
@@ -23,6 +23,7 @@ async function call<T>(method: string, fn: () => Promise<T>): Promise<T> {
 export const javaRuntimeIPC = {
   isAvailable: () => typeof window !== 'undefined' && Boolean(window.api?.javaRuntime),
   scan: () => call('scan', () => api().scan()),
+  get: (request: JavaRuntimeGetRequest) => call('get', () => api().get(request)),
   select: (request: JavaRuntimeSelectRequest) => call('select', () => api().select(request)),
 };
 

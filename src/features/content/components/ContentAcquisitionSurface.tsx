@@ -61,6 +61,7 @@ export function ContentAcquisitionSurface<
   actionsClassName?: string;
 }) {
   const selectedCount = state.selections.size;
+  const isMutating = state.isInstalling || state.isImportingLocal;
   const isInitialLoading = state.searchStatus === 'loading' && state.items.length === 0;
   const showEmpty = state.searchStatus === 'ready' && state.items.length === 0;
   const outcomeTone = state.outcome?.isPresentationSuccess
@@ -72,13 +73,14 @@ export function ContentAcquisitionSurface<
   return (
     <section
       className={className}
-      aria-busy={state.searchStatus === 'loading' || state.isInstalling || undefined}
+      aria-busy={state.searchStatus === 'loading' || isMutating || undefined}
       data-secondary-content-workspace="shared"
     >
       <label className="block space-y-1.5">
         <span className="control-label">{labels.search}</span>
         <input
           type="search"
+          disabled={isMutating}
           value={state.query}
           onChange={(event) => state.setQuery(event.target.value)}
           aria-label={labels.search}
@@ -87,7 +89,7 @@ export function ContentAcquisitionSurface<
         />
       </label>
 
-      {controls}
+      {controls ? <fieldset disabled={isMutating} className="min-w-0">{controls}</fieldset> : null}
 
       <div className={resultsClassName} data-testid={testIds?.resultsViewport}>
         {isInitialLoading ? (
@@ -126,7 +128,7 @@ export function ContentAcquisitionSurface<
                     <input
                       type="checkbox"
                       checked={checked}
-                      disabled={state.isInstalling || resolving}
+                      disabled={isMutating || resolving}
                       onChange={(event) => { void state.toggle(item, event.target.checked); }}
                       aria-label={`${item.label}${checked ? `, ${labels.selected}` : ''}`}
                       className="mt-1 h-4 w-4"
@@ -187,7 +189,7 @@ export function ContentAcquisitionSurface<
               </ul>
             ) : null}
             {state.outcome.retainedSelectionIds.length > 0 ? (
-              <Button className="mt-3" variant="secondary" size="sm" onClick={() => { void state.retryFailed(); }}>
+              <Button disabled={isMutating} className="mt-3" variant="secondary" size="sm" onClick={() => { void state.retryFailed(); }}>
                 {labels.retry}
               </Button>
             ) : null}
@@ -200,6 +202,7 @@ export function ContentAcquisitionSurface<
             variant="secondary"
             onClick={() => { void state.importLocal(); }}
             isLoading={state.isImportingLocal}
+            disabled={isMutating}
             data-testid={testIds?.localImport}
           >
             {labels.localImport}
@@ -207,7 +210,7 @@ export function ContentAcquisitionSurface<
         ) : null}
         <Button
           onClick={() => { void state.installSelected(); }}
-          disabled={selectedCount === 0 || state.resolvingIds.size > 0}
+          disabled={isMutating || selectedCount === 0 || state.resolvingIds.size > 0}
           isLoading={state.isInstalling}
         >
           {state.isInstalling ? labels.installing : labels.install}

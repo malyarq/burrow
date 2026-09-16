@@ -61,6 +61,10 @@ export function useContentAcquisitionState<
   const runtimeRef = useRef(runtime);
   const searchGenerationRef = useRef(0);
   const selectionGenerationRef = useRef(new Map<string, number>());
+  const selectionEpochRef = useRef(0);
+  const runtimeEpochRef = useRef(0);
+  const initialFiltersRef = useRef(initialFilters);
+  initialFiltersRef.current = initialFilters;
   const checkedRef = useRef<ReadonlySet<string>>(new Set());
   const selectionsRef = useRef<ReadonlyMap<string, Selection>>(new Map());
   const installingRef = useRef(false);
@@ -69,6 +73,7 @@ export function useContentAcquisitionState<
   runtimeRef.current = runtime;
 
   const runtimeKey = contentRuntimeKey(runtime);
+  const previousRuntimeKeyRef = useRef(runtimeKey);
 
   const publishChecked = useCallback((next: ReadonlySet<string>) => {
     checkedRef.current = next;
@@ -81,11 +86,22 @@ export function useContentAcquisitionState<
   }, []);
 
   const clearSelection = useCallback(() => {
+    selectionEpochRef.current += 1;
     selectionGenerationRef.current.clear();
     publishChecked(new Set());
     publishSelections(new Map());
     setResolvingIds(new Set());
   }, [publishChecked, publishSelections]);
+
+  useEffect(() => {
+    if (previousRuntimeKeyRef.current === runtimeKey) return;
+    previousRuntimeKeyRef.current = runtimeKey;
+    runtimeEpochRef.current += 1;
+    clearSelection();
+    setFilters({ ...initialFiltersRef.current });
+    setOutcome(null);
+    lastMutationRef.current = null;
+  }, [runtimeKey, clearSelection]);
 
   useEffect(() => {
     const selectionGenerations = selectionGenerationRef.current;
@@ -143,6 +159,7 @@ export function useContentAcquisitionState<
   }, [executeSearch]);
 
   const setQuery = useCallback((nextQuery: string) => {
+    if (installingRef.current || importingLocalRef.current) return;
     searchGenerationRef.current += 1;
     setQueryState(nextQuery);
     clearSelection();
@@ -152,6 +169,7 @@ export function useContentAcquisitionState<
   }, [clearSelection]);
 
   const setFilter = useCallback((key: string, value: string) => {
+    if (installingRef.current || importingLocalRef.current) return;
     searchGenerationRef.current += 1;
     setFilters((current) => ({ ...current, [key]: value }));
     clearSelection();
@@ -161,6 +179,8 @@ export function useContentAcquisitionState<
   }, [clearSelection]);
 
   const toggle = useCallback(async (item: Item, checked: boolean) => {
+    if (installingRef.current || importingLocalRef.current) return;
+    const epoch = selectionEpochRef.current;
     const nextGeneration = (selectionGenerationRef.current.get(item.id) ?? 0) + 1;
     selectionGenerationRef.current.set(item.id, nextGeneration);
 
@@ -187,18 +207,19 @@ export function useContentAcquisitionState<
     try {
       const resolved = await adapter.resolveSelection({ item, filters, runtime: runtimeRef.current });
       if (!mountedRef.current
+        || epoch !== selectionEpochRef.current
         || selectionGenerationRef.current.get(item.id) !== nextGeneration
         || !checkedRef.current.has(item.id)) return;
       const nextSelections = new Map(selectionsRef.current).set(item.id, resolved);
       publishSelections(nextSelections);
     } catch (nextError) {
-      if (!mountedRef.current || selectionGenerationRef.current.get(item.id) !== nextGeneration) return;
+      if (!mountedRef.current || epoch !== selectionEpochRef.current || selectionGenerationRef.current.get(item.id) !== nextGeneration) return;
       const withoutFailed = new Set(checkedRef.current);
       withoutFailed.delete(item.id);
       publishChecked(withoutFailed);
       setError(nextError);
     } finally {
-      if (mountedRef.current && selectionGenerationRef.current.get(item.id) === nextGeneration) {
+      if (mountedRef.current && epoch === selectionEpochRef.current && selectionGenerationRef.current.get(item.id) === nextGeneration) {
         setResolvingIds((current) => {
           const next = new Set(current);
           next.delete(item.id);
@@ -223,18 +244,19 @@ export function useContentAcquisitionState<
   }, [publishChecked, publishSelections]);
 
   const install = useCallback(async (requestedSelections: readonly Selection[]) => {
-    if (installingRef.current || requestedSelections.length === 0) return null;
+    if (installingRef.current || importingLocalRef.current || requestedSelections.length === 0) return null;
     lastMutationRef.current = 'catalog';
+    const epoch = runtimeEpochRef.current;
     installingRef.current = true;
     setIsInstalling(true);
     setError(null);
     try {
       const nextOutcome = await adapter.install({ selections: requestedSelections, runtime: runtimeRef.current });
-      if (!mountedRef.current) return null;
+      if (!mountedRef.current || epoch !== runtimeEpochRef.current) return null;
       applyOutcome(nextOutcome);
       return nextOutcome;
     } catch (nextError) {
-      if (mountedRef.current) setError(nextError);
+      if (mountedRef.current && epoch === runtimeEpochRef.current) setError(nextError);
       return null;
     } finally {
       installingRef.current = false;
@@ -261,18 +283,19 @@ export function useContentAcquisitionState<
     const localImporter = adapter.importLocal as ((input: {
       runtime: ContentRuntimeInput<K>;
     }) => Promise<AcquisitionOutcome>) | undefined;
-    if (!localImporter || importingLocalRef.current) return null;
+    if (!localImporter || importingLocalRef.current || installingRef.current) return null;
     lastMutationRef.current = 'local';
+    const epoch = runtimeEpochRef.current;
     importingLocalRef.current = true;
     setIsImportingLocal(true);
     setError(null);
     try {
       const nextOutcome = await localImporter({ runtime: runtimeRef.current });
-      if (!mountedRef.current) return null;
+      if (!mountedRef.current || epoch !== runtimeEpochRef.current) return null;
       applyOutcome(nextOutcome);
       return nextOutcome;
     } catch (nextError) {
-      if (mountedRef.current) setError(nextError);
+      if (mountedRef.current && epoch === runtimeEpochRef.current) setError(nextError);
       return null;
     } finally {
       importingLocalRef.current = false;
@@ -285,6 +308,7 @@ export function useContentAcquisitionState<
   ), [importLocal, installSelected]);
 
   const reset = useCallback(() => {
+    if (installingRef.current || importingLocalRef.current) return;
     searchGenerationRef.current += 1;
     setQueryState(initialQuery);
     setDebouncedQuery(initialQuery);

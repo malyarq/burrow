@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { FolderOpen, ImageIcon, RefreshCw, Trash2 } from 'lucide-react';
 import { useSettings } from '../../../contexts/SettingsContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -24,30 +24,41 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState<unknown | null>(null);
     const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+    const generationRef = useRef(0);
+    const lifetimeRef = useRef(0);
+    const contextRef = useRef({ instanceId, t, toast });
+    contextRef.current = { instanceId, t, toast };
 
     const loadScreenshots = useCallback(async () => {
+        const generation = ++generationRef.current;
         setLoading(true);
         setLoadError(null);
         try {
             const list = await screenshotsIPC.list(instanceId);
+            if (generation !== generationRef.current || instanceId !== contextRef.current.instanceId) return;
             setScreenshots(list);
         } catch (error) {
+            if (generation !== generationRef.current || instanceId !== contextRef.current.instanceId) return;
             console.error('Failed to load screenshots:', error);
             setLoadError(error);
-            toast.error(t('screenshots.loadError'));
+            contextRef.current.toast.error(contextRef.current.t('screenshots.loadError'));
         } finally {
-            setLoading(false);
+            if (generation === generationRef.current) setLoading(false);
         }
-    }, [instanceId, t, toast]);
+    }, [instanceId]);
     const screenshotsErrorDescription = loadError
         ? toDisplayErrorMessage(loadError, t('error.inline_fallback'))
         : t('error.inline_fallback');
 
     useEffect(() => {
+        setLightboxIndex(null);
+        setScreenshots([]);
         void loadScreenshots();
+        return () => { generationRef.current += 1; lifetimeRef.current += 1; };
     }, [loadScreenshots]);
 
     const handleDelete = useCallback(async (screenshot: Screenshot): Promise<boolean> => {
+        const lifetime = lifetimeRef.current;
         const confirmed = await confirm.confirm({
             title: t('screenshots.deleteTitle'),
             message: t('screenshots.deleteConfirm', { name: screenshot.name }),
@@ -56,12 +67,15 @@ export function ScreenshotsTab({ instanceId }: ScreenshotsTabProps) {
             variant: 'danger',
         });
 
-        if (!confirmed) {
+        if (!confirmed || lifetime !== lifetimeRef.current || instanceId !== contextRef.current.instanceId) {
             return false;
         }
 
         try {
             await screenshotsIPC.delete(screenshot.name, instanceId);
+            if (lifetime !== lifetimeRef.current || instanceId !== contextRef.current.instanceId) return true;
+            generationRef.current += 1;
+            setLoading(false);
             setScreenshots((prev) => prev.filter((item) => item.name !== screenshot.name));
             toast.success(t('screenshots.deleteSuccess'));
             return true;

@@ -4,6 +4,7 @@ import { assertChildName, resolvePathWithinRoot } from '../../security/pathGuard
 import { getModpackDir, resolveLauncherRootPath } from '../instances/paths';
 import type { ModLoaderType, ModpackConfig } from '../instances/types';
 import { stageArchiveImport } from '../modpacks/importers/localInstaller';
+import type { ModpackManifest } from '../../../shared/types/modpack';
 import { readCanonicalRecordFromContent } from './canonicalRecord';
 import { StagingWorkspace } from './stagingWorkspace';
 import type { OperationAdapter, OperationContext, OperationResult } from './operationTypes';
@@ -12,6 +13,7 @@ type ImportFault = 'extraction' | 'validation' | 'publish' | 'control-plane';
 
 export type ImportOperationOptions = {
   faults?: Partial<Record<ImportFault, () => void>>;
+  installManifestContent?: (stagingRoot: string, destinationId: string, manifest: ModpackManifest) => Promise<readonly { index: number; reason: string }[]>;
 };
 
 export function createImportOperationAdapter(options: ImportOperationOptions = {}): OperationAdapter {
@@ -34,6 +36,18 @@ export function createImportOperationAdapter(options: ImportOperationOptions = {
         throwIfCancelled(context);
         const staged = await stageArchiveImport(input.filePath, workspace.stagedModpack(destinationId));
         missing = staged.missing;
+        if (staged.format === 'curseforge' && staged.manifest.files.length > 0) {
+          if (!options.installManifestContent) {
+            throw new Error('CurseForge archive content cannot be imported because the CurseForge provider is unavailable. Configure a CurseForge API key and retry; your existing files were not changed.');
+          }
+          const failures = await options.installManifestContent(workspace.stagingRoot, destinationId, staged.manifest);
+          for (const failure of failures) {
+            const file = staged.manifest.files[failure.index];
+            const label = `curseforge:${file?.projectID ?? 'missing'}/${file?.fileID ?? 'missing'}`;
+            if (file?.required ?? true) throw new Error(`Required CurseForge file could not be staged: ${label}: ${failure.reason}`);
+            missing.push(label);
+          }
+        }
         const loaderId = staged.manifest.minecraft.modLoaders[0]?.id;
         if (parseLoader(loaderId)?.type === 'quilt') throw new Error('Quilt modpacks are not supported');
         const config = buildConfig(destinationId, input.name?.trim() || staged.manifest.name, staged.manifest.minecraft.version, loaderId);

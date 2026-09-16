@@ -64,8 +64,46 @@ function mergeThemeConfig(base?: CustomThemeConfig, override?: CustomThemeConfig
   };
 }
 
-export function pruneThemeConfig(config: CustomThemeConfig | null | undefined): CustomThemeConfig {
-  const pruned = pruneThemeValue(config) as CustomThemeConfig | undefined;
+export function pruneThemeConfig(config: unknown): CustomThemeConfig {
+  if (!isRecord(config)) return {};
+  const strings = (value: unknown, keys: readonly string[]) => {
+    if (!isRecord(value)) return {};
+    return Object.fromEntries(keys.flatMap((key) => (
+      typeof value[key] === 'string' && value[key].trim() ? [[key, value[key]]] : []
+    )));
+  };
+  const bounded = (value: unknown, min: number, max: number) => (
+    typeof value === 'number' && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : undefined
+  );
+  const option = <T extends string>(value: unknown, options: readonly T[]): T | undefined => (
+    typeof value === 'string' && options.includes(value as T) ? value as T : undefined
+  );
+  const background = isRecord(config.background) ? config.background : {};
+  const video = isRecord(background.video) ? background.video : {};
+  const particles = isRecord(background.particles) ? background.particles : {};
+  const normalized: CustomThemeConfig = {
+    colors: strings(config.colors, ['background', 'card', 'textMain', 'textSecondary', 'border', 'error']),
+    brand: strings(config.brand, ['mediaBorder', 'mediaFrame', 'markBorder', 'markFrame', 'markGlow', 'shellGlow', 'surfaceCardShadow', 'surfacePanelShadow', 'surfaceSoftShadow', 'wordmarkSpacing', 'wordmarkWeight']),
+    background: {
+      ...strings(background, ['image']),
+      blur: bounded(background.blur, 0, 20),
+      opacity: bounded(background.opacity, 0, 1),
+      type: option(background.type, ['image', 'video', 'particles']),
+      position: option(background.position, ['center', 'cover', 'contain', 'repeat']),
+      video: {
+        ...strings(video, ['url']),
+        volume: bounded(video.volume, 0, 1),
+        loop: typeof video.loop === 'boolean' ? video.loop : undefined,
+        autoPause: typeof video.autoPause === 'boolean' ? video.autoPause : undefined,
+      },
+      particles: {
+        type: option(particles.type, ['snow', 'rain', 'stars']),
+        intensity: bounded(particles.intensity, 10, 100),
+        speed: bounded(particles.speed, 1, 20),
+      },
+    },
+  };
+  const pruned = pruneThemeValue(normalized) as CustomThemeConfig | undefined;
   return pruned ?? {};
 }
 

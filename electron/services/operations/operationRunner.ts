@@ -103,6 +103,22 @@ export class OperationRunner {
     }
   }
 
+  /**
+   * Runs a user-content write in the same root-wide queue and filesystem lock
+   * as staged operations. The instance is checked only after acquiring that
+   * scope, so a queued write cannot recreate content after a delete publishes.
+   */
+  public async runContentMutation<T>(rootPath: string, instanceId: string, work: () => Promise<T>): Promise<T> {
+    this.assertAccepting();
+    return await this.track(this.runRootMutation(rootPath, async (scope) => {
+      const current = scope.current;
+      if (current?.status !== 'ready' || !current.snapshot.records.some((record) => record.id === instanceId)) {
+        throw new Error(`Canonical instance does not exist: ${instanceId}`);
+      }
+      return await work();
+    }));
+  }
+
   public async recoverRegistered(defaultRootPath: string): Promise<void> {
     // A clean installation has no launcher root yet. Recovery owns creating
     // the default root before the registry canonicalizes it with realpath.

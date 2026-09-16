@@ -105,6 +105,7 @@ There is no generic `invoke/send/on/off` capability and no top-level Electron al
 ### 3.2 Launcher
 
 - `launcher:launch`
+- `launcher:getSessionState`
 - `launcher:getVersionList`
 - `launcher:getForgeSupportedVersions`
 - `launcher:getFabricSupportedVersions`
@@ -117,8 +118,11 @@ There is no generic `invoke/send/on/off` capability and no top-level Electron al
 - `launcher:log`
 - `launcher:progress`
 - `launcher:close`
+- `launcher:sessionState`
 
 `window.api.launcher.launch` accepts a logical `instanceId` plus bounded launch preferences. Launcher roots, instance paths, Java executables, VM options, and the retired `modpackId` alias are not part of the renderer contract; main resolves native launch authority from the composition root and canonical instance record.
+
+`launcher:getSessionState` returns the revisioned main-process launch snapshot. `launcher:sessionState` publishes newer snapshots while a renderer is mounted, so a remounted renderer restores preparation or running state and ignores an older query response.
 
 ### 3.3 Mods
 
@@ -155,9 +159,10 @@ On the first registration for a newly created instance, main derives the manifes
 ### 3.4.2 Java runtime
 
 - `javaRuntime:scan`
+- `javaRuntime:get`
 - `javaRuntime:select`
 
-`window.api.javaRuntime` returns opaque, short-lived installation IDs with runtime metadata. Selection accepts `{ instanceId, installationId }` and saves Java to the explicitly identified instance being edited. Java executable details and launcher roots remain in the main process. Subsequent public configuration saves preserve the main-owned Java selection.
+`window.api.javaRuntime` returns opaque, short-lived installation IDs with runtime metadata. After a scan, `get({ instanceId })` returns the opaque ID matching the persisted selection, or `null`; Java executable details and launcher roots remain in the main process. Selection accepts `{ instanceId, installationId }`; `installationId: null` restores automatic Java selection for the explicitly identified instance.
 
 ### 3.4.3 Archive inspection
 

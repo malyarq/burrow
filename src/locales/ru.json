@@ -34,7 +34,7 @@
     "settings.java_custom": "Свой путь...",
     "settings.java_custom_placeholder": "/путь/к/java",
     "settings.warning_32bit_java": "Используется 32-битная Java с объемом памяти больше 1.5 ГБ. Это может вызывать вылеты.",
-    "settings.warning_java_version": "Minecraft {{version}} требует Java {{required}} или новее. Сейчас выбрана Java {{selected}}.",
+    "settings.warning_java_version": "Minecraft {{version}} требует именно Java {{required}}. Сейчас выбрана Java {{selected}}.",
     "settings.warning_low_ram": "Выделено меньше 1 ГБ памяти. Игра может лагать.",
     "settings.runtime_locked": "Запуск уже идет. Эти настройки остаются видимыми для справки и снова станут доступными после завершения текущего запуска.",
     "settings.minecraft_path": "Папка Minecraft",

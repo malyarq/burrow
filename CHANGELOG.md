@@ -4,6 +4,26 @@
 
 This file summarizes current product versions. Git history remains the detailed development record, and [GitHub Releases](https://github.com/malyarq/burrow/releases) is the canonical source for downloadable artifacts.
 
+## [1.0.0-next.5] - 2026-09-16
+
+### Русский
+
+- Исправлен импорт Modrinth и CurseForge: обязательные файлы устанавливаются до публикации, настройки из архива попадают в папку сборки, версия Minecraft и загрузчика берётся из манифеста.
+- Обновление отдельного мода заменяет старый файл с откатом при ошибке и сохраняет отключённое состояние. Изменения контента выполняются в общей очереди с обновлением и удалением сборки.
+- Запуск защищён от повторного нажатия и смены аккаунта во время авторизации. Состояние игры восстанавливается после перезагрузки интерфейса.
+- Исправлены отложенные переходы в каталоге, повторная установка после частичной ошибки и устаревшие ответы списка скриншотов.
+- Выбор Java восстанавливается при открытии настроек; режим Auto снова доступен. Резервная копия включает сохранённые темы, некорректные параметры фона нормализуются.
+- Кнопка «Играть» остаётся внутри окна при увеличенном масштабе. Клавиатурная навигация настроек соответствует расположению вкладок.
+
+### English
+
+- Fixed Modrinth and CurseForge imports: required files are installed before publication, archive overrides reach the instance directory, and Minecraft and loader versions follow the manifest.
+- Mod updates replace the old file with rollback on failure and preserve disabled state. Content changes share the update and deletion queue.
+- Launches reject duplicate requests and account changes during authentication. Game state survives renderer reloads.
+- Fixed delayed catalog navigation, retries after partial installation, and stale screenshot list responses.
+- Java selection is restored when settings open; Auto is available again. Backups include saved themes, and invalid background parameters are normalized.
+- Play stays inside the window at increased UI scale. Settings keyboard navigation follows the responsive tab layout.
+
 ## [1.0.0-next.4] - 2026-09-16
 
 ### Русский

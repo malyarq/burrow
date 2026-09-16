@@ -209,7 +209,9 @@ export async function installForge(options: {
     });
     let profilePatched = false;
     let mcpPrefetchStarted = false;
-    return await runTaskWithProgress(
+    let mcpPrefetch: Promise<void> | undefined;
+    try {
+      return await runTaskWithProgress(
       forgeTask,
       onProgress,
       onLog,
@@ -223,11 +225,11 @@ export async function installForge(options: {
           profilePatched = patchedProfile || patchedVersion;
 
           // Best-effort: start mcp_config prefetch ASAP to avoid multi-minute stalls.
-          // Do NOT await (we don't want to block task scheduler), but log outcome.
+          // Keep the scheduler callback synchronous; drain this work before returning.
           if (!mcpPrefetchStarted) {
             mcpPrefetchStarted = true;
             onLog('[Forge] Prefetching mcp_config in background (to prevent stalls)...');
-            ensureForgeMcpConfig({ rootPath, versionId: forgeVersionId, provider: downloadProvider, onLog })
+            mcpPrefetch = ensureForgeMcpConfig({ rootPath, versionId: forgeVersionId, provider: downloadProvider, onLog })
               .then((ok) => {
                 if (ok) onLog('[Forge] mcp_config prefetch ✓');
               })
@@ -238,7 +240,10 @@ export async function installForge(options: {
           }
         }
       }
-    );
+      );
+    } finally {
+      await mcpPrefetch;
+    }
   };
 
   try {

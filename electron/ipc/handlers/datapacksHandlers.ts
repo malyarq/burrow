@@ -12,6 +12,7 @@ import {
     validateIdentifier,
     validateOptionalBoundedString,
 } from '../validation/privilegedPayloads';
+import { runContentMutation, type ContentMutationGate } from './contentMutation';
 
 function resolveInstancePath(instanceId: unknown): string {
     const safeInstanceId = assertChildName(
@@ -29,7 +30,7 @@ function validateDatapackName(value: unknown): string {
     return assertChildName(validateIdentifier(value, 'Datapack name'), 'Datapack name');
 }
 
-export function registerDatapacksHandlers(deps: { modPlatforms: ModPlatformService }) {
+export function registerDatapacksHandlers(deps: { modPlatforms: ModPlatformService; runContentMutation?: ContentMutationGate }) {
     const { modPlatforms } = deps;
 
     ipcMain.handle('datapacks:search', async (_, query: string, mcVersion?: string) => {
@@ -68,39 +69,37 @@ export function registerDatapacksHandlers(deps: { modPlatforms: ModPlatformServi
     });
 
     ipcMain.handle('datapacks:enableByInstanceId', async (_, instanceId: unknown, worldFolder: unknown, fileName: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeWorldFolder = validateWorldFolder(worldFolder);
         const safeFileName = validateDatapackName(fileName);
-        await datapacksService.enable(
-            resolveInstancePath(instanceId),
-            safeWorldFolder,
-            safeFileName,
-        );
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await datapacksService.enable(resolveInstancePath(safeInstanceId), safeWorldFolder, safeFileName);
+        });
         return { ok: true };
     });
 
     ipcMain.handle('datapacks:disableByInstanceId', async (_, instanceId: unknown, worldFolder: unknown, fileName: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeWorldFolder = validateWorldFolder(worldFolder);
         const safeFileName = validateDatapackName(fileName);
-        await datapacksService.disable(
-            resolveInstancePath(instanceId),
-            safeWorldFolder,
-            safeFileName,
-        );
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await datapacksService.disable(resolveInstancePath(safeInstanceId), safeWorldFolder, safeFileName);
+        });
         return { ok: true };
     });
 
     ipcMain.handle('datapacks:deleteByInstanceId', async (_, instanceId: unknown, worldFolder: unknown, fileName: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeWorldFolder = validateWorldFolder(worldFolder);
         const safeFileName = validateDatapackName(fileName);
-        await datapacksService.delete(
-            resolveInstancePath(instanceId),
-            safeWorldFolder,
-            safeFileName,
-        );
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await datapacksService.delete(resolveInstancePath(safeInstanceId), safeWorldFolder, safeFileName);
+        });
         return { ok: true };
     });
 
     ipcMain.handle('datapacks:installByInstanceId', async (_, instanceId: unknown, worldFolder: unknown, versionId: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeWorldFolder = validateWorldFolder(worldFolder);
         const modrinth = modPlatforms.getModrinthClient();
         if (!modrinth) throw new Error('Modrinth client not available');
@@ -110,12 +109,14 @@ export function registerDatapacksHandlers(deps: { modPlatforms: ModPlatformServi
 
         if (!primaryFile) throw new Error('No file found in version');
 
-        await datapacksService.install(
-            resolveInstancePath(instanceId),
-            safeWorldFolder,
-            primaryFile.url,
-            validateDatapackName(primaryFile.filename),
-        );
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            await datapacksService.install(
+                resolveInstancePath(safeInstanceId),
+                safeWorldFolder,
+                primaryFile.url,
+                validateDatapackName(primaryFile.filename),
+            );
+        });
         return { ok: true };
     });
 }

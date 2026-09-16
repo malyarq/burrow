@@ -34,7 +34,7 @@
     "settings.java_custom": "Custom path...",
     "settings.java_custom_placeholder": "/path/to/java",
     "settings.warning_32bit_java": "You are using 32-bit Java with more than 1.5 GB of RAM. This may cause crashes.",
-    "settings.warning_java_version": "Minecraft {{version}} requires Java {{required}} or newer. Selected: Java {{selected}}.",
+    "settings.warning_java_version": "Minecraft {{version}} requires exactly Java {{required}}. Selected: Java {{selected}}.",
     "settings.warning_low_ram": "Less than 1 GB of RAM is allocated. This may cause lag.",
     "settings.runtime_locked": "Launch is in progress. These settings stay visible for reference and unlock when the current run finishes.",
     "settings.minecraft_path": "Minecraft Directory",

@@ -137,6 +137,8 @@ export function useModpackBrowserCatalog({
   const [openingIdentity, setOpeningIdentity] = useState<string | null>(null);
   const searchGenerationRef = useRef(0);
   const openingIdentityRef = useRef<string | null>(null);
+  const openingGenerationRef = useRef(0);
+  useEffect(() => () => { openingGenerationRef.current += 1; }, []);
   const debouncedQuery = useDebounce(query, 500);
 
   const browserState = useMemo<ModpackBrowserState>(() => ({
@@ -263,6 +265,7 @@ export function useModpackBrowserCatalog({
     const identity = identityOf(modpack);
     if (openingIdentityRef.current) return;
     openingIdentityRef.current = identity;
+    const generation = ++openingGenerationRef.current;
     setOpeningIdentity(identity);
     addToHistory(modpack);
     try {
@@ -270,12 +273,15 @@ export function useModpackBrowserCatalog({
         platform: modpack.platform,
         projectId: modpack.projectId,
       })).map(cloneVersion);
+      if (generation !== openingGenerationRef.current) return;
       onNavigate({ type: 'install', modpack, versions, platform: modpack.platform });
     } catch (error) {
       console.error('Error loading versions:', error);
     } finally {
-      openingIdentityRef.current = null;
-      setOpeningIdentity(null);
+      if (generation === openingGenerationRef.current) {
+        openingIdentityRef.current = null;
+        setOpeningIdentity(null);
+      }
     }
   }, [addToHistory, onNavigate]);
 

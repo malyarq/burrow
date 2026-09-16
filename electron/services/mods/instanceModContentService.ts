@@ -4,12 +4,14 @@ import type { ModpackManifest } from '../../../shared/types/modpack';
 import type { InstanceReadPort, LauncherRootResolver } from '../../domains/instances/ports';
 import { assertChildName, resolvePathWithinRoot } from '../../security/pathGuards';
 import { getModpackDir, resolveApprovedInstancePath, resolveLauncherRootPath } from '../instances/paths';
+import { InstanceManifestManager } from '../instances/manifestManager';
 import { scanModsFolder } from './scanner';
 import type { ModEntry } from './types';
 
 /** Main-only content service scoped once to the composition-owned launcher root. */
 export class InstanceModContentService {
   private readonly rootPath: string;
+  private readonly instanceManifestManager = new InstanceManifestManager();
 
   constructor(
     rootPath: string,
@@ -33,6 +35,10 @@ export class InstanceModContentService {
       'Mod file path',
     );
     fs.rmSync(modPath, { force: true });
+    this.instanceManifestManager.removeMod(instancePath, safeFileName);
+    if (safeFileName.endsWith('.disabled')) {
+      this.instanceManifestManager.removeMod(instancePath, safeFileName.slice(0, -'.disabled'.length));
+    }
 
     const manifest = this.readManifest(instancePath);
     if (!manifest) return;
@@ -42,7 +48,8 @@ export class InstanceModContentService {
 
   public setEnabled(instanceId: string, fileName: string, enabled: boolean): void {
     const safeFileName = assertChildName(fileName, 'Mod filename');
-    const modsDirectory = resolvePathWithinRoot(this.instancePath(instanceId), 'mods', 'Mods directory');
+    const instancePath = this.instancePath(instanceId);
+    const modsDirectory = resolvePathWithinRoot(instancePath, 'mods', 'Mods directory');
     const sourcePath = resolvePathWithinRoot(modsDirectory, safeFileName, 'Mod file path');
     if (!fs.existsSync(sourcePath)) return;
 
@@ -60,6 +67,7 @@ export class InstanceModContentService {
     );
     if (fs.existsSync(targetPath)) throw new Error(`Mod file already exists: ${targetName}`);
     fs.renameSync(sourcePath, targetPath);
+    this.instanceManifestManager.renameMod(instancePath, safeFileName, targetName);
   }
 
   public async register(instanceId: string, registration: InstanceModRegistrationRequest): Promise<void> {

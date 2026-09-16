@@ -10,6 +10,7 @@ import {
 } from '../../services/instances/paths';
 import { resourcePacksService } from '../../services/resourcePacks/resourcePackService';
 import { validateIdentifier } from '../validation/privilegedPayloads';
+import { runContentMutation, type ContentMutationGate } from './contentMutation';
 
 function resolveInstancePath(instanceId: unknown): string {
     const safeInstanceId = assertChildName(
@@ -70,58 +71,66 @@ function summarizeResourcePackAcquisition(
     return { status: 'failure', importedFileNames, issues };
 }
 
-export function registerResourcePacksHandlers() {
+export function registerResourcePacksHandlers(deps: { runContentMutation?: ContentMutationGate } = {}) {
     ipcMain.handle('resourcePacks:list', async (_, instanceId: unknown) => {
         const safeInstancePath = resolveInstancePath(instanceId);
         return await resourcePacksService.list(safeInstancePath);
     });
 
     ipcMain.handle('resourcePacks:enable', async (_, instanceId: unknown, fileName: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeFileName = validateResourcePackName(fileName);
-        const safeInstancePath = resolveInstancePath(instanceId);
-        const ok = await resourcePacksService.enable(safeFileName, safeInstancePath);
+        const ok = await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            return await resourcePacksService.enable(safeFileName, resolveInstancePath(safeInstanceId));
+        });
         return { ok };
     });
 
     ipcMain.handle('resourcePacks:disable', async (_, instanceId: unknown, fileName: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeFileName = validateResourcePackName(fileName);
-        const safeInstancePath = resolveInstancePath(instanceId);
-        const ok = await resourcePacksService.disable(safeFileName, safeInstancePath);
+        const ok = await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            return await resourcePacksService.disable(safeFileName, resolveInstancePath(safeInstanceId));
+        });
         return { ok };
     });
 
     ipcMain.handle('resourcePacks:reorder', async (_, instanceId: unknown, fileNames: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeFileNames = validateResourcePackNames(fileNames);
-        const safeInstancePath = resolveInstancePath(instanceId);
-        const ok = await resourcePacksService.reorder(safeFileNames, safeInstancePath);
+        const ok = await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            return await resourcePacksService.reorder(safeFileNames, resolveInstancePath(safeInstanceId));
+        });
         return { ok };
     });
 
     ipcMain.handle('resourcePacks:delete', async (_, instanceId: unknown, fileName: unknown) => {
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
         const safeFileName = validateResourcePackName(fileName);
-        const safeInstancePath = resolveInstancePath(instanceId);
-        const ok = await resourcePacksService.delete(safeFileName, safeInstancePath);
+        const ok = await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            return await resourcePacksService.delete(safeFileName, resolveInstancePath(safeInstanceId));
+        });
         return { ok };
     });
 
     ipcMain.handle('resourcePacks:openFolder', async (_, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
-        const folder = resolveResourcePacksDir(safeInstancePath);
-
-        if (!fs.existsSync(folder)) {
-            try {
-                fs.mkdirSync(folder, { recursive: true });
-            } catch (e) {
-                console.error('Failed to create resourcepacks folder', e);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
+        await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+            const folder = resolveResourcePacksDir(resolveInstancePath(safeInstanceId));
+            if (!fs.existsSync(folder)) {
+                try {
+                    fs.mkdirSync(folder, { recursive: true });
+                } catch (e) {
+                    console.error('Failed to create resourcepacks folder', e);
+                }
             }
-        }
-
-        await shell.openPath(folder);
+            await shell.openPath(folder);
+        });
         return { ok: true };
     });
 
     ipcMain.handle('resourcePacks:add', async (_, instanceId: unknown) => {
-        const safeInstancePath = resolveInstancePath(instanceId);
+        const safeInstanceId = assertChildName(validateIdentifier(instanceId, 'Instance ID'), 'Instance ID');
 
         const { canceled, filePaths } = await dialog.showOpenDialog({
             properties: ['openFile', 'multiSelections'],
@@ -132,6 +141,8 @@ export function registerResourcePacksHandlers() {
             return summarizeResourcePackAcquisition([]);
         }
 
+        return await runContentMutation(deps.runContentMutation, safeInstanceId, async () => {
+        const safeInstancePath = resolveInstancePath(safeInstanceId);
         const folder = resolveResourcePacksDir(safeInstancePath);
         if (!fs.existsSync(folder)) {
             try {
@@ -156,5 +167,6 @@ export function registerResourcePacksHandlers() {
             filePaths.map((filePath) => resourcePacksService.import(filePath, safeInstancePath)),
         );
         return summarizeResourcePackAcquisition(results);
+        });
     });
 }

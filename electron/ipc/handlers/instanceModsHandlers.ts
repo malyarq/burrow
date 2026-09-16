@@ -3,6 +3,7 @@ import { INSTANCE_MODS_CHANNELS, type InstanceModRegistrationRequest } from '../
 import type { InstanceModContentService } from '../../services/mods/instanceModContentService';
 import { assertChildName } from '../../security/pathGuards';
 import { validateBoolean, validateEnum, validateIdentifier } from '../validation/privilegedPayloads';
+import { runContentMutation, type ContentMutationGate } from './contentMutation';
 
 type InstanceModsService = Pick<
   InstanceModContentService,
@@ -35,8 +36,8 @@ function registration(value: unknown): InstanceModRegistrationRequest {
 }
 
 /** Registers the path-free mod-content boundary for canonical instance IDs. */
-export function registerInstanceModsHandlers(deps: { instanceMods: InstanceModsService }) {
-  const { instanceMods } = deps;
+export function registerInstanceModsHandlers(deps: { instanceMods: InstanceModsService; runContentMutation?: ContentMutationGate }) {
+  const { instanceMods, runContentMutation: gate } = deps;
 
   for (const channel of INSTANCE_MODS_CHANNELS) {
     ipcMain.removeHandler(channel);
@@ -47,7 +48,9 @@ export function registerInstanceModsHandlers(deps: { instanceMods: InstanceModsS
   });
 
   ipcMain.handle('instance-mods:remove', async (_event, rawInstanceId: unknown, rawFileName: unknown) => {
-    instanceMods.remove(instanceId(rawInstanceId), modFileName(rawFileName));
+    const safeInstanceId = instanceId(rawInstanceId);
+    const safeFileName = modFileName(rawFileName);
+    await runContentMutation(gate, safeInstanceId, async () => { instanceMods.remove(safeInstanceId, safeFileName); });
     return { ok: true };
   });
 
@@ -57,16 +60,17 @@ export function registerInstanceModsHandlers(deps: { instanceMods: InstanceModsS
     rawFileName: unknown,
     rawEnabled: unknown,
   ) => {
-    instanceMods.setEnabled(
-      instanceId(rawInstanceId),
-      modFileName(rawFileName),
-      validateBoolean(rawEnabled, 'Mod enabled'),
-    );
+    const safeInstanceId = instanceId(rawInstanceId);
+    const safeFileName = modFileName(rawFileName);
+    const enabled = validateBoolean(rawEnabled, 'Mod enabled');
+    await runContentMutation(gate, safeInstanceId, async () => { instanceMods.setEnabled(safeInstanceId, safeFileName, enabled); });
     return { ok: true };
   });
 
   ipcMain.handle('instance-mods:register', async (_event, rawInstanceId: unknown, rawRegistration: unknown) => {
-    await instanceMods.register(instanceId(rawInstanceId), registration(rawRegistration));
+    const safeInstanceId = instanceId(rawInstanceId);
+    const safeRegistration = registration(rawRegistration);
+    await runContentMutation(gate, safeInstanceId, async () => await instanceMods.register(safeInstanceId, safeRegistration));
     return { ok: true };
   });
 }

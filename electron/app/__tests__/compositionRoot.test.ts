@@ -83,12 +83,15 @@ describe('createCompositionRoot', () => {
       authServerUrl: 'http://127.0.0.1:25530',
     });
     const operations = vi.spyOn(composition.operations, 'beginShutdown');
+    const launcher = vi.spyOn(composition.launcher, 'beginShutdown');
     const instances = vi.spyOn(composition.application, 'beginShutdown');
     const tunnel = vi.spyOn(composition.burrowLink, 'stop');
     const lan = vi.spyOn(composition.lanDiscovery, 'stop');
     const upnp = vi.spyOn(composition.portMapping, 'stop');
     await expect(composition.shutdown()).resolves.toEqual({ failures: [] });
     expect(operations).toHaveBeenCalledOnce();
+    expect(launcher).toHaveBeenCalledOnce();
+    expect(launcher.mock.invocationCallOrder[0]).toBeLessThan(operations.mock.invocationCallOrder[0]);
     expect(instances).toHaveBeenCalledOnce();
     expect(tunnel).toHaveBeenCalledOnce();
     expect(lan).toHaveBeenCalledOnce();

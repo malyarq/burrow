@@ -13,7 +13,7 @@ async function surfaceState(page: Page) {
     const card = document.createElement('div');
     card.className = 'surface-card';
     document.body.append(card);
-    const sidebar = document.querySelector('aside');
+    const sidebar = document.querySelector('.next-window');
     const bodyStyle = getComputedStyle(document.body);
     const sidebarStyle = getComputedStyle(sidebar!);
     const cardStyle = getComputedStyle(card);
@@ -23,7 +23,7 @@ async function surfaceState(page: Page) {
       cardBackground: cardStyle.backgroundColor,
       cardToken: cardStyle.getPropertyValue('--bg-card').trim(),
       sidebarBackground: sidebarStyle.backgroundColor,
-      sidebarToken: sidebarStyle.getPropertyValue('--bg-sidebar').trim(),
+      sidebarToken: sidebarStyle.getPropertyValue('--bg-app').trim(),
       accent: bodyStyle.getPropertyValue('--accent-main').trim(),
     };
     card.remove();
@@ -34,11 +34,12 @@ async function surfaceState(page: Page) {
 for (const [preset, colors] of Object.entries(presets)) {
   test(`${preset} surfaces inherit its light and dark variants`, async ({ page }) => {
     await page.goto(`${fixture}?theme=light&accent=purple&preset=${preset}&lang=en`);
-    await expect(page.locator('.classic-hero')).toBeVisible();
+    await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
 
     const selectPreset = page.getByRole('combobox', { name: 'Theme Presets', exact: true });
     await page.locator('[data-tour="settings"]').click();
     await selectPreset.selectOption(preset);
+    await page.getByRole('button', { name: 'Accent Color: purple', exact: true }).click();
     await page.waitForTimeout(350);
 
     let surfaces = await surfaceState(page);
@@ -60,7 +61,7 @@ for (const [preset, colors] of Object.entries(presets)) {
     expect(surfaces.accent).toBe('147 51 234');
 
     await page.reload();
-    await expect(page.locator('.classic-hero')).toBeVisible();
+    await expect(page.getByTestId('play-workspace-launch')).toBeVisible();
     await page.waitForTimeout(350);
     surfaces = await surfaceState(page);
     expect(surfaces.bodyToken).toBe(colors.dark);

@@ -26,6 +26,13 @@ export interface LauncherVersionListResponse {
 
 export type LauncherProgressEvent = TaskProgressData;
 
+/** Main-process source of truth for the one launcher session. */
+export interface LauncherSessionSnapshot {
+  revision: number;
+  phase: 'idle' | 'preparing' | 'starting' | 'running' | 'failed';
+  exitCode?: number;
+}
+
 /**
  * Core launcher API (launch + versions + events).
  *
@@ -37,6 +44,7 @@ export type LauncherProgressEvent = TaskProgressData;
  */
 export interface LauncherAPI {
   launch: (options: LauncherLaunchOptions) => Promise<void>;
+  getSessionState: () => Promise<LauncherSessionSnapshot>;
   killAndRestart: () => Promise<void>;
   getVersionList: (providerId?: DownloadProviderId) => Promise<LauncherVersionListResponse>;
   getForgeSupportedVersions: (providerId?: DownloadProviderId) => Promise<string[]>;
@@ -48,4 +56,5 @@ export interface LauncherAPI {
   onLog: (callback: (log: string) => void) => () => void;
   onProgress: (callback: (progress: LauncherProgressEvent) => void) => () => void;
   onClose: (callback: (code: number) => void) => () => void;
+  onSessionState: (callback: (snapshot: LauncherSessionSnapshot) => void) => () => void;
 }

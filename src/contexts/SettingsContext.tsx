@@ -95,8 +95,8 @@ function parseStoredThemePresetId(raw: string | null): ThemePresetId | null {
     return getThemePreset(raw)?.id ?? null;
 }
 
-function parseStoredAccentColor(raw: string | null): AccentColor {
-    return raw || DEFAULT_APPEARANCE_STATE.accentColor;
+function parseStoredAccentColor(raw: unknown): AccentColor {
+    return typeof raw === 'string' && raw.trim() ? raw : DEFAULT_APPEARANCE_STATE.accentColor;
 }
 
 function parseStoredCustomTheme(raw: string | null): CustomThemeConfig {

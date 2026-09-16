@@ -123,6 +123,8 @@ export interface ModrinthManifest {
   name: string;
   /** Краткое описание (опционально) */
   summary?: string;
+  /** Версия Minecraft и, при наличии, используемый загрузчик. */
+  dependencies?: Partial<Record<'minecraft' | 'forge' | 'fabric-loader' | 'quilt-loader' | 'neoforge', string>>;
   /** Список файлов */
   files: ModrinthManifestFile[];
 }
